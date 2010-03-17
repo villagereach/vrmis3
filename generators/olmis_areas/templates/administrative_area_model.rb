@@ -1,4 +1,6 @@
 class <%= class_name %> < AdministrativeArea
+  unloadable
+
   include BasicModelSecurity
 
   <% if parent_class %>

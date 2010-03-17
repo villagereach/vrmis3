@@ -12,6 +12,8 @@
 #
 
 class HealthCenterVisitInventoryGroup < ActiveRecord::Base
+  unloadable
+
   # This is a view.
   belongs_to :health_center_visit
   belongs_to :package

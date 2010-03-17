@@ -14,6 +14,8 @@
 #
 
 class Package < ActiveRecord::Base
+  unloadable
+
   include BasicModelSecurity
 
   belongs_to :product

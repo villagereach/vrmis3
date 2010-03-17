@@ -49,7 +49,7 @@
         <%- health_centers.group_by{|hc| hc.district}.sort_by{|d,hcs| d}.each do |district, hcs|  -%>
           <h4><%= district.label %></h4>
           <ul>
-            <%- hcs.sort_by{ |hc| progress.health_center_status(hc, visit_month) }.each do |hc| -%>
+            <%- hcs.sort_by{ |hc| HealthCenterVisit::Statuses.index(progress.health_center_status(hc, visit_month)) }.each do |hc| -%>
               <%= render :partial => 'visits/visit_item',
                          :locals => { :progress_status    => progress_class(progress.health_center_status(hc, visit_month)),
                                       :visit              => progress.health_center_visit_for_month(hc, visit_month),

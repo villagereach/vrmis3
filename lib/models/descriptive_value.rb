@@ -13,6 +13,8 @@
 #
 
 class DescriptiveValue < ActiveRecord::Base
+  unloadable
+
   include BasicModelSecurity
 
   belongs_to :descriptive_category

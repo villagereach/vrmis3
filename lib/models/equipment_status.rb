@@ -14,7 +14,9 @@
 #  updated_at             :datetime
 #
 
-class EquipmentStatus < ActiveRecord::Base
+class EquipmentStatus < ActiveRecord::Base 
+  unloadable
+
   include BasicModelSecurity
 
   belongs_to :equipment_type

@@ -12,6 +12,8 @@
 #
 
 class DescriptiveCategory < ActiveRecord::Base
+  unloadable
+
   include BasicModelSecurity
 
   referenced_by :code

@@ -9,8 +9,6 @@ class LoginController < OlmisController
   end
 
   def login
-    #raise I18n.locale# ||= Rails.configuration.i18n.default_locale
-    
     if((request.referer !~ /\/log(in|out)\b/) && session[:return_to].nil?)
       session[:return_to] = request.referer
     end

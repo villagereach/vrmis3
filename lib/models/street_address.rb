@@ -18,6 +18,8 @@
 #
 
 class StreetAddress < ActiveRecord::Base
+  unloadable
+
   belongs_to :addressed, :polymorphic => true
   
   validates_numericality_of :latitude,  :allow_nil => true

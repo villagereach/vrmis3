@@ -18,6 +18,8 @@
 #
 
 class HealthCenterVisit < ActiveRecord::Base
+  unloadable
+
   belongs_to :field_coordinator, :foreign_key => 'user_id', :class_name => 'User'
   belongs_to :health_center
 
@@ -152,6 +154,7 @@ class HealthCenterVisit < ActiveRecord::Base
   end
   
   # Please do not ever refer to these by number.
+  Statuses = [:REPORT_COMPLETE, :REPORT_INCOMPLETE, :REPORT_NOT_DONE, :REPORT_NOT_VISITED, :REPORT_IRRELEVANT]
   REPORT_COMPLETE =    :REPORT_COMPLETE
   REPORT_INCOMPLETE =  :REPORT_INCOMPLETE
   REPORT_NOT_DONE =    :REPORT_NOT_DONE

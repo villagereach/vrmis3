@@ -11,6 +11,8 @@
 #
 
 class Warehouse < ActiveRecord::Base
+  unloadable
+
   belongs_to :stock_room
   belongs_to :administrative_area
   has_one :street_address, :as => 'addressed'

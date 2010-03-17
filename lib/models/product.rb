@@ -12,6 +12,8 @@
 #
 
 class Product < ActiveRecord::Base
+  unloadable
+
   include BasicModelSecurity
 
   has_many :packages

@@ -13,6 +13,8 @@
 #
 
 class Fridge < ActiveRecord::Base
+  unloadable
+
   include BasicModelSecurity
   include ActsAsCoded
   

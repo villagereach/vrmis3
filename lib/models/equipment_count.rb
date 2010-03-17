@@ -13,6 +13,8 @@
 #
 
 class EquipmentCount < ActiveRecord::Base
+  unloadable
+
   include BasicModelSecurity
 
   belongs_to :equipment_type

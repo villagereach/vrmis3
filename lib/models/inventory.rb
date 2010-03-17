@@ -13,6 +13,8 @@
 #
 
 class Inventory < ActiveRecord::Base
+  unloadable
+
   belongs_to :stock_room
   belongs_to :user
   
