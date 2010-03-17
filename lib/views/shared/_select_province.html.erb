@@ -1,0 +1,7 @@
+<% if local_assigns[:provinces]
+     selected = params[:scope_report_to_province].to_i #if params[:scope_report_to_province]
+     options = ""
+     options << %Q{<option value="0">#{t('.all')}</option>}
+     options << options_from_collection_for_select(provinces, :id, :label, selected) %>
+<%= select_tag :scope_report_to_province, options %>
+<% end %>

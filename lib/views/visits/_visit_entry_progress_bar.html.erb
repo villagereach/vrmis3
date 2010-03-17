@@ -1,0 +1,11 @@
+<%- visit ||= @visit -%>
+<% @progress_bar_id ||= 0 %>
+<% @progress_bar_id += 1 %>
+<div id="progress_bar">
+  <label><%= t("visits.progress") %>:</label>
+  <p class="progress <%=progress_class_for_visit(visit)%>" id="progress-<%= @progress_bar_id %>">
+    <span style="display: none"><%= params.to_json %></span>
+    <em style="width:<%= visit.progress_percent %>%"></em>
+  </p>
+</div>
+

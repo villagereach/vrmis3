@@ -1,0 +1,15 @@
+<%-
+count ||= 4
+field_coordinator ||= @current_user
+delivery_zone ||= field_coordinator.delivery_zone  
+health_centers = field_coordinator.responsible_health_centers
+progress = progress_calculator
+
+-%>
+<div id="recent-months" class="this_month_summary">	
+ <%- recent_months(count).each do |month| -%>
+  <ul><li class="<% cache( cache_key_for_fc_month(field_coordinator.id, month, "month-progress-status")) do %>
+      <%= progress_class(progress.overall_status_for_date_period(month, health_centers)) %>
+    <%- end -%>"><%= link_to hcv_month(month), visits_by_month_path(:visit_month=>month) %></li></ul>
+ <%- end -%>
+</div>

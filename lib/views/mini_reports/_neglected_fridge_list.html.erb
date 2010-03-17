@@ -1,0 +1,21 @@
+<%- format ||=  report_format_for_current_user_role
+  	params.merge!(@params) if @params 
+		days ||= 30
+ 		fridges = param_scoped_fridges.neglected(days).find(:all, :order => 'reported_at desc', :limit=>10)
+-%>
+
+<div class="fridge_list fixed" id="neglected_fridges">
+
+<%- if fridges.empty? -%>
+  <h4><%= t(".no_neglected_fridges") %></h4>
+<%- else -%>
+  <h4><%= t('.neglected_fridges', :days=>days) %></h4>
+  <table class="fixed"> 
+    <tbody>
+        <%= render :partial=>'mini_reports/fridge_status_details', :collection => fridges, :as => :fridge,
+                    :locals => { :identifier => 'neglected_fridges', :format => format } %>
+    </tbody>
+  </table>
+<%- end -%>
+
+</div>

@@ -1,0 +1,92 @@
+<%- 
+  format ||= 'fc'
+  row_class = fridge_status_details_counter.odd? ? "odd" : "even"
+
+  entry_css_id = "fridge-entry-#{fridge.id}"
+  allow_update ||= true
+
+  details_css_id = "fridge-entry-details-#{fridge.id}"
+  details_revealed ||= false
+
+  update_css_id = details_css_id + "-update"
+  update_revealed ||= details_revealed
+
+  show_history ||= true
+  history_count ||= 4
+
+  status = fridge.current_status
+  new_status = FridgeStatus.new(:fridge=>fridge, :reported_at=>Time.now, :user_id => @current_user.id, :status_code => status.status_code)
+
+  is_manager = @current_user.manager? # reduced view for managers
+
+#  update_link_css_id = details_css_id + "-update-link"
+
+#  if this_fridge_was_updated(fridge)   
+#	  allow_update = true 
+#	  details_revealed = true
+#      update_revealed = this_fridge_update_failed(fridge)	  
+#  end
+	-%>
+
+<tr class="<%=row_class%> summary_container" id="<%= entry_css_id %>">
+
+   <td class="code first"><%= fridge.code %></td>
+   <td class="hc_district">
+     <strong><%= fridge.health_center.name %></strong>
+     <% unless is_manager %><em><%= t('geo_contained_by')%></em><% end %>
+     <%- if format=='fc' -%>
+        <%=fridge.health_center.district.name%>
+     <%- else; unless is_manager -%>
+	    <%=fridge.health_center.delivery_zone.name %>  (<%=fridge.health_center.delivery_zone.field_coordinator.name%>) 
+     <%- end ; end -%>
+   </td>
+
+   <td class="date<%= ' last' if is_manager %>"><em><%= t( 'datetime.distance_in_words.time_ago', :time => distance_of_time_in_words(Time.zone.now, status.reported_at).gsub( /^about /, '' )) %></em></td>
+   <% unless is_manager %>
+    <td class="temperature last">
+        <%= status.temperature %> <%="&#176;C" if status.temperature%>
+    </td>
+  <% end %>
+</tr>
+
+<tr class="details_container" id="<%= details_css_id %>">
+  <td class="main" colspan="4">
+    <div class="content">
+      <% if status.notes %>
+        <p class="status_notes"><em><%= t('.notes') %></em> &#8220;<%= status.notes %>&#8221;</p>
+      <% end %>
+
+      <dl class="personnel inline">
+        <dt><%= t('fridge_statuses.reported_by') %></dt>
+        <dd><%=user_name_and_phone(fridge.current_status.reported_by) %></dd>
+
+        <dt><%=t('health_center_contact') %></dt>
+        <dd><%=user_name_and_phone(fridge.health_center.street_address) %></dd>
+
+        <%- unless format=='fc' -%>
+          <dt><%= t('field_coordinator') %></dt>
+          <dd><%=user_name_and_phone(fridge.field_coordinator) %></dd>
+        <%- end  -%>
+      </dl>
+
+      <hr />
+
+      <%- if allow_update -%>
+        <div class="update">
+          <%= render :partial=>'fridge_statuses/short_form', :locals=>{:fridge_status => new_status} %>
+        </div>
+      <%- end -%>
+
+      <%- if show_history -%>
+        <div class="history">
+          <h6><%= t(".history") %></h6>
+          <dl class="stacked">
+            <%= render :partial=>'fridge_statuses/history_short_entry', :collection=>fridge.recent_history(history_count, 0), :as=>:fs %>
+          </dl>
+        </div>
+      <%- end -%>
+
+      <p class="more"><%=link_to( t('fridges.fridge.details',:name=>fridge.code), fridge ) %></p>
+    </div>
+  </td>
+</tr>

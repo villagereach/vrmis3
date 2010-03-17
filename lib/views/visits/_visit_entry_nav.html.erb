@@ -1,0 +1,31 @@
+<% nav = categorized_nav %>
+<div class="span-5">
+  <dl id="health_center_monthly_tasks" class="switcher_pane_menu">
+    <% nav.each do |label, subnav| %>
+      <dt><%= label %></dt>
+      <dd>
+        <ul>
+          <%- subnav.each do |task, link| -%>
+            <%- task_available = @visit.availability_class(task) -%>
+            <%- task_current =  current_visit_link?(link) ? ' current' : '' -%>
+            <%- task_progress = progress_class_for_task(@visit, task) -%>
+            <li class="status <%=[task_available, task_progress, task_current].join(" ")%>">
+              <%- if task_available == 'available' -%><%= link_to link.shift, *link -%>
+              <%- else -%><%= link.first -%>
+              <%- end -%>
+            </li>
+          <% end %>
+        </ul>
+      </dd>
+    <% end %>
+  </dl> 
+  
+  <div>
+    <h4><%= t('visits.recent_events') %></h4>
+    <ul class="submission_list">
+      <%- @visit.data_submissions.find(:all, :select => DataSubmission.default_select(true), :limit => 4).each do |event| %>
+        <li class="<%= event.status %>"><%= event.description %></li>
+      <%- end -%>
+    </ul>
+  </div>
+</div>

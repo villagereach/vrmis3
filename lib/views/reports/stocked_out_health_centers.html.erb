@@ -1,0 +1,4 @@
+<h2><%= t('reports.index.stocked_out_health_centers_by_date') %></h2>
+
+<%= render :partial => 'graphs', :locals => { :interactive_parameters => ['product_types', 'regions'], :graphs => @graphs, :tab_graphs => @tab_graphs, :tab_graph_dimension => @tab_graph_dimension } %>
+

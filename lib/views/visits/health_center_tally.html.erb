@@ -1,0 +1,33 @@
+<%- form_tag( { } ) do -%>
+<h3><%= t('.page_title_' + params[:tally].underscore) %></h3>
+
+<div class="epi">
+  <%- if !@errors.empty? -%>
+    <div id="error">
+      <ul>
+        <%- @errors.each do |tally, errors| -%>
+          <%- errors.each do |k, v| -%>
+            <li><%= link_to(v.full_messages, '#' + tally + '_' + k) %></li>
+          <%- end -%>
+        <%- end -%>
+      </ul>
+    </div>
+  <%- end -%>
+
+  <p class="note"><%= t(".instructions") %></p>
+
+  <%= tally_table(params[:tally].constantize) %>
+
+  <%= save_and_continue %>
+
+</div>
+<%- end -%>
+
+<%- javascript_tag do -%>
+  jQuery(document).ready(function() {
+    jQuery('input.datepicker').
+      datepicker(jQuery.extend(<%= js_datepicker_default_options %>,
+                               { changeMonth: true, changeYear: true, yearRange: '-1:+5' },
+                               jQuery.datepicker.regional[<%= js_datepicker_region(I18n.locale) %>]));
+    });
+<%- end -%>

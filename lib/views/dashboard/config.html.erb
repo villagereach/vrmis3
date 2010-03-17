@@ -1,0 +1,6 @@
+<h2>Config</h2>
+<ul>
+  <% [:target_percentages, :health_center_catchments, :districts, :provinces, :stock_rooms, :delivery_zones, :users].each do |c| %>
+  <li><%= link_to c.to_s.titleize, :controller => c, :action => :index %></li>
+  <% end %>
+</ul>

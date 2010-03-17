@@ -1,0 +1,15 @@
+<h2><%= t('.title', :name => @hc.name) %></h2>
+<% form_for :stock, :url => { :action => 'update_ideal_stock' } do |f| %>
+  <%= hidden_field_tag :stock_room_id, @sr.id %>
+  <%= hidden_field_tag :date, params[:date] %>
+  <%- if !@errors.empty? -%>
+    <ul>
+      <%- @errors.each do |code, errors| -%>
+        <li><%= link_to("#{Package.find_by_code(code).label}: #{errors.full_messages.to_s}", "#stock_packages_#{code}") %></li>
+      <%- end -%>
+    </ul>
+  <%- end -%>
+  <%= render :partial => 'ideal_stock', :locals => { :f => f, :params => params[:stock] || {} } %>
+  <%= f.submit t('save') %>
+  <%= link_to t('cancel'), delivery_pickup_path(@hc.delivery_zone.code, @working_date) %><br />
+<% end %>

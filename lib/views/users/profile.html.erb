@@ -1,0 +1,50 @@
+<h2><%= t(".profile_for", :name => @user.username) %></h2>
+
+<p class="return"><a href="/"><%= t(:return) %></a></p>
+
+<div id="user-profile-form">
+  <%- form_for @user, :url => profile_user_path do |f| -%>
+    <%= f.error_messages %>
+    <fieldset id="user-details">
+      <legend><%= t(".legend.personal") %></legend>
+      <ol>
+        <li>
+          <%= f.label :name %>
+          <%= f.text_field :name, :size => 40, :maxlength => 255 %>
+        </li>
+        <li>
+          <%= f.label :phone %>
+          <%= f.text_field :phone, :size => 40, :maxlength => 255 %>
+        </li>
+        <li>
+          <%= f.label :language %>
+          <%= f.select :language, Locale.all.sort_by{|l| l.name.downcase}.map{|l| [ l.name, l.code ]}, :include_blank => t(:select_blank) %>
+        </li>
+        <li>
+          <%= f.label :timezone %>
+          <%= f.time_zone_select :timezone, nil, :include_blank => t(:select_blank) %>
+        </li>
+      </ol>
+    </fieldset>
+    <fieldset id="account-details">
+      <legend><%= t(".legend.account") %></legend>
+      <ol>
+        <li>
+          <%= f.label :username %>
+          <%= f.text_field :username, :size => 20, :maxlength => 255, :readonly => true %>
+        </li>
+        <li>
+          <%= f.label :password, t(".change_password") %>
+          <%= f.password_field :password, :size => 20 %>
+        </li>
+        <li>
+          <%= f.label :password_confirmation, t(".confirm_password") %>
+          <%= f.password_field :password_confirmation, :size => 20 %>
+        </li>
+      </ol>
+    </fieldset>
+    <p class="form-buttons">
+      <%= f.submit t("update") %>
+    </p>
+  <%- end -%>
+</div>

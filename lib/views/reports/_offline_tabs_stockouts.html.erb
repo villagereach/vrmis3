@@ -1,0 +1,6 @@
+    <ul class="tabs stockouts-<%= pr.id %>">
+      <% ProductType.trackable.all.sort.each do |t| %>
+        <li><a href="#<%= t.code %>"><%= t.label %></a></li>
+      <% end %>
+    </ul>
+

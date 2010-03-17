@@ -1,0 +1,10 @@
+    <h5><%= t('reports.axes.'+@area.regions.first.class.name.tableize.singularize) %></h5>
+    <ul class="radio">
+      <% @area.regions.sort.each do |t| %>
+        <li>
+          <%= check_box_tag('region', t.label, true, :id => "region_#{t.id}") %>
+          <%= label_tag("region_#{t.id}", t.label) %>
+        </li>
+      <% end %>
+    </ul>
+

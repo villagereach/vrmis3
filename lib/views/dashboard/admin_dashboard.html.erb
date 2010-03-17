@@ -1,0 +1,24 @@
+<h2>Admin's Dashboard</h2>
+
+<h2>Choose your location and date: </h2>
+<% date = (Date.parse("#{session[:year]}-#{session[:month]}-01}") rescue Date.today.beginning_of_month) %>
+
+<% form_tag do %>
+  Location: <%=  
+  select_tag(:health_center, option_groups_from_collection_for_select(District.all,
+    :health_center_catchments,
+    :name,
+    :name,
+    :name,
+    session[:health_center] || 'MonapoSede')) %>
+
+  <%= select_tag 'month', options_for_select(%w(Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec).zip((1..12).to_a), date.month) %>
+  <%= select_tag 'year', options_for_select((2008 .. Date.today.year).to_a, date.year) %>
+
+  Mode: <select name="mode" id="mode">
+					<option value="edit">Edit</option> 
+					<option value="view">View</option>
+					<option value="admin">Admin</option> </select>
+  <%= submit_tag 'Submit', :name => nil %>
+<% end %> 
+

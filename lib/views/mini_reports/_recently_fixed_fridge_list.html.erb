@@ -1,0 +1,20 @@
+<%- format ||= report_format_for_current_user_role
+  	params.merge!(@params) if @params 
+ 		fridges = param_scoped_fridges.recently_fixed(7).find(:all, :order => 'reported_at desc', :limit=>5)
+-%>
+
+<div class="fridge_list fixed" id="recently_fixed_fridges">
+
+<%- if fridges.empty? -%>
+  <h4><%= t(".no_recently_fixed_fridges") %></h4>
+<%- else -%>
+  <h4><%= t('.recently_fixed_fridges') %></h4>
+  <table class="fixed"> 
+    <tbody>
+        <%= render :partial=>'mini_reports/fridge_status_details', :collection => fridges, :as => :fridge,
+                    :locals => { :identifier => 'recently_fixed_fridges', :format => format } %>
+    </tbody>
+  </table>
+<%- end -%>
+
+</div>

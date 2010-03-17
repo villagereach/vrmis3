@@ -1,0 +1,15 @@
+<% @items.keys.map.sort_by { |i| [ i.product, i ] }.in_groups_of(4).each do |group| %>
+  <table class="pickup">
+    <% group.compact.each do |k| %>
+      <tr>
+        <th>
+          <%= k.label %>:
+        </th>
+        <td id="<%= what %>_packages_<%= k.code %>">
+          <%= @items[k] %>
+        </td>
+      </tr>
+    <% end %>
+  </table>
+<% end %>
+

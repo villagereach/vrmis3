@@ -1,0 +1,21 @@
+<h3><%= t('health_centers.details', :name => @health_center.name) %></h3>
+
+<dl class="detail-page">
+  <%= show_pair('health_centers.name',                    @health_center.name) %>
+  <%= show_pair('health_centers.address',                 @health_center.street_address.to_label) if @health_center.street_address %>
+  <%= show_pair('health_centers.delivery_zone',           @health_center.delivery_zone.name) %>
+  <%= show_pair('health_centers.district',                @health_center.district.name) %>
+  <%= show_pair('health_centers.province',                @health_center.province.name) %>
+  <%= link_pair('health_centers.primary_contact_name',    @health_center.primary_contact.name, @health_center.primary_contact) %>
+  <%= show_pair('health_centers.primary_contact_phone',   @health_center.primary_contact.phone) %>
+  <%= link_pair('health_centers.field_coordinator_name',  @health_center.delivery_zone.field_coordinator.name,  @health_center.delivery_zone.field_coordinator) %>
+  <%= show_pair('health_centers.field_coordinator_phone', @health_center.delivery_zone.field_coordinator.phone) %>
+</dl>
+
+<%= link_to t('.new_fridge'), [:new, @health_center, :fridge] %>
+<%= render :partial => '/mini_reports/filtered_fridge_list', :locals => { :limit => 20 } %>
+<%= render :partial => '/mini_reports/fridge_status_list',   :locals => { :limit => 10 } %>
+<%= render :partial => '/mini_reports/equipment_list',       :locals => { :limit => 10 } %>
+<%#= render :partial => '/mini_reports/recently_existing_inventory',  :locals => { :limit => 10 } %>
+<%= render :partial => '/mini_reports/recently_delivered_inventory', :locals => { :limit => 10 } %>
+

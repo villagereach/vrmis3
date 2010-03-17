@@ -1,0 +1,6 @@
+<%= render :partial => '/shared/extended_fridge_scope' %>
+
+<%= link_to t('.new'), @fridge_owner ? [:new, @fridge_owner, :fridge] : :new_fridge %>
+
+<%= render :partial => '/mini_reports/filtered_fridge_list', :locals => { :limit => 20 } %>
+

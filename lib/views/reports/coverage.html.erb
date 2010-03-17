@@ -1,0 +1,9 @@
+<h2><%= t('reports.index.coverage_rates') %></h2>
+
+<%= render :partial => 'graphs', 
+           :locals => { :interactive_parameters => [],
+                        :tables => @tables, 
+                        :graphs => @graphs, 
+                        :tab_graphs => @tab_graphs, 
+                        :tab_graph_dimension => @tab_graph_dimension } %>
+

@@ -1,0 +1,12 @@
+<%- if Locale.count > 1 -%>
+  <p id="language-select">
+    <em><label for="locale"><%= t('.select_language') %></label></em>
+    <%- Locale.all.sort_by{|locale| locale.name.downcase}.each do |locale| -%>
+      <%- if I18n.locale.to_s == locale.code -%>
+        <strong><%= h locale.name %></strong>
+      <%- else -%>
+        <%= link_to(h(locale.name), url_for({ :overwrite_params => { :locale => locale.code } })) %>
+      <%- end -%>
+    <%- end -%>
+  </p>
+<%- end -%>

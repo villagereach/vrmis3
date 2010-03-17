@@ -1,0 +1,8 @@
+<% unless local_assigns[:delivery_zones].blank?
+     selected = params[:scope_report_to_delivery_zone].to_i #if params[:scope_report_to_delivery_zone]
+     options = ""
+     #options << %Q{<option value="">#{t('.select')}</option>} unless params[:scope_report_to_delivery_zone]
+     options << %Q{<option value="0">#{t('.all', :province => province.name)}</option>} if local_assigns[:province]
+     options << options_from_collection_for_select(delivery_zones, :id, :name, selected) %>
+<%= select_tag :scope_report_to_delivery_zone, options %>
+<% end %>

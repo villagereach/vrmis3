@@ -1,0 +1,22 @@
+<ul id="visit-search-results">
+  <%- limit = 6
+      past_months = recent_months(limit)
+  -%>
+  <%- @health_centers.each do |hc| -%>
+    <li>
+      <%= h hc.name %>
+      <ul>
+        <%- recent_visits = hc.health_center_visits.recent(limit) -%>
+        <%- recent_visit_months = recent_visits.map(&:visit_month) -%>
+        <%- past_months.each do |month| -%>
+          <%= render :partial => 'visit_item',
+                     :locals => { :progress_status => progress_class(progress_status_for_month(month, [hc])),
+                                  :visit           => hc.visit_for_month(month),
+                                  :health_center   => hc,
+                                  :visit_month     => month,
+                                  :render_visits_link => true } %>
+        <%- end -%>
+      </ul>
+    </li>
+  <%- end -%>
+</ul>

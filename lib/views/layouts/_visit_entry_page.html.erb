@@ -1,0 +1,11 @@
+<h2><strong><%= @health_center.label %></strong>, <%=hcv_month(params[:visit_month])%></h2>
+<%= render :partial => 'visit_entry_progress_bar' %>
+<div id="health_center_visit" class="switcher_pane">
+  <%= render :partial => "visit_entry_nav" %>
+  <div id="health_center_main" class="switcher_pane_content span-19 last">
+    <div class="content">
+      <%= yield %>	
+    </div>
+  </div>
+</div>
+

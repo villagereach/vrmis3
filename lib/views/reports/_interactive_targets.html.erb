@@ -1,0 +1,10 @@
+    <h5><%= t('reports.targets') %></h5>
+    <ul class="radio">
+    <% TargetPercentage.all.sort.each do |t| %>
+      <li>
+      <%= check_box_tag('target_percentage', t.label, true, :id => "target_percentage_#{t.id}") %>
+      <%= label_tag("target_percentage_#{t.id}", t.label) %>
+      </li>
+    <% end %>
+    </ul>
+

@@ -1,0 +1,10 @@
+    <h5><%= t('reports.products') %>:</h5>
+    <ul class="radio">
+      <% Product::TrackableProductTypes.each do |t| %>
+        <li>
+          <%= check_box_tag('product_type', I18n.t(t).capitalize, true, :id => "product_type_#{t}") %>
+          <%= label_tag("product_type_#{t}", I18n.t(t).capitalize) %>
+        </li>
+      <% end %>
+    </ul>
+

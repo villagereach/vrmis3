@@ -1,0 +1,20 @@
+<% default_url = url_for %>
+<div id="report-scope"> 
+  <%- form_tag(default_url, :id => :set_report_scope_form, :method => :get) do -%>
+    <% if !params.has_key?(:health_center_id) %>
+      <%= render :partial => '/shared/fridge_location_scope' %>
+    <% end %>
+    <%= render :partial => '/shared/fridge_status_scopes' %>
+    <noscript><%= submit_tag t("go"), :id => "report_scope_submit_button" %></noscript>
+  <%- end -%>
+  <span id="report-scope-loading-indicator" class="loading-indicator" style="visibility: hidden;"><%= t('loading') %><%= image_tag('indicator-small.gif', :size => '13x10') %></span>
+</div>
+
+<% javascript_tag do %>
+  jQuery(function() {
+    jQuery('#set_report_scope_form select').change(function() {
+      jQuery('#report-scope-loading-indicator').css('visibility', 'visible');
+      jQuery('#set_report_scope_form').submit();
+    });
+  });
+<% end %>

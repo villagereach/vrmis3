@@ -1,0 +1,10 @@
+  <li class="status <%= progress_status %> less_indent">
+    <%- if render_visits_link -%>
+      <%= link_to(h(health_center.label), hcv_best_starting_url(visit, :health_center => health_center.code, :visit_month => visit_month)) %>
+    <%- else -%>
+      <%= h(health_center.label) %>
+    <%- end -%>
+    &ndash; <%= hcv_month(visit_month) %> &ndash;
+    <span class="note"><%= visit ? (visit.visited ? t(".visited_on", :date => I18n.l(visit.date)) : t(".did_not_visit")) : t(".new") %></span>
+  </li>
+

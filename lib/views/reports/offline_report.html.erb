@@ -1,0 +1,33 @@
+<div class="collapsible-table">
+  <h3><%= t(".#{@report}") %></h3>
+
+  <% provinces = Province.all.sort %>
+  <% default = Province.default.id %>
+  <%= label_tag 'table-selector', t('shared.select_province.select') %>:
+  <%= select_tag 'table-selector', options_for_select(provinces.map { |pr| [pr.label, pr.id] }, default) %>
+  <% javascript_tag do %>
+    jQuery(document).ready(function() { 
+      jQuery(".collapsible-table .table-container").hide();
+      jQuery(".collapsible-table #table-container-<%= default %>").show();
+    });
+  <% end %>
+
+  <% provinces.each do |pr| %>
+    <div class="table-container" id="table-container-<%= pr.id %>">
+      <% begin %>
+        <%= render :partial => 'offline_tabs_'+@report, :locals => { :pr => pr } %>
+      <% rescue ActionView::MissingTemplate %>
+      <% end %>  
+      <div class="table">
+        <h4><%= pr.label %></h4>
+        <%= Graphs.chart_to_table(
+          Graphs.send('offline_'+@report, { 
+                  :province_id => pr.id, 
+                  :date_period_range => 3.months.ago.to_date.to_date_period + ':' + Date.today.to_date_period
+                }),
+            :identifier => "#{@report}-#{pr.id}").html_table({}, { :table_class => @report }) %>
+      </div>
+    </div>
+  <% end %>
+</div>
+

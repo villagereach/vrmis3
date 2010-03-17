@@ -1,0 +1,25 @@
+<%-
+  month = params[:visit_month]
+  health_centers = @fc.responsible_health_centers(:include => 'administrative_area')
+-%>
+
+<h2><%= t('.user_info', :name => @fc.name) %></h2>
+
+<table class="auto">
+  <tbody>
+    <tr>
+      <th><%= t('.username') %></th>
+      <td><%= @fc.username %></td>
+    </tr>
+    <tr>
+      <th><%= t('.phone') %></th>
+      <td><%= country_format_phone(@fc.phone) %></td>
+    </tr>
+  </tbody>
+</table>
+
+<%= render :partial => 'visits/by_month', :locals => { :visit_month        => month,
+                                                       :field_coordinator  => @fc,
+                                                       :health_centers     => health_centers,
+                                                       :month_link         => :fc_visits_by_month_path,
+                                                       :render_visits_link => false } %>

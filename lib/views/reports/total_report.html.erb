@@ -1,0 +1,18 @@
+<style>
+div.section { margin-left: 1em; }
+div.report { margin-left: 3em; }
+div.section h2 { text-align: left; }
+div.section div.span-16 { float: none; }
+div.reports > div.section div.page > h1 { font-size: 24pt; }
+div.reports > div.section div.page h2 { font-size: 20pt; }
+div.reports > div.section > div.section > div.page > h1 { font-size: 22pt; }
+div.reports > div.section > div.section > div.page h2 { font-size: 18pt; }
+div.reports > div.section > div.section > div.section > div.page > h1 { font-size: 20pt; }
+div.reports > div.section > div.section > div.section > div.page h2 { font-size: 16pt; }
+div.reports > div.section > div.section > div.section > div.section > div.page > h1 { font-size: 18pt; }
+div.reports > div.section > div.section > div.section > div.section > div.page h2 { font-size: 14pt; }
+div.page > div { display: none; }
+</style>
+<div class="reports">
+<%= render :partial => 'total_report_page', :locals => { :page => @graph_pages } %>
+</div>

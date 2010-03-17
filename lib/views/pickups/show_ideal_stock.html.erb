@@ -1,0 +1,6 @@
+<h2><%= t('.title', :name => @hc.name) %></h2>
+<%= link_to t('edit'), delivery_pickup_hc_edit_path %><br />
+<%= link_to t('done'), delivery_pickup_edit_path(@hc.delivery_zone.code, @working_date) %><br />
+<%= render :partial => 'show_stock', :locals => { :what => 'stock' } %>
+<br clear="left" />
+

@@ -1,0 +1,100 @@
+<%- 
+  count ||= 6
+  link_months = recent_months(count)
+  starting_sort ||= "status"
+  all_sorts = %w(status name district)
+  all_sorts_links = all_sorts.map{|s| [s, s+"_linkline"]}
+  progress = progress_calculator
+-%>
+<div class="switcher_pane">
+
+  <div id="visit-months-control" class="span-8" >
+    <ul class="switcher_pane_menu">
+      <%- link_months.each do |link_month| -%>
+       
+        <li class="status 
+          <%- cache( cache_key_for_fc_month(field_coordinator.id, link_month, "month-progress-status")) do -%>
+            <%= progress_class(progress.overall_status_for_date_period(link_month, health_centers)) %> 
+          <%- end -%>
+          <%= 'current' if visit_month == link_month %>" >
+            <%= link_to(hcv_month(link_month), self.send(month_link, link_month), :onclick => js_toggle("loading-indicator")) %>
+        </li>
+      <%- end -%>
+    </ul>
+    <span id="loading-indicator" class="loading-indicator" style="display:none ;"><%= t('loading') %><%= image_tag('indicator-small.gif', :size => '13x10') %></span>
+  </div>
+
+  <% cache( cache_key_for_fc_month(field_coordinator.id, visit_month, "month-detail-with-progress")) do %>
+  <div id="visit-month-content" class="switcher_pane_content span-16 last">
+    <div class="content">
+      <p id="sort_links">
+        <%= t('.sort_by') %>:
+        <%- all_sorts_links.each do |sort1, link1| -%>
+          <%- visible_container(link1, sort1==starting_sort, 'span') do -%>
+            <%- all_sorts_links.each do |sort2, link2| -%>
+              <%- if sort2 == sort1 -%>
+                <strong><%= t("."+sort2) %></strong>
+              <%- else -%>
+                <%= link_to_function(t("."+sort2),
+                  js_show(sort2,link2) + js_hide( all_sorts_links.flatten - [sort2,link2]),
+                  :href => "##{sort2}") %>
+              <%- end -%>
+            <%- end -%>
+          <%- end -%>
+        <%- end -%>
+      </p>
+
+      <%- visible_container('district', starting_sort == 'district') do -%>
+      <h3><%= t('.by_district') %></h3>
+        <%- health_centers.group_by{|hc| hc.district}.sort_by{|d,hcs| d}.each do |district, hcs|  -%>
+          <h4><%= district.label %></h4>
+          <ul>
+            <%- hcs.sort_by{ |hc| progress.health_center_status(hc, visit_month) }.each do |hc| -%>
+              <%= render :partial => 'visits/visit_item',
+                         :locals => { :progress_status    => progress_class(progress.health_center_status(hc, visit_month)),
+                                      :visit              => progress.health_center_visit_for_month(hc, visit_month),
+                                      :health_center      => hc,
+                                      :visit_month        => visit_month,
+                                      :render_visits_link => render_visits_link } %>
+            <%- end -%>
+          </ul>
+        <%- end -%>
+      <%- end -%>
+
+      <%- visible_container('name', starting_sort == 'name') do -%>
+        <h3><%= t('.by_name') %></h3>
+        <ul>
+          <%- health_centers.sort.each do |hc| -%>
+                <%= render :partial => 'visits/visit_item',
+                           :locals => { :progress_status    => progress_class(progress.health_center_status(hc, visit_month)),
+                                        :visit              => progress.health_center_visit_for_month(hc, visit_month),
+                                        :health_center      => hc,
+                                        :visit_month        => visit_month,
+                                        :render_visits_link => render_visits_link } %>
+          <%- end -%>
+        </ul>               
+      <%- end -%>
+
+      <%- visible_container('status', starting_sort == 'status') do -%>
+        <h3><%= t( '.by_status' ) %></h3>
+        <%- health_centers.group_by{|hc| progress.health_center_status(hc, visit_month) }.
+              sort_by { |status, hcs| progress_class(status) }.each do |status, hcs|  -%>
+          <h4><%= t(".#{progress_class(status)}") %></h4>
+          <ul>
+            <%- hcs.sort.each do |hc| -%>
+              <%= render :partial => 'visits/visit_item',
+                         :locals => { :progress_status    => progress_class(progress.health_center_status(hc, visit_month)),
+                                      :visit              => progress.health_center_visit_for_month(hc, visit_month),
+                                      :health_center      => hc,
+                                      :visit_month        => visit_month,
+                                      :render_visits_link => render_visits_link } %>
+            <%- end -%>
+          </ul>
+        <%- end -%>
+      <%- end -%>
+
+    </div> <%# .content %>
+  </div>
+  <%- end -%>
+</div>
+

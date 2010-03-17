@@ -1,0 +1,5 @@
+<% %w(name phone).each do |a| %>
+<dt><%= form.label a, User.human_attribute_name(a) %></dt>
+<dd><%= form.text_field a %></dd>
+<% end %>
+

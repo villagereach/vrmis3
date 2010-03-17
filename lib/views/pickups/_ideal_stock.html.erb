@@ -1,0 +1,15 @@
+<% @items.keys.map.sort_by { |i| [ i.product, i ] }.in_groups_of(2).each do |group| %>
+  <div style="width: 80em">
+    <% group.compact.each do |k| %>
+      <div style="width: 10em; margin-right: 1em; float: left; text-align: right;">
+        <%= f.label "packages_#{k.code}", k.label %>:
+      </div>
+      <div style="width: 10em; float: left; text-align: left;">
+        <%= f.text_field k.code, :value => params[:packages].maybe[k.code] || @items[k], :size => 3, :index => 'packages', :style => "text-align: right"  %>
+      </div>
+    <% end %>
+  <br clear="left" />
+  </div>
+<% end %>
+<br clear="left" />
+

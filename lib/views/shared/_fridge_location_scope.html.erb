@@ -1,0 +1,9 @@
+<%  options = [
+    [ 'Country', Country.all.sort.map{|a| [ a.label, "" ] } ],
+    [ 'Province', Province.all.sort.map{|a| [ a.label, "in_province,#{a.id}" ] } ],
+    [ 'Delivery Zone', DeliveryZone.all.sort.map{|a| [ a.label, "in_delivery_zone,#{a.id}" ] } ],
+    [ 'District', District.all.sort.map{|a| [ a.label, "in_district,#{a.id}" ] } ]
+  ] %>
+<label for="report_scope"><%= I18n.t('shared.fridge_location_scope.fridge_location') %></label>
+<%= select_tag :report_scope, grouped_options_for_select(options, params[:report_scope]) %>
+

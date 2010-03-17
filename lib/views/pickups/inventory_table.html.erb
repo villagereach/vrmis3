@@ -1,0 +1,68 @@
+<%- @comparison_column ||=nil
+    @comparison_class ||=nil
+    @show_date ||= true
+-%>
+
+<h2><%= @page_title %></h2>
+
+<div class="prepend-7 span-12 append-5 last">
+  
+<%- if @show_date -%>
+  <h4>  <%= t('headers.date') %>:  <%= l(@inventory.date, :format=>:default) %> </h4>
+<%- end -%>
+
+
+<table class="inventory">
+
+  <thead>
+    <tr >
+      <th class="label">
+        <%=    t('inventory.package_label')  %>
+      </th>
+      <th class="amount">
+        <%=    t('inventory.package_amount')  %>
+      </th>
+      <%- unless @comparison_column.blank? -%>
+      <th class="comparison <%=@comparison_class%> ">
+        <%= @comparison_column %>
+      </th>
+      <%- end -%>
+
+
+    </tr>
+  </thead>
+  <tbody>
+    <%- @amounts.keys.map.sort_by { |i| [ i.product, i ] }.each do |package| -%>
+    <tr class="inventory_row">
+
+
+      <td class="label" >
+        <%= package.label %>
+      </td>
+      <td class="amount" >
+        <%=  @amounts[package] %>
+      </td>
+
+      <%- unless @comparison_column.blank? -%>
+      <td class="comparison <%=@comparison_class%> ">
+        <%= @comparisons[package] %>
+      </td>
+      <%- end -%>
+    </tr>
+    <%- end -%>
+  </tbody>
+</table>
+
+<div class="not_in_print">
+<%=link_to t('edit'), url_for()+"/edit"%> 
+<%- if @comparison_column -%> |
+  <%=link_to_function( t('inventory.print_warehouse_form'), "window.print()") %>
+  <%=link_to_function(  image_tag('icons/silk/printer.png', :class=>'printer_icon'), "window.print()") %>
+<%- end -%>
+| <%= @back_link %> 
+</div>
+
+
+</div>
+
+

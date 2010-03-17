@@ -1,0 +1,12 @@
+<div>
+  <% form_tag(visits_search_path, :id => "visit_search_form") do %>
+  <%= text_field :health_center, :name, { :autocomplete => "off" } %>
+  <%= javascript_tag(%Q{
+        jQuery(document).ready(function() {
+          var health_center_name_auto_complete_data = [ #{HealthCenter.in_delivery_zone(@current_user.delivery_zone).sort.map{|hc| "'#{hc.label}'"}.uniq.join(', ')} ];
+          jQuery("#health_center_name").autocomplete(health_center_name_auto_complete_data).result(function(event, item) { jQuery("#visit_search_form").submit(); });
+        });
+      }) %>
+  <%= submit_tag t('search_button') %>
+  <% end %>
+</div>

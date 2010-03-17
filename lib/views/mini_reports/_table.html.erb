@@ -1,0 +1,54 @@
+<div id="table_<%= identifier %>">
+<% rows = data.count %>
+<% offset ||= (params[:offset] || 0).to_i %>
+<% @params ||= {} %>
+<% if rows == 0 %>
+  <%= t('.none') %>
+<% else %>
+  <% sql_options ||= {} %>
+  <% sql_options[:limit] = limit if limit %>
+  <% sql_options[:offset] = offset if offset %>
+  <% sort_by ||= nil %>
+  <%= ReportTable.new(
+        columns, 
+        data,
+        :sort_by => sort_by,
+        :sql_options => sql_options,
+        :identifier => identifier,
+        :i18n => true,
+        :model => model,
+        :controller => @controller).
+      html_table(params, 
+        :params => @params.merge({ :action => :render_mini_table, :identifier => identifier, :limit => limit, :offset => 0 }), 
+        :link_proc => lambda { |text, url| jquery_link_to_remote(text, :update => "#{identifier}", :method => :get, :url => url ) } )          
+      %>
+  <p>
+     <% if offset > 0 %>
+       <span class="pagination-link previous">
+         <%= jquery_link_to_remote(t('.more_previous', :num => [ offset, limit ].min),
+                              { :update => identifier,
+                                :method => :get,
+                                :url => url_for({ :overwrite_params => 
+                                    @params.merge({ :action => :render_mini_table, 
+                                                    :offset => [ offset - limit, 0 ].max,
+                                                    :identifier => identifier,
+                                                    :columns => columns,
+                                                    :limit => limit }) }) }) %>
+       </span>
+     <% end %>
+     <% if rows > offset + limit %>
+       <span class="pagination-link next">
+         <%= jquery_link_to_remote(t('.more_next', :num => [ limit, rows - (offset + limit) ].min),
+                              { :update => identifier,
+                                :method => :get,
+                                :url => url_for({ :overwrite_params => 
+                                    @params.merge({ :action => :render_mini_table, 
+                                                    :offset => offset + limit,
+                                                    :identifier => identifier,
+                                                    :columns => columns,
+                                                    :limit => limit }) }) }) %>
+       </span>
+     <% end %>
+  </p>
+<% end %>
+</div>

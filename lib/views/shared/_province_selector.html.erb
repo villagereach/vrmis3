@@ -1,0 +1,21 @@
+<span id="province_selector">
+  <label for="province_id"><%= t('.province') %></label> 
+  <%= select_tag :province_id, 
+        options_for_select(
+          [[t('shared.select_province.select'),'']] + Province.options_for_select, 
+          params[:province_id]) %>
+  <%= render :partial => "/shared/district_selector" %>
+  <% javascript_tag do %>
+    jQuery('#province_id').change(function() {
+      jQuery('#district_spinner').show();
+      jQuery.ajax({
+        url: '<%= district_selector_url %>',
+        type: 'GET',
+        data: { province_id: jQuery(this).val() },
+        success: function(data, textStatus, xhr) {
+          jQuery('#district_selector').replaceWith(data);
+        }
+      });
+    });
+  <% end %>
+</span>

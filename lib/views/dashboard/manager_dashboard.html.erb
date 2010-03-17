@@ -1,0 +1,26 @@
+<div id="todo-list-dashboard">
+  <h2><%= t('common.to_do') %></h2>
+
+  <div>
+    <%= render :partial => 'shared/report_scope' %>
+  </div>
+
+  <div class="hc span-11 append-1">
+<%#    <h2><%= t('common.data_entry_title') +|</h2> # RH: this seems redundant with the header in the partial %>
+        
+   
+    <%= render :partial => 'mini_reports/overall_data_status'  %>
+
+  </div>
+  
+  <div class="cold-chain span-12 last">
+<%#        <h2><%= t('common.cold_chain_title') +|</h2> # RH: this seems redundant with the header in the partial %>
+<%= render :partial => '/mini_reports/overall_fridge_status'   %>
+<%= render :partial => '/mini_reports/currently_urgent_fridge_list'       %>
+<%= render :partial => '/mini_reports/neglected_fridge_list'     %>
+ 
+
+       
+
+  </div>
+</div>

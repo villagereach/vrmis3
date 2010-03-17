@@ -1,0 +1,15 @@
+<div class="form_container login">
+  <h2><%= t(".login_to", :name => "VR MIS3") %></h2>
+
+  <% form_for :login do |f| %>
+    <dl class="inline">
+      <dt><%= f.label :username, t("activerecord.attributes._all.username") %></dt>
+      <dd><%= f.text_field :username, :class => 'autofocus' %></dd>
+
+      <dt><%= f.label :password, t("activerecord.attributes._all.password") %></dt>
+      <dd><%= f.password_field :password %></dd>
+    </dl>
+
+    <p class="submit"><%= f.submit t(".submit_button") %></p>
+  <% end %>
+</div>

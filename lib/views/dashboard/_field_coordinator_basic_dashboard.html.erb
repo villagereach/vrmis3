@@ -1,0 +1,16 @@
+  <div class="hc span-11 append-1">
+    <h3><%= t('dashboard.field_coordinator_dashboard.visit_data_entry') %></h3>
+        
+    <h4><%= t('dashboard.field_coordinator_dashboard.recent_updates') %></h4>
+    <%= render :partial => 'visits/recent_activity' %>
+        
+    <h4><%= t('dashboard.field_coordinator_dashboard.monthly_progress') %></h4>
+    <%= render :partial => 'shared/recent_months', :locals => { :link_to_site_visits => true } %>
+  </div>
+  
+  <div id="offline-forms" class="span-12 last">
+    <h3><%= t('visits.offline_forms') %></h3>
+    <%= render :partial => 'shared/stored_forms' %>
+  </div>
+
+  <%= js_show_or_hide_offline_forms_div("offline-forms") %>

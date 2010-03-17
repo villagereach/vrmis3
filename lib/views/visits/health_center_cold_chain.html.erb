@@ -1,0 +1,78 @@
+<%- form_tag do -%>
+<h3><%= current_link.first %></h3>
+
+<%- if !@errors.empty? -%>
+<div id="error">
+  <ul>
+    <%- @errors.each do |key,hash| -%>
+      <%- hash.each do |part,errors| -%>
+        <%- errors.each_full do |msg| -%>
+          <li><%= h msg %></li>
+        <%- end -%>
+      <%- end -%>
+    <%- end -%>
+  </ul>
+</div>
+<%- end -%>
+
+<p class="note"><%= t(".instructions") %></p>
+
+<table class="equipment">
+	<thead>
+		<tr>
+			<th><%= t(".fridge") %></th>
+			<th><%= t(".status") %></th>
+			<th><%= t(".temperature") %></th>
+			<th><%= t(".notes") %></th>
+		</tr>
+	</thead>
+	<tbody>
+		<%- fields_for :fridge_status do |f| -%>
+		<%- @fridge_statuses.sort_by(&:fridge).each do |fridge_status| -%>
+		<%- index = fridge_status.fridge_code.to_s -%>
+		<%- status_value = default_field_value(params[:fridge_status], index, 'status_code', fridge_status.status_code) -%>
+		<%- temperature_value = default_field_value(params[:fridge_status], index, 'temperature', fridge_status.temperature) -%>
+		<%- notes_value = default_field_value(params[:fridge_status], index, 'notes', fridge_status.notes) -%>
+		<%- checked = !fridge_status.new_record? && default_field_value(params[:fridge_status], index, 'temperature/NR', temperature_value.to_s.empty? ? '1' : '0') == '1' -%>
+		<tr>
+			<th><%= fridge_status.fridge_code %></th>
+			<td>
+				<div class="tally status <%= 'error' if @errors[index].on(:status_code) rescue nil %>">
+					<%= f.select :status_code, FridgeStatus.status_options, { :include_blank => t("select_blank"), :selected => status_value }, :index => index %>
+				</div>
+			</td>
+			<td>
+				<div class="tally temperature <%= 'error' if @errors[index].on(:temperature) rescue nil %>" style="<%= 'display:none' if ['BROKE','MISS'].include?(status_value) %>">
+					<%= f.text_field :temperature, :size => 5, :value => temperature_value, :index => index %>
+					<%= f.check_box 'temperature/NR', :checked => checked, :index => index %>
+					<%= f.label 'temperature/NR', t("NR"), :index => index %>
+				</div>
+			</td>
+			<td>
+				<div class="tally notes <%= 'error' if @errors[index].on(:name) rescue nil %>">
+					<%= f.text_area :notes, :size => "30x2", :value => notes_value, :index => index %>
+				</div>
+			</td>
+		</tr>
+		<%- end -%>
+		<%- end -%>
+	</tbody>
+</table>
+<%= save_and_continue %>
+<%- end -%>
+
+<script type="text/javascript">
+  jQuery(document).ready(function() {
+    jQuery('.tally select').each(function() {
+      jQuery(this).change(function() {
+        var temp_cell = jQuery(this).parents('tr').find('div.tally.temperature');
+        var val = jQuery(this).val();
+        if (val == 'BROKE' || val == 'MISS') {
+          temp_cell.hide();
+        } else {
+          temp_cell.show();
+        }
+      });
+    });
+  });
+</script>

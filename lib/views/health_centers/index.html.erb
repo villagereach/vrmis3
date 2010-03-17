@@ -1,0 +1,18 @@
+<div id="report-scope"> 
+  <%- form_tag(url_for, :id => :set_report_scope_form, :method => :get) do -%>
+    <%= select :options, :delivery_zone, DeliveryZone.all.sort.map{|dz| [ dz.name, dz.id.to_s ]}, :selected => params[:options].maybe[:delivery_zone], :include_blank => t('choose_delivery_zone') %> 
+    <noscript><%= submit_tag t("go"), :id => "report_scope_submit_button" %></noscript>
+  <%- end -%>
+  <span id="report-scope-loading-indicator" class="loading-indicator" style="visibility: hidden;"><%= t('loading') %><%= image_tag('indicator-small.gif', :size => '13x10') %></span>
+</div>
+<%= link_to t('new'), [:new_health_center] %>
+<%= render :partial => '/mini_reports/health_center_list', :locals => { :scope => @scope, :limit => 20 } %>
+
+<% javascript_tag do %>
+  jQuery(function() {
+    jQuery('#set_report_scope_form select').change(function() {
+      jQuery('#report-scope-loading-indicator').css('visibility', 'visible');
+      jQuery('#set_report_scope_form').submit();
+    });
+  });
+<% end %>

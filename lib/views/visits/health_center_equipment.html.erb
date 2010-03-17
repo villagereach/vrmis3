@@ -1,0 +1,60 @@
+<%- form_tag do -%>
+<h3><%= current_link.first %></h3>
+<%- if !@errors.empty? -%>
+<div id="error">
+  <ul>
+    <%- @errors.each do |key,hash| -%>
+      <%- hash.each do |part,errors| -%>
+        <%- errors.each_full do |msg| -%>
+          <li><%= h msg %></li>
+        <%- end -%>
+      <%- end -%>
+    <%- end -%>
+  </ul>
+</div>
+<%- end -%>
+
+<p class="note"><%= t(".instructions") %></p>
+
+<table class="equipment">
+	<thead>
+		<tr>
+			<th><%= t(".type") %></th>
+			<th><%= t(".quantity") %></th>
+			<th><%= t(".status") %></th>
+			<th><%= t(".notes") %></th>
+		</tr>
+	</thead>
+	<tbody>
+		<%- @equipment.each do |item| -%>
+		<%- index = item.first.equipment_type_code.to_s -%>
+		<%- quantity_value = default_field_value(params[:equipment_count], index, 'quantity', item.first.quantity) -%>
+		<%- status_value = default_field_value(params[:equipment_status], index, 'status_code', item.last.status_code) -%>
+		<%- notes_value = default_field_value(params[:equipment_status], index, 'notes', item.last.notes) -%>
+		<%- checked = !item.first.new_record? && default_field_value(params[:equipment_count], index, 'quantity/NR', quantity_value.to_s.empty? ? '1' : '0') == '1' -%>
+		<tr>
+			<th><%= item.first.equipment_type.label %></th>
+			<td>
+				<div class="tally <%= 'error' if @errors[index][:equipment_count].on(:quantity) rescue nil %>">
+					<%= text_field :equipment_count, :quantity, :size => 5, :value => quantity_value, :index => index %>
+					<%= check_box :equipment_count, 'quantity/NR', :checked => checked, :index => index %>
+					<%= label :equipment_count, 'quantity/NR', t("NR"), :index => index %>
+				</div>
+			</td>
+			<td>
+				<div class="tally <%= 'error' if @errors[index][:equipment_status].on(:status_code) rescue nil %>">
+					<%= select :equipment_status, :status_code, EquipmentStatus.status_options, { :include_blank => t("select_blank"), :selected => status_value }, :index => index %>
+				</div>
+			</td>
+			<td>
+				<div class="tally <%= 'error' if @errors[index][:equipment_status].on(:notes) rescue nil %>">
+					<%= text_area :equipment_status, :notes, :size => "30x2", :value => notes_value, :index => index %>
+				</div>
+			</td>
+		</tr>
+		<%- end -%>
+	</tbody>
+</table>
+<%= save_and_continue %>
+</fieldset>
+<%- end -%>

@@ -1,0 +1,3 @@
+<% form_for [@addressed, @addressed.street_addresses.build] do |f| %>
+  <%= render :partial => '/street_addresses/edit_fields', :locals => { :form => f } %>
+<% end %>

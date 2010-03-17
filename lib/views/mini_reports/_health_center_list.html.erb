@@ -1,0 +1,17 @@
+<div id="health_center_list">
+<% limit ||= params[:limit] || nil
+   scope = HealthCenter
+   if params[:options]
+      scope = scope.scoped_by_delivery_zone_id(params[:options][:delivery_zone]) if params[:options][:delivery_zone] 
+   end -%>   
+<%- columns = [:name, :district, :delivery_zone, :fridges, :primary_contact_name, :primary_contact_phone, :address] %>
+<%- columns << :update_link if HealthCenter.new.authorized_for_update? -%>
+<%= render :partial => '/mini_reports/table', 
+  :locals => { 
+    :data => scope,
+    :sql_options => { :include => [:delivery_zone, :administrative_area, :street_address, { :stock_room => :fridges }] }, 
+    :columns => columns, 
+    :identifier => 'health_center_list',        
+    :model => HealthCenter, 
+    :limit => limit } %>
+</div>

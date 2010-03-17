@@ -1,0 +1,25 @@
+<% form_for [@fridge_owner, @fridge].compact do |f| %>
+<div class="active-scaffold">
+<div class="show-view">
+
+<h3><%= t("fridges.fridge.#{params[:action]}", :name => @fridge.code) %></h3>
+
+<dl>
+  <dt><%= t('fridges.fridge.code') %></dt>
+  <dd><%= f.text_field :code, :value => @fridge.code %></dd>
+  <dt><%= t('fridges.fridge.description') %></dt>
+  <dd><%= f.text_area :description, :value => @fridge.description %></dd>
+  <dt><%= t('fridges.fridge.model') %></dt>
+  <dd><%= f.select :fridge_model_id, FridgeModel.options_for_select %>
+  <dt><%= t('fridges.fridge.stock_room') %></dt>
+  <% if @fridge.new_record? && !@fridge_owner %>
+  <dd><%= select_tag('fridge[stock_room_id]',
+            grouped_options_for_select(StockRoom.grouped_options_for_select, @fridge.stock_room_id)) %>
+  <% else %>
+  <dd><%= h @fridge.stock_room.name %></dd>
+  <% end %>
+</dl>
+<p class="form-footer"><%= f.submit %></p>
+</div>
+</div>
+<% end %>

@@ -1,0 +1,46 @@
+<%-
+ fridge_scope = param_scoped_fridges 
+ all_fridges = fridge_scope.all(:include => 'current_status') 
+ count = all_fridges.count 
+ fridges_by_category = all_fridges.group_by(&:status_category) 
+ fridges_by_age = all_fridges.group_by(&:age_category) 
+ colors = %w(green orange red)
+-%>
+<h3><%= t('.overall_fridge_status') %>, <%= t('num_fridges', :count => all_fridges.length) %></h3>
+
+<h4><%= t('.by_status') %></h4>
+<table class="status_graph">
+  <tbody>
+    <%- ['green','yellow','red'].zip(colors).each do |c,col|
+      fridges_by_category[c] ||= []
+      -%>
+      <tr class="<%=col%>">
+        <th>
+          <%= link_to(fridges_by_category[c].length.to_s, :overwrite_params => { :controller => 'fridges', :action => 'index', :status_category_scope => c }) %>
+          <%= t("status_category.#{c}") %>
+        </th>
+        <td class="graph"><p><em style="width:<%= pct( fridges_by_category[c].length, count ) %>;"></em></p></td>
+        <td class="integer"><%= pct(fridges_by_category[c].length,count) %></td>
+      </tr>
+    <%- end -%>
+  </tbody>
+</table>
+
+
+<h4><%= t('.by_status_age') %></h4>
+<table class="status_graph">
+  <tbody>
+    <%- ['1mo','2mo','old'].zip(colors).each do |c,col| 
+              fridges_by_age[c] ||= []
+        -%>
+      <tr class="<%=col%>">
+        <th>
+          <%= link_to(fridges_by_age[c].length.to_s, :overwrite_params => { :controller => 'fridges', :action => 'index', :age_category_scope => c }) %>
+          <%= t("age_category.#{c}") %>
+        </th>
+        <td class="graph"><p><em style="width:<%= pct( fridges_by_age[c].length, count ) %>;"></em></p></td>
+        <td class="integer"><%= pct(fridges_by_age[c].length,count)  %></td>
+      </tr>
+    <%- end -%>
+  </tbody>
+</table>

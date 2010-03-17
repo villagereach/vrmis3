@@ -1,0 +1,77 @@
+<%- 
+  field_coordinators = User.field_coordinators.reject{|fc| fc.delivery_zone.nil?}
+  
+  hcs = HealthCenter.all 
+  progress = progress_calculator
+
+  dp_range = date_periods_between((Date.today - 1.year).to_date_period, Date.today.to_date_period) 
+  
+  oldest_unfinished_visit_by_health_center = hcs.map { |hc| 
+    [hc, progress.health_center_status_by_date_periods(hc, dp_range).detect { |dp, st| 
+      st != HealthCenterVisit::REPORT_NOT_DONE && 
+        st != HealthCenterVisit::REPORT_COMPLETE && 
+          st != HealthCenterVisit::REPORT_IRRELEVANT } || ['1900-01', HealthCenterVisit::REPORT_NOT_DONE] ] }
+
+  oldest_unfinished_visit_by_fc = 
+    oldest_unfinished_visit_by_health_center.map { |hc, dp| [hc.field_coordinator, dp] }.
+      group_by(&:first).
+        map { |fc, dps| [fc, dps.map(&:last).min] }
+    
+  months_1 = ((Date.today.beginning_of_month) - 1.months).to_date_period
+  months_2 = ((Date.today.beginning_of_month) - 2.months).to_date_period
+  
+  by_date = lambda { |x, visit|
+      if visit.first < months_2
+        'old'
+      elsif visit.first < months_1
+        '2mo'
+      else
+        '1mo'
+      end
+    }
+  
+  count_by_health_center = oldest_unfinished_visit_by_health_center.count_by(&by_date)
+  count_by_field_coordinator = oldest_unfinished_visit_by_fc.count_by(&by_date)
+  
+  n_fcs = count_by_field_coordinator.values.sum
+  n_hcs = count_by_health_center.values.sum
+  
+  colors = %w(green orange red)
+-%>
+<h3><%= t('.overall_data_status') %></h3>
+
+<h4><%= t('.by_fc') %>: <%= n_fcs %></h4>
+<table class="status_graph">
+  <tbody>
+    <%# should call these age options from a central place somewhere.  separate ones for data & fridge %>
+    <%- ['1mo','2mo','old'].zip(colors).each do |c,col| 
+      -%>
+      <tr class="<%=col%>">
+        <th>
+          <%= link_to(count_by_field_coordinator[c], fc_visits_path) %>
+          <%= t("age_category.#{c}") %>
+        </th>
+        <td class="graph"><p><em style="width:<%= ( count_by_field_coordinator[c] * 100.0 / n_fcs ) %>%"></em></p></td>
+        <td class="integer"><%= pct(count_by_field_coordinator[c], n_fcs)  %></td>
+      </tr>
+    <%- end -%>
+  </tbody>
+</table>
+
+<h4><%= t('.by_hc') %>: <%= n_hcs %></h4>
+<table class="status_graph">
+  <tbody>
+    <%- ['1mo','2mo','old'].zip(colors).each do |c,col| 
+      -%>
+      <tr class="<%=col%>">
+        <th>
+           <%= link_to(count_by_health_center[c], health_centers_path) %>
+          <%= t("age_category.#{c}") %>
+        </th>
+        <td class="graph"><p><em style="width:<%= ( count_by_health_center[c] * 100.0 / n_hcs) %>%"></em></p></td>
+        <td class="integer"><%= pct(count_by_health_center[c], n_hcs)  %></td>
+      </tr>
+    <%- end -%>
+  </tbody>
+</table>
+

@@ -1,0 +1,24 @@
+<div class="mini_report" id="filtered_fridge_list">
+<%
+  params.merge!(@params) if @params
+  limit ||= params[:limit]
+  offset ||= params[:offset]
+  data = Fridge
+  data = data.scoped_by_id(HealthCenter.find_by_id(params[:health_center_id]).fridges) if params[:health_center_id].present?
+  data = data.send(*params[:report_scope].split(',')) if params[:report_scope].present?
+  data = data.status_category(params[:status_category_scope]) if params[:status_category_scope].present?
+  data = data.age_category(params[:age_category_scope]) if params[:age_category_scope].present?
+  columns = [:code, :health_center, :district, :latest_status, :latest_temp, :date_of_latest_status, :notes, :reported_by, :history_popup, :more_info_popup]
+  columns -= [:health_center, :district] if params[:suppress_location] 
+%>
+<%= render :partial => '/mini_reports/table', 
+  :locals => { 
+    :data => data, 
+    :sql_options => { :include => [{:stock_room => { :health_center => :administrative_area }}, {:fridge_statuses => :user}] }, 
+    :sort_by => :date,
+    :columns => columns, 
+    :identifier => 'filtered_fridge_list', 
+    :model => Fridge, 
+    :limit => limit,
+    :offset => offset } %>
+</div>

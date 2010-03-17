@@ -1,0 +1,19 @@
+<div class="section">
+<% name, reports, pages = *page %>
+<% @total_report_page = (@total_report_page || 0) + 1 %>
+<% page_id = "trp#{@total_report_page}" %>
+<div class="page" id="<%= page_id %>">
+  <h1><%= link_to_function(name, "jQuery('##{page_id} div.report').toggle(); jQuery('##{page_id} div.plot').each(function(i,e) { jqplots[e.id].redraw() })") %></h1>
+  <% reports.each do |name, gs| %>
+    <div class="report">
+    <h2><%= h(name) %></h2>
+    <% graphs, tab_graphs, tab_graph_dimension = *gs %>
+    <%= render :partial => 'graphs', :locals => { :graphs => graphs, :tab_graphs => tab_graphs, :tab_graph_dimension => tab_graph_dimension } %>
+    </div>
+  <% end %>
+</div>
+
+<% pages.maybe.each do |page| %>
+<%= render :partial => 'total_report_page', :locals => { :page => page } %>
+<% end %>
+</div>

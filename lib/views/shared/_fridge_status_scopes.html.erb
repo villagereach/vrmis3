@@ -1,0 +1,8 @@
+<label for="status_category_scope"><%= I18n.t('shared.fridge_status_scopes.fridge_status_category') %></label>
+<%= select_tag :status_category_scope, options_for_select(
+  [[]] + %w(green yellow red).map { |c| [I18n.t("status_category.#{c}"),c] }, params[:status_category_scope]) %>
+
+<label for="age_category_scope"><%= I18n.t('shared.fridge_status_scopes.fridge_age_category') %></label>
+<%= select_tag :age_category_scope, options_for_select(
+  [[]] + %w(1mo 2mo old).map { |c| [I18n.t("age_category.#{c}"),c] }, params[:age_category_scope]) %>
+

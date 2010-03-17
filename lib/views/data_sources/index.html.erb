@@ -1,0 +1,12 @@
+<%- form_for(:file, :url => data_sources_import_url, :html => { :multipart => true }) do |f| -%>
+  <%= f.error_messages %>
+
+  <dl class="stacked">
+    <dt><%= f.label :data, t(".upload_data") %></dt>
+    <dd><%= f.file_field :data %></dd>
+  </dl>
+
+  <p>
+    <%= submit_tag(t(".upload"), :disable_with => t(".uploading")) %>
+  </p>
+<%- end -%>

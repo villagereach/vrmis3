@@ -1,0 +1,15 @@
+<%- count ||= 5 -%>
+<% recent_visits = HealthCenterVisit.by_user(@current_user).recent(count).all(:include => :health_center).sort_by(&:updated_at).reverse %>
+<% progress = progress_calculator() %>
+<div id="recent_hcs" class="recent">
+  <ul id="recent-visit-edits"> 
+    <%- recent_visits.each do |visit| -%>
+      <%= render :partial => 'visits/visit_item.html',
+                 :locals  => { :progress_status => progress_class(progress.health_center_status(visit.health_center, visit.visit_month)),
+                               :visit           => visit,
+                               :render_visits_link => true,
+                               :health_center   => visit.health_center,
+                               :visit_month     => visit.visit_month } %>
+    <%- end -%>
+  </ul>
+</div>

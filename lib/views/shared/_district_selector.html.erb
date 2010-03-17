@@ -1,0 +1,9 @@
+<span id="district_selector">
+  <span id="district_spinner" class="loading-indicator" style="display: none;"><%= t('loading') %><%= image_tag('indicator-small.gif', :size => '13x10') %></span>
+  <% if params[:province_id].present? %>
+    <%= select_tag :district_id, options_for_select(
+        [[t('shared.select_district.select'),'']] + 
+          District.options_for_select_by_parent(params[:province_id]),
+            params[:district_id])%>
+  <% end %>
+</span>

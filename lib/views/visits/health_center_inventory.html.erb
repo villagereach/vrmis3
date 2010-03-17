@@ -1,0 +1,67 @@
+<% form_tag do %>
+<h3><%= current_link.first %></h3>
+
+<%- if !@errors.empty? -%>
+<div id="error">
+  <ul>
+    <%- @errors.each do |key, hash| -%>
+      <%- hash.each do |part, errors| -%>
+        <%- errors.each_full do |msg| -%>
+          <li><%= h msg %></li>
+        <%- end -%>
+      <%- end -%>
+    <%- end -%>
+  </ul>
+</div>
+<%- elsif !@existing_inventory.errors.empty? || !@delivered_inventory.errors.empty?-%>
+<div id="error">
+  <%= @existing_inventory.errors.full_message unless @existing_inventory.errors.empty? %>
+  <%= @delivered_inventory.errors.full_message unless @delivered_inventory.errors.empty? %>
+</div>
+<%- end -%>
+
+<p class="note"><%= t(".instructions") %></p>
+
+<table class="inventory">
+  <thead>
+    <tr>
+      <th><%= t('.product') %></th>
+      <th><%= t('.ideal_quantity') %></th>
+      <th><%= t('.existing_quantity') %></th>
+      <th><%= t('.delivered_quantity') %></th>
+    </tr>
+  </thead>
+  <%- fields_for :inventory_counts do |f| -%>
+    <%- Package.all.partition_by{|package| package.product.product_type_code}.each do |type, stocks| -%>    
+      <tbody>
+        <%- stocks.each do |package| -%>
+          <%- index = package.code -%>
+          <%- existing_stock_value = default_field_value(params[:inventory_counts], index.to_s, :existing, @stock[:existing][index].quantity) -%>
+          <%- delivered_stock_value = default_field_value(params[:inventory_counts], index.to_s, :delivered, @stock[:delivered][index].quantity) -%>
+          <%- existing_nr_checked = !@stock[:existing][index].new_record? && default_field_value(params[:inventory_counts], index.to_s, 'existing/NR', existing_stock_value.to_s.empty? ? '1' : '0') == '1' -%>
+          <%- delivered_nr_checked = !@stock[:delivered][index].new_record? && default_field_value(params[:inventory_counts], index.to_s, 'delivered/NR', delivered_stock_value.to_s.empty? ? '1' : '0') == '1' -%>
+          <tr>
+            <th><%= package.label %></th>
+            <td class="static"><%= h(number_with_delimiter( @stock[:ideal][index] )) if @stock[:ideal][index] %></td>
+            <td>
+              <div class="tally <%= 'error' if @errors[index][:existing].on(:quantity) rescue nil %>">
+                <%= f.text_field :existing,:index => index, :size => 5, :value => existing_stock_value %>
+                <%= f.check_box 'existing/NR', :checked => existing_nr_checked, :index => index %>
+                <%= f.label 'existing/NR', t("NR"), :index => index %>
+              </div>
+            </td>
+            <td>
+              <div class="tally <%= 'error' if @errors[index][:delivered].on(:quantity) rescue nil %>">
+                <%= f.text_field :delivered, :index => index, :size => 5, :value => delivered_stock_value %>
+                <%= f.check_box 'delivered/NR', :checked => delivered_nr_checked, :index => index %>
+                <%= f.label 'delivered/NR', t("NR"), :index => index %>
+              </div>
+            </td>
+          </tr>
+        <%- end -%>    
+      </tbody>
+    <%- end -%>
+  <%- end -%>
+</table>
+<%= save_and_continue %>
+<%- end -%>

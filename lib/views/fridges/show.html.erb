@@ -1,0 +1,47 @@
+<h2><%= t('fridges.fridge.details', :name => @fridge.code) %></h2>
+
+<div class="span-12">
+  <h3><%= t('.about_fridge') %></h3>
+  <dl class="detail-page stacked">
+    <%= show_pair('fridges.fridge.model',         @fridge.fridge_model.description) %>
+    <%= show_pair('fridges.fridge.size',          @fridge.fridge_model.capacity) %>
+    <%= show_pair('fridges.fridge.power_source',  @fridge.fridge_model.power_source) %>
+    <%= link_pair('fridges.fridge.health_center', @fridge.stock_room.administrative_area.name, @fridge.stock_room.health_center) %>
+    <%= show_pair('fridges.fridge.description',   @fridge.description) %>
+  </dl>
+
+
+  <h3><%= t('.about_hc', :name => @fridge.stock_room.health_center.name) %></h3>
+  <dl>
+    <% [:district, :delivery_zone, :province].each do |x| %>
+      <% if @fridge.stock_room.health_center.send(x) %>
+        <dt><%= t("fridges.fridge.#{x}") %></dt>
+        <dd><%= h @fridge.stock_room.health_center.send(x).name %></dd>
+      <% end %>
+    <% end %>
+
+    <%= link_pair('fridges.fridge.field_coordinator', 
+                    @fridge.stock_room.health_center.delivery_zone.field_coordinator.name, 
+                    @fridge.stock_room.health_center.delivery_zone.field_coordinator) %>
+    <%= show_pair('fridges.fridge.field_coordinator_phone', 
+                    @fridge.stock_room.health_center.delivery_zone.field_coordinator.phone) %>
+
+    <%- if @fridge.stock_room.fridges.count > 1 -%>
+      <dt><%= t('fridges.fridge.health_center_related_fridges', :name => @fridge.stock_room.administrative_area.name) %></dt>
+      <dd>
+        <ul>
+          <%- @fridge.stock_room.fridges.reject{|f| f.id == @fridge.id}.each do |other_fridge| -%>
+            <li class="<%= other_fridge.current_status.status_code %>">
+              <%= link_to( other_fridge.code, other_fridge )%>
+            </li>
+          <%- end -%>
+        </ul>
+      </dd>
+
+    <%- end -%>
+  </dl>
+</div>
+
+<div class="span-12 last">
+  <%= render :partial => '/mini_reports/fridge_status_list', :locals => { :limit => 20 } %>
+</div>

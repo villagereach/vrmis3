@@ -1,0 +1,52 @@
+<% scopes = {
+     "country"       => "province",
+     "province"      => "district",
+     "district"      => nil
+   }
+   scope ||= "country"
+   scope = scope.to_s
+   model = nil
+   done_one = false
+%>
+
+<div id="report-scope"> 
+<%- form_tag(url_for, :id => :set_report_scope_form, :method => :get) do -%>
+    <label for="report_scope"><%= t('.select_report_scope') %></label>
+    <%- while scopes[scope]
+          parent_scope = scope
+          scope = scopes[scope] -%>
+      <span id="<%= scope %>_select">
+        <%- if !done_one || params["scope_report_to_#{scope}"] || params["scope_report_to_#{parent_scope}"]
+              parent_value = model ? model.find_by_id(params["scope_report_to_#{parent_scope}"]) : nil
+              model = scope.classify.constantize
+              values = if local_assigns[scope.to_sym]
+                         model.send("in_#{scope}", local_assigns[scope.to_sym])
+                       elsif local_assigns[parent_scope.to_sym] || params["scope_report_to_#{parent_scope}"]
+                         model.send("in_#{parent_scope}", local_assigns[parent_scope.to_sym] || params["scope_report_to_#{parent_scope}"])
+                       else
+                         model.all
+                       end.sort
+              done_one = true -%>
+          <%= render :partial => "shared/select_#{scope}",
+                     :locals => local_assigns.reverse_merge({ scope.pluralize.to_sym => values, parent_scope.to_sym => parent_value }) %>
+        <%- end -%>
+      </span>
+    <%- end -%>
+    <span id="report-scope-loading-indicator" class="loading-indicator" style="visibility: hidden;"><%= t('loading') %><%= image_tag('indicator-small.gif', :size => '13x10') %></span>
+    <noscript><%= submit_tag t("go"), :id => "report_scope_submit_button" %></noscript>
+  <%- end -%>
+  <% javascript_tag do %>
+    jQuery(function() {
+      jQuery('#scope_report_to_province').change(function() {
+        jQuery('#district_select').hide();
+        jQuery('#district_select').html('');
+        jQuery('#report-scope-loading-indicator').css('visibility', 'visible');
+        jQuery(this).parents('form').submit();
+      });
+      jQuery('#scope_report_to_district').change(function() {
+        jQuery('#report-scope-loading-indicator').css('visibility', 'visible');
+        jQuery(this).parents('form').submit();
+      });
+    });
+  <% end %>
+</div>

@@ -1,0 +1,86 @@
+<%- @comparison_column ||=nil
+    @comparison_class = @comparison_column.downcase.gsub(/ /,"_") if @comparison_column
+    @show_date = true if @show_date.nil?
+    @edit_date ||= false
+-%>
+
+<h2><%= @page_title %></h2>
+
+<div class="prepend-7 span-12 append-5 last">
+<%- form_for :inventory do |f| -%>
+
+<%- unless @errors.empty? -%>
+  <ul>
+    <%- @errors.each do |code, errors| -%>
+      <li><%= link_to("#{Package.find_by_code(code).label}: #{errors.full_messages.to_s}", "#inventory_packages_#{code}") %></li>
+    <%- end -%>
+  </ul>
+<%- end -%>
+
+<%- if @show_date 
+       if @edit_date-%>
+  
+  <p class="date_selector">
+  <%= f.label :date, t("headers.date") %>
+  <%= f.text_field :date, :class => "datepicker", :value => I18n.l(@date) %>
+  <%- javascript_tag do -%>
+    jQuery(document).ready(function() {
+      jQuery('input.datepicker').
+        datepicker(jQuery.extend(<%= js_datepicker_default_options %>,
+                                 { defaultDate: new Date() },
+                                 jQuery.datepicker.regional[<%= js_datepicker_region(I18n.locale) %>]));
+      });
+  <%- end -%>
+  </p>
+      <%- else -%>
+      <h4>Date: <%=l(@inventory.date, :format=>:default)%></h4>
+      <%=f.hidden_field :date%>
+      
+<%- end  -%>
+      
+<%- end  -%>
+
+<table class="inventory inventory-form">
+
+  <thead>
+    <tr >
+      <th class="label">
+        <%=    t('inventory.package_label')  %>
+      </th>
+      <th class="amount">
+        <%=    t('inventory.package_amount')  %>
+      </th>
+      <%- unless @comparison_column.blank? -%>
+      <th class="comparison">
+        <%= @comparison_column %>
+      </th>
+      <%- end -%>
+    </tr>
+  </thead>
+  <tbody>
+    <%- @amounts.keys.map.sort_by { |i| [ i.product, i ] }.each do |package| -%>
+    <tr class="inventory_row">
+
+      <td class="label" >
+        <%= f.label "packages_#{package.code}", package.label %>
+      </td>
+      <td class="amount" >
+        <div class="tally <%= @errors[package.code] ? 'error' : '' %>">
+          <%= f.text_field package.code, :value => params[:inventory].maybe[:packages].maybe[package.code] || @amounts[package], :index => 'packages', :size => 3, :class => "numeric" %>
+        </div>
+      </td>
+
+      <%- unless @comparison_column.blank? -%>
+      <td class="comparison">
+        <%= @comparisons[package] %>
+      </td>
+      <%- end -%>
+
+    </tr>
+    <%- end -%>
+  </tbody>
+</table>
+
+<p class="submit"><%=f.submit t('save') %></p>
+<%- end -%>
+</div>

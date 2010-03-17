@@ -1,0 +1,97 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <meta http-equiv="content-type" content="text/html;charset=UTF-8" />
+  <title>Village Reach Prototype vrMIS3</title>
+
+  <%= javascript_include_tag ENV['RAILS_ENV'] == 'development' ? 'jquery.js' : 'jquery.min.js',
+                             'application_jquery.js',
+                             'ui/ui.core.js',
+                             'ui/ui.tabs.js',
+                             'ui/ui.datepicker.js',
+                             'ui/i18n/jquery-ui-i18n.js',
+                             'jquery.autocomplete.js',
+                             'formgrid.js',
+                             'jquery.jqplot.min.js',
+                             'reports.js',
+                             'plugins/jqplot.categoryAxisRenderer.min.js',
+                             'plugins/jqplot.canvasTextRenderer.min.js',
+                             'plugins/jqplot.canvasAxisLabelRenderer.min.js',
+                             'plugins/jqplot.canvasAxisTickRenderer.min.js',
+                             'plugins/jqplot.barRenderer.min.js',
+                             :cache => "cache/js" %>
+
+  <%= stylesheet_link_tag "blueprint/screen.css", "jquery.autocomplete.css", :cache => "cache/sp",    :media => "screen, projection"  %>
+  <%= stylesheet_link_tag 'ui/jquery-ui-1.7.2.custom.css', "jquery.jqplot.css", "style", "theme",                :cache => "cache/all",   :media => "all"                %>
+  <%= stylesheet_link_tag "blueprint/print.css", "print",                                                        :cache => "cache/print", :media => "print"              %>
+  
+  <%= javascript_tag('var jqplots={}; var table_options={};') %>
+  <!--[if IE]>
+    <%= javascript_include_tag "excanvas.min.js" %>
+    <![if lt IE 8]>
+      <%= stylesheet_link_tag "blueprint/ie.css", :media => "screen, projection" %>
+      <%= stylesheet_link_tag "ie.css" %>
+    <![endif]>
+  <![endif]-->
+</head>
+
+<body class="<%= @controller.controller_name %> <%= @controller.action_name %>">
+
+<div id="header" class="container">
+  <h1><a href="/">Village Reach Prototype vrMIS3</a></h1>
+
+  <div id="user_tools">
+    <%= render :partial => "layouts/locale" %>
+    <% if @current_user %>
+        <p id="login">
+          <em><%= t("logged_in_as") %></em> <strong><%= @current_user.name %></strong>
+          <%= link_to(t("my_profile"), profile_user_path(@current_user)) %>
+          <%= link_to(t("logout"), :controller => 'login', :action => 'logout') %>
+        </p>
+    <% end %>
+  </div>
+</div>
+
+
+<div id="main" class="container">
+  <% if @current_user and not @minimal_layout %>
+    <div id="tabs">
+      <ul class="navigation">
+        <%- nav_length = role_specific_tabs.length
+            role_specific_tabs.each_with_index do |(label, path), index|
+              tab_classes = [ "tab", "tab-#{nav_length}" ]
+              tab_classes.push("current") if current_tab?(path)
+              tab_classes.push("first") if index == 0
+              tab_classes.push("last") if index == nav_length - 1 -%>
+          <li class="<%= tab_classes.join(' ') %>"><%= link_to t(label), path %></li>
+        <%- end -%>
+      </ul>
+    </div>
+    
+    <% if @breadcrumbs && @breadcrumbs.present? && !@suppress_breadcrumbs%>
+      <p id="breadcrumbs">
+        <label><%= t('you_are_here') %></label>
+        <% @breadcrumbs[0..-2].each do |txt, path| %>
+          <%= link_to(h(breadcrumb_string(txt)), path) %>
+          <img src="/images/icons/silk/arrow_right.png" width="16px" height="16px" alt="next" />
+        <% end %>
+        <strong><%= h breadcrumb_string(@breadcrumbs.last.first) %></strong>
+      </p>
+    <% end %>
+  <% end %> <%# /if @current_user %>
+
+  <div id="error-flash"><%= flash[:error] %></div>
+  <div id="notice-flash"><%= flash[:notice] %></div>
+
+  <%= render :partial => "layouts/#{controller.sub_layout}" %>
+</div>
+
+<div id="footer" class="container clear">
+  <div class="content">
+    <p class="copyright"><%= t("copyright") %></p>
+    <p class="tools"><%= t( 'documentation_link_short' ) %> | <%=link_to "clear cache", nuke_caches_path%></p>
+  </div>
+</div>
+
+</body> 
+</html>

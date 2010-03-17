@@ -1,0 +1,13 @@
+<h2><%=t('breadcrumb.unloads',:name => @zone.name)%></h2>
+
+<div class="span-8 prepend-8">
+<h3><%=t('inventory.recent_returns')%></h3>
+
+<ul>
+<%- @unloads.each do |unload| -%>
+<li><%=link_to(l(unload.date), unload_path(@zone.code,unload.date))%></li>
+<%- end -%>
+</ul>
+
+<%= link_to( t('inventory.new_return'), unload_new_path(@zone.code) )%>
+</div>

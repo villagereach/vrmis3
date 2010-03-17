@@ -1,0 +1,21 @@
+<%- format ||=  report_format_for_current_user_role
+  	params.merge!(@params) if @params 
+		days ||= 14
+ 		fridges = param_scoped_fridges.urgent(days).find(:all, :order => 'reported_at desc', :limit=>10)
+-%>
+
+<div class="fridge_list fixed" id="urgent_fridges">
+
+<%- if fridges.empty? -%>
+  <h4><%= t(".no_urgent_fridges") %></h4>
+<%- else -%>
+  <h4><%= t('.urgent_fridges', :days=>days) %></h4>
+  <table class="fixed"> 
+    <tbody>
+        <%= render :partial=>'mini_reports/fridge_status_details', :collection => fridges, :as => :fridge,
+                    :locals => { :identifier => 'neglected_fridges', :format => format } %>
+    </tbody>
+  </table>
+<%- end -%>
+
+</div>

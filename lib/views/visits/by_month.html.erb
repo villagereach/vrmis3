@@ -1,0 +1,15 @@
+<%-
+  month = params[:visit_month]
+  field_coordinator ||= @current_user
+  health_centers = field_coordinator.responsible_health_centers(:include => 'administrative_area')
+-%>
+
+
+<h2><%= hcv_month(month) %></h2>
+
+<%= render :partial => 'by_month', :locals => { :visit_month        => month,
+                                                :field_coordinator => field_coordinator,
+                                                :health_centers     => health_centers,
+                                                :month_link         => :visits_by_month_path,
+                                                :render_visits_link => true } %>
+

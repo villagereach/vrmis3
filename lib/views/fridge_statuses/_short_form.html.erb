@@ -1,0 +1,19 @@
+<% form_for fridge_status, :url => new_fridge_status_path, :index => fridge_status.fridge.id, :html => { :id => "new_fridge_status-#{fridge_status.fridge.id}" } do |f| %>
+  <%= f.hidden_field :reported_at %>
+  <%= f.hidden_field :user_id %>
+
+  <dl class="stacked">
+    <dt><%= f.label :status_code, t('.new_status') %></dt>
+    <dd><%= f.select :status_code, FridgeStatus.status_options %></dd>
+
+    <dt><%= f.label :temperature, t('.new_temp') %></dt>
+    <dd><%= f.text_field :temperature, :size=>5 %> &#176;C</dd>
+
+    <dt><%= f.label :notes, t('.notes') %></dt>
+    <dd><%= f.text_area :notes, :size=>'20x3' %></dd>
+  </dl>
+  <p class="submit">
+    <%= submit_tag t('update') %>
+    <a href="" class="cancel"><%= t('cancel') %></a>
+  </p>
+<% end %>	

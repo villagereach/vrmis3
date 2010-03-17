@@ -1,0 +1,36 @@
+<h2><%= t("users.profile.profile_for", :name => @user.username) %></h2>
+
+<p class="return"><a href="/"><%= t(:return) %></a></p>
+
+<div id="user-profile-form">
+  <fieldset id="user-details">
+    <legend><%= t("users.profile.legend.personal") %></legend>
+    <ol>
+      <li>
+        <%= User.human_attribute_name('name') %>
+        <%= @user.name %>
+      </li>
+      <li>
+        <%= User.human_attribute_name('phone') %>
+        <%= @user.phone %>
+      </li>
+      <li>
+        <%= User.human_attribute_name('language') %>
+        <%= @user.language %>
+      </li>
+      <li>
+        <%= User.human_attribute_name('timezone') %>
+        <%= @user.timezone %>
+      </li>
+    </ol>
+  </fieldset>
+  <fieldset id="account-details">
+    <legend><%= t("users.profile.legend.account") %></legend>
+    <ol>
+      <li>
+        <%= User.human_attribute_name('username') %>
+        <%= @user.username %>
+      </li>
+    </ol>
+  </fieldset>
+</div>

@@ -1,0 +1,19 @@
+<div id="manager-cold-chain">
+  <h2><%= t('.cold_chain_title') %></h2>
+  <%= render :partial => 'shared/report_scope' %>
+
+  <div class="span-11 append-1">
+    <%= render :partial => '/mini_reports/currently_bad_fridge_list'   %>
+  </div>
+
+  <div class="span-12 last">
+    <%= render :partial => '/mini_reports/overall_fridge_status'   %>
+    <%= render :partial => '/mini_reports/currently_urgent_fridge_list'       %>
+    <%= render :partial => '/mini_reports/neglected_fridge_list'     %>
+    <%# render :partial => '/mini_reports/recently_fixed_fridge_list'  %>
+  </div>
+</div>
+
+
+<%# fridge_statuses = !params[:report_scope].blank? ? FridgeStatus.send(*params[:report_scope].split(',')) : FridgeStatus %>
+<%# render :partial => '/mini_reports/fridge_status_list'             , :locals => { :fridge_statuses => fridge_statuses, :limit => 5 } %>

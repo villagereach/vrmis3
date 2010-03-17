@@ -1,0 +1,89 @@
+<%-
+  count ||= 6
+  link_months = recent_months(count)
+  month = params[:visit_month] || link_months.first
+  starting_sort ||= "status"
+  all_sorts = %w(status name province)
+  all_sorts_links = all_sorts.map{|s| [s, s+"_linkline"]}
+  
+  field_coordinators = User.field_coordinators.reject{|fc| fc.delivery_zone.nil?}.sort
+  health_centers = HealthCenter.all
+  progress = progress_calculator
+-%>
+
+<h2><%= hcv_month(month) %></h2>
+
+<div class="switcher_pane">
+
+  <div id="visit-months-control" class="span-8" >
+    <ul class="switcher_pane_menu">
+      <%- link_months.each do |link_month| -%>
+      <li class="status <%=progress_class(progress.overall_status_for_date_period(link_month, health_centers))%> <%= 'current' if month == link_month %>" >
+        <%= link_to(hcv_month(link_month), fc_visits_by_month_path(link_month), :onclick=>js_toggle("loading-indicator")) %>
+      </li>
+      <%- end -%>
+    </ul>
+    <span id="loading-indicator" class="loading-indicator" style="display:none ;"><%= t('loading') %><%= image_tag('indicator-small.gif', :size => '13x10') %></span>
+  </div>
+
+  <div id="visit-month-content" class="switcher_pane_content span-16 last">
+    <div class="content">
+      <p id="sort_links">
+        <%= t( '.sort_by' )%>:
+        <%-all_sorts_links.each do |sort1, link1|-%>
+          <%- visible_container(link1, sort1==starting_sort, 'span') do -%>
+            <%- all_sorts_links.each do |sort2, link2|-%>
+              <%- if sort2==sort1 -%>
+                <strong><%=t("."+sort2) %> </strong>
+              <%- else -%>
+                <%= link_to_function(t("."+sort2),js_show(sort2,link2) + js_hide( all_sorts_links.flatten - [sort2,link2]) ) %>
+              <%- end -%>
+            <%- end -%>
+          <%- end -%>
+        <%- end -%>
+      </p>
+
+      <%# WARNING: assumes warehouses are at the province level; if warehouses are at a different administrative area level, the "province" label will be wrong %>
+      <%- visible_container('province', starting_sort == 'province') do -%>
+        <h3><%= t( '.by_province') %></h3>
+        <%- field_coordinators.group_by{|fc| fc.delivery_zone.warehouse.administrative_area }.sort_by{|p,hcs| p }.each do |province, fcs| -%>
+          <h4><%= province.name %></h4>
+          <ul>
+            <%- fcs.sort.each do |fc| -%>
+              <li class="status <%= progress_class(progress.delivery_zone_status(fc.delivery_zone, month)) %>">
+                <%= link_to(h(fc.name), fc_path(fc, :visit_month => month)) -%>
+              </li>
+            <%- end -%>
+          </ul>
+        <%- end -%>
+      <%- end -%>
+
+      <%- visible_container('name', starting_sort == 'name') do -%>
+        <h3><%= t( '.by_name') %></h3>
+        <ul>
+          <%- field_coordinators.each do |fc| -%>
+            <li class="status <%= progress_class(progress.delivery_zone_status(fc.delivery_zone, month)) %>">
+              <%= link_to(h(fc.name), fc_path(fc, :visit_month => month)) -%>
+            </li>
+          <%- end -%>
+        </ul>
+      <%- end -%>
+      
+      <%- visible_container('status', starting_sort == 'status') do -%>
+        <h3><%= t( '.by_status') %></h3>
+        <%- field_coordinators.group_by{|fc| progress.delivery_zone_status(fc.delivery_zone, month) }.each do |status, fcs| -%>
+          <h4><%= t(".#{progress_class(status)}") %></h4>
+          <ul>
+            <%- fcs.sort.each do |fc| -%>
+              <li class="status <%= progress_class(status) %>">
+                <%= link_to(h(fc.name), fc_path(fc, :visit_month => month)) -%>
+              </li>
+            <%- end -%>
+          </ul>
+        <%- end -%>
+      <%- end -%>
+      
+    </div>
+  </div>
+
+</div>

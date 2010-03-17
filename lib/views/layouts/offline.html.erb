@@ -1,0 +1,70 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+        lang="<%= I18n.locale %>"
+        <%- unless @suppress_manifest -%>
+          manifest="<%= manifest_url(:locale => I18n.locale) %>"
+        <%- end -%>
+        >
+  <head>
+    <title><%= t("health_center_visit") %></title>
+    <script src='/javascripts/jquery.min.js'       ></script>
+    <script src='/javascripts/formgrid.js'     ></script>
+    <script src='/javascripts/date.js'       ></script>
+    <script src='/javascripts/i18n.js'       ></script>
+    <script src='/javascripts/collapsible_report.js'        ></script>
+    <script src='/javascripts/ui/ui.core.js'        ></script>
+    <script src='/javascripts/ui/ui.accordion.js'        ></script>
+    <script src='/fancybox/jquery.fancybox.js' ></script>
+    <%= javascript_tag('jQuery.noConflict()')   %>
+    <link rel="stylesheet" href="/stylesheets/blueprint/screen.css" media = "screen, projection" />
+    <link rel="stylesheet" href="/stylesheets/theme.css"            media = "screen, projection" />
+    <link rel="stylesheet" href="/stylesheets/vrmis3.css"           media = "screen, projection" />
+    <link rel="stylesheet" href="/fancybox/jquery.fancybox.css"     media = "screen, projection" />
+    <link rel="stylesheet" href="/stylesheets/collapsible_report.css" />
+    <script src='/javascripts/jquery.treeTable.min.js'></script>
+    <link rel="stylesheet" href="/stylesheets/jquery.treeTable.css" />
+    <link rel="stylesheet" href="/stylesheets/print.css" media="print"/%>
+    <%- javascript_tag do -%>
+      jQuery(document).ready(function() {
+        if (localStorage['fc']) {
+          jQuery('#login strong').text(localStorage['fc']);
+          jQuery('#login').show();
+        }
+      });
+      function logout() {
+        delete localStorage['fc'];
+        delete localStorage['dz'];
+        window.location.href = '<%= xform_format_url(:name => "hcvisit-nojr", :format => "html", :locale => I18n.locale) %>';
+      }
+    <%- end -%>
+  </head>
+  <body>
+    <div id="header">
+      <div id="user_tools">
+        <div id="language" class="content">
+          <%= render :partial => "layouts/locale" %>
+        </div>
+        <div id="login" class="content" style="display:none">
+          <em><%= t("logged_in_as") %></em> <strong></strong>
+          <%= link_to(t("logout"), "javascript:logout()") %>
+        </div>
+      </div>
+      <h1><a href="/">Village Reach Prototype vrMIS3</a></h1>
+      <%= render :partial => '/shared/offline_tasks' %>
+    </div>
+    <div id="offline-reports" class="container">
+      <% if @breadcrumbs && @breadcrumbs.present? && !@suppress_breadcrumbs%>
+        <p id="breadcrumbs">
+          <label><%= t('you_are_here') %></label>
+          <% @breadcrumbs[1..-2].each do |txt, path| %>
+            <%= link_to(h(breadcrumb_string(txt)), path) %>
+            <img src="/images/icons/silk/arrow_right.png" width="16px" height="16px" alt="next" />
+          <% end %>
+          <strong><%= h breadcrumb_string(@breadcrumbs.last.first) %></strong>
+        </p>
+      <% end %>
+
+      <%= yield %>
+    </div>
+  </body>
+</html>

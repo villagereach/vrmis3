@@ -1,0 +1,23 @@
+<h2><%= t('.header', :name => @district.name) %></h2>
+
+<% form_tag({}, :method => 'get') do %>
+  <%= t('.choose_district') %> 
+  <%= select_tag :district_id, options_for_select(@controller.current_user.districts.map { |d| [d.name, d.id] }, @district.id) %>
+  <span id="district_spinner" class="loading-indicator" style="display: none;"><%= t('loading') %><%= image_tag('indicator-small.gif', :size => '13x10') %></span>
+  <% javascript_tag do %>
+    jQuery('#district_id').change(function() {
+      jQuery('#district_spinner').show();
+      jQuery(this).parent('form').submit();
+    });
+  <% end %>
+  <noscript><%= submit_tag %></noscript>
+<% end %>
+
+<% @district.health_centers.each do |hc| %>
+  <% statements = @autoeval.statements(hc) %>
+  <% if statements.present? %>
+  <h3><%= link_to hc.name, hc %></h3>
+  <ul><%= statements.map { |name, params| content_tag(:li, I18n.t("reports.autoeval.#{name}", params)) } %></ul> 
+  <% end %>
+<% end %>
+

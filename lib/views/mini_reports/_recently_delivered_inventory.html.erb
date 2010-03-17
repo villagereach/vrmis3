@@ -1,0 +1,16 @@
+<div class="mini_report" id="recently_delivered_inventory">
+<% limit ||= params[:limit] || 10 %>
+<% offset ||= params[:offset] || 0 %>
+<% if visit = HealthCenter.find_by_id(params[:id]).maybe.most_recent_visit_with_any_inventory %>
+<h3><%= t('.delivered_inventory_header', :date => I18n.l(visit.date), :user => visit.field_coordinator_name) %></h3>
+<%= render :partial => '/mini_reports/table', :locals => {
+        :columns => [:position, :package_name, :existing_quantity, :delivered_quantity, :expected_delivery_quantity], 
+        :data => visit.health_center_visit_inventory_groups,
+        :sql_options => { :include => 'package' },
+        :identifier => 'recently_delivered_inventory',
+        :i18n => true,
+        :limit => limit,
+        :offset => offset,
+        :model => HealthCenterVisitInventoryGroup } %>
+<% end %>
+</div>
