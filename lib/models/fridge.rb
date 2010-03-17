@@ -51,24 +51,13 @@ class Fridge < ActiveRecord::Base
     }
   }
 
-  # Return fridges in the given district
-  named_scope :in_district, lambda{|d|
-    district_id = d.is_a?(District) ? d.id : d.to_i
-    {
-      :include => { :stock_room => :health_center },
-      :conditions => [ (<<-SQL).squish, district_id ]
-        health_centers.administrative_area_id = ?
-      SQL
-    }
-  }
-
   # Return fridges in the given province
-  named_scope :in_province, lambda{|p|
-    province_id = p.is_a?(Province) ? p.id : p.to_i
+  named_scope :in_area_health_centers, lambda{|p|
     {
       :include => { :stock_room => :health_center },
+      :joins => [ AdministrativeArea.sql_area_join ],
       :conditions => [ (<<-SQL).squish, province_id ]
-        health_centers.administrative_area_id IN (SELECT id FROM administrative_areas WHERE parent_id = ?)
+        health_centers.administrative_area_id IN (#{AdministrativeArea.sql_area_ids})
       SQL
     }
   }

@@ -1,4 +1,4 @@
-class CreateHealthCentersUsers < ActiveRecord::Migration
+class OlmisCreateHealthCentersUsers < ActiveRecord::Migration
   def self.up
     create_table :health_centers_users, :id => false do |t|
       t.references :health_centers, :null => false

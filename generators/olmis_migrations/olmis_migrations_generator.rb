@@ -5,7 +5,7 @@ class OlmisMigrationsGenerator < Rails::Generator::Base
         filename = File.split(g).last
         migration_filename = filename.gsub(/^\d+_(.*)\.rb$/, 'olmis_\1')
 
-        if m.migration_exists?(migration_filename)
+        if Dir.glob(Rails.root.join('db','migrate','*' + migration_filename + '.rb')).present?
           logger.exists migration_filename 
         else
           m.migration_template filename, "db/migrate", :migration_file_name => migration_filename 

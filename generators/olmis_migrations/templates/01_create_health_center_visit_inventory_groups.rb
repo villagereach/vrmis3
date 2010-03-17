@@ -1,4 +1,4 @@
-class CreateHealthCenterVisitInventoryGroups < ActiveRecord::Migration
+class OlmisCreateHealthCenterVisitInventoryGroups < ActiveRecord::Migration
   def self.up
     execute <<-SQL
     CREATE VIEW health_center_visit_inventory_groups 

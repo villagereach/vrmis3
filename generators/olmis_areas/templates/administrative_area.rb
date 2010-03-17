@@ -47,20 +47,35 @@ class AdministrativeArea < ActiveRecord::Base
     street_address.maybe.centroid
   end
 
+  def self.sql_area_ids
+    '<%= hierarchy.map { |h| h.tableize + ".id" }.join(", ") %>'
+  end
+
+  def self.sql_any_area(id)
+    sanitize_sql_for_conditions(["? in (#{sql_area_ids})", id])
+  end
+
+  def self.sql_area_join
+    <% pairs = (hierarchy.reverse + [nil]).zip([['HealthCenter', 'administrative_area_id']] + hierarchy.reverse.map { |h| [h, 'parent_id'] })[0..-2] %>
+    <<-SQL
+    <%= pairs.map { |p, cp| c, cid = *cp; "administrative_areas #{p.tableize} on #{p.tableize}.id = #{c.tableize}.#{cid}" }.join("\n    inner join ") %>
+    SQL
+  end
+
   <% hierarchy.each do |h| %>
-  def <%= h.downcase %>
-    parent.<%= h.downcase %> if parent
+  def <%= h.underscore %>
+    parent.<%= h.underscore %> if parent
   end
   <% end %>
 
   <% hierarchy.first do |h| %>
-  def <%= h.downcase %>
+  def <%= h.underscore %>
     <%= h %>.first
   end
   <% end %>
 
   <% hierarchy[1..-1].each do |h| %>
-  def self.<%= h.downcase.pluralize %>
+  def self.<%= h.tableize %>
     <%= h %>.all.sort.map(&:label)
   end
   <% end %>

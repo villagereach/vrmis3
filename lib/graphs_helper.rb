@@ -249,7 +249,7 @@ module GraphsHelper
   end
 
   include DatePeriodRangeHelper
-  include ApplicationHelper
+  include OlmisHelper
   
   def parse_params(params)
     options = {}

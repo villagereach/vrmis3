@@ -1,5 +1,5 @@
 class DataSourcesController < OlmisController
-  add_breadcrumb 'breadcrumb.data_sources', 'data_sources_path', :except => [ :list_xforms, :get_xform, :submit_xform ]
+  add_breadcrumb 'breadcrumb.data_sources', 'data_sources_path'
 
   helper :visits
   

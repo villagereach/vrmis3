@@ -1,14 +1,18 @@
 # -*- coding: utf-8 -*-
 # Methods added to this helper will be available to all templates in the application.
-module ApplicationHelper
+module OlmisHelper
+  
   def get_area_from_params(ps = params)
-    area = Country.first
-    if ps[:province_id].present?
-      area = Province.find(ps[:province_id]) 
-      if ps[:district_id].present? && d = District.find_by_id(ps[:district_id])
-        area = d if d.province == area
+    hierarchy = Olmis.area_hierarchy
+    
+    area = hierarchy.first.default
+    hierarchy[1..-1].each do |h|
+      if ps[h.param_name].present?
+        a = h.find_by_id(ps[h.param_name])
+        area = a if a.parent == area
       end
     end
+    
     area
   end    
   

@@ -1,5 +1,4 @@
 class ReportsController < OlmisController
-  before_filter :set_default_province
 
   skip_before_filter :check_logged_in, :set_locale, :only => [ :offline_index, :offline_report, :offline_autoeval ]
   before_filter :set_locale_without_session, :only => [ :offline_index, :offline_report, :offline_autoeval ]
@@ -197,11 +196,4 @@ class ReportsController < OlmisController
     @map = Maps.districts_by_stockouts_for_date_period_range(@products, date_period_range)
   end
 
-  private
-
-  def set_default_province
-    if !params.has_key?(:province_id) 
-      params[:province_id] = Province.default.id.to_s 
-    end
-  end
 end

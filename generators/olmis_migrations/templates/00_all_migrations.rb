@@ -1,4 +1,4 @@
-class MergeExistingMigrations < ActiveRecord::Migration
+class OlmisAllMigrations < ActiveRecord::Migration
   def self.up
     create_table "roles" do |t|
       t.string   "code",       :null => false

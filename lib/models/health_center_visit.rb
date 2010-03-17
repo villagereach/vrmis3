@@ -152,11 +152,11 @@ class HealthCenterVisit < ActiveRecord::Base
   end
   
   # Please do not ever refer to these by number.
-  REPORT_COMPLETE = 1
-  REPORT_INCOMPLETE = 2
-  REPORT_NOT_DONE = 3
-  REPORT_NOT_VISITED = 4
-  REPORT_IRRELEVANT = 5
+  REPORT_COMPLETE =    :REPORT_COMPLETE
+  REPORT_INCOMPLETE =  :REPORT_INCOMPLETE
+  REPORT_NOT_DONE =    :REPORT_NOT_DONE
+  REPORT_NOT_VISITED = :REPORT_NOT_VISITED
+  REPORT_IRRELEVANT =  :REPORT_IRRELEVANT
   
   # Return a hash of values consisting of the status for each visit batch element
   #   (existing inventory, delivered inventory, general equipment, cold chain equipment, stock card equipment,

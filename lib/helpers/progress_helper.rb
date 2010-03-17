@@ -1,10 +1,10 @@
 module ProgressHelper
   ProgressClasses = { 
-    HealthCenterVisit::REPORT_COMPLETE    => 'complete',
-    HealthCenterVisit::REPORT_INCOMPLETE  => 'incomplete',
-    HealthCenterVisit::REPORT_NOT_DONE    => 'todo',
-    HealthCenterVisit::REPORT_NOT_VISITED => 'not_visited',
-    HealthCenterVisit::REPORT_IRRELEVANT  => 'irrelevant',
+    :REPORT_COMPLETE    => 'complete',
+    :REPORT_INCOMPLETE  => 'incomplete',
+    :REPORT_NOT_DONE    => 'todo',
+    :REPORT_NOT_VISITED => 'not_visited',
+    :REPORT_IRRELEVANT  => 'irrelevant',
     nil => 'todo',
   }
     

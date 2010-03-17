@@ -1,4 +1,4 @@
-class AddCatchmentPopulationToHealthCenters < ActiveRecord::Migration
+class OlmisAddCatchmentPopulationToHealthCenters < ActiveRecord::Migration
   def self.up
     add_column :health_centers, :catchment_population, :integer
   end
