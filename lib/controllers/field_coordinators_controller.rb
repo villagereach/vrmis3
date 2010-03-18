@@ -1,4 +1,6 @@
 class FieldCoordinatorsController < OlmisController
+  unloadable
+
   helper :progress
 
   add_breadcrumb 'breadcrumb.field_coordinators', 'fc_visits_path'

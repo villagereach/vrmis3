@@ -1,8 +1,7 @@
-  map.connect ':controller/render_mini_table', :action => 'render_mini_table'
+  map.mini_table '/:path/render_mini_table', :action => 'render_mini_table', :controller => :olmis
 
-  map.resources :fridges, :path_prefix => 'cold_chain'
   map.resources :users, :member => { :profile => [:get, :put] }
-  
+
   map.new_fridge_status '/fridge_statuses/new', :controller => :fridge_statuses, :action => 'create', :conditions => { :method => [:put, :post] }
   
   map.resources :fridges, :path_prefix => 'cold_chain'
@@ -31,7 +30,7 @@
   map.connect '/set_date_period', :controller=>'dashboard', :action=>'set_date_period'
   map.login   '/login',  :controller => 'login', :action => 'login'
   map.logout  '/logout', :controller => 'login', :action => 'logout'
-  map.is_logged_in '/logged-in', :controller => 'application', :action => 'logged_in'
+  map.is_logged_in '/logged-in', :controller => 'olmis', :action => 'logged_in'
   
   map.connect '/graph_data/:graph.:format', :controller => 'graph_data', :action => 'graph'
  
@@ -50,7 +49,7 @@
   map.health_center_rdt_epi  '/visits/:visit_month/:health_center/epi/rdt',    :controller => 'visits', :action => 'health_center_tally', :tally => 'RdtTally'
   map.health_center_usage_epi '/visits/:visit_month/:health_center/epi/usage',  :controller => 'visits', :action => 'health_center_tally', :tally => 'EpiUsageTally'
 
-  map.nuke_caches             '/nuke_caches', :controller => 'application', :action => 'nuke_caches'
+  map.nuke_caches             '/nuke_caches', :controller => 'olmis', :action => 'nuke_caches'
 
   map.health_center_equipment_general   '/visits/:visit_month/:health_center/equipment/general',   :controller => 'visits', :action => 'health_center_equipment'
   map.health_center_equipment_coldchain '/visits/:visit_month/:health_center/equipment/coldchain', :controller => 'visits', :action => 'health_center_cold_chain'
@@ -63,8 +62,8 @@
   map.reports '/reports', :controller => 'reports', :action => 'index'
   map.report_maps '/reports/:action', :controller => 'reports'
 
-  map.delivery_zone_selector '/dz', :controller => 'application', :action => 'delivery_zone_selector'
-  map.district_selector      '/dct', :controller => 'application', :action => 'district_selector'
+  map.delivery_zone_selector '/dz', :controller => 'olmis', :action => 'delivery_zone_selector'
+  map.district_selector      '/dct', :controller => 'olmis', :action => 'district_selector'
 
 
 

@@ -1,4 +1,6 @@
 class DataSourcesController < OlmisController
+  unloadable
+
   add_breadcrumb 'breadcrumb.data_sources', 'data_sources_path'
 
   helper :visits

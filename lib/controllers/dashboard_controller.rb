@@ -1,6 +1,6 @@
 class DashboardController < OlmisController
   unloadable
-  
+
   helper :progress
   helper :fridges
   helper :visits

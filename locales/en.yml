@@ -1,0 +1,147 @@
+# -*- coding: utf-8 -*-
+en:
+  save: Save changes
+  change: Change
+  num_fridges: 
+    one: 1 fridge
+    other: "{{count}} fridges"
+  tab_reports: Reports
+  tab_fridge_issues: Cold Chain
+  update: Update
+  health_center_contact: Health Center Contact
+  test: test
+  previous_six_months: Previous six months
+  tab_site_visits: Site Visits
+  new: New
+  user: 
+    name: Name
+    phone: Phone
+  edit: Edit
+  status_category: 
+    green: Green
+    red: Red
+    yellow: Yellow
+  tab_fcs: Field Coordinators
+  fuel: gas
+  geo_contained_by: in
+  loading: Loading ...
+  username: Username
+  done: Done
+  NR: NR
+  cancel: Cancel
+  Visit: Visit
+  tab_return_from_route: Return from Route
+  you_are_here: "You are here:"
+  OK: OK
+  logged_in_as: Logged in as
+  syringe: syringe
+  tab_dashboard: Dashboard
+  breadcrumb: 
+    epi_visit_month: "{{visit_month}} Visit ({{epi_month}} EPI)"
+    report: Reports
+    unloads: Returns for {{name}}
+    show_health_center: "{{name}}"
+    edit: Edit
+    new_unload: Warehouse return for {{name}}
+    site_visits: Site Visits
+    report_autoeval: Autoeval
+    report_fridge_issues: Refrigerator issues
+    field_coordinators: Field coordinators
+    show_ideal_stock: Ideal stock for {{name}}
+    pickups: Pickups for {{name}}
+    new_fridge: New refrigerator
+    report_maps: Maps
+    offline_report: 
+      coverage: Coverage
+      autoeval: Autoevaluation
+      visited_health_centers: Visited Health Centers
+      delivery_interval: Delivery Interval
+      fridge_issues: Fridge Issues
+      stockouts: Stockouts Report
+    report_delivery_intervals: Delivery intervals
+    data_sources: Upload Data
+    edit_ideal_stock: Update ideal stock for {{name}}
+    fridges: Fridges
+    health_centers: Health centers
+    report_visited_health_centers: Visited health centers
+    report_stocked_out_health_centers: Stocked out health centers
+    cold_chain: Cold Chain
+    new_pickup: Warehouse pickup for {{name}}
+    equipment: Equipment
+    new_health_center: New
+    edit_health_center: Edit {{name}}
+    epi: EPI
+    stock_cards: Stock Cards
+    inventory: Inventory
+    visit_search: Search
+    current_visit: ""
+    home: To-do/Dashboard
+    report_stockouts: Stockouts
+    report_coverage: Coverage
+  vaccine: vaccine
+  date_on: "on"
+  headers: 
+    address: Address
+    history_popup: ""
+    temperature: Temp
+    delivery_zone: Delivery zone
+    response: Response
+    existing_quantity: Existing
+    quantity: Quantity
+    blank: ""
+    status: Status
+    district: District
+    expected_delivery_quantity: Ideal stock amount
+    status_date: Last updated
+    fridges: Refrigerators
+    received: Received
+    delivered_quantity: Delivered
+    type: Type
+    health_center: HC
+    package_name: Package
+    update_link: ""
+    date: Date
+    primary_contact_name: Contact
+    related_sms: Reply to
+    user_name: User
+    phone: Phone
+    gateway: Gateway
+    more_info_popup: ""
+    fridge_code: Code
+    primary_contact_phone: Contact Phone
+    message: Message
+    reported_by: Reported by
+    notes: Notes
+    sms_dependents: Replies
+    incoming: Incoming?
+  tab_to_do: To Do List
+  EPI: EPI
+  choose_delivery_zone: "Delivery zone:"
+  tab_coverage: Coverage
+  current_time: Present
+  street_address: 
+    city: City
+    address1: Address line 1
+    latitude: Latitude
+    address2: Address line 2
+    postal_code: Postal
+    longitude: Longitude
+  yes: "Yes"
+  logout: Log out
+  select_blank: Select ...
+  tab_view_reports: View Reports
+  maps: 
+    popup: 
+      total_stockouts: "Total stockouts: {{stockouts}}"
+      coverage_percentage: "{{name}} coverage: {{coverage}}%"
+      population: Population
+      service_count: "{{name}} vaccinations delivered: {{total}}"
+  tab_health_centers: Health Centers
+  go: Go
+  documentation_link_short: <a href="https://villagereach.unfuddle.com/projects">VrMIS3 documentation</a>
+  month: Month
+  tab_report_maps: Maps
+  epi_visit_month: <span class="visit-month">{{visit_month}} Visit</span> <span class="epi-month">({{epi_month}} EPI)</span>
+  tab_visits: Visits
+  age_category: 
+    none: no status
