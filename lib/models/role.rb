@@ -18,7 +18,7 @@ class Role < ActiveRecord::Base
   referenced_by :code
 
   def label
-    I18n.t("Role.#{code}")
+    code.humanize
   end
 
   include Comparable
