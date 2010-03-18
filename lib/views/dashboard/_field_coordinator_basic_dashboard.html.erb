@@ -8,9 +8,4 @@
     <%= render :partial => 'shared/recent_months', :locals => { :link_to_site_visits => true } %>
   </div>
   
-  <div id="offline-forms" class="span-12 last">
-    <h3><%= t('visits.offline_forms') %></h3>
-    <%= render :partial => 'shared/stored_forms' %>
-  </div>
 
-  <%= js_show_or_hide_offline_forms_div("offline-forms") %>

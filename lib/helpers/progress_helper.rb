@@ -13,7 +13,7 @@ module ProgressHelper
   end
 
   def progress_class_for_task(visit, task)
-    progress_class(visit.status_by_table(HealthCenterVisit::TASKS_AND_TABLES[task]))
+    progress_class(visit.status_by_table(HealthCenterVisit.tasks_and_tables[task]))
   end
 
   def progress_class_for_visit(visit)
@@ -236,17 +236,18 @@ module ProgressHelper
   end
 
   def named_route_for_step(name, path_params)
-    {
+    routes = {
       'HealthCenterInventory'          => health_center_inventory_url(path_params),
       'GeneralEquipment'               => health_center_equipment_general_url(path_params),
       'ColdChainEquipment'             => health_center_equipment_coldchain_url(path_params),
-      'StockCardEquipment'             => health_center_equipment_stockcards_url(path_params),
-      'EpiUsageTally'                  => health_center_usage_epi_url(path_params),
-      'AdultVaccinationTally'          => health_center_adult_epi_url(path_params),
-      'ChildVaccinationTally'          => health_center_child_epi_url(path_params),
-      'FullVaccinationTally'           => health_center_full_epi_url(path_params),
-      'RdtTally'                       => health_center_rdt_epi_url(path_params)
-    }[name.to_s] || health_center_visit_url(path_params)
+      'StockCardEquipment'             => health_center_equipment_stockcards_url(path_params),      
+    }
+    
+    HealthCenterVisit.tally_hash.each do |k|
+      routes[k] = health_center_tally_url(path_params.merge(:tally => k))
+    end
+    
+    routes[name.to_s] || health_center_visit_url(path_params)
   end
 
   def progress_calculator

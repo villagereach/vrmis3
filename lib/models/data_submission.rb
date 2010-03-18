@@ -35,10 +35,7 @@ class DataSubmission < ActiveRecord::Base
   end
 
   def content_type=(type)
-    if data && data[0,ExcelVisitDataSource::Magic.length] == ExcelVisitDataSource::Magic || type == ExcelVisitDataSource::ContentType
-      type = ExcelVisitDataSource::ContentType
-      self.character_set = 'binary'
-    elsif type =~ /charset=([\w\-]+)/
+    if type =~ /charset=([\w\-]+)/
       self.character_set = $1
     end
     
@@ -68,13 +65,7 @@ class DataSubmission < ActiveRecord::Base
       end
     end
     
-    if request.params.has_key?(:xml_submission_file)
-      self.data_source = DataSource['AndroidOdkVisitDataSource']
-      ok_status = 201
-    elsif request.params.has_key?(:file) && self.content_type == 'application/vnd.ms-excel'
-      self.data_source = DataSource['ExcelVisitDataSource']
-      ok_status = 302
-    elsif request.content_type.to_s == 'application/xml'
+    if request.content_type.to_s == 'application/xml'
       self.data_source = DataSource['XformVisitDataSource']
       ok_status = 200
     end
@@ -302,14 +293,14 @@ class DataSubmission < ActiveRecord::Base
   end
   
   def process_tallies
-    [AdultVaccinationTally, ChildVaccinationTally, EpiUsageTally, FullVaccinationTally, RdtTally].each do |tally_class|
-      if @params[tally_class.name]
-        records, tally_errors = tally_class.create_or_replace_records_by_keys_and_user_from_data_entry_group(
+    HealthCenterVisit.tally_hash.each do |tally|
+      if @params[tally]
+        records, tally_errors = tally.constantize.create_or_replace_records_by_keys_and_user_from_data_entry_group(
           [@visit.health_center_id, @visit.epi_month], 
           @visit.field_coordinator,
-          @params[tally_class.name])
+          @params[tally])
         
-        @visit_errors[tally_class.name] = tally_errors unless tally_errors.empty?
+        @visit_errors[tally] = tally_errors unless tally_errors.empty?
       end
     end
   end
