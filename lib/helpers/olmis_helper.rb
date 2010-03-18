@@ -317,6 +317,7 @@ module OlmisHelper
   
   def nuke_all_caches
     controller.expire_fragment(/.*/)
+    I18n.backend.cache_store.clear
   end
   
 

@@ -1,12 +1,12 @@
 <h2><%= t(".profile_for", :name => @user.username) %></h2>
 
-<p class="return"><a href="/"><%= t(:return) %></a></p>
+<p class="return"><a href="<%= users_path %>"><%= t(:return) %></a></p>
 
 <div id="user-profile-form">
   <%- form_for @user, :url => profile_user_path do |f| -%>
     <%= f.error_messages %>
     <fieldset id="user-details">
-      <legend><%= t(".legend.personal") %></legend>
+      <legend><%= t("users.legend.personal") %></legend>
       <ol>
         <li>
           <%= f.label :name %>
@@ -18,7 +18,7 @@
         </li>
         <li>
           <%= f.label :language %>
-          <%= f.select :language, Locale.all.sort_by{|l| l.name.downcase}.map{|l| [ l.name, l.code ]}, :include_blank => t(:select_blank) %>
+          <%= f.select :language, Locale.all.sort_by{|l| l.name.to_s.downcase}.map{|l| [ l.name || l.code, l.code ]}, :include_blank => t(:select_blank) %>
         </li>
         <li>
           <%= f.label :timezone %>
@@ -27,22 +27,68 @@
       </ol>
     </fieldset>
     <fieldset id="account-details">
-      <legend><%= t(".legend.account") %></legend>
+      <legend><%= t("users.legend.account") %></legend>
       <ol>
         <li>
           <%= f.label :username %>
-          <%= f.text_field :username, :size => 20, :maxlength => 255, :readonly => true %>
+          <%= f.text_field :username, :size => 20, :maxlength => 255, :readonly => @user.primary_admin? %>
         </li>
         <li>
-          <%= f.label :password, t(".change_password") %>
+          <%= f.label :password, t("users.change_password") %>
           <%= f.password_field :password, :size => 20 %>
         </li>
         <li>
-          <%= f.label :password_confirmation, t(".confirm_password") %>
+          <%= f.label :password_confirmation, t("users.confirm_password") %>
           <%= f.password_field :password_confirmation, :size => 20 %>
         </li>
       </ol>
     </fieldset>
+
+    <fieldset id="zone-details-fieldset" class="checkbox-group">
+      <legend><%= link_to_function(t("users.legend.delivery_zone"), 'jQuery("#zone-details").toggle()') %></legend>
+      <% visible_container('zone-details', false, 'div') do %>
+        <% DeliveryZone.all.sort.in_groups_of(3).each do |dzs| %>
+          <% dzs.compact.each do |dz| %>
+            <label> 
+              <%= check_box_tag('user[delivery_zone_ids][]', dz.id, @user.delivery_zones.include?(dz) ? 'checked' : nil) %>
+              <%= dz.label %>
+            </label>
+          <% end %>
+          <br clear="left" />
+        <% end %>
+      <% end %>
+    </fieldset>
+
+    <fieldset id="health_center-fieldset" class="checkbox-group">
+      <legend><%= link_to_function(t("users.legend.health_center"), 'jQuery("#health_center-details").toggle()') %></legend>
+      <% visible_container('health_center-details', false, 'div') do %>
+        <% HealthCenter.all.sort.in_groups_of(3).each do |hcs| %>
+          <% hcs.compact.each do |hc| %>
+            <label> 
+              <%= check_box_tag('user[health_center_ids][]', hc.id, @user.health_centers.include?(hc) ? 'checked' : nil) %>
+              <%= hc.label %>
+            </label>
+          <% end %>
+          <br clear="left" />
+        <% end %>
+      <% end %>
+    </fieldset>
+
+    <fieldset id="administrative_area-fieldset" class="checkbox-group">
+      <legend><%= link_to_function(t("users.legend.administrative_area"), 'jQuery("#administrative_area-details").toggle()') %></legend>
+      <% visible_container('administrative_area-details', false, 'div') do %>
+        <% AdministrativeArea.all.sort.in_groups_of(3).each do |aas| %>
+          <% aas.compact.each do |aa| %>
+            <label> 
+              <%= check_box_tag('user[administrative_area_ids][]', aa.id, @user.administrative_areas.include?(aa) ? 'checked' : nil) %>
+              <%= aa.label %>
+            </label>
+          <% end %>
+          <br clear="left" />
+        <% end %>
+      <% end %>
+    </fieldset>
+    
     <p class="form-buttons">
       <%= f.submit t("update") %>
     </p>

@@ -11,9 +11,20 @@
 #
 
 class Role < ActiveRecord::Base
+  unloadable
+  
   include BasicModelSecurity
   has_many :users
   referenced_by :code
+
+  def label
+    I18n.t("Role.#{code}")
+  end
+
+  include Comparable
+  def <=>(other)
+    code <=> other.code
+  end
   
   def report_format
     if code == 'field_coordinator'

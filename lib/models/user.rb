@@ -17,15 +17,23 @@
 #
 
 class User < ActiveRecord::Base
+  unloadable
+  
   include BasicModelSecurity
 #  attr_accessor :password_hash_confirmation
 
   has_one :street_address, :as => 'addressed'
   
   validates_presence_of :username
+  validates_presence_of :role_id
+  validates_presence_of :language
+  validates_presence_of :timezone
+  
   validates_uniqueness_of :username
   validates_uniqueness_of :phone, :allow_nil => true
+
   validates_format_of :phone, :with => /^\d+$/, :message => 'must be only digits', :allow_nil => true
+  
   validates_confirmation_of :password_hash
   belongs_to :role
   referenced_by :name, :username
@@ -47,6 +55,10 @@ class User < ActiveRecord::Base
   def self.admin
     User.find_by_username('admin') #boo
   end
+
+  def primary_admin?
+    username == 'admin'
+  end
   
   def districts
     responsible_health_centers.map(&:district).uniq
@@ -54,6 +66,10 @@ class User < ActiveRecord::Base
   
   def default_vehicle_code
     ''
+  end
+  
+  def phone=(p)
+    super(p.blank? ? nil : p)
   end
   
   def provinces
@@ -70,8 +86,7 @@ class User < ActiveRecord::Base
   end
 
   def responsible_health_centers(*args)
-    case role_code
-    when 'field_coordinator'
+    if field_coordinator?
       delivery_zone.maybe.health_centers(*args)
     else 
       []
@@ -91,7 +106,7 @@ class User < ActiveRecord::Base
   end
 
   def can_edit?
-    admin? || role_code == 'manager'
+    admin? || manager?
   end
 
   def self.authenticate(username, password)
@@ -136,6 +151,10 @@ class User < ActiveRecord::Base
     Digest::SHA1.hexdigest("#{password_salt}--#{p}--")
   end
 
+  def role_name
+    role.label if role
+  end
+  
   private
 
   def hash_password(p)

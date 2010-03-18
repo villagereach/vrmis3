@@ -170,11 +170,18 @@ div.progress span.empty { background-color: white; color: red; }
 #user-profile-form li {
     margin-bottom: 1.0ex;
 }
+
 #user-profile-form label {
     display: block;
     padding: 0.25ex 0.25em 0 0;
     text-align: left;
 }
+
+#user-profile-form fieldset.checkbox-group label {
+    display: block; float: left; width: 10em;
+    padding: 0.25ex 0.25em 0 0;
+}
+ class="checkbox-group"
 
 div#health_center_visit input[type="submit"] { margin: 0.5em; }
 
