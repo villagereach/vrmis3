@@ -1,0 +1,511 @@
+# -*- coding: utf-8 -*-
+en:
+  common: 
+    #common terms 
+      to_do:        Dashboard
+      cold_chain_title:   Cold Chain
+      data_entry_title:   Data Entry
+      #breadcrumbs 
+      you_are_here: "You are here"
+      ago: ago
+  layouts:
+    locale:
+      select_language: "Select language:"
+    field_coordinator:
+      tasks_for: "Field Coordinator Tasks for {{name}}, {{date}}"
+      go_on_route: "Go On Route"
+      return_from_route: "Return From Route"
+      check_cold_chain: "Check Cold Chain"
+  dashboard:
+    field_coordinator_dashboard:
+      to_do:            Your to-do list
+      visit_data_entry: 'Health Center Visits: Data Entry'
+      recent_updates:   Recent Updates
+      monthly_progress: Monthly Progress
+      fridge_status:    Fridge Status
+      fridge_issues:    Reported Refrigerator Issues
+    manager_dashboard:
+      #to_do:        Dashboard
+      #cold_chain_title:   Cold Chain
+      #data_entry_title:   Data Entry
+  inventory:
+    DeliveryPickup:
+      show: Warehouse Pickup for {{where}}
+      edit: Edit Warehouse Pickup for {{where}}
+      new: New Warehouse Pickup for {{where}}
+    DeliveryReturn:
+      show: Warehouse Return for {{where}}
+      edit: Edit Warehouse Return for {{where}}
+      new: New Warehouse Return for {{where}}
+    IdealStockAmount:
+      show: Ideal Stock Amount for {{where}}
+      edit: Edit Ideal Stock Amount for {{where}}
+      new: New Ideal Stock Amount for {{where}}
+    print_warehouse_form: Print Form for Warehouse 
+    amount_picked_up: Amount Picked Up
+    amount_returned: Amount Returned
+    package_label:  Product
+    package_amount: Amount
+    recent_pickups: Recent Pickups
+    recent_returns: Recent Returns
+    new_pickup: New Pickup
+    new_return: New Return
+    back_to_pickups:  Back to Pickups
+    back_to_returns:  Back to Returns
+    change_isa: Change Ideal Stock Amounts
+    change_isa_for: Change Ideal Stock Amount For
+  fridge_statuses:
+    reported_by:    Reported by
+    reported_by_short:  by
+    enter_new:      Update Fridge Status
+    create:
+      ok:      "'{{status}}' status was recorded for fridge {{fridge}} at {{hc}}"
+      no_temp: "'{{status}}' status was recorded for fridge {{fridge}} at {{hc}}, but temperature '{{temp}}' was ignored"
+      problem: "A problem was detected with your status entry: {{reason}}"
+      error:   "Unrecognized fridge status"
+    short_form:
+      new_status: New status
+      new_temp:   New temperature
+      notes:      Notes
+  login:
+    goo: Yama
+    #controller
+    please_log_in: "Please log in ..."
+    welcome_back: "Welcome back, {{name}}"
+    invalid_login: "You did not provide a valid login name and password!"
+    #views
+    login:
+      login_to: "Log in to {{name}}"
+      submit_button: "Log in"
+  reports:
+    export_as_csv: "Export as CSV"
+    report_parameters: "Report parameters"
+    update_report: "Update graphs"
+    update_map: "Update map"
+    legend: "Legend"
+    circle_size_porportional_to_population:  Circle size is proportional to district population
+    index:
+      report_front_title: Choose a Report
+      field_coordinator_report: Field Coordinator Efficiency Report
+      visited_health_centers: Visited health centers
+      epi_vaccination_report: EPI Vaccination Report
+      coverage_rates: Coverage rates by target populations
+      inventory_management_report: Inventory Management Report
+      stockouts_by_date: Stockouts by date
+      stocked_out_health_centers_by_date: '% of health centers experiencing a stockout, by date'
+      cold_chain_report: Cold Chain Report
+      fridge_issues_by_date: Fridge issues by date
+      mapping: Mapping
+      coverage_map_by_date: Map of coverage rates by date range
+      stockouts_map_by_date: Map of stockout events by date range
+      delivery_interval: Delivery intervals
+      autoeval: 'Autoevaluation'
+      autoeval_report: 'Autoevaluation report'
+    targets: 'Targets'
+    products: 'Products'
+    population: 'Population'
+    date_range: 'Date range'
+    dimension: 'Dimension'
+    dimension_area: 'Area'
+    dimension_product: 'Product'
+    titles:
+      refrigerator_issues: "Percentage of health centers experiencing refrigerator malfunction, {{name}}, {{date}}"
+      health_centers_visited: "Percentage of health centers visited, {{name}}, {{date}}"
+      stockouts_by_product_and_date_period: "% Visits with Stockout by area and date period, {{name}}, {{date}}"
+      stockouts_by_area_and_date_period:    "% Visits with Stockout by product and date period, {{name}}, {{date}}"
+      stockouts_by_area_and_product:        "% Visits with Stockout by area and product, {{name}}, {{date}}"
+      stocked_out_health_centers_by_type_and_date_period: '% of HCs experiencing a stockout by date period, {{name}}, {{date}}'
+      stocked_out_health_centers_by_area_and_date_period: '% of HCs experiencing a {{type}} stockout by date period, {{name}}, {{date}}'
+      target_coverage: "Target coverage, {{name}}, {{date}}"
+      usage:            "Vaccine usage, {{name}}, {{date}}"
+      regional_target_coverage: "Regional target coverage, {{name}}, {{date}}"
+      delivery_interval: "Delivery intervals, {{name}}, {{date}}"
+    axes:
+      date_period: 'Date period'
+      target_coverage: '% of target covered'
+      stockouts: '% of health center visits observing a stockout'
+      province: "Province"
+      delivery_zone: "Delivery zone"
+      district: "District"
+      health_center_catchment: "Health center catchment"
+      target_percentage:   'Target populations'
+      percent_stocked_out: % stocked out
+      percent_visited: % visited
+      percent_malfunctioning: % malfunctioning
+    series:
+      fridges:
+        broken_or_missing: 'Broken/problem/missing'
+      total: 'Total'
+      total_clinic_visits: 'Total health center visits'
+      target:  'Target'
+      visited: 'Visited'
+      percent_visited: 'Percent visited'
+      reported: 'Reported'
+      not_visited:  'Not visited'
+      not_reported: 'Not reported'
+      total_visits: 'Number of visits'
+      population:          'Population'
+      target_group_size:   'Target group'
+      target_vaccinations: 'Vaccinations'
+      distributed: 'Total doses applied'
+      usage: 'Doses used' 
+      loss_rate:   'Loss (%)'
+      target_coverage: 'Target coverage (%)'
+      delivery_interval:
+        previous_month_dates: 'Previous visit date'
+        current_month_dates: 'Selected month'
+        average_interval: 'Avg'
+        interval: 'Interval'
+        min_interval: 'Min'
+        max_interval: 'Max'
+        total_visits: 'Number of visits'
+        days_between: 'Days between two most recent visits'
+        number_acceptable: 'Number of visits ≤ {{num}} days from previous'
+        percent_acceptable: '% visits ≤ {{num}} days from previous'
+    offline_report:
+      stockouts:              'Stockouts Report'
+      fridge_issues:          'Fridge Issues'
+      visited_health_centers: 'Visited Health Centers'
+      delivery_interval:      'Delivery Interval'
+      coverage:               'Coverage'
+    autoeval:
+      header:               'Autoevaluation for {{name}}'
+      choose_district:      'Choose another district:'
+      not_recently_visited: 'This health center has not been visited {{months}} months in a row and the reasons “Health center is not yet operating or has been permanently closed” or “Health center no longer gives immunizations” were not selected. Make sure that visiting this health center remains a priority.'
+      excessive_interval:   '{{days}} days passed between this month’s and last month’s visits to this health center.'
+      stockouts_this_month: 'In {{date}}, this health center had a stockout of {{product}}. Please follow up to resolve this problem.'
+      stockouts_this_month_full_delivery_last_month: 'This health center had a stockout of {{product}} in the current month, yet the ideal stock amount for {{product}} was delivered the previous month. Check to verify that the stock ideal amount is correct.'
+      insufficient_deliveries: 'For 2 or more months in a row, this health center did not receive the full stock amount of {{product}}. Please follow up to resolve this problem.'
+  mini_reports:
+    table:
+      none: '(none)'
+      more: '({{num}} more)'
+      more_previous: '<< Previous {{num}}'
+      more_next: 'Next {{num}} >>'
+    overall_fridge_status:
+      overall_fridge_status: Overall Cold Chain Status
+      by_status:  Working Condition
+      by_status_age:  Last Update
+    overall_data_status:
+      overall_data_status: Overall Data Entry Status
+      by_fc:  Field Coordinators
+      by_hc:  Health Centers
+      num_fcs_and_hcs: "{{fcs}} Field Coordinators, {{hcs}} Health Centers"
+    recently_fixed_fridge_list:
+      recently_fixed_fridges: 'Recently fixed refrigerators'
+      no_recently_fixed_fridges: 'No recently fixed refrigerators'
+    currently_bad_fridge_list:
+      not_ok_fridges: 'Currently broken refrigerators'
+      no_fridges_with_status: "No {{status}} refrigerators"
+    persistent_problem_fridge_list:
+      persistent_problem_fridges: 'Persistently broken refrigerators'
+    currently_urgent_fridge_list:
+      urgent_fridges: 'Refrigerators with problems for {{days}} days'
+      no_urgent_fridges: 'No refrigerators with urgent problems'
+    neglected_fridge_list:
+      neglected_fridges: 'Refrigerators not updated in {{days}} days'
+      no_neglected_fridges:  'No refrigerators needing an update'
+    fridge_status_list:
+      recent_fridge_statuses: 'Recently reported refrigerator statuses'
+    equipment_list:
+      equipment_header: 'Equipment inspected on {{date}} by {{user}}'
+    recently_delivered_inventory:
+      delivered_inventory_header: 'Stock delivered and counted on {{date}} by {{user}}'
+    fridge_status_details:
+      notes:       "Notes:"
+      history:     "History"
+  cold_chain:
+    index:
+      cold_chain_title: Cold Chain
+  fridges:
+    index:
+      new: Add new fridge
+    show:
+      about_fridge: About this refrigerator
+      about_hc:     "About <strong>{{name}}</strong> health center"
+    fridge:
+      details: 'Fridge Details for {{name}}'
+      update: 'Fridge Details for {{name}}'
+      edit: 'Fridge Details for {{name}}'
+      new: 'New Fridge Details'
+      health_center: 'Health Center'
+      health_center_related_fridges: 'Other Fridges at {{name}}'
+      district: 'District'
+      delivery_zone: 'Delivery Zone'
+      province: 'Province'
+      field_coordinator: 'Field Coordinator'
+      field_coordinator_phone: 'Field Coordinator Phone'
+      description: 'Description'
+      model: 'Model'
+      size: 'Size'
+      code: 'Code'
+      stock_room: 'Stock room'
+      power_source: 'Power Source'
+  health_centers:
+    details: "Health center details for {{name}}"
+    name:    "Name"
+    address: "Address"
+    district: District
+    province: Province
+    primary_contact_name: "Primary contact"
+    primary_contact_phone: "Phone"
+    delivery_zone: "Delivery zone"
+    field_coordinator_name:  "Field coordinator"
+    field_coordinator_phone: "Field coordinator phone"
+    edit: "Update Health Center {{name}}"
+    new:  "Create Health Center"
+    show:
+      new_fridge: "Create new fridge"
+  field_coordinators:
+    index:
+      title: Field Coordinators
+      sort_by: Sort by
+      province: province
+      name: name
+      status: status
+      by_province: By province
+      by_name: By name
+      by_status: By status
+      complete: Complete
+      incomplete: Incomplete
+      todo: Todo
+    show:
+      user_info: "{{name}}"
+      visit_status: "Visits status for {{month}}"
+      username: Login name
+      phone: Phone
+  visits:
+    recent_events: "Recent events"
+    new_visit: "New Visit"
+    progress: "Progress"
+    health_center: "Health Center"
+    offline_forms: "Offline Data Entry"
+    go_to_offline_data_entry: "Switch to offline data entry"
+    index:
+      find_visit: Find a visit
+      progress_for: Progress for
+      recent_visits: Recent Visit Entries
+      recent_months: View by Month
+      recent_hcs: Recent Health Centers
+    by_month:
+      sort_by: Sort by
+      district: district
+      name: name
+      status: status
+      by_district: By district
+      by_name: By name
+      by_status: By status
+      complete: Complete
+      incomplete: Incomplete
+      todo: Todo
+    visit_item:
+      new: New visit
+      visited_on: "Visited on {{date}}"
+      did_not_visit: Did not visit
+    health_center_monthly_tasks:
+      visit: 'Visit'
+      inventory: 'Inventory'
+      equipment: 'Equipment'
+      general: 'General'
+      cold_chain: 'Cold Chain'
+      stock_cards: 'Stock Cards'
+      delivery: 'Delivery'
+      rdt: RDT
+      save_and_go_to: "Save and continue to {{next_page}}"
+    health_center_monthly_visit:
+      date: Visit date
+      time: Time
+      visiting_field_coordinator: "Visiting Field Coordinator"
+      vehicle_code: Vehicle ID      
+      reason_for_not_visiting: 'Why did no one visit?'
+      select_reason: "Select reason ..."
+      notes: "Notes and Comments"
+      did_you_visit: 'Did you visit {{name}} in {{month}}?'
+      was_this_visited: 'Was {{name}} visited in {{month}}?'
+      yes_i_visited: 'Yes, I visited myself'
+      yes_someone_else_visited: 'Yes, someone else visited'
+      no_noone_visited: 'No, no one visited'
+      do_you_have_epi_data: "Do you have EPI data?"
+      upload_spreadsheet: "Do you have a spreadsheet to upload?"
+     
+    health_center_monthly_progress_bar:
+      did_not_visit: Did not visit
+    health_center_tally:
+      instructions: "Note: Check “not recorded” (NR) if the number is not available; if there are none, record a zero (0)."
+      page_title_adult_vaccination_tally: Adult Vaccination Tallies
+      page_title_child_vaccination_tally: Child Vaccination Tallies
+      page_title_full_vaccination_tally: Full Vaccination Tallies
+      page_title_epi_usage_tally: EPI Usage Tallies
+      page_title_rdt_tally: RDT Tallies
+      save: Save changes
+    health_center_inventory:
+      instructions: "Note: Check “not recorded” (NR) if the quantity is not available; if there are none, record a zero (0)."
+      product: Product
+      ideal_quantity: Ideal Quantity
+      existing_quantity: Existing Quantity
+      delivered_quantity: Delivered Quantity
+    health_center_equipment:
+      instructions: "Note: Check “not recorded” (NR) if the quantity is not available; if there are none, record a zero (0)."
+      type: Equipment
+      quantity: Quantity
+      status: Status
+      notes: Notes
+    health_center_cold_chain:
+      instructions: "Note: Check “not recorded” (NR) if the temperature is not available."
+      fridge: Refrigerator
+      status: Status
+      temperature: Temp (°C)
+      notes: Notes
+    health_center_stock_cards:
+      name: Stock Card
+      have: Have?
+      use: Use correctly?
+  pickups:
+    no_pickup:
+      no_pickup: No pickup for {{name}} found for {{date}}
+    no_unload:
+      no_unload: No return for {{name}} found for {{date}}
+    pickup_receipt:
+      picked_up: Items picked up from {{name}} by {{user}} on {{date}}
+    unload_items:
+      unloaded: Items unloaded after delivery return
+    unload_receipt:
+      unload_receipt: Items returned to {{name}} by {{user}} on {{date}}
+    date_picker:
+      pick_date: 'To make a pickup, choose a delivery zone and date:'
+    show_ideal_stock:
+      title: "Ideal Stock amounts for {{name}}" 
+    update_ideal_stock:
+      title: "Update Ideal Stock amounts for {{name}}" 
+      cancel: "Return to delivery pickup list"
+    pickup:
+      update_for: Update ideal stock amounts for
+      update_for_one: Or, update ideal stock amounts for one health center
+      title: "Pickup amounts for {{name}}" 
+  users:
+    return: "Return to Dashboard"
+    profile:
+      profile_for: "User Profile for {{name}}"
+      legend:
+        personal: "Personal Information"
+        account: "Account Information"
+      change_password: "Change Password"
+      confirm_password: "Confirm Password"
+  shared:
+    recent_health_center_visit_edits:
+      recent_visit_link_label: "{{health_center}} ({{visit_month}})"
+      recent_visit_hc_label: "{{health_center}}"
+      recent_visit_month_label: "{{visit_month}}"
+    fridge_location_scope:
+      fridge_location: "Location" 
+    fridge_status_scopes:
+      fridge_status_category: "Status" 
+      fridge_age_category: "Age"
+    province_selector:
+      province: "Province:"
+    select_province:
+      select: Select Province
+      all: All Provinces
+    select_delivery_zone:
+      select: Select Delivery Zone
+      all: All Delivery Zones in {{province}}
+    select_district:
+      select: Select District
+      all: All Districts in {{delivery_zone}}
+    report_scope:
+      select_report_scope: Select report scope
+    offline_tasks:
+      select_task:   "Select task:"
+      record_visits: "Record Visits"
+      view_reports:  "View Reports"
+  data_sources:
+    upload_successful: "Upload successful"
+    upload_failed: "Upload failed: {{reason}}"
+    unsupported_format: "{{format}} is not a supported file format"
+    missing_file: "No file was selected"
+    index:
+      upload_data: "Upload health center data"
+      upload: "Upload"
+      uploading: "Uploading..."
+    hcvisit:
+      visit_intro:
+        label: Visit Intro
+        hint: Additional text TBD
+      inventory_intro:
+        label: Inventory Intro
+        hint: Additional text TBD
+      general_intro:
+        label: General Equipment Intro
+        hint: Additional text TBD
+      cold_chain_intro:
+        label: Cold Chain Intro
+        hint: Additional text TBD
+      stock_cards_intro:
+        label: Stock Cards Intro
+        hint: Additional text TBD
+      visit_month: Visit Month
+      quantity_error: Value must be a non-negative integer or a dash (-)
+      quantity_hint: Enter a dash (-) if the quantity is not available; if there are none, record a zero (0).
+      temperature_error: The temperature must be an integer value. A working fridge temperature must be between 2 and 8 °C.
+      temperature_hint: Enter a dash (-) if the temperature is not available
+    list_xforms:
+      visit_all: Health Center Visits
+      visit_by_dz: "{{delivery_zone}} Visits"
+    hcvisit-nojr:
+      go_to_context_selection:           Change health center or month
+      logout:                            Logout / Change delivery zone
+      tab_title_adult_vaccination_tally: Adult Vaccinations
+      tab_title_child_vaccination_tally: Child Vaccinations
+      tab_title_full_vaccination_tally:  Full Vaccinations
+      tab_title_epi_usage_tally:         EPI Usage
+      tab_title_rdt_tally:               RDTs
+      add_fridge:                        Add new fridge
+      upload_all:                        Upload all completed forms
+      upload_empty:                      You have no completed forms available for uploading
+      submit_failed:                     Form submission failed
+      login_to_server:                   Log in to server
+      status:
+        login_and_upload: Login and upload forms
+        updated:          Updated
+        downloading:      Downloading
+        online:           Online
+        offline:          Offline
+      upload:
+        ready:    Ready
+        uploaded: Uploaded
+      errors:
+        select_fc:            A field coordinator must be selected
+        select_dz:            A delivery zone must be selected
+        select_province:      A province must be selected
+        select_district:      A district must be selected
+        select_health_center: A health center must be selected
+        select_visit_year:    The year of the visit must be selected
+        select_visit_month:   The month of the visit must be selected
+        select_visiting_fc:   The visiting field coordinator must be selected
+        vehicle_id:           A vehicle ID must be entered
+        date:                 A valid date must be entered
+        date_not_future:      A valid date that is not later than today must be entered
+        date_for_visit_month: A valid date in the visited month, that is not later than today, must be entered
+        select_non_visit:     A reason for not visiting must be selected
+        non_visit_reason:     Specify the reason for not visiting
+        select_status:        A status must be selected
+        fridge_code:          A fridge code must be entered
+        temperature:          The temperature must be an integer value. A working fridge temperature must be between 2 and 8 °C.
+        quantity:             The quantity must be a non-negative integer value
+        select_yes_or_no:     'Select either "yes" or "no"'
+  sms_messages:
+    index:
+      sms_messages: "SMS messages"
+  javascripts:
+    hcvisit:
+      cache_state:
+        uncached:    Uncached
+        idle:        Idle
+        checking:    Checking
+        downloading: Downloading
+        updateready: Update ready
+        obsolete:    Obsolete
+      upload:      Upload
+    upload_forms:
+      upload: Upload
+      upload_all_completed_forms: Upload all completed forms

@@ -1,4 +1,6 @@
 class GraphDataController < OlmisController
+  unloadable
+
   helper :date_period_range
 
   def graph

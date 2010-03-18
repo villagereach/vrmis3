@@ -1,4 +1,6 @@
 class FridgesController < OlmisController
+  unloadable
+
   add_breadcrumb 'breadcrumb.cold_chain', 'cold_chain_path'
   add_breadcrumb 'breadcrumb.fridges',    'fridges_path'
 

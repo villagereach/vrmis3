@@ -1,4 +1,6 @@
 class HealthCentersController < OlmisController
+  unloadable
+
   add_breadcrumb 'breadcrumb.health_centers', 'health_centers_path'
 
   def index

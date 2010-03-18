@@ -1,4 +1,6 @@
 class UsersController < OlmisController
+  unloadable
+
   def show
     @user = User.find_by_id(params[:id])
   end

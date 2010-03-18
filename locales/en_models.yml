@@ -1,0 +1,30 @@
+# -*- coding: utf-8 -*-
+# English translations for models
+# NOTE: This file will have few, if any, entries since the model attributes are generally displayed as intended in English
+en:
+  activerecord:
+    attributes:
+      data_submission:
+        complete: Complete visit entered from {{source}} on {{date}} by {{user}}
+        incomplete: Incomplete visit entered from {{source}} on {{date}} by {{user}}
+      _all:
+        username: Username
+        password: Password
+      health_center_visit:
+        invalid_date: Please specify a valid, non-future, date.
+        describe_reason_for_not_visiting: should contain your reason for not visiting
+        vehicle_problem: Vehicle problem
+        road_problem: Road problem
+        visited_no: No, there was a problem
+        no_future_date: Date cannot be in the future
+        set_visited: must be set to change visit status
+        other: Other (Enter reason below)
+        visited_conflict: and unvisited reason conflict
+        visited_yes: "Yes"
+        health_center_closed: Health center closed
+    errors:
+      models:
+        fridge_status:
+          attributes:
+            temperature:
+              working_temp_range: must be between 2 and 8
