@@ -1,4 +1,6 @@
 class HealthCenterVisitPeriodicProgress
+  unloadable
+  
   def initialize
     @health_center_visits_by_date_period = {}
     @health_center_status_by_date_period = {}
@@ -29,20 +31,18 @@ class HealthCenterVisitPeriodicProgress
   end
 
   def counts_by_health_center_visit_for_date_period(dps)
+    tally_hash = Hash[*Olmis.configuration['tallies'].map { |k, v| [k, 0] }.flatten]
+    
     counts = Hash.new do |hash, key|      
       hash[key] = Hash[*dps.map { |dp|
         [dp, {
           'ExistingHealthCenterInventory' => [0, 0],
           'DeliveredHealthCenterInventory' => [0, 0],
           'cold_chain' => [0, 0],
-          'stock_cards' => [0, 0],
-          'EpiUsageTally' => 0,
-          'AdultVaccinationTally' => 0,
-          'ChildVaccinationTally' => 0,
-          'FullVaccinationTally' => 0,
-          'RdtTally' => 0,
+          'stock_cards' => [0, 0],          
           'equipment' => [0, 0]
-        }] }.flatten]
+        }.merge(tally_hash) 
+      ] }.flatten]
     end
     
     conn = ActiveRecord::Base.connection
@@ -57,9 +57,9 @@ class HealthCenterVisitPeriodicProgress
       end
     end
 
-    [EpiUsageTally, AdultVaccinationTally, ChildVaccinationTally, FullVaccinationTally, RdtTally].each do |tally_klass|
-      conn.select_all(tally_count_query(tally_klass, dp_sql)).each do |r| 
-        counts[r['id'].to_i][r['date_period']][tally_klass.name] = r['count'].to_i 
+    Olmis.configuration['tallies'].each do |tally, definition|
+      conn.select_all(tally_count_query(tally.constantize, dp_sql)).each do |r| 
+        counts[r['id'].to_i][r['date_period']][tally] = r['count'].to_i 
       end
     end    
 

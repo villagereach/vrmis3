@@ -167,7 +167,7 @@ class ReportsController < OlmisController
     @graphs = []
     @tables = [ 
       ['', Graphs.target_coverage_by_area_date_period_range(graph_params) ],
-      ['', Graphs.usage_by_area_date_period_range(graph_params) ],                 
+#      ['', Graphs.usage_by_area_date_period_range(graph_params) ],                 
     ]
   end
 

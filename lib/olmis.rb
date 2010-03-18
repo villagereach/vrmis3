@@ -21,8 +21,7 @@ class Olmis
         end
   
         definition['roles'].each do |l, options|
-          code = name_to_code(l, 'Role')
-          Role.find_or_initialize_by_code(code).update_attributes!(options)
+          Role.find_or_initialize_by_code(l).update_attributes!(options)
         end
   
         pt_by_code = {}

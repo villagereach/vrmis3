@@ -27,6 +27,12 @@
     <fieldset id="account-details">
       <legend><%= t("users.legend.account") %></legend>
       <ol>
+        <% if @current_user.admin? && !@user.primary_admin? %>
+          <li>
+            <%= f.label :role_id, t('activerecord.attributes._all.role') %>
+            <%= f.select :role_id, Role.all.sort.map { |r| [ r.label, r.id ] } %>
+          </li>
+        <% end %>
         <li>
           <%= f.label :username %>
           <%= f.text_field :username, :size => 20, :maxlength => 255, :readonly => @user.primary_admin? %>
@@ -42,6 +48,7 @@
       </ol>
     </fieldset>
 
+    <% if @current_user.admin? && !@user.admin? %>
     <fieldset id="zone-details-fieldset" class="checkbox-group">
       <legend><%= link_to_function(t("users.legend.delivery_zone"), 'jQuery("#zone-details").toggle()') %></legend>
       <% visible_container('zone-details', false, 'div') do %>
@@ -86,6 +93,7 @@
         <% end %>
       <% end %>
     </fieldset>
+    <% end %>
     
     <p class="form-buttons">
       <%= f.submit t("update") %>

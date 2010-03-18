@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
   'languages' => ['en'],
-  'time_zone' => 'US/Pacific',
+  'time_zone' => 'Pacific Time (US & Canada)',
 
   'roles' => {
     'admin'            => { :landing_page => '/' },

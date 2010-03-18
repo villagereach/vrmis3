@@ -42,11 +42,8 @@
   map.health_center_visit     '/visits/:visit_month/:health_center', :controller => 'visits', :action => 'health_center_monthly_visit'
   map.health_center_visit_title '/visits/:visit_month/:health_center/title', :controller => 'visits', :action => 'health_center_monthly_visit_title'
   map.health_center_visit_format '/visits/:visit_month/:health_center.:format', :controller => 'visits', :action => 'health_center_monthly_visit'
-  map.health_center_adult_epi '/visits/:visit_month/:health_center/epi/adult', :controller => 'visits', :action => 'health_center_tally', :tally => 'AdultVaccinationTally'
-  map.health_center_child_epi '/visits/:visit_month/:health_center/epi/child', :controller => 'visits', :action => 'health_center_tally', :tally => 'ChildVaccinationTally'
-  map.health_center_full_epi  '/visits/:visit_month/:health_center/epi/full',  :controller => 'visits', :action => 'health_center_tally', :tally => 'FullVaccinationTally'
-  map.health_center_rdt_epi  '/visits/:visit_month/:health_center/epi/rdt',    :controller => 'visits', :action => 'health_center_tally', :tally => 'RdtTally'
-  map.health_center_usage_epi '/visits/:visit_month/:health_center/epi/usage',  :controller => 'visits', :action => 'health_center_tally', :tally => 'EpiUsageTally'
+
+  map.health_center_tally     '/visits/:visit_month/:health_center/epi/:tally', :controller => 'visits', :action => 'health_center_tally'
 
   map.nuke_caches             '/nuke_caches', :controller => 'olmis', :action => 'nuke_caches'
 

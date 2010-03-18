@@ -71,24 +71,24 @@ class HealthCenterVisit < ActiveRecord::Base
     []
   end
   
-  TASKS_AND_TABLES = {
-    :visit => "Visit",
-    :usage => "EpiUsageTally",
-    :adult => "AdultVaccinationTally",
-    :child => 'ChildVaccinationTally',
-    :full  => 'FullVaccinationTally',
-    :rdt   => 'RdtTally',
-    :inventory => 'HealthCenterInventory',
-    :general => 'GeneralEquipment',
-    :cold_chain => 'ColdChainEquipment',
-    :stock_cards => 'StockCardEquipment'
-  }
-
+  def self.tally_hash
+    @tally_hash ||= Hash[*Olmis.configuration['tallies'].map { |k, v| [k, k] }.flatten]
+  end
+  
+  def self.tasks_and_tables
+    tally_hash.merge({
+      :visit => "Visit",
+      :inventory => 'HealthCenterInventory',
+      :general => 'GeneralEquipment',
+      :cold_chain => 'ColdChainEquipment',
+      :stock_cards => 'StockCardEquipment'
+    })
+  end
   
   def availability_class(task)
     if new_record?
       "preavailable"
-    elsif !epi_data_ready && [:usage, :adult, :child, :full, :rdt].include?(task)
+    elsif !epi_data_ready && self.class.tally_hash.has_key?(task)
       "unavailable"
     elsif !visited && [:inventory, :delivery, :general, :cold_chain, :stock_cards].include?(task)
       "unavailable"
@@ -191,11 +191,7 @@ class HealthCenterVisit < ActiveRecord::Base
       'Equipment' => combined_status(status['GeneralEquipment'],
                                      status['ColdChainEquipment'],
                                      status['StockCardEquipment']),
-      'EPI'       => combined_status(status['EpiUsageTally'],
-                                     status['AdultVaccinationTally'],
-                                     status['ChildVaccinationTally'],
-                                     status['FullVaccinationTally'],
-                                     status['RdtTally'])
+      'EPI'       => combined_status(*status.values_at(self.class.tally_hash.keys))
     }
   end
 
@@ -268,11 +264,10 @@ class HealthCenterVisit < ActiveRecord::Base
 
   def status_by_table(table=nil)
     @status ||= returning ActiveSupport::OrderedHash.new do |h|
-      h['EpiUsageTally']         = epi_data_ready? ? tally_status(EpiUsageTally)         : REPORT_NOT_VISITED
-      h['AdultVaccinationTally'] = epi_data_ready? ? tally_status(AdultVaccinationTally) : REPORT_NOT_VISITED
-      h['ChildVaccinationTally'] = epi_data_ready? ? tally_status(ChildVaccinationTally) : REPORT_NOT_VISITED
-      h['FullVaccinationTally']  = epi_data_ready? ? tally_status(FullVaccinationTally)  : REPORT_NOT_VISITED
-      h['RdtTally']              = epi_data_ready? ? tally_status(RdtTally)              : REPORT_NOT_VISITED
+      self.class.tally_hash.sort.each do |k, v|
+        h[k]         = epi_data_ready? ? tally_status(k.constantize)         : REPORT_NOT_VISITED
+      end
+      
       h['HealthCenterInventory'] = visited ? inventory_status                            : REPORT_NOT_VISITED
       h['GeneralEquipment']      = visited ? equipment_status                            : REPORT_NOT_VISITED
       h['ColdChainEquipment']    = visited ? cold_chain_status                           : REPORT_NOT_VISITED
