@@ -1,0 +1,22 @@
+<div class="mini_report" id="user_list">
+<%
+  params.merge!(@params) if @params
+  limit ||= params[:limit]
+  offset ||= params[:offset]
+  data = User
+  data = data.scoped_by_id(HealthCenter.find_by_id(params[:health_center_id]).users) if params[:health_center_id].present?
+  data = data.send(*params[:report_scope].split(',')) if params[:report_scope].present?
+  columns = [:name, :username, :phone, :last_login, :role_name, :language, :timezone, :advanced]
+  columns = [:edit] + columns if @current_user.admin?
+%>
+<%= render :partial => '/mini_reports/table', 
+  :locals => { 
+    :data => data, 
+    :sql_options => {  }, 
+    :sort_by => :username,
+    :columns => columns, 
+    :identifier => 'user_list', 
+    :model => Fridge, 
+    :limit => limit,
+    :offset => offset } %>
+</div>

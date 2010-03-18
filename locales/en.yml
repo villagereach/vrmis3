@@ -543,13 +543,14 @@ en:
       title:          "Pickup amounts for {{name}}"
   users:
     return: "Return to Dashboard"
+    password:  "Password"
+    change_password:  "Change Password"
+    confirm_password: "Confirm Password"
     profile:
       profile_for: "User Profile for {{name}}"
-      legend:
-        personal: "Personal Information"
-        account:  "Account Information"
-      change_password:  "Change Password"
-      confirm_password: "Confirm Password"
+    legend:
+      personal: "Personal Information"
+      account:  "Account Information"
   shared:
     recent_health_center_visit_edits:
       recent_visit_link_label:  "{{health_center}} ({{visit_month}})"
@@ -726,3 +727,5 @@ en:
       _all:
         username: "Username"
         password: "Password"
+        date: "Date"
+        role: "Role"
