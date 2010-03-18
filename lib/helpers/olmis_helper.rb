@@ -244,7 +244,15 @@ module OlmisHelper
     ajax_options = {}
 
     url_options = options[:url]
-    url_options = url_options.merge(:escape => false) if url_options.is_a?(Hash)
+    if url_options.is_a?(Hash)
+      # Force :controller to "olmis" and :path to the controller name (otherwise the wrong URL may be generated)
+      if url_options[:overwrite_params]
+        url_options[:overwrite_params].merge!(:controller => "olmis", :path => controller.controller_path)
+      else
+        url_options.merge!(:controller => "olmis", :path => controller.controller_path)
+      end
+      url_options.merge!(:escape => false)
+    end
 
     ajax_options[:url] = "'#{escape_javascript(url_for(url_options))}'"
     ajax_options[:type] = "'#{options[:method].to_s.upcase}'" if options[:type]
