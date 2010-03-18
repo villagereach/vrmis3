@@ -673,7 +673,7 @@ dl.inline dd.stacked input {
   font-weight: bold;
 }
 #local-forms .status.working {
-  background-image: url('/images/active_scaffold/default/indicator.gif');
+  background-image: url('../images/indicator.gif');
 }
 /* }}} */
 
