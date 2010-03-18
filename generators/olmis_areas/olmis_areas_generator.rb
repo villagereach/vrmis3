@@ -1,7 +1,8 @@
 class OlmisAreasGenerator < Rails::Generator::Base
   def manifest
+    definition = Olmis.configuration
     hierarchy = Olmis.area_hierarchy
-
+    
     record { |m|
 
       parent_class = nil
