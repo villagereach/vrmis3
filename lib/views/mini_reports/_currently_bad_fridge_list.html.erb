@@ -3,7 +3,7 @@ params.merge!(@params) if @params
 fridges_by_code = {}
 param_scoped_fridges.not_ok.find(:all, :order => :reported_at).group_by{ |fridge| fridge.current_status.status_code }.each do |code,fridges| 
   fridges_by_code[code] = fridges.group_by{|fridge|
-    [fridge.health_center.administrative_area.parent.name,fridge.health_center.delivery_zone.field_coordinator.name]
+    [fridge.health_center.administrative_area.parent.name,fridge.health_center.delivery_zone.field_coordinator.try(&:name)||t("missing_fc")]
   }
 end
 

@@ -30,7 +30,7 @@ module OlmisHelper
   end
 
   def link_pair(label, text, *link)
-    '<dt>' + t(label) + '</dt><dd>' + (text.blank? ? '&nbsp;' : link_to(h(text), *link)) + '</dd>'
+    '<dt>' + t(label) + '</dt><dd>' + (text.blank? ? '&nbsp;' : (link.compact.empty? ? h(text) : link_to(h(text), *link))) + '</dd>'
   end
   
   def seed_lock_file                                                                 

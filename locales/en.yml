@@ -63,6 +63,7 @@ en:
   epi_month:                   "EPI Month"
   epi_visit_month:             '<span class="visit-month">{{visit_month}} Visit</span> <span class="epi-month">({{epi_month}} EPI)</span>'
   choose_delivery_zone:        "Delivery zone:"
+  missing_fc:                  "(none)"
   num_fridges:
     one:   "1 fridge"
     other: "{{count}} fridges"

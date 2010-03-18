@@ -37,7 +37,7 @@
      <%- if format=='fc' -%>
         <%=fridge.health_center.district.name%>
      <%- else; unless is_manager -%>
-	    <%=fridge.health_center.delivery_zone.name %>  (<%=fridge.health_center.delivery_zone.field_coordinator.name%>) 
+	    <%=fridge.health_center.delivery_zone.name %>  (<%=fridge.health_center.delivery_zone.field_coordinator.try(&:name)||t("missing_fc")%>) 
      <%- end ; end -%>
    </td>
 
