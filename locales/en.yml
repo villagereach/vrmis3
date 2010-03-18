@@ -130,6 +130,9 @@ en:
     edit_ideal_stock:          "Update ideal stock for {{name}}"
     report:                    "Reports"
     data_sources:              "Upload Data"
+    users:                     "Users"
+    new_user:                  "New User"
+    edit_user:                 "Edit User"
     epi_visit_month:           "{{visit_month}} Visit ({{epi_month}} EPI)"
     field_coordinators:        "Field coordinators"
     report_delivery_intervals: "Delivery intervals"
@@ -551,6 +554,11 @@ en:
     legend:
       personal: "Personal Information"
       account:  "Account Information"
+      delivery_zone: "Delivery Zones"
+      health_center: "Health Centers"
+      administrative_area: "Administrative Areas"
+    index:
+      new: "Create new user"
   shared:
     recent_health_center_visit_edits:
       recent_visit_link_label:  "{{health_center}} ({{visit_month}})"

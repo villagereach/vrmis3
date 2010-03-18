@@ -55,19 +55,21 @@
 
 
 <div id="main" class="container">
-  <% if @current_user and not @minimal_layout %>
-    <div id="tabs">
-      <ul class="navigation">
-        <%- nav_length = role_specific_tabs.length
-            role_specific_tabs.each_with_index do |(label, path), index|
-              tab_classes = [ "tab", "tab-#{nav_length}" ]
-              tab_classes.push("current") if current_tab?(path)
-              tab_classes.push("first") if index == 0
-              tab_classes.push("last") if index == nav_length - 1 -%>
-          <li class="<%= tab_classes.join(' ') %>"><%= link_to t(label), path %></li>
-        <%- end -%>
-      </ul>
-    </div>
+  <% if @current_user %>
+    <% unless @minimal_layout %>
+      <div id="tabs">
+        <ul class="navigation">
+          <%- nav_length = role_specific_tabs.length
+              role_specific_tabs.each_with_index do |(label, path), index|
+                tab_classes = [ "tab", "tab-#{nav_length}" ]
+                tab_classes.push("current") if current_tab?(path)
+                tab_classes.push("first") if index == 0
+                tab_classes.push("last") if index == nav_length - 1 -%>
+            <li class="<%= tab_classes.join(' ') %>"><%= link_to t(label), path %></li>
+          <%- end -%>
+        </ul>
+      </div>
+    <% end %>
     
     <% if @breadcrumbs && @breadcrumbs.present? && !@suppress_breadcrumbs%>
       <p id="breadcrumbs">

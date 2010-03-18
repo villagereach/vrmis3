@@ -1,7 +1,5 @@
 <h2><%= t(".profile_for", :name => @user.username) %></h2>
 
-<p class="return"><a href="<%= users_path %>"><%= t(:return) %></a></p>
-
 <div id="user-profile-form">
   <%- form_for @user, :url => profile_user_path do |f| -%>
     <%= f.error_messages %>
