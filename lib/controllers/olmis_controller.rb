@@ -5,7 +5,6 @@ class OlmisController < ActionController::Base
   unloadable
   
   protect_from_forgery # See ActionController::RequestForgeryProtection for details
-  include ExceptionNotifiable
   
   def nuke_caches
     helpers.nuke_all_caches

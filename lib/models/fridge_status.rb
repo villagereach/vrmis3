@@ -82,7 +82,7 @@ class FridgeStatus < ActiveRecord::Base
   }
 
   def self.status_codes
-    FRIDGE_STATUS_KEYS
+    Olmis.configuration['fridge_statuses']
   end
 
   def self.status_options

@@ -29,7 +29,7 @@ class EquipmentStatus < ActiveRecord::Base
   validates_presence_of :health_center_visit_id
 
   def self.status_codes
-    EQUIPMENT_STATUS_KEYS
+    Olmis.configuration['equipment_statuses']
   end
 
   def self.status_options

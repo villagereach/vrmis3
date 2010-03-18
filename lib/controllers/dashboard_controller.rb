@@ -1,4 +1,6 @@
-class DashboardController < ApplicationController
+class DashboardController < OlmisController
+  unloadable
+  
   helper :progress
   helper :fridges
   helper :visits

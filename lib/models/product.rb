@@ -28,8 +28,12 @@ class Product < ActiveRecord::Base
 
   alias_method :name, :label
 
-  ProductType.all.each do |type|
-    named_scope type.code, { :include => :product_type, :conditions => { 'product_types.code' => type.code } }
+  begin
+    ProductType.all.each do |type|
+      named_scope type.code, { :include => :product_type, :conditions => { 'product_types.code' => type.code } }
+    end
+  rescue ActiveRecord::StatementInvalid => e
+        
   end
   
   named_scope :trackable, { :include => :product_type, :conditions => { 'product_types.trackable' => true } }

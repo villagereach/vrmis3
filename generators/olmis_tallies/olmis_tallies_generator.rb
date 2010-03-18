@@ -1,6 +1,6 @@
 class OlmisTalliesGenerator < Rails::Generator::Base
   def manifest
-    definition = eval(File.read(Rails.root.join('config','olmis.rb')))
+    definition = Olmis.configuration
 
     record { |m|
 

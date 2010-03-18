@@ -2,11 +2,13 @@
 # Methods added to this helper will be available to all templates in the application.
 
 module OlmisHelper
+  unloadable
   
   def get_area_from_params(ps = params)
-    hierarchy = Olmis.area_hierarchy
+    hierarchy = Olmis.area_hierarchy.map(&:constantize)
     
     area = hierarchy.first.default
+    
     hierarchy[1..-1].each do |h|
       if ps[h.param_name].present?
         a = h.find_by_id(ps[h.param_name])

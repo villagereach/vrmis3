@@ -1,15 +1,8 @@
 class OlmisAreasGenerator < Rails::Generator::Base
   def manifest
-    definition = eval(File.read(Rails.root.join('config','olmis.rb')))
-    hierarchy = definition['administrative_area_hierarchy']
+    hierarchy = Olmis.area_hierarchy
 
     record { |m|
-
-      m.directory File.join('app','models')
-      m.class_collisions 'AdministrativeArea'
-
-      m.template 'administrative_area.rb',  File.join('app', 'models', "administrative_area.rb"), 
-        :assigns => { :hierarchy => hierarchy }
 
       parent_class = nil
 

@@ -1,19 +1,24 @@
 class Olmis
   class << self
     def configuration
-      @configuration ||= eval(File.read(Rails.root.join('config','olmis.rb')))
+      path = Rails.root.join('config','olmis.rb')
+      if File.exists?(path)
+        @configuration ||= eval(File.read(path))
+      else
+        raise "Please create an OLMIS configuration file at #{path}"
+      end
     end
     
     def area_hierarchy
-      @area_hierarchy ||= configuration['hierarchy'].map { |h| h.constantize }
+      @area_hierarchy ||= configuration['administrative_area_hierarchy']
     end
   
     def bootstrap
       definition = configuration
       ActiveRecord::Base.transaction do
-        definition['languages'].each do |l|
-          Locale.find_or_create_by_code(l).update_attributes!(:name => Languages.native_languages[l.to_sym])
-        end
+#        definition['languages'].each do |l|
+#          Locale.find_or_create_by_code(l).update_attributes!(:name => Languages.native_languages[l.to_sym])
+#        end
   
         definition['roles'].each do |l, options|
           Role.find_or_initialize_by_code(name_to_code(l, 'Role')).update_attributes!(options.merge(:code => l))
@@ -23,7 +28,11 @@ class Olmis
         pd_by_code = {}
 
         unless User.find_by_username('admin')
-          User.create!(:username => 'admin', :password => 'olmis', :password_confirmation => 'olmis')
+          User.create!(
+            :username => 'admin', :role_code => 'admin',
+            :password => 'olmis', :password_confirmation => 'olmis', 
+            :language => definition['languages'].first, 
+            :timezone => definition['time_zone'])
         end
         
         definition['product_types'].each_with_index do |p, i|
@@ -37,7 +46,7 @@ class Olmis
         end
   
         definition['packages'].each_with_index do |p,i|
-          Package.find_or_initialize_by_code(p['code']).update_attributes!(:product_id => pd_by_code[p['product']], :quantity => p['quantity'], :position => i)
+          Package.find_or_initialize_by_code(p['code']).update_attributes!(:product_id => pd_by_code[p['product']].id, :quantity => p['quantity'], :position => i)
         end
   
         definition['equipment'].each_with_index do |e,i|
@@ -119,7 +128,7 @@ class Olmis
         dz = DeliveryZone.find_or_initialize_by_code(dz_code)
 
         if dz.new_record?
-          dz.update_attributes!(:warehouse => Warehouses.first, :code => dz_code)
+          dz.update_attributes!(:warehouse => Warehouse.first, :code => dz_code)
         end
 
         area = hierarchy.detect { |h| data.has_key?(h) }
@@ -127,8 +136,12 @@ class Olmis
         aa_code = name_to_code(data[area], area)
         a = AdministrativeArea.find_by_code(aa_code)
 
-        hc_code = name_to_code(name, 'HealthCenter')
-        h = a.health_centers.find_or_initialize_by_code(hc_code)
+        begin
+          hc_code = name_to_code(name, 'HealthCenter')
+          h = a.health_centers.find_or_initialize_by_code(hc_code)
+        rescue
+          raise aa_code
+        end
 
         unless h.stock_room
           h.stock_room = StockRoom.create!

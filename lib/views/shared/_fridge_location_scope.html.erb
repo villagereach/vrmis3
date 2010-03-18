@@ -1,6 +1,6 @@
 <%  options =
-    Olmis.area_hierarchy.map { |h|
-      [ h.name, h.all.sort.map { |a| a.label, "in_#{a.table_name.singularize},#{a.id}" } ]
+    Olmis.area_hierarchy.map(&:constantize).map { |h|
+      [ h.name, h.all.sort.map { |a| [a.label, "in_#{h.table_name.singularize},#{a.id}"] } ]
     }
 %>
 <label for="report_scope"><%= I18n.t('shared.fridge_location_scope.fridge_location') %></label>
