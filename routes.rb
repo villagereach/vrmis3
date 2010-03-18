@@ -38,7 +38,6 @@
 
   map.visits                  '/visits', :controller => 'visits', :action => 'index', :method => :get
   map.visits_search           '/visits/search', :controller => 'visits', :action => 'search', :method => :get
-  map.visits_search_auto_complete 'visits/auto_complete_for_health_center_name', :controller => 'visits', :action => 'auto_complete_for_health_center_name', :conditions => { :method => :get }
   map.visits_by_month         '/visits/:visit_month', :controller => 'visits', :action => 'by_month', :method => :get
   map.health_center_visit     '/visits/:visit_month/:health_center', :controller => 'visits', :action => 'health_center_monthly_visit'
   map.health_center_visit_title '/visits/:visit_month/:health_center/title', :controller => 'visits', :action => 'health_center_monthly_visit_title'
@@ -64,9 +63,4 @@
 
   map.delivery_zone_selector '/dz', :controller => 'olmis', :action => 'delivery_zone_selector'
   map.district_selector      '/dct', :controller => 'olmis', :action => 'district_selector'
-
-
-
-  ## Catch-all route for auto_complete actions (could be useful if there is a proliferation of auto-complete actions)
-  #map.auto_complete ':controller/:action', :action => /auto_complete_for_\S+/, :conditions => { :method => :get }
 
