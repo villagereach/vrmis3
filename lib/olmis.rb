@@ -16,9 +16,9 @@ class Olmis
     def bootstrap
       definition = configuration
       ActiveRecord::Base.transaction do
-#        definition['languages'].each do |l|
-#          Locale.find_or_create_by_code(l).update_attributes!(:name => Languages.native_languages[l.to_sym])
-#        end
+        definition['languages'].each do |l|
+          Locale.find_or_create_by_code(l).update_attributes!(:name => Languages.native_languages[l.to_sym])
+        end
   
         definition['roles'].each do |l, options|
           Role.find_or_initialize_by_code(name_to_code(l, 'Role')).update_attributes!(options.merge(:code => l))
