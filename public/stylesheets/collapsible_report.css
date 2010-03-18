@@ -1,0 +1,110 @@
+.collapsible-table table.report-table { border-collapse: collapse; width: auto; font-size: 90%; }
+.collapsible-table table.report-table th, .tables table.report-table td { border: inherit; }
+.collapsible-table table.report-table thead th span { white-space: normal; text-align: center; padding: 0; }
+
+.collapsible-table table.report-table tr.date_period td    { background-color: #DADCD1 }
+.collapsible-table table.report-table tr.province td       { background-color: #DACCD1 }
+.collapsible-table table.report-table tr.delivery_zone td  { background-color: #DABCD1 }
+.collapsible-table table.report-table tr.district td       { background-color: #DAACD1 }
+.collapsible-table table.report-table tr.health_center td  { background-color: #DA9CD1 }        
+
+.collapsible-table table.report-table tr.even.date_period td   { background-color: #E5ECF9 }
+.collapsible-table table.report-table tr.even.province td      { background-color: #D5ECF9 }
+.collapsible-table table.report-table tr.even.delivery_zone td { background-color: #C5ECF9 }
+.collapsible-table table.report-table tr.even.district td      { background-color: #B5ECF9 }
+.collapsible-table table.report-table tr.even.health_center td { background-color: #A5ECF9 }
+
+/* overrides, keeping the originals in place for now */
+
+.collapsible-table table.report-table tr.date_period td    { background-color: #fff }
+.collapsible-table table.report-table tr.delivery_zone td  { background-color: #fff; padding-top : 1em; }
+.collapsible-table table.report-table tr.district td       { background-color: #fff; border-top : 1px solid #ccc; }
+.collapsible-table table.report-table tr.health_center td  { background-color: #fff }
+
+.collapsible-table table.report-table tr.even.date_period td   { background-color: #fff }
+.collapsible-table table.report-table tr.even.delivery_zone td { background-color: #fff }
+.collapsible-table table.report-table tr.even.district td      { background-color: #fff }
+.collapsible-table table.report-table tr.even.health_center td { background-color: #eee }
+
+/* reduce this for fewer hierarchical selections in the table */
+.collapsible-table table.report-table tbody tr:first-child td:first-child { width: 150px; }
+.collapsible-table table.report-table tbody tr:first-child td:first-child + td { width: 50px; }
+
+.collapsible-table {
+  background : #f3f3f3;
+}
+.collapsible-table .table {
+  border: thin solid #ccc;
+  padding : 0 20px;
+  background-color: #fff;
+  width: 820px;
+  overflow: auto;
+}
+.collapsible-table table.report-table colgroup:first-child {
+  border-right : 1px solid #999;
+}
+
+.collapsible-table table.report-table thead th {
+  font-weight : normal;
+  text-align: center;
+  white-space: normal;
+  padding : 0 15px; /* px instead of em to make the math easier */
+  border-width: 0 0 1px 0;
+  border-style: solid;
+  border-color: #ccc;
+  height : 4em;
+  vertical-align : bottom;
+}
+.collapsible-table table.report-table thead th:first-child {
+  width : 250px;
+}
+.collapsible-table table.report-table thead th:nth-child(2) {
+  width : 50px;
+}
+.collapsible-table .tabs {
+  font-size : 1.2em;
+  list-style-type: none;
+  padding: 0;
+  margin: 0 0 -2px 381px; /* sum of th:first-child and th:nth-child(2), plus padding */
+  height : 1.6em;
+}
+.collapsible-table .tabs li {
+  list-style-type: none;
+  margin: 0;
+  padding : .2em 1em;
+  display: inline;
+}
+.collapsible-table .tabs li a {
+  color : #09c;
+  text-decoration: none;
+}
+.collapsible-table .tabs li a:hover {
+  text-decoration : underline;
+}
+.collapsible-table .tabs li.selected {
+  background-color: #fff;
+  border: 1px solid #999;
+  border-bottom-color: #fff;
+}
+.collapsible-table table.report-table .date_period td:first-child {
+  font-size : 1.2em;
+  font-weight : bold;
+}
+.collapsible-table table.report-table .delivery_zone td:first-child {
+  font-size : 1.2em;
+}
+.collapsible-table table.report-table td:first-child {
+  color : #09c;
+  text-decoration : underline;
+}
+.collapsible-table table.report-table td:first-child:hover {
+  color : #0cf;
+}
+/* but not the health center */
+.collapsible-table table.report-table .health_center td:first-child {
+  color : inherit;
+  text-decoration : none;
+}
+.collapsible-table table.report-table .health_center td:first-child:hover {
+  color : inherit;
+}

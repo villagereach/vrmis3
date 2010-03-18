@@ -1,0 +1,129 @@
+.not_in_print {
+	display: none;
+}
+
+.hidden_in_print {
+	visibility: hidden;
+}
+
+td.pickup_box {
+	margin: 4px;
+	border: 1px solid black;
+	width:  10em;
+}
+
+#header, #footer, #tabs, #breadcrumbs {
+	display: none;
+}
+
+.export_as_csv, .reports form input[type=submit], .tab_graphs {
+	display: none;
+}
+
+form#options div.option_group {
+	float: left;
+	margin-right: 5em;
+}
+
+form#options ul {
+	list-style: none;
+	padding-left: 0;
+}
+
+div.last {
+	clear: both;
+	padding-top: 2em;
+}
+
+.reports .parameters, .reports.autoeval form {
+  display: none;
+}
+
+table {
+  border-collapse: separate;
+  border-spacing: 0;
+}
+table.report-table td, table.report-table th {
+  padding: 4px;
+  text-align: left;
+}
+table.report-table td.percentage,
+table.report-table td.float,
+table.report-table td.int,
+table.report-table td.ratio,
+table.report-table td.interval,
+table.report-table td.content_tag {
+  text-align: right;
+}
+thead th {
+  border-bottom: 2px solid #666;
+}
+tbody td {
+  border-bottom: 1px solid #ccc;
+}
+
+table.report-table td.nil:after {
+  display: block;
+  text-align: center;
+  content: "-";
+}
+table.report-table td span.bad {
+  color : red;
+  font-weight: bold;
+}
+table.report-table td span.ok  {
+  color : #999;
+  font-family : Georgia,"Times New Roman",serif;
+  font-style : italic;
+}
+table.report-table td span.stockout {
+  text-transform: lowercase;
+  text-align: right;
+  margin: 1px auto;
+  width: 3em;
+  display: block;
+}
+
+.collapsible-table div.table {
+  border: none;
+  overflow: visible;
+}
+.collapsible-table div.table h4 {
+  margin-bottom: 0.5em;
+}
+.collapsible-table .tabs li:not(.selected) {
+  display: none;
+}
+.collapsible-table .tabs li.selected {
+  border: none;
+  color: #09c;
+}
+.collapsible-table table.report-table thead th {
+  height: inherit;
+}
+.collapsible-table table.report-table td:first-child {
+  text-decoration: none;
+}
+.collapsible-table > label,
+.collapsible-table > select {
+  display: none;
+}
+
+#offline-reports .ui-accordion {
+  display: none;
+}
+#autoeval {
+  margin-left: 0 !important;  /* override screen setting */
+}
+
+/* canceling blueprint defaults*/
+a:link, a:visited {
+  background: transparent;
+  font-weight: normal;
+  text-decoration: none;
+  color: black;
+}
+
+a:link:after, a:visited:after {
+  content: "";
+}

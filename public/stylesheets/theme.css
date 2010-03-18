@@ -1,0 +1,934 @@
+hr {
+  height : 1px;
+}
+body {
+  font-size : 90%;
+  background : #eee;
+  background : #dadcd1;
+}
+.container {
+  background : #fff;
+  position : relative; /* won't someone think of the children? */
+}
+a:link,
+a:visited {
+  color : #09c;
+  text-decoration : underline;
+}
+a:hover {
+  color : #0cf;
+}	
+a.highlight {
+  color : #00f;
+  font-size : 1.1em;
+}
+a.highlight:hover {
+  color : red; /* XXX debug */
+}
+
+thead th {
+  border-bottom : 1px solid #ccc;
+  text-align: center;
+  vertical-align: bottom;
+}
+
+
+div.jqplot-target {
+  margin: 1em auto;
+}
+
+/* }}} */
+/* sortable table headings {{{ */
+table.report-table thead th span {
+  padding-left: 16px;
+  line-height: 16px;
+}
+
+table.report-table thead th span {
+  white-space: pre
+}
+
+table.report-table thead th.sortable-header span {
+  display: block;
+  padding-left: 0
+}
+
+table.report-table thead th.sortable-header a {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+  padding-left: 16px;
+  background-image: url('/images/icons/silk/arrow_refresh_small.png');
+  background-position: center left;
+  background-repeat: no-repeat;
+}
+
+table.report-table thead th.asc a {
+  background-image: url('/images/icons/silk/arrow_down.png');
+}
+
+table.report-table thead th.desc a {
+  background-image: url('/images/icons/silk/arrow_up.png');
+}
+/* }}} */
+/* headings {{{ */
+h2 {
+  color : #541;
+  font-size : 2em;
+  font-weight : bold;
+  text-align : center;
+  margin : .5em 0;
+}
+h3 {
+  font-size : 1.3em;
+  border-bottom : 1px solid #ccc;
+}
+h4 {
+  color : #666;
+  color : #541;
+  margin-bottom : .5em;
+}
+/* }}} */
+/* header {{{ */
+#header {
+  background : transparent;
+  height : 60px;
+}
+#header h1 {
+  padding : 10px 0 0 10px;
+  margin : 0;
+}
+#header h1 a {
+  text-indent : -5000px;
+  background : transparent url( /images/vr-mis-logo-small.png ) no-repeat 0% 0%;
+  width : 100px;
+  height : 36px;
+  display : block;
+}
+/* }}} */
+/* user tools {{{ */
+#user_tools {
+  color : #541;
+  font-size : .9em;
+  padding : .5em 1em;
+  background : #fff;
+  border : 1px solid #ddd;
+  border-bottom : none;
+  height : 20px;
+  position : absolute;
+  top : 0;
+  right : 0;
+  -moz-border-radius : 0 0 10px 10px;
+  -webkit-border-bottom-right-radius : 10px;
+  -webkit-border-bottom-left-radius  : 10px;
+  border-bottom-right-radius : 10px;
+  border-bottom-left-radius  : 10px;
+}
+#user_tools p {
+  margin : 0;
+  float : left;
+}
+#user_tools strong,
+#user_tools a {
+  padding : 0 .3em;
+  margin : 0;
+}
+#user_tools em {
+  font-family : Georgia,"Times New Roman",serif;
+  font-style : italic;
+}
+#login {
+  padding-left : 2em;
+  border-left : 1px solid #ccc;
+}
+#language-select {
+  padding-right : 2em;
+}
+/* }}} */
+/* navigation {{{ */
+.return {
+  padding : 0 1em;
+}
+.return a {
+  font-weight : bold;
+}
+.return a:before {
+  content : "\00AB  ";
+}
+#tabs {
+  display : table;
+  width : 100%;
+}
+#tabs ul {
+  display : table-row;
+}
+#tabs li {
+  text-align : center;
+  display : table-cell;
+}
+#tabs li a {
+  color : #fff;
+  font-size : 1.2em;
+  font-weight : normal;
+  text-decoration : none;
+  white-space : nowrap;
+  padding : .2em 0;
+  background : #083;
+  border-left : 1px solid #0a7;
+  border-right : 1px solid #060;
+  display : block;
+
+  background : #541;
+  border-left : 1px solid #784;
+  border-right : 1px solid #120;
+}
+#tabs li a:hover,
+#tabs li.current a,
+#tabs li.current a:hover {
+  background : #fe4;
+  border-left : 1px solid #ffc;
+  border-right : 1px solid #cb0;
+
+  background : #900;
+  border-left : 1px solid #c33;
+  border-right : 1px solid #600;
+}
+#tabs li.current a,
+#tabs li.current a:hover {
+  text-decoration : none;
+  cursor : text;
+}
+#tabs li.first,
+#tabs li.first a {
+  -moz-border-radius-topleft : 10px;
+  -webkit-border-top-left-radius : 10px;
+  border-top-left-radius : 10px;
+  border-left : none !important; /* to override hover */
+}
+#tabs li.last,
+#tabs li.last a {
+  -moz-border-radius-topright : 10px;
+  -webkit-border-top-right-radius : 10px;
+  border-top-right-radius : 10px;
+  border-right : none !important; /* to override hover */
+}
+/* }}} */
+/* main {{{ */
+#main {
+  padding : 0 0 1em 0;
+  -moz-border-radius : 10px;
+  -webkit-border-radius : 10px;
+  border-radius : 10px;
+}
+/* }}} */
+/* forms, inline forms {{{ */
+form hr {
+  clear : none; /* this is a bit risky, using hr only for a line, not for layout */
+}
+textarea {
+  width : auto;
+  height : auto;
+}
+input[type=text],
+input[type=password],
+input.text,
+input.title,
+textarea {
+  font-size : 1em;
+  padding : .2em .3em;
+}
+input[type=text]:focus,
+input[type=password]:focus,
+input.text:focus,
+input.title:focus,
+textarea:focus {
+  background : #ffe;
+  border-color : #000;
+}
+label {
+  color : #333;
+  font-weight : normal;
+}
+ul.radio {
+  list-style : none;
+  padding-left : 0;
+}
+p.radio_label {
+  font-weight : bold;
+  margin : 0;
+}
+input[type=checkbox],
+input[type=radio],
+input.checkbox,
+input.radio {
+  top : 0;
+}
+.save_and_continue {
+  padding-top : .5em;
+  border-top : 1px solid #ccc;
+  margin-bottom : 0;
+}
+/* inline */
+dl.inline dt {
+  text-align : right;
+  margin : 0.5em 0;
+  width : 12em;
+  height : 1.5em;
+  float : left;
+  clear : left;
+}
+dl.inline dd {
+  float : left;
+  clear : right;
+}
+dl.inline dt.submit label {
+  display : none;
+}
+/* stacked */
+dl.inline dt.stacked,
+dl.inline dt.stacked label,
+dl.stacked dt,
+dl.stacked dt label {
+  font-weight : bold;
+  text-align : left;
+  float : none;
+}
+dl.inline dd.stacked,
+dl.stacked dd {
+  margin-left : 0;
+  float : none;
+}
+dl.inline dd.stacked input {
+  margin : 0;
+}
+/* }}} */
+/* footer {{{ */
+#footer {
+  background : transparent;
+}
+#footer .content {
+  padding : 1em;
+}
+#footer p {
+  color : #000;
+  font-size : .9em;
+  text-align : center;
+  float : left;
+}
+#footer .tools {
+  font-size : .8em;
+  float : right;
+}
+#footer .tools a {
+  color : #666;
+}
+/* }}} */
+
+/* features        */
+/* breadcrumbs {{{ */
+#breadcrumbs {
+  padding : .2em 1em;
+  background : #eee;
+  border-bottom : 1px solid #ddd;
+  margin-bottom : 0;
+}
+#breadcrumbs label {
+  font-family : Georgia,"Times New Roman",serif;
+  font-style : italic;
+}
+#breadcrumbs img {
+  vertical-align : middle;
+  padding : 0 .3em;
+}
+#breadcrumbs strong {
+  font-weight : normal;
+}
+/* }}} */
+/* collapser {{{ */
+.collapser_container .collapser ul {
+  display : none;
+}
+/* }}} */
+/* switcher pane, menu and content {{{ */
+.switcher_pane .switcher_pane_menu {
+  padding : 1em 0 0 1em;
+  position : relative;
+  z-index : 5;
+}
+.switcher_pane ul.switcher_pane_menu {
+  margin-top: 1em;
+}
+.switcher_pane .switcher_pane_menu dd {
+  padding : 0 0 1em 0;
+  margin : 0;
+}
+.switcher_pane .switcher_pane_menu,
+.switcher_pane .switcher_pane_menu ul,
+.switcher_pane .switcher_pane_menu li {
+  list-style : none;
+  padding : 0;
+  margin : 0;
+}
+.switcher_pane .switcher_pane_menu li {
+  color : #999;
+  padding : .2em 0 .2em 1em;
+}
+.switcher_pane .switcher_pane_menu li.current {
+  font-weight : bold;
+  background-color : #f6f6f6;
+  border : 1px solid green;
+  border-right : none;
+}
+.switcher_pane .switcher_pane_menu li.current a,
+.switcher_pane .switcher_pane_menu li.current a:hover {
+  color : #000;
+  text-decoration : none;
+  cursor : text;
+}
+.switcher_pane .switcher_pane_content {
+  margin-left : -11px;
+}
+.switcher_pane .switcher_pane_menu li.status {
+  background-position : .2em .4em;
+}
+/* content */
+.switcher_pane .switcher_pane_content .content {
+  padding : 1em;
+  background : #f6f6f6;
+  border : 1px solid green;
+  margin-top : 1em;
+  width : 90%;
+  min-height : 400px;
+}
+/* }}} */
+/* report scope {{{ */
+#report-scope {
+  text-align : right;
+  padding-right : 1em;
+  margin-top : -1em;
+}
+#report-scope select {
+  margin : 0;
+}
+/* }}} */
+/* fridge list {{{ */
+.fridge_list {
+  width : 100%;
+}
+.fridge_list h4 {
+  margin-top : 1.5em;
+}
+.fridge_list h5 {
+  font-family : Georgia,"Times New Roman",serif;
+  font-style : italic;
+  font-weight : normal;
+  padding-left : 20px;
+  margin : 0;
+}
+.fridge_list table {
+  margin : 0 0 1em 0;
+}
+.fridge_list .odd td {
+  background-color : #f0f0ff;
+}
+.fridge_list .even td {
+  background-color : transparent;
+}
+.fridge_list em {
+  color : #000;
+  font-weight : normal;
+  font-style : normal;
+}
+.fridge_list .code {
+  color : #069;
+  font-weight : bold;
+  text-decoration : underline;
+  padding-left : 20px;
+  width : 5em;
+}
+.fridge_list tr.hover .code,
+.fridge_list .code:hover {
+  color : #09c;
+}
+.fridge_list .date {
+  font-weight : normal;
+  text-align : right;
+}
+.fridge_list em {
+  color : #999;
+  font-family : Georgia,"Times New Roman",serif;
+  font-style : italic;
+}
+.fridge_list .code {
+  background-repeat : no-repeat;
+  background-position : 0% 50%;
+}
+/* Fridge status codes (except fixed) are taken from config/equipment_status.yml */
+.fridge_list .broke .code {
+  background-image : url( /images/icons/silk/exclamation.png );
+}
+.fridge_list .miss .code {
+  background-image : url( /images/icons/exclamation_yellow.png );
+}
+.fridge_list .prob .code {
+  background-image : url( /images/icons/silk/information.png );
+}
+.fridge_list .fixed .code {
+  background-image : url( /images/icons/silk/accept.png );
+}
+.fridge_list .summary_container td {
+  padding-bottom : 0;
+  cursor : pointer;
+}
+/* hover & active */
+.fridge_list .summary_container.active td,
+.fridge_list .summary_container.hover td {
+  background-color : #ddf;
+}
+.fridge_list .summary_container.active td {
+  border : 1px solid #99f;
+  border-width : 1px 0 0 0;
+}
+.fridge_list .summary_container.active td.first {
+  border-left-width : 1px;
+}
+.fridge_list .summary_container.active td.last {
+  border-right-width : 1px;
+}
+.fridge_list .details_container.active td.main {
+  border : 1px solid #99f;
+  border-width : 0 1px 1px 1px;
+}
+/* details */
+.fridge_list .details_container td {
+  padding-top : 0;
+}
+.fridge_list .details_container .content {
+  display : none;
+}
+.fridge_list .details {
+  padding-left : 7em;
+}
+.fridge_list .details p {
+  margin : 0;
+}
+.fridge_list .status_reporter {
+}
+.fridge_list .status_notes {
+  padding-left : 1.5em;
+  margin-bottom : .5em;
+}
+.fridge_list .personnel {
+  padding : .5em 1.5em;
+}
+.fridge_list .personnel dt {
+  color : #999;
+  font-family : Georgia,"Times New Roman",serif;
+  font-weight : normal;
+  font-style : italic;
+  margin : 0;
+}
+.fridge_list .personnel dd {
+  margin-left : .5em;
+}
+.fridge_list .personnel .contact {
+  float : left;
+}
+.fridge_list .personnel .field_coordinator {
+  float : right;
+}
+.fridge_list .update,
+.fridge_list .history {
+  padding : 0;
+  width : 45%;
+}
+.fridge_list .update {
+  padding-left : 1em;
+  border-right : 1px solid #ccc;
+  float : left;
+}
+.fridge_list .update .submit {
+  clear : both;
+}
+.fridge_list .update dl.stacked {
+  margin-bottom : 0;
+}
+.fridge_list .cancel {
+  padding : 0 1em;
+}
+.fridge_list .history {
+  float : right;
+}
+.fridge_list .history h6 {
+  margin : 0;
+}
+.fridge_list .history dt {
+  font-weight : normal;
+  margin-top : .8em;
+}
+.fridge_list .more {
+  text-align : right;
+  margin-bottom : 0;
+  clear : both;
+}
+/* }}} */
+/* status graph {{{ */
+.status_graph th {
+  text-align : left;
+}
+.status_graph th,
+.status_graph th a {
+  font-weight : normal;
+}
+.status_graph th {
+  white-space : nowrap;
+}
+.status_graph td.graph {
+  width : 100%;
+}
+.status_graph td.graph p,
+.status_graph td.graph p em {
+  height : 1em;
+}
+.status_graph td.graph p {
+  padding : 0;
+  background : #eee;
+  margin : 0;
+}
+.status_graph td.graph p em {
+  display : block;
+}
+.status_graph .green td.graph p em {
+  background : green;
+}
+.status_graph .orange td.graph p em {
+  background : orange;
+}
+.status_graph .red td.graph p em {
+  background : red;
+}
+.status_graph td.integer {
+  font-size : .9em;
+  font-family : Georgia,"Times New Roman",serif;
+  font-style : italic;
+  text-align : right;
+}
+/* }}} */
+/* progress bar {{{ */
+#progress_bar {
+  margin : -1em 0 0 300px;
+  height : 2em;
+  clear : both;
+}
+#progress_bar label,
+#progress_bar p {
+  float : left;
+}
+#progress_bar label {
+  font-family : Georgia,"Times New Roman",serif;
+  font-style : italic;
+}
+#progress_bar p {
+  padding : 0;
+  background : #eee;
+  border : 1px solid #ddd;
+  margin : .2em 0 0 1em;
+  width : 300px;
+  height : 1em;
+}
+#progress_bar p em {
+  height : 1em;
+  display : block;
+}
+#progress_bar .complete em {
+  background : green;
+}
+#progress_bar .incomplete em {
+  background : orange;
+}
+#progress_bar .todo em {
+  background : red;
+}
+#progress_bar em {
+  background : green !important;
+}
+/* }}} */
+/* stored forms {{{ */
+#local-forms {
+  padding-left: 0.5em;
+}
+#local-forms li {
+  padding-left: 24px;
+}
+#local-forms li input {
+  margin-left: 1em;
+}
+#local-forms + input {
+  margin-left: 0.5em;
+}
+#local-forms .status.todo {
+  font-style: italic;
+}
+#local-forms .status.complete {
+  font-weight: bold;
+}
+#local-forms .status.working {
+  background-image: url('/images/active_scaffold/default/indicator.gif');
+}
+/* }}} */
+
+/* specific pages go here, until/if we create their own stylesheets */
+/* login {{{ */
+.login #header,
+.login #main,
+.login #footer {
+  width : 600px;
+}
+.login #header {
+  height : 150px;
+}
+.login h2 {
+  padding : .5em 0 0 0;
+  margin : 0 0 .5em 0;
+}
+.login .inline {
+  margin-bottom : 0;
+}
+.login .inline dt {
+  width : 10em;
+}
+.login .inline dd input {
+  width : 20em;
+}
+.login select {
+  font-size : 1em;
+}
+.login .submit {
+  padding : 1em 0 0 11.5em;
+  clear : both;
+  margin-bottom : 0;
+}
+/* }}} */
+/* dashboard {{{ */
+.cold-chain {
+  position : relative; /* won't someone think of the children? */
+}
+#recent-visit-edits {
+  padding-left : 2em;
+}
+#outstanding_forms {
+  margin-top: 1em;
+}
+/* }}} */
+/* state by icons {{{ */
+li.status {
+  list-style : none;
+  padding-left : 24px !important; /* to override the switcher_pane menu */
+  background : transparent url( /images/icons/silk/cancel.png ) no-repeat 0% .2em;
+}
+li.status.todo {
+  background-image : url( /images/icons/silk/exclamation.png );
+}
+li.status.incomplete {
+  background-image : url( /images/icons/exclamation_yellow.png );
+}
+li.status.complete {
+  background-image : url( /images/icons/silk/accept.png );
+}
+/* }}} */
+/* visits {{{ */
+.this_month_summary ul {
+  list-style : none;
+  padding-left : .5em;
+  margin-bottom : 0;
+}
+.this_month_summary ul ul {
+  padding : 0;
+}
+.this_month_summary ul li {
+  padding-left : 24px;
+  background : transparent url( /images/icons/silk/cancel.png ) no-repeat 0% .2em;
+}
+.this_month_summary ul.todo li,
+.this_month_summary ul li.todo {
+  background-image : url( /images/icons/silk/exclamation.png );
+}
+.this_month_summary ul.incomplete li,
+.this_month_summary ul li.incomplete {
+  background-image : url( /images/icons/exclamation_yellow.png );
+}
+.this_month_summary ul.complete li,
+.this_month_summary ul li.complete {
+  background-image : url( /images/icons/silk/accept.png );
+}
+.this_month_summary ul.complete {
+  padding-top : .5em;
+  border-top : 1px solid #ccc;
+  margin-top : .5em;
+}
+/* }}} */
+/* visit per month {{{ */
+#sort_links {
+  float : right;
+}
+#sort_links a,
+#sort_links strong {
+  padding : 0 .3em;
+}
+#visit-month-content ul {
+  padding-left : .5em;
+}
+/* }}} */
+/* one visit {{{ */
+#health_center_main th,
+#health_center_main td {
+  vertical-align : top;
+}
+#health_center_main thead th,
+#health_center_main td {
+  text-align : left;
+  white-space : nowrap;
+}
+#health_center_main tbody th {
+  text-align : right;
+  padding-top : .8em;
+}
+#health_center_main thead th.empty {
+  border-bottom : none;
+}
+#health_center_main td div.nr {
+  font-size : .8em;
+  text-align : left;
+}
+#health_center_main p.note {
+  font-family : Georgia,"Times New Roman",serif;
+  font-style : italic;
+}
+#health_center_main .inventory td.static {
+  text-align : right;
+  padding-top : .8em;
+  padding-right : 5em;
+  padding-bottom : .8em;
+  width : 3em;
+}
+/* }}} */
+/* fridge details {{{ */
+.detail-page.stacked dd {
+  margin-bottom : 1em;
+}
+/* }}} */
+/* pickups {{{ */
+.pickups table {
+  width : auto;
+}
+.pickups table th,
+.pickups table td {
+  text-align : right;
+}
+.pickups .submit {
+  padding-top : 1em;
+  border-top : 1px solid #ccc;
+  margin-top : 1em;
+}
+/* }}} */
+/* reports {{{ */
+.reports form h5,
+.reports form p {
+  margin-bottom : .5em;
+}
+.reports form h5,
+.reports form label {
+  font-weight : bold;
+}
+.reports form li label {
+  font-weight : normal;
+}
+.export_as_csv {
+  text-align : left;
+}
+.export_as_csv a {
+  padding-left : 20px;
+  background : transparent url( /images/icons/silk/application_view_columns.png ) no-repeat 0% 50%;
+}
+/* }}} */
+/* manager cold chain {{{ */
+#manager-cold-chain .fridge_list {
+  font-size : .9em;
+}
+/* }}} */
+
+/* datepicker {{{ */
+#ui-datepicker-div {
+  font-size: 75%;
+}
+#ui-datepicker-div table.ui-datepicker-calendar {
+  width: 100%;
+}
+/* }}} */
+
+/* report map {{{ */
+#report_popup 
+{
+	font-family : Georgia,"Times New Roman",serif;
+	text-align : left;
+	font-size : .8em;
+	color : #99f;
+	padding-left: .5em;
+}
+/* }}} */
+table.report-table colgroup {
+  border-width: 0 thin;
+  border-color: #ddd;
+  border-style: solid;
+}
+
+table.report-table {
+  width: auto;
+  margin: 1em auto;
+}
+
+table.report-table thead th { background: #C3D9FF }
+table.report-table tbody th { border-right: 1px solid #9FB8CC }
+table.report-table tbody tr.even td, table.report-table tbody tr.even th { background: #E5ECF9 }
+table.report-table tbody tr.odd, table.report-table tbody tr.odd th     { background: #9FB8CC }
+.tables table.report-table td, .tables table.report-table th { padding: 2px }
+.tables table.report-table { font-size: 75%; }
+.tables table.report-table thead th span { padding: 0; line-height: inherit; white-space: normal; }
+.tables table.report-table thead th.sortable-header a {  text-decoration: none;  color: inherit;  display: block; background: inherit; }
+.tables table.report-table thead th.asc a  { background: inherit; }
+.tables table.report-table thead th.desc a { background: inherit; }
+
+table.report-table td.pct, .tables table.report-table td.float, .tables table.report-table td.int { text-align: right; }
+table.report-table td.ratio { text-align: center; }
+table.report-table td.interval { text-align: center; }
+
+table.report-table.delivery_interval tbody tr td.text { text-align: center; }
+table.report-table.delivery_interval tbody tr td:first-child { text-align: left; }
+
+table.report-table td span.bad {
+  color : red;
+  font-weight: bold;
+}
+table.report-table td span.ok  {
+  color : #999;
+  font-family : Georgia,"Times New Roman",serif;
+  font-style : italic;
+}
+table.report-table td span.stockout {
+  text-transform : lowercase;
+  text-align : right;
+  background : transparent;
+  margin: 1px auto;
+  width: 3em;
+  display : block;
+}
+table.report-table td span.visited    { width: 8em; }
+
+table.report-table td.pct { color: black; }
+table.report-table td.pct:after { content: '%'; color: #888; }
+table.report-table td.nil:after { display: block; text-align: center; content: "-"; color: #888; }
+table.report-table td.pct.nil:after { text-align: right; }
+table.report-table td.int.nil:after { text-align: right; }
+table.report-table td.float.nil:after { text-align: right; }
+
+

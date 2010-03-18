@@ -1,0 +1,320 @@
+/* minimal stylesheet */ 
+
+html {
+	height:100%;
+	margin-bottom:1px;
+}
+
+/* nav-link
+--------------------------------------------------*/
+#nav-link  {
+	margin:0 auto;
+	border: 0;
+	float:right;
+	line-height:2em;
+	text-align:right;
+	text-transform:uppercase;
+	font-weight:bold;
+	padding: 0px 50px 0px 0px;
+}
+
+#left_nav {
+	width: 110px;
+	padding-top: 30px;
+	float: left;
+	clear: left;
+}
+
+
+#side-panel {
+	width: 700px;
+	border: 2px solid red;
+	padding: 7px;
+	padding-bottom: 12px;
+	margin-bottom: 20px;
+	background-color: gray;
+}
+
+#admin_config {
+	padding-left: 90px;
+
+}
+
+/* paragraphs, lists, etc
+--------------------------------------------------*/
+div.block {padding:10px 10px 10px 10px;}
+/*div.background {color:white;} */
+
+/* line */
+span.line {
+	height: 16px;
+	border-left: 1px solid #666;
+	padding-left: 6px;
+}
+
+
+/* ---- specific to RoR -- */
+
+
+#errorExplanation {
+	width: 400px;
+	border: 2px solid red;
+	padding: 7px;
+	padding-bottom: 12px;
+	margin-bottom: 20px;
+	background-color: #f0f0f0;
+}
+
+#errorExplanation h2 {
+	text-align: left;
+	font-weight: bold;
+	padding: 5px 5px 5px 15px;
+	font-size: 12px;
+	margin: -7px;
+	background-color: #c00;
+	color: #000000;
+}
+
+#errorExplanation p {
+	color: #333;
+	margin-bottom: 0;
+	padding: 5px;
+}
+
+.notice_flash {
+	color: #0a0;
+}
+
+.notice_flash {
+	color: #0a0;
+}
+
+div.tally.error {
+	background-color: #F88;
+}
+
+.hc_list {
+	padding: 2px; 
+	border: 1px solid black;
+}
+
+.hc_list.current {
+	background: #DDF;
+}
+
+.Empty {
+	background-color: #F00; 
+	color: #FFF; 
+}
+
+a.Empty, a.Empty:link, a.Empty:visited { 
+	color: #FFF; 
+}
+
+.Complete {
+	background-color: #8F8;
+}
+
+.Incomplete {
+	background-color: #FF8;
+}
+
+div.clear
+{
+	clear: both;
+}
+
+#record-visits-dashboard {
+    min-width: 66em;
+}
+#health-center-list {
+    float: left;
+    min-width: 66em;
+}
+#recent-activity {
+    float: right;
+}
+#health-center-list .district, #recent-activity .recent {
+    border: thin solid black;
+    margin: 0.5em;
+    width: 20em;
+}
+div.fieldWithErrors { display: inline; border: thin solid black; }
+div.fieldWithErrors input { background: #F88 }
+div.fieldWithErrors select { background: #F88 }
+div.fieldWithErrors textarea { background: #F88 }
+
+div.progress { display: inline; margin: 0 1em 0 0.5em; }
+div.progress { font: 14px bold verdana, sans-serif; }
+div.progress span.complete { background-color: white; color: green; }
+div.progress span.incomplete { background-color: white; color: yellow; }
+div.progress span.empty { background-color: white; color: red; }
+
+#user-profile-form {
+    width: 40em;
+}
+#user-profile-form form {
+    padding: 0;
+}
+#user-profile-form fieldset {
+    margin-bottom: 2.0ex;
+}
+#user-profile-form legend {
+    font-size: 110%;
+    font-weight: bold;
+    padding: 0.5ex 0.5em;
+}
+#user-profile-form ol {
+    list-style: none;
+}
+#user-profile-form li {
+    margin-bottom: 1.0ex;
+}
+#user-profile-form label {
+    display: block;
+    padding: 0.25ex 0.25em 0 0;
+    text-align: left;
+}
+
+div#health_center_visit input[type="submit"] { margin: 0.5em; }
+
+input.numeric { text-align: right; }
+
+div#health_center_visit div.progress { margin-left: 60em; }
+div#health_center_visit div.progress:before { content: "Progress: " }
+
+div#health_center_monthly_tasks > ul > li:before { content:"o "; color: red;    font-weight: bold; }
+div#health_center_monthly_tasks > ul > li li:before { content:"× "; color: red; font-weight: bold; }
+div#health_center_monthly_tasks > ul > li li.unavailable { color: #888; font-style: italic; }
+div#health_center_monthly_tasks > ul > li li.preavailable { color: #088; font-style: italic; }
+div#health_center_monthly_tasks > ul > li li.current { font-weight: bold }
+
+.active-scaffold div.mover img { cursor: move; margin-left: 4px; }
+
+#error-flash { color: red }
+#notice-flash { color: green }
+
+div#recent-months { float: left; }
+table.recent-months { border-collapse: collapse; margin: 1em; }
+table.recent-months th, table.recent-months td { padding: 2px; }
+table.recent-months tbody.month-header th, table.recent-months tbody.month-header th { padding: 4px }
+table.recent-months th.district { padding-left: 12px; }
+table.recent-months tbody.month-header { }
+table.recent-months tbody.district-list { }
+
+#recent-visit-edits { list-style: none; padding-left: 1em; }
+#recent-visit-edits li { font-weight: bold; margin-bottom: 1ex; }
+
+.pagination-link { margin: 0 5px; }
+
+span.label { cursor: pointer; color: #09c; text-decoration: underline; }
+
+ul#visit-search-results, ul#visit-search-results li ul { list-style: none; padding-left: 1em; }
+li.status a { font-weight: bold; }
+li.status span.visit-month { }
+li.status span.epi-month { }
+li.status span.note { font-size: 90%; }
+
+/* {{{ autocomplete styles, modified from Rails auto_complete plugin */
+
+div.auto_complete {
+    width: 350px;  /* seems to be overridden anyway; not sure it's really necessary */
+    background: #fff;
+}
+div.auto_complete ul {
+    border: 1px solid #888;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    list-style-type: none;
+}
+div.auto_complete ul li {
+    margin: 0;
+    padding: 0 3px;
+}
+div.auto_complete ul li.selected {
+    background-color: #ffb;
+}
+div.auto_complete ul strong.highlight {
+    color: #800; 
+    margin: 0;
+    padding: 0;
+}
+
+/* autocomplete styles }}} */
+
+/* {{{ loading indicator
+       FIXME: Adjust to match final spinner */
+
+span.loading-indicator {
+  color: #2163d6; /* Match text to spinner color */
+  font: bold 12px "Bitstream Vera Sans", Arial, sans-serif;
+}
+span.loading-indicator img { padding-left: 4px }
+
+/* loading indicator }}} */
+
+
+/* hack override for recent_activity*/
+
+li.less_indent {
+	margin-left: -20px;
+}
+
+/* print-related */
+
+img.printer_icon {
+	margin-left: 0.5em;
+}
+
+.not_on_screen {
+	display: none;
+}
+.hidden_on_screen {
+	visibility: hidden;
+}
+
+/* other */
+table.inventory text-field {
+	margin: 0;
+	padding: 0;
+	height: 2em;
+}
+table.inventory td {
+	padding: 0;
+	height: 2.5em;
+}
+
+
+ul.submission_list {
+  margin: 0;
+  padding: 0;
+}
+
+ul.submission_list li {
+  margin: 0;
+  padding: 0;
+  list-style-type: none;
+  font-size: xx-small;
+}
+
+table.jqplot-table-legend {
+  width: auto;
+  margin-bottom: none;
+  border-spacing: auto;
+}
+
+table.jqplot-table-legend td {
+  padding: 2px;
+}
+
+.tab_graphs { background: inherit; }
+.tab_graphs > div.ui-tabs-panel { float: left; background-color: #f6f6f6; border: thin solid green; margin-left: -1px; }
+.tab_graphs > ul.ui-tabs-nav > li > a { padding: 2px; font-size: 75%; float: none; display: block; border: thin solid transparent; border-right-width: 0;  }
+.tab_graphs > ul.ui-tabs-nav > li.ui-tabs-selected { padding: 0; }
+.tab_graphs > ul.ui-tabs-nav { width: 100px; float: left; margin-top: 2em; background: inherit; padding: 0; border: none;}
+.tab_graphs > ul.ui-tabs-nav > li { display: block; float: none; margin: 5px 0; padding: 0; background: inherit; border: none!important;  }
+.tab_graphs > ul.ui-tabs-nav > li.ui-tabs-selected { background-color: #f6f6f6; -moz-border-radius: 0; -webkit-border-radius: 0; border-radius: 0; }
+.tab_graphs > ul.ui-tabs-nav > li.ui-tabs-selected a { border-width: thin; border-style: solid; border-color: green #f6f6f6 green green; color: black;} ; 
+
+
