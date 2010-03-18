@@ -13,3 +13,9 @@
     <p class="submit"><%= f.submit t(".submit_button") %></p>
   <% end %>
 </div>
+<% javascript_tag do %>
+  jQuery(function() {
+    var ut = jQuery("#user_tools");
+    if (ut.children().length === 0) ut.hide();
+  });
+<% end %>

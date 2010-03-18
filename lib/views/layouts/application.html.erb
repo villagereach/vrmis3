@@ -43,11 +43,12 @@
   <div id="user_tools">
     <%= render :partial => "layouts/locale" %>
     <% if @current_user %>
-        <p id="login">
-          <em><%= t("logged_in_as") %></em> <strong><%= @current_user.name %></strong>
-          <%= link_to(t("my_profile"), profile_user_path(@current_user)) %>
-          <%= link_to(t("logout"), :controller => 'login', :action => 'logout') %>
-        </p>
+      <% user_display_name = @current_user.name.blank? ? @current_user.username : @current_user.name %>
+      <p id="login">
+        <em><%= t("logged_in_as") %></em> <strong><%= user_display_name %></strong>
+        <%= link_to(t("my_profile"), profile_user_path(@current_user)) %>
+        <%= link_to(t("logout"), :controller => 'login', :action => 'logout') %>
+      </p>
     <% end %>
   </div>
 </div>

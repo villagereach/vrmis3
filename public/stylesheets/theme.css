@@ -141,8 +141,15 @@ h4 {
   padding-left : 2em;
   border-left : 1px solid #ccc;
 }
+#login:only-child {
+  padding-left : 0;
+  border-left : none;
+}
 #language-select {
   padding-right : 2em;
+}
+#language-select:only-child {
+  padding-right : 0;
 }
 /* }}} */
 /* navigation {{{ */
