@@ -13,7 +13,7 @@ class OlmisAllMigrations < ActiveRecord::Migration
       t.string   "password_salt", :default => "", :null => false
       t.string   "phone"
       t.datetime "last_login"
-      t.references "roles",       :default => 1, :deferrable => true
+      t.references "roles",       :default => 1
       t.string   "language", :null => false
       t.string   "timezone", :null => false
       t.boolean  "advanced", :null => false, :default => false
@@ -25,7 +25,7 @@ class OlmisAllMigrations < ActiveRecord::Migration
     create_table "administrative_areas" do |t|
       t.string   "code",       :null => false
       t.integer  "population"
-      t.integer  "parent_id",  :references => :administrative_areas, :deferrable => true
+      t.integer  "parent_id",  :references => :administrative_areas
       t.string   "type",       :null => false
       t.text     "polygon"
       t.timestamps
@@ -35,8 +35,8 @@ class OlmisAllMigrations < ActiveRecord::Migration
 #    add_index "administrative_areas", ["parent_id"], :name => "locations_parent_id_fkey"
 
     create_table "administrative_areas_users", :id => false do |t|
-      t.references "users",                :null => false, :cascade => true, :deferrable => true
-      t.references "administrative_areas", :null => false, :cascade => true, :deferrable => true
+      t.references "users",                :null => false, :cascade => true
+      t.references "administrative_areas", :null => false, :cascade => true
     end
 
 #    add_index "administrative_areas_users", ["administrative_area_id"], :name => "administrative_areas_users_administrative_area_id_fkey"
@@ -48,8 +48,8 @@ class OlmisAllMigrations < ActiveRecord::Migration
 
     create_table "warehouses" do |t|
       t.string "code"
-      t.references :administrative_areas, :null => false, :deferrable => true
-      t.references :stock_rooms,          :null => false, :deferrable => true
+      t.references :administrative_areas, :null => false
+      t.references :stock_rooms,          :null => false
       t.timestamps
     end
 
@@ -71,17 +71,17 @@ class OlmisAllMigrations < ActiveRecord::Migration
     create_table :health_centers do |t|
       t.string :code,        :null => false, :default => ''
       t.text   :description, :null => false, :default => ''
-      t.references :stock_rooms, :null => false, :deferrable => true
-      t.references :delivery_zones,       :null => false, :deferrable => true
-      t.references :administrative_areas, :null => false, :deferrable => true
+      t.references :stock_rooms, :null => false
+      t.references :delivery_zones,       :null => false
+      t.references :administrative_areas, :null => false
       t.timestamps
     end
 
     add_index "health_centers", ["code"], :name => "index_health_centers_on_code", :unique => true
 
     create_table "health_center_visits" do |t|
-      t.references "users",                                       :null => false, :deferrable => true
-      t.references "health_centers",                              :null => false, :deferrable => true
+      t.references "users",                                       :null => false
+      t.references "health_centers",                              :null => false
       t.string   "visit_month",                                   :null => false
       t.date     "visited_at",                                    :null => false
       t.string   "vehicle_code",           :default => "",        :null => false
@@ -129,7 +129,7 @@ class OlmisAllMigrations < ActiveRecord::Migration
     add_index "descriptive_categories", ["code"], :name => "index_descriptive_categories_on_code", :unique => true
 
     create_table "descriptive_values" do |t|
-      t.references "descriptive_categories",                :null => false, :deferrable => true
+      t.references "descriptive_categories",                :null => false
       t.string   "code",                                    :null => false
       t.integer  "position",                :default => 0, :null => false
       t.timestamps
@@ -149,8 +149,8 @@ class OlmisAllMigrations < ActiveRecord::Migration
     add_index "target_percentages", "code", :unique => true
 
     create_table "descriptive_values_target_percentages", :id => false do |t|
-      t.references "descriptive_values", :null => false, :cascade => true, :deferrable => true
-      t.references "target_percentages", :null => false, :cascade => true, :deferrable => true
+      t.references "descriptive_values", :null => false, :cascade => true
+      t.references "target_percentages", :null => false, :cascade => true
     end
 
 #    add_index "descriptive_values_target_percentages", ["descriptive_value_id"], :name => "descriptive_values_target_percentages_descriptive_value_id_fkey"
@@ -176,7 +176,7 @@ class OlmisAllMigrations < ActiveRecord::Migration
     create_table "packages" do |t|
       t.string   "code",        :default => '', :null => false
       t.integer  "quantity",   :default => 0
-      t.references "products",                 :null => false, :cascade => true, :deferrable => true
+      t.references "products",                 :null => false, :cascade => true
       t.integer  "position",   :default => 0,  :null => false
       t.timestamps
     end
@@ -192,9 +192,9 @@ class OlmisAllMigrations < ActiveRecord::Migration
     add_index "equipment_types", "code", :unique => true
     
     create_table "equipment_counts" do |t|
-      t.references "equipment_types",      :null => false, :deferrable => true
-      t.references "stock_rooms",          :null => false, :cascade => true, :deferrable => true
-      t.references "health_center_visits", :null => false, :deferrable => true
+      t.references "equipment_types",      :null => false
+      t.references "stock_rooms",          :null => false, :cascade => true
+      t.references "health_center_visits", :null => false
       t.integer  "quantity"
       t.timestamps
     end
@@ -204,9 +204,9 @@ class OlmisAllMigrations < ActiveRecord::Migration
 #    add_index "equipment_counts", ["stock_room_id"], :name => "equipment_counts_stock_room_id_fkey"
 
     create_table "equipment_statuses" do |t|
-      t.references "equipment_types",      :null => false, :deferrable => true
-      t.references "stock_rooms",          :null => false, :cascade => true, :deferrable => true
-      t.references "health_center_visits", :null => false, :deferrable => true
+      t.references "equipment_types",      :null => false
+      t.references "stock_rooms",          :null => false, :cascade => true
+      t.references "health_center_visits", :null => false
       t.string     "status_code",          :null => false
       t.datetime   "reported_at",          :null => false
       t.text       "notes"
@@ -230,8 +230,8 @@ class OlmisAllMigrations < ActiveRecord::Migration
     create_table "fridges" do |t|
       t.string   "code"
       t.text     "description"
-      t.references "fridge_models", :null => false, :deferrable => true
-      t.references "stock_rooms",   :null => false, :cascade => true, :deferrable => true
+      t.references "fridge_models", :null => false
+      t.references "stock_rooms",   :null => false, :cascade => true
       t.timestamps
     end
 
@@ -241,8 +241,8 @@ class OlmisAllMigrations < ActiveRecord::Migration
  #   add_index "fridges", ["stock_room_id"], :name => "fridges_stock_room_id_fkey"
  #
     create_table "fridge_statuses" do |t|
-      t.references "fridges",   :null => false, :cascade => true, :deferrable => true
-      t.references "users", :deferrable => true
+      t.references "fridges",   :null => false, :cascade => true
+      t.references "users"
       t.string   "status_code", :null => false, :default => ''
       t.integer  "temperature"
       t.datetime "reported_at",        :null => false
@@ -255,10 +255,10 @@ class OlmisAllMigrations < ActiveRecord::Migration
     add_index :fridge_statuses, [:fridge_id, :reported_at, :status_code], :name => 'idx_fridge_statuses_on_fridge_and_time_and_status'
 
     create_table "inventories" do |t|
-      t.references "stock_rooms", :null => false, :cascade => true, :deferrable => true
+      t.references "stock_rooms", :null => false, :cascade => true
       t.date     "date",          :null => false
       t.string   "inventory_type",:null => false
-      t.references "users",       :null => false, :deferrable => true
+      t.references "users",       :null => false
       t.timestamps
     end
 
@@ -266,8 +266,8 @@ class OlmisAllMigrations < ActiveRecord::Migration
 #    add_index "inventories", ["user_id"], :name => "inventories_user_id_fkey"
 
     create_table "package_counts" do |t|
-      t.references "inventories", :null => false, :cascade => true, :deferrable => true
-      t.references "packages",   :null => false, :deferrable => true
+      t.references "inventories", :null => false, :cascade => true
+      t.references "packages",   :null => false
       t.integer  "quantity",     :null => true
       t.timestamps
     end
@@ -276,8 +276,8 @@ class OlmisAllMigrations < ActiveRecord::Migration
 #    add_index "package_counts", ["package_id"], :name => "package_counts_package_id_fkey"
 
     create_table "ideal_stock_amounts" do |t|
-      t.references "stock_rooms",                :null => false, :cascade => true, :deferrable => true
-      t.references "packages",                   :null => false, :deferrable => true
+      t.references "stock_rooms",                :null => false, :cascade => true
+      t.references "packages",                   :null => false
       t.integer  "quantity",      :default => 0, :null => false
       t.timestamps
     end

@@ -3,7 +3,7 @@ class <%= migration_filename.camelize %> < ActiveRecord::Migration
     <%- if drop_old_table -%>
     drop_table '<%= table_name %>'
     <%- end -%>create_table '<%= table_name %>' do |t|
-      t.references 'health_centers', :null => false, :deferrable => true
+      t.references 'health_centers', :null => false
       t.string   'date_period',      :null => false
 
       <% tally_fields.each do |f| %>
@@ -15,7 +15,7 @@ class <%= migration_filename.camelize %> < ActiveRecord::Migration
       <% end %>
 
       <% descriptive_categories.each do |f, options| %>
-        t.integer  '<%= f %>_id', :null => false, :references => :descriptive_values, :deferrable => true
+        t.integer  '<%= f %>_id', :null => false, :references => :descriptive_values
       <% end %>
 
       <% dimensions.each do |f| %>
@@ -28,11 +28,11 @@ class <%= migration_filename.camelize %> < ActiveRecord::Migration
           relation = f.tableize
         end
         %>
-        t.integer '<%= method.singularize %>_id', :null => false, :references => :<%= relation %>, :deferrable => true
+        t.integer '<%= method.singularize %>_id', :null => false, :references => :<%= relation %>
       <% end %>
 
-      t.integer  'created_by_id', :references => 'users', :deferrable => true
-      t.integer  'updated_by_id', :references => 'users', :deferrable => true
+      t.integer  'created_by_id', :references => 'users'
+      t.integer  'updated_by_id', :references => 'users'
       t.timestamps
     end
 
