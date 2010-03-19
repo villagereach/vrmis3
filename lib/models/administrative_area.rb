@@ -53,9 +53,11 @@ class AdministrativeArea < ActiveRecord::Base
     health_centers.map(&:delivery_zone).uniq
   end
 
-  Olmis.area_hierarchy.each do |h|
-    define_method h.underscore do
-      parent.send(h.underscore) if parent
+  if Olmis.configured?
+    Olmis.area_hierarchy.each do |h|
+      define_method h.underscore do
+        parent.send(h.underscore) if parent
+      end
     end
   end
 
@@ -74,15 +76,17 @@ class AdministrativeArea < ActiveRecord::Base
       pairs.map { |p, cp| c, cid = *cp; "administrative_areas #{p.tableize} on #{p.tableize}.id = #{c.tableize}.#{cid}" }.join("\n    inner join ")
     end
 
-    Olmis.area_hierarchy.first do |h|
-      define_method h.underscore do
-        h.constantize.first
+    if Olmis.configured?
+      Olmis.area_hierarchy.first do |h|
+        define_method h.underscore do
+          h.constantize.first
+        end
       end
-    end
-  
-    Olmis.area_hierarchy.each do |h|
-      define_method h.tableize do
-        h.constantize.all.sort.map(&:label)
+    
+      Olmis.area_hierarchy.each do |h|
+        define_method h.tableize do
+          h.constantize.all.sort.map(&:label)
+        end
       end
     end
   end

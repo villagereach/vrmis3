@@ -1,8 +1,15 @@
 class Olmis
   class << self
+    def path
+      Rails.root.join('config','olmis.rb')
+    end
+
+    def configured?
+      File.exists?(path)
+    end
+
     def configuration
-      path = Rails.root.join('config','olmis.rb')
-      if File.exists?(path)
+      if configured?
         @configuration ||= eval(File.read(path))
       else
         raise "Please create an OLMIS configuration file at #{path}"
