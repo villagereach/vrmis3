@@ -1,3 +1,4 @@
+# English localization file for data defined in ../config/olmis.rb
 en:
   Role:
     admin:             Administrator

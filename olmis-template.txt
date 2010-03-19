@@ -1,26 +1,77 @@
+mysql_version = run("mysql_config --version")
+if mysql_version.blank?
+  puts <<-EOF
+OpenLMIS currently only works with MySQL and a MySQL installation cannot
+be found, or the MySQL binaries cannot be found in your PATH.
+
+Please install MySQL, or add the MySQL binaries directory to your PATH,
+before configuring an OpenLMIS application.
+  EOF
+  exit
+end
+
+appname = File.basename(root)
+
 run "rm public/index.html"
+run "rm public/javascripts/*"
+run "rm public/images/*"
 
-git :init
-git :add => '.'
-git :commit => "-a -m 'Initial commit'"
+use_git = yes?("Use git (y/n)?")
+use_submodules = use_git && yes?("Install plugins as submodules (y/n)?")
 
-#\s*(filter_parameter_logging :password)/, '\1'
+if use_git
+  git :init
+  run "touch tmp/.gitignore log/.gitignore"
+  file ".gitignore", <<-EOF.gsub(/^ +/,'')
+    .DS_Store
+    log/*.log
+    tmp/*
+    tmp/**/*
+    config/database.yml
+    *~
+    *.swp
+  EOF
+  git :add => '.'
+  git :commit => "-a -m 'Initial commit'"
+end
 
-plugin 'olmis',                      :submodule => true, :git => 'git@villagereach.unfuddle.com:villagereach/olmis.git vendor/plugins/olmis'
-plugin 'references',                 :submodule => true, :git => 'git://github.com/joelhoffman/referenced-by.git vendor/plugins/referenced_by'
-plugin 'report',                     :submodule => true, :git => 'git://github.com/joelhoffman/report.git vendor/plugins/report'
-plugin 'mig_constraints',            :submodule => true, :git => 'git://github.com/joelhoffman/mig_constraints.git vendor/plugins/mig_constraints'
-plugin 'smurf',                      :submodule => true, :git => 'git://github.com/thumblemonks/smurf.git vendor/plugins/smurf'
-plugin 'columns_on_demand',          :submodule => true, :git => 'git://github.com/willbryant/columns_on_demand.git vendor/plugins/columns_on_demand'
-plugin 'active_record_defaults',     :submodule => true, :git => 'git://github.com/aussiegeek/active_record_defaults.git vendor/plugins/active_record_defaults'
-plugin 'activerecord_i18n_defaults', :submodule => true, :git => 'git://github.com/dcrec1/activerecord_i18n_defaults.git vendor/plugins/activerecord_i18n_defaults'
-plugin 'i18n_label',                 :submodule => true, :git => 'git://github.com/iain/i18n_label.git vendor/plugins/i18n_label'
-plugin 'i18n_backend_database',      :submodule => true, :git => 'git://github.com/joelhoffman/i18n_backend_database.git vendor/plugins/i18n_backend_database'
+log '', 'Installing plugins.'
+plugin "olmis",
+  :git => "git@villagereach.unfuddle.com:villagereach/olmis.git",
+  :submodule => use_submodules
+plugin "referenced-by",
+  :git => "git://github.com/joelhoffman/referenced-by.git",
+  :submodule => use_submodules
+plugin "report",
+  :git => "git://github.com/joelhoffman/report.git",
+  :submodule => use_submodules
+plugin "mig_constraints",
+  :git => "git://github.com/joelhoffman/mig_constraints.git",
+  :submodule => use_submodules
+plugin "smurf",
+  :git => "git://github.com/thumblemonks/smurf.git",
+  :submodule => use_submodules
+plugin "columns_on_demand",
+  :git => "git://github.com/willbryant/columns_on_demand.git",
+  :submodule => use_submodules
+plugin "active_record_defaults",
+  :git => "git://github.com/aussiegeek/active_record_defaults.git",
+  :submodule => use_submodules
+plugin "activerecord_i18n_defaults",
+  :git => "git://github.com/dcrec1/activerecord_i18n_defaults.git",
+  :submodule => use_submodules
+plugin "i18n_label",
+  :git => "git://github.com/iain/i18n_label.git",
+  :submodule => use_submodules
+plugin "i18n_backend_database",
+  :git => "git://github.com/joelhoffman/i18n_backend_database.git",
+  :submodule => use_submodules
 
-gsub_file 'config/routes.rb', /  (map.connect.*)/, '  #\1'
+gsub_file "config/routes.rb", /^( *)(map.connect.*)/, '\1#\2'
 route "map.from_plugin 'i18n_backend_database'"
 route "map.from_plugin 'olmis'"
 
+gem "mysql"
 gem "fastercsv"
 gem "stringex"
 gem "ick"
@@ -39,21 +90,30 @@ I18N
 
 initializer 'ick.rb', 'Ick.sugarize'
 
-dbname = ask('Name of database, without _development, _test, etc. suffix?')
-username = ask('Database username? (should have access to create databases if the DB does not exist)')
-password = ask('Database password? (OK to leave blank)')
+db_name = ask("Enter the database name (default is #{appname})")
+db_name.strip!
+db_name = db_name.blank? ? appname : db_name.sub(/_(development|production|test)$/, '')
 
-gsub_file 'config/database.yml', / +adapter: sqlite3\s*\n/mi, ''
-gsub_file 'config/database.yml', / +database: [^\n]+\n/mi, ''
+db_user = ask("Enter the database username (default is root); it must have permission to create #{db_name}_development if it does not exist")
+db_user.strip!
+db_user = "root" if db_user.blank?
 
-pw = password.blank? ? "" : "\n  password: #{password.strip}"
+db_pass = ask("Enter the database password for #{db_user}; hit return if #{db_user} has no password")
+db_pass.strip!
 
-gsub_file 'config/database.yml', /(development|test|production):/mi do |match|
-  name = match.gsub(/:$/, '')
-  "#{match}\n  adapter: mysql\n  encoding: utf8\n  database: #{dbname}_#{name}\n  username: #{username.strip}#{pw}"
+gsub_file 'config/database.yml', /^\s*(adapter|database|encoding|username|password):[^\n]*\n/mi, ''
+
+pw = db_pass.blank? ? "" : "\n  password: #{db_pass}"
+
+gsub_file 'config/database.yml', /^(development|test|production):/mi do |match|
+  name = match.split(':',2).first
+  "#{match}\n  adapter: mysql\n  encoding: utf8\n  database: #{db_name}_#{name}\n  username: #{db_user}#{pw}"
 end
 
 rake 'db:create'
+
+log '', 'Required gems will now be installed with the sudo command.'
+rake 'gems:install', :sudo => true
 
 generate 'i18n_backend_database'
 generate 'olmis_migrations'
@@ -61,38 +121,48 @@ generate 'olmis_migrations'
 rake 'db:migrate'
 rake 'i18n:populate:from_rails'
 
-git :add => '.'
-git :commit => "-a -m 'Initial OLMIS configuration'"
+if use_git
+  git :add => '.'
+  git :commit => "-a -m 'Initial OLMIS configuration'"
+end
 
 rake 'olmis:assets:init'
 
-git :commit => "-a -m 'Adding OLMIS assets'"
+if use_git
+  git :add => '.'
+  git :commit => "-a -m 'Adding OLMIS assets'"
+end
 
-if yes?('Apply sample Pacific NW OLMIS configuration? (Y/N)')
+if yes?('Apply sample Pacific NW OLMIS configuration (y/n)?')
   run 'cp vendor/plugins/olmis/sample/olmis.rb config/'
+  run 'cp vendor/plugins/olmis/sample/en.yml config/locales/'
 
-  
   generate 'olmis_areas'
   generate 'olmis_tallies'
 
-  git :add => '.'
-  git :commit => "-a -m 'Adding OLMIS region and tally models'"
-  
+  if use_git
+    git :add => '.'
+    git :commit => "-a -m 'Adding OLMIS region and tally models'"
+  end
+
   rake 'db:migrate'
-  
+  rake 'i18n:populate:from_rails'
   rake 'olmis:db:bootstrap'
   
   log '', 'Next steps:'
 else
   log '', 'Next steps:'
-  log '', '  * Create an OLMIS configuration file in config/olmis.rb, '
-  log '', '      using vendor/plugins/olmis/sample/olmis.rb as an example.'
-  log '', '  * Run script/generate olmis_areas'
-  log '', '    and script/generate olmis_tallies'
-  log '', '  * Run rake db:migrate to create tables for your configured EPI tallies'
-  log '', '  * Run rake olmis:db:bootstrap to populate the database with an initial system and create the "admin" user'
+  log '', '* Create an OLMIS configuration file in config/olmis.rb'
+  log '', '  using vendor/plugins/olmis/sample/olmis.rb as an example.'
+  log '', '* Create an OLMIS translation file in config/locales'
+  log '', '  using vendor/plugins/olmis/sample/en.yml as an example.'
+  log '', '* Run script/generate olmis_areas'
+  log '', '  and script/generate olmis_tallies'
+  log '', '* Run rake db:migrate to create tables for your configured EPI tallies'
+  log '', '* Run rake i18n:populate:from_rails to add translations to the database'
+  log '', '* Run rake olmis:db:bootstrap to populate the database with an initial'
+  log '', '  system and create the "admin" user'
 end
 
-log '', '  * Start the Rails server and login as "admin" with password "olmis".'
-log '', '  * Create field coordinator users and assign them to delivery zones.'
-
+log '', '* Start the Rails server and login as "admin" with password "olmis".'
+log '', '* Create field coordinator users and assign them to delivery zones.'
