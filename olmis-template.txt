@@ -1,0 +1,93 @@
+run "rm public/index.html"
+
+git :init
+git :add => '.'
+git :commit => "-a -m 'Initial commit'"
+
+#\s*(filter_parameter_logging :password)/, '\1'
+
+plugin 'olmis',                      :submodule => true, :git => 'git@villagereach.unfuddle.com:villagereach/olmis.git vendor/plugins/olmis'
+plugin 'references',                 :submodule => true, :git => 'git://github.com/joelhoffman/referenced-by.git vendor/plugins/referenced_by'
+plugin 'report',                     :submodule => true, :git => 'git://github.com/joelhoffman/report.git vendor/plugins/report'
+plugin 'mig_constraints',            :submodule => true, :git => 'git://github.com/joelhoffman/mig_constraints.git vendor/plugins/mig_constraints'
+plugin 'smurf',                      :submodule => true, :git => 'git://github.com/thumblemonks/smurf.git vendor/plugins/smurf'
+plugin 'columns_on_demand',          :submodule => true, :git => 'git://github.com/willbryant/columns_on_demand.git vendor/plugins/columns_on_demand'
+plugin 'active_record_defaults',     :submodule => true, :git => 'git://github.com/aussiegeek/active_record_defaults.git vendor/plugins/active_record_defaults'
+plugin 'activerecord_i18n_defaults', :submodule => true, :git => 'git://github.com/dcrec1/activerecord_i18n_defaults.git vendor/plugins/activerecord_i18n_defaults'
+plugin 'i18n_label',                 :submodule => true, :git => 'git://github.com/iain/i18n_label.git vendor/plugins/i18n_label'
+plugin 'i18n_backend_database',      :submodule => true, :git => 'git://github.com/joelhoffman/i18n_backend_database.git vendor/plugins/i18n_backend_database'
+
+gsub_file 'config/routes.rb', /  (map.connect.*)/, '  #\1'
+route "map.from_plugin 'i18n_backend_database'"
+route "map.from_plugin 'olmis'"
+
+gem "fastercsv"
+gem "stringex"
+gem "spreadsheet", :version => '>= 0.6.4'
+gem "ick"
+gem 'capistrano', :version => '>= 2.5.5'
+gem 'capistrano-ext', :version => '>= 1.2.1', :lib => 'capistrano'
+gem 'nokogiri', :version => '>= 1.4.1'
+
+environment "config.load_paths += ['lib', 'lib/mixins', 'lib/helpers', 'lib/models', 'lib/controllers'].map { |d| Rails.root.join('vendor','plugins', 'olmis', d) }"
+environment "config.plugins = [:all, :olmis]"
+
+environment "config.i18n.load_path += Dir[Rails.root.join('vendor','plugins','olmis','locales','*.yml')]"
+environment "config.i18n.default_locale = :en"
+
+initializer 'i18n.rb', <<I18N
+I18n.backend = I18n::Backend::Database.new # registers the backend
+I18n.backend.cache_store = :memory_store   # optional: specify an alternate cache store
+I18n.backend.localize_text_tag = '##'      # optional: specify an alternate localize text tag, the default is ^^
+I18N
+
+initializer 'ick.rb', 'Ick.sugarize'
+
+dbname = ask('Name of database, without _development, _test, etc. suffix?')
+username = ask('Database username? (should have access to create databases if the DB does not exist)')
+password = ask('Database password? (OK to leave blank)')
+
+gsub_file 'config/database.yml', / +adapter: sqlite3\s*\n/mi, ''
+gsub_file 'config/database.yml', / +database: [^\n]+\n/mi, ''
+
+pw = password.blank? ? "" : "\n  password: #{password.strip}"
+
+gsub_file 'config/database.yml', /(development|test|production):/mi do |match|
+  name = match.gsub(/:$/, '')
+  "#{match}\n  adapter: mysql\n  encoding: utf8\n  database: #{dbname}_#{name}\n  username: #{username.strip}#{pw}"
+end
+
+rake 'db:create'
+
+generate 'i18n_backend_database'
+generate 'olmis_migrations'
+
+rake 'db:migrate'
+rake 'i18n:populate:from_rails'
+
+rake 'olmis:assets:init'
+
+if yes?('Apply sample Pacific NW OLMIS configuration? (Y/N)')
+  run 'cp vendor/plugins/olmis/sample/olmis.rb config/'
+  
+  generate 'olmis_areas'
+  generate 'olmis_tallies'
+
+  rake 'db:migrate'
+  
+  rake 'olmis:db:bootstrap'
+  
+  log '', 'Next steps:'
+else
+  log '', 'Next steps:'
+  log '', '  * Create an OLMIS configuration file in config/olmis.rb, '
+  log '', '      using vendor/plugins/olmis/sample/olmis.rb as an example.'
+  log '', '  * Run script/generate olmis_areas'
+  log '', '    and script/generate olmis_tallies'
+  log '', '  * Run rake db:migrate to create tables for your configured EPI tallies'
+  log '', '  * Run rake olmis:db:bootstrap to populate the database with an initial system and create the "admin" user'
+end
+
+log '', '  * Start the Rails server and login as "admin" with password "olmis".'
+log '', '  * Create field coordinator users and assign them to delivery zones.'
+
