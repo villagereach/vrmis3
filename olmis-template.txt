@@ -23,11 +23,7 @@ route "map.from_plugin 'olmis'"
 
 gem "fastercsv"
 gem "stringex"
-gem "spreadsheet", :version => '>= 0.6.4'
 gem "ick"
-gem 'capistrano', :version => '>= 2.5.5'
-gem 'capistrano-ext', :version => '>= 1.2.1', :lib => 'capistrano'
-gem 'nokogiri', :version => '>= 1.4.1'
 
 environment "config.load_paths += ['lib', 'lib/mixins', 'lib/helpers', 'lib/models', 'lib/controllers'].map { |d| Rails.root.join('vendor','plugins', 'olmis', d) }"
 environment "config.plugins = [:all, :olmis]"
