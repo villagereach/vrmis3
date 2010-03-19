@@ -61,14 +61,23 @@ generate 'olmis_migrations'
 rake 'db:migrate'
 rake 'i18n:populate:from_rails'
 
+git :add => '.'
+git :commit => "-a -m 'Initial OLMIS configuration'"
+
 rake 'olmis:assets:init'
+
+git :commit => "-a -m 'Adding OLMIS assets'"
 
 if yes?('Apply sample Pacific NW OLMIS configuration? (Y/N)')
   run 'cp vendor/plugins/olmis/sample/olmis.rb config/'
+
   
   generate 'olmis_areas'
   generate 'olmis_tallies'
 
+  git :add => '.'
+  git :commit => "-a -m 'Adding OLMIS region and tally models'"
+  
   rake 'db:migrate'
   
   rake 'olmis:db:bootstrap'
