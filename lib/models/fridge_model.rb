@@ -21,7 +21,7 @@ class FridgeModel < ActiveRecord::Base
   has_many :fridges
   
   def self.options_for_select
-    all(:order => 'name').map { |f| [f.name, f.id] }
+    all(:order => 'code').map { |f| [f.code, f.id] }
   end
 
   def self.power_sources

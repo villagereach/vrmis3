@@ -1,0 +1,82 @@
+en:
+  Role:
+    admin:             Administrator
+    manager:           Manager
+    observer:          Observer
+    field_coordinator: Field Coordinator
+  Package:
+    syringe005ml: 0.05 ml syringe
+    syringe05ml:  0.5 ml syringe
+    syringe5ml:   5 ml syringe
+    bcg:          BCG
+    measles:      Measles
+    penta:        Penta
+    polio10:      Polio 10 dose
+    polio20:      Polio 20 dose
+  ProductType:
+    vaccine: vaccine
+    syringe: syringe
+  Product:
+    syringe005ml: 0.05 ml syringe
+    syringe05ml:  0.5 ml syringe
+    syringe5ml:   5 ml syringe
+    bcg:          BCG
+    measles:      Measles
+    penta:        Penta
+    polio:        Polio
+  EquipmentType:
+    burner:       Burner
+    lamp:         Lamp
+    extinguisher: Extinguisher
+    transport:    Transport
+  FridgeStatus:
+    BROKE: Broken
+    MISS:  Missing
+    PROB:  Problem
+    OK:    Working
+  EquipmentStatus:
+    BROKE: Broken
+    MISS:  Missing
+    PROB:  Problem
+    OK:    Working
+    MORE:  Need more
+  StockCard:
+    polio: Polio
+    penta: Penta
+    bcg:   BCG
+  DescriptiveCategory: # Linked to DescriptiveValue (below)
+    sex:             Sex
+    child_regimen:   Regimen
+    child_age_range: Child Age Range
+    strategy:        Strategy
+  DescriptiveValue:
+    # DescriptiveCategory = sex
+    f:           Female
+    m:           Male
+    # DescriptiveCategory = child_regimen
+    polio0:      Polio (Newborn)
+    polio1:      Polio 1st dose
+    polio2:      Polio 2nd dose
+    polio3:      Polio 3rd dose
+    penta1:      Penta 1st dose
+    penta2:      Penta 2nd dose
+    penta3:      Penta 3rd dose
+    bcg:         BCG
+    measles:     Measles
+    # DescriptiveCategory = child_age_range
+    months0_11:  0-11 months
+    months12_23: 12-23 months
+    # DescriptiveCategory = strategy
+    hc:          Health Center
+    mb:          Mobile Brigade
+  TargetPercentage:  
+    polio1: Polio 1
+    polio3: Polio 3
+    full:   Fully vaccinated children
+  EpiUsageTally:
+    doses_received:    Doses received
+    doses_distributed: Doses distributed
+    loss:              Doses lost
+    open_vials:        Open vials
+    expiration:        First expiration date
+  

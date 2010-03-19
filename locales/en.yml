@@ -134,6 +134,7 @@ en:
     users:                     "Users"
     new_user:                  "New User"
     edit_user:                 "Edit User"
+    user_profile:              "User Profile"
     epi_visit_month:           "{{visit_month}} Visit ({{epi_month}} EPI)"
     field_coordinators:        "Field coordinators"
     report_delivery_intervals: "Delivery intervals"

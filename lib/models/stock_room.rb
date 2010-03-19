@@ -39,9 +39,9 @@ class StockRoom < ActiveRecord::Base
   end
   
   def self.grouped_options_for_select
-    [['Warehouses', Warehouse.all(:include => :administrative_area, :order => 'administrative_areas.name').
-                             map { |w| [w.name, w.stock_room_id] }],
-     ['Health Centers', HealthCenter.all(:order => 'name').map { |h| [h.name, h.stock_room_id] }]]
+    [['Warehouses', Warehouse.all(:include => :administrative_area, :order => 'administrative_areas.code').
+                             map { |w| [w.code, w.stock_room_id] }],
+     ['Health Centers', HealthCenter.all(:order => 'code').map { |h| [h.code, h.stock_room_id] }]]
   end
 
   def ideal_stock_by_package
