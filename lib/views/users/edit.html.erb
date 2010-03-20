@@ -1,7 +1,7 @@
 <div id="user-profile-form">
-  <h2><%= t(".profile_for", :name => @user.username) %></h2>
+  <h2><%= t("users.#{params[:action]}.title", :name => @user.username) %></h3>
 
-  <%- form_for @user, :url => profile_user_path do |f| -%>
+  <%- form_for @user do |f| -%>
     <%= f.error_messages %>
     <fieldset id="user-details">
       <legend><%= t("users.legend.personal") %></legend>
@@ -30,20 +30,14 @@
       <ol>
         <li>
           <%= f.label :username %>
-          <% if @current_user.admin? && !@user.primary_admin? %>
-            <%= f.text_field :username, :size => 20, :maxlength => 255 %>
-          <% else %>
-            <p class="readonly form-field"><%= h @current_user.username %></p>
-          <% end %>
+          <%= f.text_field :username, :size => 20, :maxlength => 255 %>
         </li>
-        <% if @current_user.admin? && !@user.primary_admin? %>
-          <li>
-            <%= f.label :role_id, t('activerecord.attributes._all.role') %>
-            <%= f.select :role_id, Role.all.sort.map { |r| [ r.label, r.id ] } %>
-          </li>
-        <% end %>
         <li>
-          <%= f.label :password, t("users.change_password") %>
+          <%= f.label :role_id, t('activerecord.attributes._all.role') %>
+          <%= f.select :role_id, Role.all.sort.map { |r| [ r.label, r.id ] } %>
+        </li>
+        <li>
+          <%= f.label :password, t("users.password") %>
           <%= f.password_field :password, :size => 20 %>
         </li>
         <li>
@@ -58,9 +52,12 @@
       <fieldset id="administrative_area-fieldset" class="checkbox-group">
         <legend><%= t("users.legend.administrative_area") %></legend>
         <div>
-          <% @current_user.administrative_areas.sort.in_groups_of(3).each do |aas| %>
+          <% AdministrativeArea.all.sort.in_groups_of(3).each do |aas| %>
             <% aas.compact.each do |aa| %>
-              <span><%= h aa.label %></span>
+              <label> 
+                <%= check_box_tag('user[administrative_area_ids][]', aa.id, @user.administrative_areas.include?(aa) ? 'checked' : nil) %>
+                <%= aa.label %>
+              </label>
             <% end %>
             <br clear="left" />
           <% end %>
@@ -70,9 +67,12 @@
       <fieldset id="zone-details-fieldset" class="checkbox-group">
         <legend><%= t("users.legend.delivery_zone") %></legend>
         <div>
-          <% @current_user.delivery_zones.sort.in_groups_of(3).each do |dzs| %>
+          <% DeliveryZone.all.sort.in_groups_of(3).each do |dzs| %>
             <% dzs.compact.each do |dz| %>
-              <span><%= h dz.label %></span>
+              <label> 
+                <%= check_box_tag('user[delivery_zone_ids][]', dz.id, @user.delivery_zones.include?(dz) ? 'checked' : nil) %>
+                <%= dz.label %>
+              </label>
             <% end %>
             <br clear="left" />
           <% end %>
@@ -82,9 +82,12 @@
       <fieldset id="health_center-fieldset" class="checkbox-group">
         <legend><%= t("users.legend.health_center") %></legend>
         <div>
-          <% @current_user.health_centers.sort.in_groups_of(3).each do |hcs| %>
+          <% HealthCenter.all.sort.in_groups_of(3).each do |hcs| %>
             <% hcs.compact.each do |hc| %>
-              <span><%= h hc.label %></span>
+              <label> 
+                <%= check_box_tag('user[health_center_ids][]', hc.id, @user.health_centers.include?(hc) ? 'checked' : nil) %>
+                <%= hc.label %>
+              </label>
             <% end %>
             <br clear="left" />
           <% end %>
@@ -92,11 +95,12 @@
       </fieldset>
 
     <% end %>
-    
+
     <p class="form-buttons">
-      <%= f.submit t("users.edit.button") %>
+      <%= f.submit t("users.#{params[:action]}.button") %>
+      <%= link_to t("cancel"), users_path %>
     </p>
 
-  <%- end -%>
+  <% end %>
 
 </div>

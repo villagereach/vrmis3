@@ -3,39 +3,44 @@ class UsersController < OlmisController
 
   add_breadcrumb 'breadcrumb.users', 'users_path', :except => [ :profile ]
 
+  def index
+  end
+  
   def show
     @user = User.find_by_id(params[:id])
   end
   
-  
-  def index
-  end
-  
   def new
-    add_breadcrumb 'breadcrumb.new_user', new_user_path
     @user = User.new
+    add_breadcrumb 'breadcrumb.new_user', new_user_path
+    render :action => :edit
   end
 
   def edit
     @user = User.find_by_id(params[:id])
     add_breadcrumb 'breadcrumb.edit_user', user_path(@user)
-    render :profile
   end
   
-  def update 
-    create
-  end
-
   def create
-    if (request.put? || request.post?) && @current_user.admin?
-      User.transaction do
-        begin
-          @user = params[:id] ? User.find_by_id(params[:id]) : User.new(params[:user])
-          @user.save!
-          redirect_to profile_user_path(@user)
-        rescue ActiveRecord::ActiveRecordError
-          render :new
-        end
+    User.transaction do
+      begin
+        @user = User.new(params[:user])
+        @user.save!
+        redirect_to users_url
+      rescue ActiveRecord::ActiveRecordError
+        render :action => :new
+      end
+    end
+  end
+  
+  def update
+    User.transaction do
+      begin
+        @user = User.find_by_id(params[:id])
+        @user.update_attributes!(params[:user])
+        redirect_to users_url
+      rescue ActiveRecord::ActiveRecordError
+        render :action => :edit
       end
     end
   end
