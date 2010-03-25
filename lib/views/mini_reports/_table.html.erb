@@ -30,6 +30,8 @@
                                 :method => :get,
                                 :url => url_for({ :overwrite_params => 
                                     @params.merge({ :action => :render_mini_table, 
+                                                    :controller => :olmis,
+                                                    :path => params[:path] || params[:controller],
                                                     :offset => [ offset - limit, 0 ].max,
                                                     :identifier => identifier,
                                                     :columns => columns,
@@ -42,7 +44,9 @@
                               { :update => identifier,
                                 :method => :get,
                                 :url => url_for({ :overwrite_params => 
-                                    @params.merge({ :action => :render_mini_table, 
+                                    @params.merge({ :action => :render_mini_table,
+                                                    :controller => :olmis,
+                                                    :path => params[:path] || params[:controller],
                                                     :offset => offset + limit,
                                                     :identifier => identifier,
                                                     :columns => columns,

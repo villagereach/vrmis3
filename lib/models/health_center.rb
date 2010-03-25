@@ -81,6 +81,10 @@ class HealthCenter < ActiveRecord::Base
   def self.param_name
     'health_center_id'
   end
+  
+  def primary_contact
+    users.first
+  end
 
   include Comparable
   def <=>(other)

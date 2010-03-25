@@ -6,10 +6,10 @@
   <%= show_pair('health_centers.delivery_zone',           @health_center.delivery_zone.name) %>
   <%= show_pair('health_centers.district',                @health_center.district.name) %>
   <%= show_pair('health_centers.province',                @health_center.province.name) %>
-  <%= show_pair('health_centers.primary_contact_name',    @health_center.primary_contact.try(&:name)) %>
-  <%= show_pair('health_centers.primary_contact_phone',   @health_center.primary_contact.try(&:phone)) %>
-  <%= link_pair('health_centers.field_coordinator_name',  @health_center.delivery_zone.field_coordinator.try(&:name) || t("missing_fc"),  @health_center.delivery_zone.field_coordinator) %>
-  <%= show_pair('health_centers.field_coordinator_phone', @health_center.delivery_zone.field_coordinator.try(&:phone) || t("missing_fc")) %>
+  <%= show_pair('health_centers.primary_contact_name',    @health_center.primary_contact.try(:name)) %>
+  <%= show_pair('health_centers.primary_contact_phone',   @health_center.primary_contact.try(:phone)) %>
+  <%= link_pair('health_centers.field_coordinator_name',  @health_center.delivery_zone.field_coordinator.try(:name) || t("missing_fc"),  @health_center.delivery_zone.field_coordinator) %>
+  <%= show_pair('health_centers.field_coordinator_phone', @health_center.delivery_zone.field_coordinator.try(:phone) || t("missing_fc")) %>
 </dl>
 
 <%= link_to t('.new_fridge'), [:new, @health_center, :fridge] %>
