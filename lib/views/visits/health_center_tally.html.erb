@@ -27,6 +27,16 @@
 </div>
 <%- end -%>
 
+<%- if @errors -%>
+  <%- javascript_tag do -%>
+    <%- @errors.each do |type, names| -%>
+      <%- names.each do |name, value| -%>
+        $('#<%= name.gsub(',','-') %>').addClass('error');
+      <%- end -%>
+    <%- end -%>
+  <%- end -%>
+<%- end -%>
+
 <% if @current_user.admin? %>
 <%= link_to("Generate ERB", :overwrite_params => { :format => :erb }) %>
 <% end %>  

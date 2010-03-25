@@ -139,12 +139,26 @@ module VisitsHelper
       content_tag(:table, colgroups + content_tag(:thead, column_headers) + content_tag(:tbody, body), :class => 'spreadsheet')
   end
 
-  def tally_form_field(type, name, field, value, nr_checked, options)
+  def tally_form_field(type, name, options)
+    @record_value_hash ||= {}
+    
+    @record_value_hash[type] ||= type.records_by_param_names_for_keys(@health_center, epi_month)
+    
+    dim, field = name.split(':', 2)
+    field ||= 'value'
+
+    value = (params.has_key?(type.name) ? params[type.name][name] : nil) || 
+      @record_value_hash[type][name].maybe.send(field)
+    
+    nr_checked = @record_value_hash[type].has_key?(name) && @record_value_hash[type][name].send(field).nil?
+      
     tf = case type.fields_hash[field.to_sym]
          when :date
-           text_field(type.name, name, options.merge({ :value => value, :size => 8, :class => "datepicker" }))
+           o = options.merge({ :value => value, :size => 8, :class => "datepicker" })
+           ActionView::Helpers::InstanceTag.new(type.name, name, self).to_input_field_tag("date", o)
          else
-           text_field(type, name, options.merge({ :value => value.to_s, :size => 4 }))
+           o = options.merge({ :value => value.to_s, :size => 4, :min => '0', :step => '1' })
+           ActionView::Helpers::InstanceTag.new(type.name, name, self).to_input_field_tag("number", o)
          end
          
      tf + content_tag(:div,
@@ -152,26 +166,16 @@ module VisitsHelper
         label(type, name + '/NR', t('NR')), :class => 'nr')
   end
     
-  def tally_form_erb(type, name, field, value, nr_checked, options)
-    "<%= tally_form_field(#{type.name}," + [name, field, value, nr_checked, options].map(&:inspect).join(", ") + ") %>"
+  def tally_form_erb(type, name, options)
+    "<%= tally_form_field(#{type.name}," + [name, options].map(&:inspect).join(", ") + ") %>"
   end
 
   def tally_field(type, name, options={}, form_field_proc=:tally_form_field)
-    @record_value_hash ||= {}
-    @errors ||= {}
-    
-    type_klass = type.constantize
-    
-    @record_value_hash[type] ||= type_klass.records_by_param_names_for_keys(@health_center, epi_month)
     dim, field = name.split(':', 2)
     field ||= 'value'
-    
-    value = (params.has_key?(type) ? params[type][name] : nil) || 
-      @record_value_hash[type][name].maybe.send(field)
-    
-    nr_checked = @record_value_hash[type].has_key?(name) && @record_value_hash[type][name].send(field).nil?
-      
-    %Q{<div class="tally #{@errors[type] && @errors[type][name] ? 'error' : ''}">} + self.send(form_field_proc, type_klass, name, field, value, nr_checked, options) + '</div>'
+    type = type.constantize
+    field_type = type.fields_hash[field.to_sym] == :date ? 'date' : 'tally'
+    %Q{<div class="#{field_type}" id="#{name.gsub(',','-')}">} + self.send(form_field_proc, type, name, options) + '</div>'
   end
 
   def options_for_visits_month(date)

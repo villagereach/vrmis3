@@ -293,7 +293,7 @@ class DataSubmission < ActiveRecord::Base
   end
   
   def process_tallies
-    HealthCenterVisit.tally_hash.each do |tally|
+    HealthCenterVisit.tally_hash.each do |tally, value|
       if @params[tally]
         records, tally_errors = tally.constantize.create_or_replace_records_by_keys_and_user_from_data_entry_group(
           [@visit.health_center_id, @visit.epi_month], 
