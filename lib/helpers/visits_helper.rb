@@ -83,7 +83,8 @@ module VisitsHelper
     hash[normalize_link(controller.request.path)]
   end
   
-  def tally_table(tally_class, tally_field_proc = nil)
+  def tally_table(tally_class, tally_field_proc = nil, header_proc = nil)
+    header_proc ||= lambda { |vals| tally_class.header_for(*vals) }
     tally_field_proc ||= lambda { |point| tally_field(tally_class.name, tally_class.param_name(point)) }
 
     row_groups, col_groups = tally_class.form_table(:standard)
@@ -91,19 +92,33 @@ module VisitsHelper
     col_group_combinations = col_groups.map { |cg| Enumerable.multicross(*cg.map { |col| tally_class.possible_key_values(col) }) }.flatten_once
     row_group_combinations = row_groups.map { |cg| Enumerable.multicross(*cg.map { |row| tally_class.possible_key_values(row) }) rescue raise cg.inspect;  }.flatten_once
 
-    column_headers = 
+    column_blocks = 
       col_group_combinations.transpose.map { |a| 
         aa = a.partition_by { |i| i }; 
-        content_tag(:tr, [content_tag(:th, "", :class => "empty")] + 
-          aa.map { |k, vs| 
-            column_header = tally_class.header_for(*k) 
-            content_tag(:th, content_tag(:div,content_tag(:span, column_header)), :colspan => vs.length) 
-          })
+
+        aa.map { |k, vs| 
+          column_header = header_proc[*k] 
+          [column_header, vs.length] 
+        }
       }
 
-    body =           
+    colgroups = content_tag(:colgroup, nil, :span => 1) + 
+      column_blocks.first.map { |header, length|
+        content_tag(:colgroup, nil, :class => 'group', :span => length)
+      }.join('')
+      
+    column_headers = 
+      column_blocks.map { |block|
+        content_tag(:tr, [content_tag(:th, "", :class => "empty")] + 
+          block.map { |header, length|
+            content_tag(:th, content_tag(:div,content_tag(:span, header)), :colspan => length)
+          }
+        )
+      }
+    
+    body =
       row_group_combinations.map do |rg|
-        row_headers = rg.map { |type, value| tally_class.header_for(type, value) }
+        row_headers = rg.map { |type, value| header_proc[type, value] }
         header = content_tag(:th, content_tag(:div,content_tag(:span, row_headers.join(", "))))
         content_tag(:tr, 
           header + 
@@ -121,19 +136,27 @@ module VisitsHelper
         )
       end
     
-      content_tag(:table, content_tag(:thead, column_headers) + content_tag(:tbody, body), :class => 'spreadsheet')
+      content_tag(:table, colgroups + content_tag(:thead, column_headers) + content_tag(:tbody, body), :class => 'spreadsheet')
   end
 
-  def tally_form_field(type, name, field, value, options)
-    case type.fields_hash[field.to_sym]
-    when :date
-      text_field(type.name, name, options.merge({ :value => value, :size => 8, :class => "datepicker" }))
-    else
-      text_field(type, name, options.merge({ :value => value.to_s, :size => 4 }))
-    end
+  def tally_form_field(type, name, field, value, nr_checked, options)
+    tf = case type.fields_hash[field.to_sym]
+         when :date
+           text_field(type.name, name, options.merge({ :value => value, :size => 8, :class => "datepicker" }))
+         else
+           text_field(type, name, options.merge({ :value => value.to_s, :size => 4 }))
+         end
+         
+     tf + content_tag(:div,
+       check_box(type, name + '/NR', :checked => nr_checked) + 
+        label(type, name + '/NR', t('NR')), :class => 'nr')
   end
     
-  def tally_field(type, name, options={})
+  def tally_form_erb(type, name, field, value, nr_checked, options)
+    "<%= tally_form_field(#{type.name}," + [name, field, value, nr_checked, options].map(&:inspect).join(", ") + ") %>"
+  end
+
+  def tally_field(type, name, options={}, form_field_proc=:tally_form_field)
     @record_value_hash ||= {}
     @errors ||= {}
     
@@ -146,18 +169,9 @@ module VisitsHelper
     value = (params.has_key?(type) ? params[type][name] : nil) || 
       @record_value_hash[type][name].maybe.send(field)
     
-    checked = @record_value_hash[type].has_key?(name) && @record_value_hash[type][name].send(field).nil?
+    nr_checked = @record_value_hash[type].has_key?(name) && @record_value_hash[type][name].send(field).nil?
       
-    if @mode == 'edit'
-      %Q{<div class="tally #{@errors[type] && @errors[type][name] ? 'error' : ''}">} + 
-      tally_form_field(type_klass, name, field, value, options) + 
-        '' + 
-        check_box(type, name + '/NR', :checked => checked) + 
-        label(type, name + '/NR', t('NR')) + 
-        '</div>'
-    else
-      "<span id='#{type}[#{name}]'>#{value || (@record_value_hash[type][name] ? 'NR' : '')}</span>"
-    end
+    %Q{<div class="tally #{@errors[type] && @errors[type][name] ? 'error' : ''}">} + self.send(form_field_proc, type_klass, name, field, value, nr_checked, options) + '</div>'
   end
 
   def options_for_visits_month(date)
@@ -178,4 +192,13 @@ module VisitsHelper
     value_from_params = (params ? params[index][field] : nil) || default_value
   end
 
+  def nr_field(builder, name, index, value, nr_checked, error, suppress_nr = false)
+    content_tag(:div,
+      builder.text_field(name, :index => index, :value => value, :html => { :type => 'number', :min => '0', :step => 1 } ) +
+        (suppress_nr ? '' : content_tag(:div,
+          builder.check_box("#{name}/NR", :checked => nr_checked, :index => index) +
+          builder.label("#{name}/NR", t("NR"), :index => index),
+          :class => 'nr')),
+      :class => ['tally', error ? 'error' : ''].reject(&:blank?).join(" "))
+  end
 end

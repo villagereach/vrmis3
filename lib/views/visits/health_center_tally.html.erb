@@ -16,12 +16,20 @@
 
   <p class="note"><%= t(".instructions") %></p>
 
-  <%= tally_table(params[:tally].constantize) %>
+  <% begin %>
+    <%= render :partial => params[:tally].underscore %>
+  <% rescue ActionView::MissingTemplate %>  
+    <%= tally_table(params[:tally].constantize) %>
+  <% end %>
 
   <%= save_and_continue %>
 
 </div>
 <%- end -%>
+
+<% if @current_user.admin? %>
+<%= link_to("Generate ERB", :overwrite_params => { :format => :erb }) %>
+<% end %>  
 
 <%- javascript_tag do -%>
   jQuery(document).ready(function() {

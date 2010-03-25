@@ -10,4 +10,5 @@ Mime::Type.register "text/plain", :properties
 Mime::Type.register "application/xml", :xsl
 Mime::Type.register "image/png", :png
 Mime::Type.register "application/javascript", :jqplot
+Mime::Type.register "text/plain", :erb
 
