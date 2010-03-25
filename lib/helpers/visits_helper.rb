@@ -84,7 +84,7 @@ module VisitsHelper
   end
   
   def tally_table(tally_class, tally_field_proc = nil, header_proc = nil)
-    header_proc ||= lambda { |vals| tally_class.header_for(*vals) }
+    header_proc ||= lambda { |val1, val2| tally_class.header_for(val1, val2) }
     tally_field_proc ||= lambda { |point| tally_field(tally_class.name, tally_class.param_name(point)) }
 
     row_groups, col_groups = tally_class.form_table(:standard)

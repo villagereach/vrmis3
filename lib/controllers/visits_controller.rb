@@ -133,7 +133,7 @@ class VisitsController < OlmisController
             "<!-- Modifications made there will appear in the online form. -->\n" +
             helpers.tally_table(tally_class, 
               lambda { |point| helpers.tally_field(tally_class.name, tally_class.param_name(point), {}, :tally_form_erb) },
-              lambda { |vals| "<%= #{tally_class}.header_for(#{vals.map(&:inspect).join(", ")}) %>" })
+              lambda { |val1, val2| "<%= #{tally_class}.header_for(#{[val1, val2].map(&:inspect).join(", ")}) %>" })
         }
       end
     end
