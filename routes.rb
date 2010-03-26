@@ -36,6 +36,9 @@
  
   map.connect '/config',  :controller => 'dashboard', :action => 'config'
 
+  map.xforms_list  '/formList',             :controller => 'data_sources', :action => 'list_xforms',  :conditions => { :method => :get }
+  map.xform_submit '/submission',           :controller => 'data_sources', :action => 'submit_xform', :conditions => { :method => :post }
+
   map.visits                  '/visits', :controller => 'visits', :action => 'index', :method => :get
   map.visits_search           '/visits/search', :controller => 'visits', :action => 'search', :method => :get
   map.visits_by_month         '/visits/:visit_month', :controller => 'visits', :action => 'by_month', :method => :get

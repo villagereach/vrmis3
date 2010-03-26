@@ -9,7 +9,9 @@ end
 
 ActionController::Base.append_view_path(File.dirname(__FILE__) + '/lib/views')
 
-Dir.glob(File.join(File.dirname(__FILE__), 'lib', '*', '*.rb')) do |f|
+require File.join(File.dirname(__FILE__), 'lib', 'dependencies.rb')
+
+Dir.glob(File.join(File.dirname(__FILE__), 'lib', 'mixins', '*.rb')) do |f|
   require f
 end
 
