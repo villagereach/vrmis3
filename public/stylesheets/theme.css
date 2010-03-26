@@ -786,39 +786,6 @@ li.status.complete {
   padding-left : .5em;
 }
 /* }}} */
-/* one visit {{{ */
-#health_center_main th,
-#health_center_main td {
-  vertical-align : top;
-}
-#health_center_main thead th,
-#health_center_main td {
-  text-align : left;
-  white-space : nowrap;
-}
-#health_center_main tbody th {
-  text-align : right;
-  padding-top : .8em;
-}
-#health_center_main thead th.empty {
-  border-bottom : none;
-}
-#health_center_main td div.nr {
-  font-size : .8em;
-  text-align : left;
-}
-#health_center_main p.note {
-  font-family : Georgia,"Times New Roman",serif;
-  font-style : italic;
-}
-#health_center_main .inventory td.static {
-  text-align : right;
-  padding-top : .8em;
-  padding-right : 5em;
-  padding-bottom : .8em;
-  width : 3em;
-}
-/* }}} */
 /* fridge details {{{ */
 .detail-page.stacked dd {
   margin-bottom : 1em;

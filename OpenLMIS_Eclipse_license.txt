@@ -1,0 +1,18 @@
+openLMIS Licensing Information
+=============================
+
+openLMIS(tm) may be used under the terms of
+
+  * Eclipse Public License (EPL)
+    http://www.eclipse.org/org/documents/epl-v10.php
+
+
+VillageReach is the initial contributor
+
+For the purposes of this License the "initial contributor" defined in section 1.a. of EPL v1.0 (http://www.eclipse.org/legal/epl-v10.html) shall be VillageReach, Inc., 601 N 34th St, Seattle, WA 98103. (http://www.villagereach.org)
+
+Additional Contributor(s): ______________________________________.
+
+Trademarks
+
+You may not remove or alter any openLMIS or VillageReach trademark or trade name placed in the Original Code by VillageReach. All copies of the Covered Code distributed by You shall include any such openLMIS and VillageReach trademarks and trade names.   Except for the foregoing obligation, You are granted no rights to reproduce or display any openLMIS or VillageReach trademarks or trade names.

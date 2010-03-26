@@ -35,19 +35,17 @@
 		<tr>
 			<th><%= item.first.equipment_type.label %></th>
 			<td>
-				<div class="tally <%= 'error' if @errors[index][:equipment_count].on(:quantity) rescue nil %>">
-					<%= text_field :equipment_count, :quantity, :size => 5, :value => quantity_value, :index => index %>
-					<%= check_box :equipment_count, 'quantity/NR', :checked => checked, :index => index %>
-					<%= label :equipment_count, 'quantity/NR', t("NR"), :index => index %>
-				</div>
+        <%- fields_for :equipment_count do |f| -%>
+          <%= nr_field(f, 'quantity', index, quantity_value, checked, (@errors[index][:equipment_count].on(:quantity) rescue nil)) %>
+        <%- end -%>
 			</td>
 			<td>
-				<div class="tally <%= 'error' if @errors[index][:equipment_status].on(:status_code) rescue nil %>">
+				<div class="<%= 'error' if @errors[index][:equipment_status].on(:status_code) rescue nil %>">
 					<%= select :equipment_status, :status_code, EquipmentStatus.status_options, { :include_blank => t("select_blank"), :selected => status_value }, :index => index %>
 				</div>
 			</td>
 			<td>
-				<div class="tally <%= 'error' if @errors[index][:equipment_status].on(:notes) rescue nil %>">
+				<div class="<%= 'error' if @errors[index][:equipment_status].on(:notes) rescue nil %>">
 					<%= text_area :equipment_status, :notes, :size => "30x2", :value => notes_value, :index => index %>
 				</div>
 			</td>

@@ -1,4 +1,4 @@
-jQuery.noConflict();
+//jQuery.noConflict();
 
 ANIMATION_SPEED = 150; // milliseconds
 FRIDGE_ENTRY_PREFIX = '#fridge-entry-';

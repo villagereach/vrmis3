@@ -54,12 +54,9 @@ class VisitsController < OlmisController
     end
 
     HealthCenterVisit.transaction do
-      begin
-        @visit, @errors = submission.process_visit(@health_center, helpers.visit_month, @current_user)
-      rescue ActiveRecord::ActiveRecordError => e
-        raise e.inspect
-      end
+      @visit, @errors = submission.process_visit(@health_center, helpers.visit_month, @current_user)
     end    
+
     if @errors.empty?
       submission.status = 'success'
       submission.save
@@ -123,8 +120,23 @@ class VisitsController < OlmisController
   end
   
   def health_center_tally
-    @mode = 'edit'
     handle_submit if request.post?
+    respond_to do |format|
+      format.html {
+        
+      }
+      if @current_user.admin? 
+        format.erb  {
+          tally_class = params[:tally].constantize
+          render :text =>
+            "<!-- Save this as #{Rails.root.join("app/views/visits/_#{params[:tally].underscore}.html.erb")} -->\n" +
+            "<!-- Modifications made there will appear in the online form. -->\n" +
+            helpers.tally_table(tally_class, 
+              lambda { |point| helpers.tally_field(tally_class.name, tally_class.param_name(point), {}, :tally_form_erb) },
+              lambda { |val1, val2| "<%= #{tally_class}.header_for(#{[val1, val2].map(&:inspect).join(", ")}) %>" })
+        }
+      end
+    end
   end
   
   def current_visit

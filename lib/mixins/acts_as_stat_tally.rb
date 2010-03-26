@@ -278,12 +278,17 @@ module ActsAsStatTally
       @form_tables[name]
     end
     
+    def descriptive_category_code(dim)
+      cc = _categories.detect { |c| c.first == dim }
+      cc.last if cc.present?
+    end
+    
     def possible_key_values(dim)
       case fields_hash[dim]
       when :tally, :date
         [[dim, dim.to_s]]
       when :descriptive_category
-        DescriptiveCategory.find_by_code(_categories.detect { |c| c.first == dim }.last).descriptive_values.sort.map { |v| [dim, v.code] }
+        DescriptiveCategory.find_by_code(descriptive_category_code(dim)).descriptive_values.sort.map { |v| [dim, v.code] }
       when :dimension
         dimensions[dim].all.sort.map { |v| [dim, v.code] }
       end
