@@ -1,0 +1,50 @@
+CACHE MANIFEST
+# version <%# version added by controller %>
+
+CACHE:
+/xforms/hcvisit.html?locale=<%= I18n.locale %>
+/xforms/data.xml
+/xforms/olmis.xml
+/images/icons/silk/accept.png
+/images/icons/silk/exclamation.png
+/images/icons/silk/arrow_right.png
+/images/icons/exclamation_yellow.png
+/images/icons/exclamation_green.png
+/images/icons/silk/exclamation.png
+/images/indicator.gif
+/images/vr-mis-logo-small.png
+
+<%#= offline_report_index_path(:locale => I18n.locale)%>
+
+<%#-[:stockouts, :fridge_issues, :visited_health_centers, :delivery_interval, :coverage, :autoeval].each do |report| -%>
+<%#= offline_report_path(report, :locale => I18n.locale) %>
+<%#- end -%>
+
+##/javascripts/offline_autoeval.js
+/javascripts/jquery.min.js
+/javascripts/formgrid.js
+/javascripts/hcvisit.js
+/javascripts/date.js
+/javascripts/i18n.js
+##/javascripts/ui/ui.core.js
+##/javascripts/ui/ui.accordion.js
+##/javascripts/collapsible_report.js
+##/stylesheets/collapsible_report.css
+##/javascripts/jquery.treeTable.min.js
+##/stylesheets/jquery.treeTable.css
+##/images/toggle-expand-light.png
+##/images/toggle-expand-dark.png 
+##/images/toggle-collapse-light.png
+##/images/toggle-collapse-dark.png 
+
+<%= (Dir.glob(File.join(RAILS_ROOT, 'public','fancybox','*')) + Dir.glob(File.join(RAILS_ROOT, 'public','xforms','xsltforms','*'))).
+         reject { |f| f =~ /\.(?:xsl|php|txs)$/ }.
+         map { |f| f.gsub(File.join(RAILS_ROOT,'public'),'') }.join("\n") %>
+/stylesheets/blueprint/screen.css
+/stylesheets/theme.css
+/stylesheets/hcvisit.css
+/stylesheets/print.css
+
+NETWORK:
+/logged-in
+/visits

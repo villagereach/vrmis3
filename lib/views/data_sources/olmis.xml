@@ -1,0 +1,2 @@
+<%- @visit = HealthCenterVisit.new -%>
+<%= render :file => '/visits/health_center_monthly_visit.xml.erb' %>

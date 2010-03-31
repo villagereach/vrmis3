@@ -1,0 +1,75 @@
+function upload(node) {
+  key = node.id.replace('_','/');  
+  jQuery(node.lastChild).attr('disabled', true);
+  jQuery(node).addClass('working');
+  jQuery.ajax( { 
+      async: true,
+      contentType: 'application/xml',
+      data: localStorage[key],
+      url: '<%= visits_url %>/' + key + '.xml',
+      dataType: 'html',
+      type: 'PUT',
+      error: function (XMLHttpRequest, textStatus, errorThrown) {      
+        jQuery(node).removeClass('working');
+        alert(textStatus);
+        jQuery(node.lastChild).attr('disabled', false);
+      },
+      success: function(data, textStatus, xhr) {
+        jQuery.ajax( { 
+            async: true,
+            url: '<%= visits_url %>',
+            success: function(data, textStatus, xhr) { 
+              jQuery('#search_and_recent').html(data);
+              localStorage.removeItem(key);
+              jQuery(node).remove();
+            }
+        });
+      },
+  } );
+}
+
+function forEachLocalStorageKey(f) {
+  if (localStorage[0])
+    for (var x=0; x < localStorage.length; x++) 
+      f(localStorage[x]);
+  else
+    for (var x in localStorage)
+      f(x);
+}
+
+function findCorrectLabel(key) {
+  jQuery.ajax( { 
+      async: true,
+      data: null,
+      url: '<%= visits_url %>/' + key + '/title',
+      dataType: 'html',
+      type: 'GET',
+      success: function(data, textStatus, xhr) { jQuery('#'+key.replace('/','_')+' span').html(data); },
+  } );
+}
+
+function upload_all() {
+  jQuery('#local-forms li.complete').each(function(i,n) { upload(n) });
+}
+
+function setupSavedVisits() {
+  var local_forms = [];
+  var valid_forms = JSON.parse(localStorage['valid forms']);  
+
+  if (!valid_forms)
+    return;
+
+  forEachLocalStorageKey(function(key) {
+      if(key.match(/^[\d\-]+\/.+$/)) {
+        local_forms.push('<li id="' + key.replace('/','_') + '" class="status ' + (valid_forms[key] ? 'complete' : 'todo') + '"><span>' + key + '</span></li>');
+        setTimeout((function(k) { return function() { findCorrectLabel(k) }; })(key), 1);
+      }
+  });
+
+  jQuery('#local-forms').html(local_forms.join('')) 
+  jQuery('#local-forms li.complete').append('<%= %Q{<input type="button" onclick="upload(this.parentNode);" value="#{t('.upload')}" />} %>');
+  if (jQuery('#local-forms li.complete').length > 0) {
+    jQuery('#local-forms').after('<%= %Q{<input type="button" onclick="upload_all()" value="#{t('.upload_all_completed_forms')}" />} %>');
+  }
+}
+

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<vrmis3>
+<olmis>
   <meta>
     <date><%= [Date.today, @visit.updated_at, @visit.created_at].compact.max.to_date.to_s %></date>
     <province><%= @visit.health_center && @visit.health_center.province.name %></province>
@@ -19,7 +19,7 @@
     <non_visit_reason><%= @visit.visit_status %></non_visit_reason>
     <notes><%= @visit.notes %></notes>
     <epi>
-    <%- [EpiUsageTally,AdultVaccinationTally,ChildVaccinationTally,FullVaccinationTally,RdtTally].each do |klass| -%>
+    <%- HealthCenterVisit.tally_hash.map{|k,v| k.constantize}.each do |klass| -%>
       <<%= klass.name.tableize %>>
         <%- record_value_hash = klass.records_by_param_names_for_keys(@visit.health_center, @visit.epi_month) -%>
         <%- klass.expected_params().each do |param, type| -%>
@@ -65,5 +65,4 @@
       </stock_cards>
     </visit>
   </hcvisit>
-</vrmis3>
-
+</olmis>
