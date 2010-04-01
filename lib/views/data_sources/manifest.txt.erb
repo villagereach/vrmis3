@@ -37,9 +37,9 @@ CACHE:
 ##/images/toggle-collapse-light.png
 ##/images/toggle-collapse-dark.png 
 
-<%= (Dir.glob(File.join(RAILS_ROOT, 'public','fancybox','*')) + Dir.glob(File.join(RAILS_ROOT, 'public','xforms','xsltforms','*'))).
-         reject { |f| f =~ /\.(?:xsl|php|txs)$/ }.
-         map { |f| f.gsub(File.join(RAILS_ROOT,'public'),'') }.join("\n") %>
+<%- third_party_files = Dir.glob(File.join(RAILS_ROOT, 'public', 'fancybox', '*')) +
+                        Dir.glob(File.join(RAILS_ROOT, 'public', 'xforms', 'xsltforms', '*')).reject{|f| f =~ /\.(?:php|png|txs)$/} -%>
+<%= third_party_files.map{|f| f.sub(File.join(RAILS_ROOT, 'public'), '')}.join("\n") %>
 /stylesheets/blueprint/screen.css
 /stylesheets/theme.css
 /stylesheets/hcvisit.css

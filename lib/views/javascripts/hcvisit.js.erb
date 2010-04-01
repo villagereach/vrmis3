@@ -194,7 +194,7 @@ function setSelectedValue(name, value) {
   var ctx = $('data');
   if (!ctx) return null;
 
-  var xf_setvalue = new XFSetvalue(new Binding("instance('data')/selected-values/"+name), value, null, null, null);
+  var xf_setvalue = new XFSetvalue(new Binding(false, "instance('data')/selected-values/"+name), value, null, null, null);
   var xf_action = new XFAction(null, null).add(xf_setvalue);
 
   run(xf_action, "statusPanel", "DOMActivate", false, true);
@@ -209,7 +209,7 @@ function getSelectedValue(name) {
                new FunctionCallExpr('http://www.w3.org/2002/xforms instance',new CteExpr('data')),
                new LocationExpr(false,
                  new StepExpr('child',new NodeTestName('','selected-values')),
-                 new StepExpr('child',new NodeTestName('',name)))));
+                 new StepExpr('child',new NodeTestName('',name)))), []);
 
   var nodeset = xp.evaluate(ctx);
 
@@ -229,7 +229,7 @@ function find_province_district_health_center(hc) {
                      new BinaryExpr(
                        new LocationExpr(false, new StepExpr('attribute',new NodeTestName(null, 'code'))),
                        '=',
-                       new CteExpr(hc)))))));
+                       new CteExpr(hc)))))), []);
 
   var nodeset = xp.evaluate($('data'));
   
@@ -266,7 +266,7 @@ function find_health_centers_by_attr(attr, value) {
                      new BinaryExpr(
                        new LocationExpr(false, new StepExpr('attribute', new NodeTestName(null, attr))),
                        '=',
-                       new CteExpr(value)))))));
+                       new CteExpr(value)))))), []);
   return xp.evaluate($('data'));
 }
 
