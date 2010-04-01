@@ -43,6 +43,7 @@
           <%- [:existing, :delivered].each do |type| -%>
             <item for="<%= package.code %>" type="<%= type %>" nr="<%= stock[type][index].nr %>" qty="<%= stock[type][index].quantity %>" />
           <%- end -%>
+          <item for="<%= package.code %>" type="spoiled" nr="false" qty="" />
         <%- end -%>
       </inventory>
       <general>
