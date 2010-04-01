@@ -603,11 +603,12 @@ body {
   background-color: #cfc;
   border: 2px solid green;
   color: green;
+  position: relative;
 }
 #status_footer #download_indicator em {
   background-color: green;
   position: absolute;
-  bottom: 3px; left: 9px;
+  bottom: 0; left: 0;
   height: 4px;
 }
 #status_footer #download_indicator p {

@@ -824,12 +824,18 @@
           <div class="online"><a class="inline" href="#login"><%= t(".status.login_and_upload") %></a><a class="inline" style="display: none" href="#upload"></a></div>
           <div class="offline"><%= t(".status.offline") %></div>
         </div>
+      </xf:group>
+      <xf:group>
         <div id="status_indicator">
-          <a href="<%= request.url %>"><%= t(".status.updated") %></a>
+          <div>
+            <a href="<%= request.url %>"><%= t(".status.updated") %></a>
+          </div>
         </div>
         <div id="download_indicator">
-          <p><%= t(".status.downloading") %> ... <span id="download-pct"></span></p>
-          <em id="download-progress-bar" style="width: 0"></em>
+          <div>
+            <p><%= t(".status.downloading") %> ... <span id="download-pct"></span></p>
+            <em id="download-progress-bar" style="width: 0"></em>
+          </div>
         </div>
       </xf:group>
     </div>
