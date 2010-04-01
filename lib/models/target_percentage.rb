@@ -12,8 +12,6 @@
 #
 
 class TargetPercentage < ActiveRecord::Base
-  unloadable
-
   has_and_belongs_to_many :descriptive_values
 
   validates_presence_of :stat_tally_klass

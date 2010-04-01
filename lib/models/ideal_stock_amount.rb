@@ -12,8 +12,6 @@
 #
 
 class IdealStockAmount < ActiveRecord::Base
-  unloadable
-
   include BasicModelSecurity
   belongs_to :package
   belongs_to :stock_room

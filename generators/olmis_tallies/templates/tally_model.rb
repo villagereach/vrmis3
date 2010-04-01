@@ -1,6 +1,4 @@
 class <%= class_name %> < ActiveRecord::Base
-  unloadable
-
   acts_as_stat_tally
 
   string_key_field :date_period

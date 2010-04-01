@@ -1,6 +1,4 @@
 class DataSourcesController < OlmisController
-  unloadable
-
   skip_before_filter :check_logged_in, :only => [ :list_xforms, :submit_xform, :get_xform ]
   skip_before_filter :set_locale,      :only => [ :manifest, :get_xform ]
   before_filter :set_locale_without_session, :only => [ :manifest, :get_xform ]

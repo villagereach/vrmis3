@@ -1,6 +1,4 @@
 class PickupsController < OlmisController
-  unloadable
-
   add_breadcrumb(lambda { |c| I18n.t('breadcrumb.pickups', :name => c.delivery_zone.name) }, 'pickups_path', 
                  :only => ['pickups', 'pickup', 'pickup_new', 'pickup_edit', 'isa', 'isa_edit'])
   add_breadcrumb(lambda { |c| I18n.l(Date.parse(c.param_date), :format => :default) }, 'pickup_path',

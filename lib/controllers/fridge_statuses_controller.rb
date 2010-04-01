@@ -1,6 +1,4 @@
 class FridgeStatusesController < OlmisController
-  unloadable
-
   helper :fridges
 
   def create

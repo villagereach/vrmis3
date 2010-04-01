@@ -15,8 +15,6 @@
 #
 
 class FridgeStatus < ActiveRecord::Base
-  unloadable
-
   include BasicModelSecurity
 
   belongs_to :fridge

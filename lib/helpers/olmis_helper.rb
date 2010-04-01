@@ -2,7 +2,6 @@
 # Methods added to this helper will be available to all templates in the application.
 
 module OlmisHelper
-  unloadable
   
   def get_area_from_params(ps = params)
     hierarchy = Olmis.area_hierarchy.map(&:constantize)

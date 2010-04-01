@@ -11,8 +11,6 @@
 #
 
 class EquipmentType < ActiveRecord::Base
-  unloadable
- 
   include BasicModelSecurity
 
   validates_presence_of :code

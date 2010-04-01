@@ -1,6 +1,4 @@
 class LoginController < OlmisController
-  unloadable
-
   skip_before_filter :check_logged_in
 
   def logout
