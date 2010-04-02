@@ -1,4 +1,5 @@
 var online = true;
+var valid_forms = {};
 var manifest_files = {
   count:      1,
   downloaded: 0
@@ -22,6 +23,12 @@ window.addEventListener('load', function() {
   applicationCache.addEventListener('updateready', do_update,   true);
   applicationCache.addEventListener('cached',      do_cached,   true);
   
+  try {
+    valid_forms = JSON.parse(localStorage['valid forms']) || {};
+  } catch(e) {
+    valid_forms = {};
+  }
+
   setupVisits();
   setupVisitSearch();
 
@@ -145,7 +152,7 @@ function get_available_visit_months() {
 }
 
 function setupVisitMonths() {
-  xforms.openAction("setupVisitMonths");
+  xforms.openAction();
 
   var month_selector = jQuery('#visit-month-selector');
   var select_control = month_selector.find('select');
@@ -187,7 +194,7 @@ function setupVisitMonths() {
   month_selector.parent().append(ul);
   month_selector.hide();
 
-  xforms.closeAction("setupVisitMonths");
+  xforms.closeAction();
 }
 
 function setSelectedValue(name, value) {
@@ -289,7 +296,7 @@ function selectVisit() {
     return;
   }
 
-  xforms.openAction("selectVisit");
+  xforms.openAction();
 
   Dialog.show("statusPanel");
 
@@ -321,7 +328,7 @@ function selectVisit() {
     show_container(containers['visit']);
   }, 1);
   
-  xforms.closeAction("selectVisit");
+  xforms.closeAction();
 }
 
 function show_container( container ) {
@@ -346,11 +353,12 @@ function show_visits() {
   show_container(containers['month']);
 }
 
-function get_selected_value(path, root) {
+function get_context_path_value(ctx, path) {
   //TODO: Implement XPath
-  //$(root).xfElement.doc is not a real document element so the Firefox XPath evaluator will not recognize it.
-  doc = [$(root).xfElement.doc];
-  path.split('/').filter(function(p) { return p != '' }).forEach(function(p, i) {
+  var doc = [ ctx.xfElement.doc ];
+  var nodes = path.split('/');
+  nodes.unshift(ctx.id);
+  nodes.filter(function(p) { return p != '' }).forEach(function(p, i) {
     newdoc = []
     doc.forEach(function(n, ni) {
       newdoc = newdoc.concat(n.childNodes.filter(function(c) { return c.nodeName == p; }));
@@ -363,8 +371,8 @@ function get_selected_value(path, root) {
 function update_visit_history(obj) {
   <%# this data is to support the offline autoeval report, please see offline_autoeval.js.erb %> 
   
-  var health_center = get_selected_value('/vrmis3/hcvisit/health_center', 'vrmis3')[0].getTextContent();
-  var date_period   = get_selected_value('/vrmis3/hcvisit/visit_month', 'vrmis3')[0].getTextContent();
+  var health_center = get_context_path_value($('olmis'), '/hcvisit/health_center')[0].getTextContent();
+  var date_period   = get_context_path_value($('olmis'), '/hcvisit/visit_month')[0].getTextContent();
   var history = JSON.parse(localStorage[health_center + '/visit-history'] || '{}');
   
   if (!history[date_period])
@@ -377,7 +385,7 @@ function update_visit_history(obj) {
 }
 
 function inventory_quantities(type) {
-  return get_selected_value('/vrmis3/hcvisit/visit/inventory/entry', 'vrmis3').
+  return get_context_path_value($('olmis'), '/hcvisit/visit/inventory/entry').
     filter(function(e) { return e.getAttributeNS(null, 'type') == type; }).
     filter(function(e) { return <%= Package.trackable.all.map(&:sku).to_json %>.indexOf(e.getAttributeNS(null, 'for')) >= 0; }).  
     filter(function(e) { nr = e.getElementsByTagName('nr')[0]; return !nr || nr.getTextContent() == '' || nr.getTextContent() == 'false'; }).
@@ -392,12 +400,12 @@ function update_stockouts() {
 }
 
 function visit_date_changed() {
-  var date          = get_selected_value('/vrmis3/hcvisit/visited_at', 'vrmis3')[0].getTextContent();
+  var date = get_context_path_value($('olmis'), '/hcvisit/visited_at')[0].getTextContent();
   update_visit_history({ 'visit': date });
 }
 
 function non_visit_reason_changed() {
-  var reason      = get_selected_value('/vrmis3/hcvisit/non_visit_reason', 'vrmis3')[0].getTextContent();
+  var reason = get_context_path_value($('olmis'), '/hcvisit/non_visit_reason')[0].getTextContent();
   update_visit_history({ 'visit': reason });
 }
 
@@ -410,17 +418,9 @@ function logout() {
   show_container(containers['login']);
 }
 
-var valid_forms = null;
 var save_timeouts = {};
 
 function get_hc_form_status(visit_key) {
-  if (!valid_forms) {
-    try {
-      valid_forms = JSON.parse(localStorage['valid forms']) || {};
-    } catch(e) {
-      valid_forms = {};
-    }
-  }
   var status = 'unknown';
   if (valid_forms[visit_key] === true) {
     status = 'valid';
@@ -433,18 +433,11 @@ function get_hc_form_status(visit_key) {
 }
 
 function set_hc_form_status(key, status) {
-  if (!valid_forms) {
-    try {
-      valid_forms = JSON.parse(localStorage['valid forms']) || {};
-    } catch(e) {
-      valid_forms = {};
-    }
-  }
   valid_forms[key] = status;
 }
 
 function setupFormOptions(local_forms, only_set_monthly_status) {
-  xforms.openAction("setupFormOptions");
+  xforms.openAction();
 
   var savedVisits = jQuery('#saved-forms-control');
   if (!only_set_monthly_status) savedVisits.empty();
@@ -504,7 +497,7 @@ function setupFormOptions(local_forms, only_set_monthly_status) {
     }
   }
 
-  xforms.closeAction("setupFormOptions");
+  xforms.closeAction();
 }
 
 function uniq(arr) {
@@ -519,19 +512,11 @@ function uniq(arr) {
 }
 
 function setupVisits() {
-  xforms.openAction("setupVisits");
+  xforms.openAction();
 
   var hcs = find_health_centers_in_delivery_zone(getSelectedValue('delivery_zone'));
   var months = get_available_visit_months();
   var month_period = getSelectedValue('visit_date_period');
-
-  if (!valid_forms) {
-    try {
-      valid_forms = JSON.parse(localStorage['valid forms']) || {};
-    } catch(e) {
-      valid_forms = {};
-    }
-  }
 
   localStorage['valid forms'] = JSON.stringify(valid_forms); 
 
@@ -552,7 +537,7 @@ function setupVisits() {
     setupFormOptions(local_forms, month_period != month);
   }
 
-  xforms.closeAction("setupVisits");
+  xforms.closeAction();
 }
 
 function reset_saved_forms_search() {
@@ -604,11 +589,12 @@ XFSubmission.prototype.submit = function() {
 
   var action = possiblyEvaluatableValue(this.action, "error");
   
+  xforms.openAction();
+
   if (action.substr(0,8) == "local://") {
     var key = action.substr(8);
     var method = possiblyEvaluatableValue(this.method, "post").toLowerCase();
 
-    xforms.openAction("hcvisit submit");
     if(method == 'get' && this.replace == "instance" && localStorage[key]) {
       try {
         var inst = this.instance == null? this.model.getInstance() : $(this.instance).xfElement;
@@ -652,11 +638,11 @@ XFSubmission.prototype.submit = function() {
     } else {
       XMLEvents.dispatch(this, "xforms-submit-error");
     }
-    xforms.closeAction("hcvisit submit");
-    return;
   } else {
     this.submitWithoutLocalStore()
   }
+
+  xforms.closeAction();
 }
 
 // FIXME: XPath functions have the wrong namespace applied to them because of an apparent bug in XSLTForms.
@@ -742,7 +728,6 @@ XPathCoreFunctions['http://www.w3.org/2005/xpath-functions sort'] =  new XPathFu
 
 function setupSavedVisits() {
   var local_forms = [];
-  var valid_forms = JSON.parse(localStorage['valid forms']);  
 
   forEachLocalStorageKey(function(key) {
       if (key.match(/^[\d\-]+\/.+$/) && valid_forms[key]) {
