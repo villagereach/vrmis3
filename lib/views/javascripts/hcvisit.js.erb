@@ -572,10 +572,18 @@ function setupVisitSearch() {
 }
 
 function possiblyEvaluatableValue(val, def) {
-  if(val.evaluate) {
-    var n = val.evaluate()[0];
-    if (n) {
-      return getValue(n);
+  if (val.evaluate) {
+    var v = val.evaluate();
+    if (v) {
+      if (typeof v == 'string') {
+        return v;
+      } else {
+        // TODO: Not sure how we get here. When using older version of XSLTForms?
+        var n = v[0];
+        if (n) {
+          return (typeof n == 'string' ? n : getValue(n));
+        }
+      }
     }
   } else {
     return val;

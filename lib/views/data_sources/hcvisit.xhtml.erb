@@ -83,12 +83,12 @@
 
       <xf:bind nodeset="instance('olmis')/hcvisit" relevant="true()" />
 
-      <xf:submission
+      <xf:submission id="load"
         replace="instance"
         instance="olmis"
         ref="/olmis"
         method="get"
-        id="load"
+        validate="false"
         includenamespaceprefixes="">
         <xf:resource value="instance('data')/selected-values/selector" />
         <xf:action ev:event="xforms-submit-done">
@@ -104,39 +104,13 @@
           <xf:toggle case="case-visit"/>
           <xf:load resource="javascript:set_active_tab('visit')" />
         </xf:action>
-        <xf:action ev:event="xforms-submit-error">
-        </xf:action>
       </xf:submission>
 
-      <xf:submission
-        replace="instance"
-        instance="olmis"
-        method="get"
-        ref="/nothing"
-        id="load-remote"
-        validate="false"
-        includenamespaceprefixes="">
-        <xf:resource value="instance('data')/selected-values/remote-selector" />
-        <xf:action ev:event="xforms-submit-done">
-          <xf:setvalue bind="province"      value="instance('data')/selected-values/province"/>
-          <xf:setvalue bind="district"      value="instance('data')/selected-values/district"/>
-          <xf:setvalue bind="health_center" value="instance('data')/selected-values/health_center"/>
-          <xf:setvalue bind="visit_month"   value="instance('data')/selected-values/visit_date_period"/>
-          <xf:setvalue bind="delivery_zone" value="instance('data')/selected-values/delivery_zone"/>
-          <xf:setvalue bind="field_coordinator" value="instance('data')/selected-values/field_coordinator"/>
-          <xf:setvalue bind="visiting_field_coordinator" value="instance('data')/selected-values/visiting_field_coordinator"/>
-          <xf:setvalue ref="/olmis/meta/date" value="jr:today()"/>
-        </xf:action>
-        <xf:action ev:event="xforms-submit-error">
-        </xf:action>
-      </xf:submission>
-      
-      <xf:submission
+      <xf:submission id="new"
         replace="instance"
         instance="olmis"
         ref="/nothing"
         method="get"
-        id="new"
         validate="false"
         action="olmis.xml"
         includenamespaceprefixes="">
@@ -165,60 +139,32 @@
         </xf:action>
       </xf:submission>
 
-      <xf:submission
+      <xf:submission id="save"
         replace="instance"
         instance="olmis"
         ref="/olmis"
         method="put"
-        id="save"
+        validate="false"
         includenamespaceprefixes="">
         <xf:resource value="instance('data')/selected-values/selector" />
       </xf:submission>
 
-      <xf:submission
-        replace="instance"
-        instance="olmis"
-        ref="/olmis"
-        method="delete"
-        id="delete"
-        includenamespaceprefixes="">
-        <xf:resource value="instance('data')/selected-values/selector" />
-      </xf:submission>
-
-      <xf:submission
+      <xf:submission id="accept"
         replace="instance"
         instance="olmis"
         ref="/olmis"
         method="put"
-        id="accept"
         includenamespaceprefixes="">
         <xf:resource value="instance('data')/selected-values/selector" />
       </xf:submission>
 
-      <xf:submission
+      <xf:submission id="reject"
         replace="instance"
         instance="olmis"
         ref="/olmis"
         method="put"
-        id="reject"
         includenamespaceprefixes="">
         <xf:resource value="instance('data')/selected-values/selector" />
-      </xf:submission>
-
-      <xf:submission ajx:synchronized="false()"
-        replace="none"
-        action="<%= xform_submit_url %>" 
-        ref="instance('olmis')" 
-        method="post" 
-        includenamespaceprefixes="" 
-        id="submit">
-        <xf:action ev:event="xforms-submit-done">
-          <xf:send ev:event="xforms-submit" submission="accept" />
-        </xf:action>
-        <xf:action ev:event="xforms-submit-error">
-          <xf:message><%= t(".submit_failed") %></xf:message>
-          <xf:send ev:event="xforms-submit" submission="reject" />
-        </xf:action>
       </xf:submission>
 
       <xf:bind id="i-province"    nodeset="instance('data')/selected-values/province" required="true()" relevant="false()"/>
