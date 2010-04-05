@@ -240,17 +240,25 @@ if (Core.isIE) {
 
 if (Core.isIE) {
     Core.transformText = function(xml, xslt, inline) {
-			var xmlDoc = new ActiveXObject("Microsoft.XMLDOM");
+			var xmlDoc = new ActiveXObject("MSXML2.DOMDocument.6.0");
 			xmlDoc.loadXML(xml);
-			var xsltDoc = new ActiveXObject("Microsoft.XMLDOM");
+			var xslDoc = new ActiveXObject("MSXML2.FreeThreadedDOMDocument.6.0");
 			if (inline) {
-				xsltDoc.loadXML(xml);
+				xslDoc.loadXML(xml);
 			} else {
-				xsltDoc.async = false;
-				xsltDoc.load(xslt);
+				xslDoc.async = false;
+				xslDoc.load(xslt);
 			}
-			var resultNode = xmlDoc.transformNode(xsltDoc);
-			return resultNode;
+			var xslTemplate = new ActiveXObject("MSXML2.XSLTemplate.6.0");
+      xslTemplate.stylesheet = xslDoc;
+      var xslProc = xslTemplate.createProcessor();
+      xslProc.input = xmlDoc;
+			for (var i = 3, len = arguments.length-1; i < len ; i += 2) {
+				xslProc.addParameter(arguments[i], arguments[i+1], "");
+			}
+
+			xslProc.transform();
+			return xslProc.output;
     };
 } else {
     Core.transformText = function(xml, xslt, inline) {
@@ -669,9 +677,9 @@ var I8N = {
 		
 
     parseNumber : function(value) {
-		var signo = I8N.get("format.decimal");
+		var decsep = I8N.get("format.decimal");
 
-		if(!value.match("^[-+]?[0-9]*[\\" + signo + "[0-9]*]?$")) {
+		if(!value.match("^[\\-+]?([0-9]+(\\" + decsep + "[0-9]*)?|\\" + decsep + "[0-9]+)$")) {
 			throw "Invalid number " + value;
 		}
 
@@ -921,12 +929,11 @@ function setValue(node, value) {
 		
 
 function run(action, element, evt, synch, propagate) {
-	xforms.openAction();
-    
 	if (synch) {
 		Dialog.show("statusPanel", null, false);
 
 		setTimeout(function() { 
+			xforms.openAction();
 			action.execute(IdManager.find(element), null, evt);
 			Dialog.hide("statusPanel", false);
 			if (!propagate) {
@@ -935,6 +942,7 @@ function run(action, element, evt, synch, propagate) {
 			xforms.closeAction();
 		}, 1 );
 	} else {
+		xforms.openAction();
 		action.execute(IdManager.find(element), null, evt);
 		if (!propagate) {
 			evt.stopPropagation();
@@ -2066,7 +2074,7 @@ XFSubmission.prototype.submit = function() {
 							}
 						}
 					} catch(e) {
-						DebugConsole.write(e.message || e);
+						DebugConsole.write(e || e.message);
 						//alert(e.message || e);
 						XMLEvents.dispatch(subm, "xforms-submit-error");
 						xforms.closeAction();
@@ -3869,10 +3877,14 @@ XFOutput.prototype.setValue = function(value) {
 					var xamlScript = Core.isXhtml ? document.createElementNS("http://www.w3.org/1999/xhtml", "script") : document.createElement("script");
 					xamlScript.setAttribute("type", "text/xaml");
 					xamlScript.setAttribute("id", this.element.id+"-xaml");
-					xamlScript.text = Core.transformText(value, Core.ROOT + "svg2xaml.xsl", false);
+					xamlScript.text = Core.transformText(value, Core.ROOT + "svg2xaml.xsl", false, "width", element.currentStyle.width, "height", element.currentStyle.height);
 					element.appendChild(xamlScript);
 					var xamlObject = Core.isXhtml ? document.createElementNS("http://www.w3.org/1999/xhtml", "object") : document.createElement("object");
+					xamlObject.setAttribute("width", element.currentStyle.width+"px");
+					xamlObject.setAttribute("height", element.currentStyle.height+"px");
 					xamlObject.setAttribute("type", "application/x-silverlight");
+					xamlObject.setAttribute("style", "min-width: " + element.currentStyle.width+"px");
+					//xamlObject.setAttribute("style", "min-width: " + xamlScript.text.substring(xamlScript.text.indexOf('<Canvas Width="')+15,xamlScript.text.indexOf('" Height="')) + "px");
 					var xamlParamSource = Core.isXhtml ? document.createElementNS("http://www.w3.org/1999/xhtml", "param") : document.createElement("param");
 					xamlParamSource.setAttribute("name", "source");
 					xamlParamSource.setAttribute("value", "#"+this.element.id+"-xaml");
@@ -3887,7 +3899,10 @@ XFOutput.prototype.setValue = function(value) {
 					xamlObject.appendChild(xamlParamIswindowless);
 					element.appendChild(xamlObject);
 				} else if (Core.isXhtml) {
+					var cs = window.getComputedStyle(element, null);
 					XDocument.parse(value, element);
+					element.firstChild.setAttribute("width", cs.getPropertyValue("min-width"));
+					element.firstChild.setAttribute("height", cs.getPropertyValue("min-height"));
 				} else {
 					var svgObject = Core.isXhtml ? document.createElementNS("http://www.w3.org/1999/xhtml", "object") : document.createElement("object");
 					svgObject.setAttribute("type", "image/svg+xml");
@@ -4272,7 +4287,10 @@ XFSelect.prototype.itemClick = function(value) {
 		var old = this.value || getValue(this.element.node);
 		var inputSelected = null;
 
-		if (old == value) { return; }
+		if (old == value) {
+			xforms.closeAction();
+			return;
+		}
 
 		for (var j = 0, len1 = inputs.length; j < len1; j++) {
 			var input = inputs[j];
@@ -4584,13 +4602,13 @@ Calendar.prototype.refresh = function() {
 
         for (var j = 0; j < 7; j++, cont++) {
             var cell = trLine.childNodes[j];
+						var dayInMonth = (cont >= firstDay && cont < firstDay + daysOfMonth);
             Core.setClass(cell, "hover", false);
             Core.setClass(cell, "today", currentMonthYear && day == this.currentDay);
-            Core.setClass(cell, "selected", day == this.day);
+            Core.setClass(cell, "selected", dayInMonth && day == this.day);
             Core.setClass(cell, "weekend", (j+ini)%7 > 4);
 
-            cell.firstChild.nodeValue
-                = (cont >= firstDay && cont < firstDay + daysOfMonth)? day++ : "";
+            cell.firstChild.nodeValue = dayInMonth ? day++ : "";
         }
     }
 };
@@ -5595,7 +5613,7 @@ TypeDefs.XForms = {
 
 	"negativeInteger" : {
 		"base" : "xforms:integer",
-		"patterns" : [ "^([\\-][0-9])?$" ]
+		"patterns" : [ "^([\\-][0-9]+)?$" ]
 	},
 
 		
