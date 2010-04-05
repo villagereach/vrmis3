@@ -412,23 +412,33 @@ h2 {
 /* }}} */
 /* location-selector & context-selector {{{ */
 #form,
+#login-form,
 #location-selector,
 #context-selector,
 #offline-reports {
   margin : 5em auto 0;
 }
-#location-selector,
+#login-form,
 #context-selector {
-  width : 300px;
+  width : 400px;
 }
+#location-selector {
+  width : 600px;
+}
+#login-form input {
+  width: 8em;
+}
+.xforms-control span.focus {
+  /* Not sure what purpose this span serves, but it messes up the form layout if it's shown */
+  display: none;
+}
+#login-form .xforms-control,
 #location-selector .xforms-control,
 #context-selector .xforms-control {
   clear : both;
   display : block;
 }
-#location-selector {
-  width : 600px;
-}
+#login-form button,
 #location-selector button {
   font-size : 1em;
   margin : 1em 0 0 11em;

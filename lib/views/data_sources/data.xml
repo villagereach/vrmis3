@@ -13,6 +13,7 @@
     <remote-selector />
     <delivery-zone-selector />
     <selected-month-exists />
+    <access_code/>
     <login-selected />
     <context-selected />
     <logged_in />

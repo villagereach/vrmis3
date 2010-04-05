@@ -249,25 +249,32 @@
       <xf:action ev:event="xforms-ready">
         <xf:load resource="javascript:setupVisitMonths()" />
         <xf:setvalue bind="i-visit-month" value="substring(jr:today(),1,7)" />
+        <xf:setfocus control="access_code" />
       </xf:action>
     </xf:model>
   </head>
   <body>
     <h1><a href="/">Village Reach Prototype olmis</a></h1>
-    <div id="location-selector" class="container login inline">   
+    <div id="login-form" class="container login inline">
       <h2><%= t("login.login.login_to", :name => "VR MIS3") %></h2>
       <xf:group>
-        <xf:select1 id="fc-selector" ref="instance('data')/selected-values/field_coordinator">
-          <xf:label><%= t("field_coordinator") %></xf:label>
-          <xf:itemset nodeset="instance('data')/blank | olmis:sort(instance('data')/province/fc/@name)">
-            <xf:label ref="."/>
-            <xf:value ref="."/>
-          </xf:itemset>
-          <xf:action ev:event="xforms-value-changed">
-            <xf:setvalue if="instance('data')/selected-values/delivery_zone = ''" bind="i-delivery-zone" value="instance('data')/province/fc[@name=instance('data')/selected-values/field_coordinator]/@dz" />
-          </xf:action>
-          <xf:alert><%= t(".errors.select_fc") %></xf:alert>
-        </xf:select1>
+        <xf:secret id="access_code" ref="instance('data')/selected-values/access_code">
+          <xf:label><%= t(".login.access_code") %></xf:label>
+        </xf:secret>
+
+        <xf:trigger>
+          <xf:label><%= t("login.login.submit_button") %></xf:label>
+        </xf:trigger>
+
+        <xf:action ev:event="DOMActivate" mode="synchronous">
+          <xf:load resource="javascript:login()" />
+        </xf:action>
+      </xf:group>
+    </div>
+
+    <div id="location-selector" class="container login inline">   
+      <h2><%= t(".main.page_title") %></h2>
+      <xf:group>
         <xf:select1 id="dz-selector" ref="instance('data')/selected-values/delivery_zone">
           <xf:label><%= t("delivery_zone") %></xf:label>
           <xf:itemset nodeset="instance('data')/blank | olmis:sort(instance('data')/province/delivery_zone/@name)">
@@ -279,12 +286,23 @@
           </xf:action>
           <xf:alert><%= t(".errors.select_dz") %></xf:alert>
         </xf:select1>
-        <xf:trigger bind="login-selected">
-          <xf:label><%= t("login.login.submit_button") %></xf:label>
+        <xf:select1 id="fc-selector" ref="instance('data')/selected-values/field_coordinator">
+          <xf:label><%= t("field_coordinator") %></xf:label>
+          <xf:itemset nodeset="instance('data')/blank | olmis:sort(instance('data')/province/fc/@name)">
+            <xf:label ref="."/>
+            <xf:value ref="."/>
+          </xf:itemset>
+          <xf:action ev:event="xforms-value-changed">
+            <xf:setvalue if="instance('data')/selected-values/delivery_zone = ''" bind="i-delivery-zone" value="instance('data')/province/fc[@name=instance('data')/selected-values/field_coordinator]/@dz" />
+          </xf:action>
+          <xf:alert><%= t(".errors.select_fc") %></xf:alert>
+        </xf:select1>
+        <xf:trigger>
+          <xf:label><%= t("go") %></xf:label>
           <xf:action ev:event="DOMActivate" mode="synchronous">
             <xf:setvalue bind="field_coordinator" value="instance('data')/selected-values/field_coordinator"/>
             <xf:setvalue bind="delivery_zone"     value="instance('data')/selected-values/delivery_zone"/>
-            <xf:load resource="javascript:login()" />
+            <xf:load resource="javascript:select_location()" />
           </xf:action>
         </xf:trigger>
       </xf:group>
@@ -305,10 +323,10 @@
       </xf:group>
       <xf:group bind="login-active" id="user" class="content">
         <div>
-          <em><%= t("logged_in_as") %></em>
-          <strong><xf:output value="instance('data')/selected-values/field_coordinator" /></strong>
+          <!--em><%= t("logged_in_as") %></em>
+          <strong><xf:output value="instance('data')/selected-values/field_coordinator" /></strong-->
           <xf:trigger appearance="minimal">
-            <xf:label><%= t(".logout") %></xf:label>
+            <xf:label><%= t("logout") %></xf:label>
             <xf:action ev:event="DOMActivate">
               <xf:load resource="javascript:logout()" />
             </xf:action>

@@ -619,7 +619,11 @@ en:
       upload_empty:                      "You have no completed forms available for uploading"
       submit_failed:                     "Form submission failed"
       login_to_server:                   "Log in to server"
-      logout:                            "Logout / Change delivery zone"
+      logout:                            "Logout"
+      login:
+        access_code:                     "Enter access code"
+      main:
+        page_title:                      "Main Page"
       status:
         login_and_upload: "Login and upload forms"
         updated:          "Updated"

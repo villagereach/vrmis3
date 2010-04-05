@@ -5,7 +5,8 @@ var manifest_files = {
   downloaded: 0
 };
 var containers = {
-  login: 'location-selector',
+  login: 'login-form',
+  main:  'location-selector',
   month: 'context-selector',
   visit: 'form'
 };
@@ -337,9 +338,21 @@ function show_container( container ) {
 }
 
 function login() {
-  localStorage['fc'] = getSelectedValue('field_coordinator');
-  localStorage['dz'] = getSelectedValue('delivery_zone');
-  setSelectedValue('logged_in', 'true()');
+  // FIXME: Implement something more than a trivial check
+  if (getSelectedValue('access_code').length > 0) {
+    setSelectedValue('logged_in', 'true()');
+    show_container(containers['main']);
+  }
+}
+
+function logout() {
+  jQuery('#login-form input').each(function() { jQuery(this).val(''); });
+  setSelectedValue('access_code', '');
+  setSelectedValue('logged_in', 'false()');
+  show_container(containers['login']);
+}
+
+function select_location() {
   jQuery('#visit-month-menu span').removeClass();  // reset to empty state
   show_visits();
 }
@@ -407,15 +420,6 @@ function visit_date_changed() {
 function non_visit_reason_changed() {
   var reason = get_context_path_value($('olmis'), '/hcvisit/non_visit_reason')[0].getTextContent();
   update_visit_history({ 'visit': reason });
-}
-
-function logout() {
-  delete localStorage['fc'];
-  delete localStorage['dz'];
-  setSelectedValue('field_coordinator', '');
-  setSelectedValue('delivery_zone', '');
-  setSelectedValue('logged_in', 'false()');
-  show_container(containers['login']);
 }
 
 var save_timeouts = {};
