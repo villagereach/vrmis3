@@ -524,8 +524,7 @@ table.calendar {
 #case-full_vaccination_tallies table.spreadsheet,
 #case-child_vaccination_tallies table.spreadsheet,
 #case-adult_vaccination_tallies table.spreadsheet,
-#case-epi_usage_tallies table.spreadsheet,
-#case-rdt_tallies table.spreadsheet,
+#case-usage_tallies table.spreadsheet,
 #case-inventory table.spreadsheet,
 #case-equipment table.spreadsheet {
   width : auto;
@@ -533,8 +532,7 @@ table.calendar {
 #case-full_vaccination_tallies input.xforms-value[type="text"],
 #case-child_vaccination_tallies input.xforms-value[type="text"],
 #case-adult_vaccination_tallies input.xforms-value[type="text"],
-#case-epi_usage_tallies input.xforms-value[type="text"],
-#case-rdt_tallies input.xforms-value[type="text"],
+#case-usage_tallies input.xforms-value[type="text"],
 #case-inventory input.xforms-value[type="text"],
 #case-equipment input.xforms-value[type="text"] {
   width : 3em;
@@ -547,7 +545,7 @@ table.calendar {
 #case-adult_vaccination_tallies tr:first-child th {
   border-bottom : 0;
 }
-#case-epi_usage_tallies td:nth-child(5) .xforms-value,
+#case-usage_tallies table.spreadsheet td:last-child .xforms-value,
 #case-equipment #fridge-list tr th .xforms-value {
   width : 7em;
 }

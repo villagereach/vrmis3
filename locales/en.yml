@@ -472,7 +472,7 @@ en:
       inventory:   "Inventory"
       equipment:   "Equipment"
       general:     "General"
-      cold_chainp: "Cold Chain"
+      cold_chain:  "Cold Chain"
       stock_cards: "Stock Cards"
       delivery:    "Delivery"
       rdt:         "RDT"
@@ -500,7 +500,7 @@ en:
       page_title_adult_vaccination_tally: "Adult Vaccination Tallies"
       page_title_child_vaccination_tally: "Child Vaccination Tallies"
       page_title_full_vaccination_tally:  "Full Vaccination Tallies"
-      page_title_epi_usage_tally:         "EPI Usage Tallies"
+      page_title_usage_tally:             "Usage Tallies"
       page_title_rdt_tally:               "RDT Tallies"
     health_center_inventory:
       instructions: "Note: Check “not recorded” (NR) if the quantity is not available; if there are none, record a zero (0)."
@@ -612,7 +612,7 @@ en:
       tab_title_adult_vaccination_tally: "Adult Vaccinations"
       tab_title_child_vaccination_tally: "Child Vaccinations"
       tab_title_full_vaccination_tally:  "Full Vaccinations"
-      tab_title_epi_usage_tally:         "EPI Usage"
+      tab_title_usage_tally:             "Usage"
       tab_title_rdt_tally:               "RDTs"
       add_fridge:                        "Add new fridge"
       upload_all:                        "Upload all completed forms"
@@ -696,7 +696,7 @@ en:
     vehicle_problem:      "Vehicle problem"
     health_center_closed: "Health center closed"
     other:                "Other (Enter reason below)"
-  EpiUsageTally:
+  UsageTally:
     doses_received:    "Doses received"
     doses_distributed: "Doses distributed"
     loss:              "Doses lost"

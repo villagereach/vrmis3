@@ -495,12 +495,12 @@
                       </xf:item>
                       <%- %w(road_problem vehicle_problem health_center_closed).each do |reason| -%>
                         <xf:item>
-                          <xf:label><%= t("activerecord.attributes.health_center_visit.#{reason}") %></xf:label>
+                          <xf:label><%= t("HealthCenterVisit.#{reason}") %></xf:label>
                           <xf:value><%= reason %></xf:value>
                         </xf:item>
                       <%- end -%>
                       <xf:item>
-                        <xf:label><%= t("activerecord.attributes.health_center_visit.other") %></xf:label>
+                        <xf:label><%= t("HealthCenterVisit.other") %></xf:label>
                         <xf:value>other</xf:value>
                       </xf:item>
                       <xf:alert><%= t(".errors.select_non_visit") %></xf:alert>
