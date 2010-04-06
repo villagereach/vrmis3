@@ -33,6 +33,7 @@ window.addEventListener('load', function() {
 
   setupVisits();
   setupVisitSearch();
+  fixup_menu_tabs();
 
   go_offline();
 }, false);
@@ -117,13 +118,11 @@ function set_active_tab(tab) {
 }
 
 function fixup_menu_tabs() {
-  jQuery('.menu-tab').removeClass('last');
-  if (jQuery('.menu-tab.xforms-enabled').length > 0) {
-    jQuery('.menu-tab.xforms-enabled').slice(-1).addClass('last');
-  } else {
-    // Degenerate case of a single tab (the first tab never has the xforms-enabled class set)
-    jQuery('.menu-tab').slice(0,1).addClass('last');
-  }
+  jQuery('#tab-menu a').each(function() {
+    jQuery(this).focus(function() {
+      jQuery(this).blur();
+    });
+  });
 }
 
 function get_available_visit_months() {
@@ -332,7 +331,6 @@ function selectVisit() {
              $('fc-selector').xfElement.selectValue(fc);
     }
     Dialog.hide("statusPanel");
-    fixup_menu_tabs();
     show_container(containers['visit']);
   }, 1);
   
