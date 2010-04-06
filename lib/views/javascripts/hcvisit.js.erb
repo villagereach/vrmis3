@@ -13,7 +13,7 @@ var containers = {
 };
 
 window.addEventListener('load', function() { 
-  $('saved-forms-control').addEventListener('change', selectVisit, true);
+  $('saved-forms-control').addEventListener('change', select_visit, true);
   window.setInterval(check_update_status, 3 * 1000);
   
   var statuses = ['cached', 'checking', 'downloading', 'error', 'noupdate', 'obsolete', 'progress', 'updateready'];
@@ -31,8 +31,8 @@ window.addEventListener('load', function() {
     valid_forms = {};
   }
 
-  setupVisits();
-  setupVisitSearch();
+  setup_visits();
+  setup_visit_search();
   fixup_menu_tabs();
 
   go_offline();
@@ -153,7 +153,7 @@ function get_available_visit_months() {
   return months;
 }
 
-function setupVisitMonths() {
+function setup_visit_months() {
   xforms.openAction();
 
   var month_selector = jQuery('#visit-month-selector');
@@ -188,7 +188,7 @@ function setupVisitMonths() {
 //        if (!item.hasClass('disabled')) {
 //          item.parent().siblings().find('span').removeClass('selected');
 //          item.addClass('selected');
-//          setSelectedValue('health_center', '');
+//          set_selected_value('health_center', '');
 //          $('visit-month-selector').xfElement.selectValue(value);
 //        }
 //      };
@@ -204,7 +204,7 @@ function setupVisitMonths() {
   xforms.closeAction();
 }
 
-function setSelectedValue(name, value) {
+function set_selected_value(name, value) {
   var ctx = $('data');
   if (!ctx) return null;
 
@@ -214,7 +214,7 @@ function setSelectedValue(name, value) {
   run(xf_action, "statusPanel", "DOMActivate", false, true);
 }
 
-function getSelectedValue(name) {
+function get_selected_value(name) {
   var ctx = $('data');
   if (!ctx) return null;
   
@@ -252,7 +252,7 @@ function find_province_district_health_center(hc) {
             nodeset[0].parentNode.getAttributeNS(null, 'name'),            // district
             nodeset[0].getAttributeNS(null, 'code'),                       // health_center
             nodeset[0].getAttributeNS(null, 'dz'),                         // delivery_zone
-            getSelectedValue('field_coordinator')];                        // field_coordinator
+            get_selected_value('field_coordinator')];                      // field_coordinator
   else
     return null;
 }
@@ -297,7 +297,7 @@ XFSelect.prototype.selectValue = function(value) {
   }
 }
 
-function selectVisit() {
+function select_visit() {
   savedVisits = $('saved-forms-control');
   if (savedVisits.selectedIndex == -1) {
     return;
@@ -344,15 +344,15 @@ function show_container( container ) {
 
 function login() {
   // FIXME: Implement something more than a trivial check
-  if (getSelectedValue('access_code').length > 0) {
-    setSelectedValue('logged_in', 'true()');
+  if (get_selected_value('access_code').length > 0) {
+    set_selected_value('logged_in', 'true()');
     show_container(containers['main']);
   }
 }
 
 function logout() {
-  setSelectedValue('access_code', '');
-  setSelectedValue('logged_in', 'false()');
+  set_selected_value('access_code', '');
+  set_selected_value('logged_in', 'false()');
   show_container(containers['login']);
   jQuery('#login-form input').each(function() { jQuery(this).val(''); }).slice(0,1).focus();
 }
@@ -363,7 +363,7 @@ function select_location() {
 }
 
 function show_visits() {
-  setupVisits();
+  setup_visits();
   // If no month is currently selected, autoselect the first month that is not finished
   //if (jQuery('#visit-month-menu span.selected').length === 0) {
   //  jQuery('#visit-month-menu li:not(.accept):first').find('span').click();
@@ -445,7 +445,7 @@ function set_hc_form_status(key, status) {
   valid_forms[key] = status;
 }
 
-function setupFormOptions(local_forms, only_set_monthly_status) {
+function setup_form_options(local_forms, only_set_monthly_status) {
   xforms.openAction();
 
   var savedVisits = jQuery('#saved-forms-control');
@@ -520,12 +520,12 @@ function uniq(arr) {
   return ret;
 }
 
-function setupVisits() {
+function setup_visits() {
   xforms.openAction();
 
-  var hcs = find_health_centers_in_delivery_zone(getSelectedValue('delivery_zone'));
+  var hcs = find_health_centers_in_delivery_zone(get_selected_value('delivery_zone'));
   var months = get_available_visit_months();
-  var month_period = getSelectedValue('visit_date_period');
+  var month_period = get_selected_value('visit_date_period');
 
   localStorage['valid forms'] = JSON.stringify(valid_forms); 
 
@@ -543,7 +543,7 @@ function setupVisits() {
       local_forms[district].push(key);
     }
 
-    setupFormOptions(local_forms, month_period != month);
+    setup_form_options(local_forms, month_period != month);
   }
 
   xforms.closeAction();
@@ -556,7 +556,7 @@ function reset_saved_forms_search() {
   jQuery('#saved-forms-filter').val('');
 }
 
-function setupVisitSearch() {
+function setup_visit_search() {
   reset_saved_forms_search();
   jQuery('#saved-forms-filter').keyup(function() {
     // case-insensitive match from beginning of health center name
@@ -626,7 +626,7 @@ XFSubmission.prototype.submit = function() {
         var node = this.eval_();
         set_hc_form_status(key, validate_(node));
 
-        setupVisits();
+        setup_visits();
       } catch(e) {
         DebugConsole.write("local storage failed");
         xforms.error(this.element, "xforms-submit-error",
@@ -635,8 +635,8 @@ XFSubmission.prototype.submit = function() {
     } else if(method == 'delete') {
       clearTimeout(save_timeouts[key]);
       localStorage.removeItem(key);
-      setupVisits();
-      selectVisit();
+      setup_visits();
+      select_visit();
     } else if(method == 'put') {
       var node = this.eval_();
       clearTimeout(save_timeouts[key]);
@@ -650,7 +650,7 @@ XFSubmission.prototype.submit = function() {
           localStorage[_key] = Writer.toString(_node);
         }
         XMLEvents.dispatch(_this, "xforms-submit-done");
-        //setupVisits();
+        //setup_visits();
       }; })(this, node, key, this.element.id), 1000);
     } else {
       XMLEvents.dispatch(this, "xforms-submit-error");
@@ -743,13 +743,13 @@ XPathCoreFunctions['http://www.w3.org/2005/xpath-functions sort'] =  new XPathFu
             });
     });
 
-function setupSavedVisits() {
+function setup_saved_visits() {
   var local_forms = [];
 
   forEachLocalStorageKey(function(key) {
       if (key.match(/^[\d\-]+\/.+$/) && valid_forms[key]) {
         local_forms.push('<li id="' + key.replace('/','_') + '" class="status ' + (valid_forms[key] ? 'complete' : 'todo') + '"><span>' + key + '</span></li>');
-        setTimeout((function(k) { return function() { findCorrectLabel(k) }; })(key), 1);
+        setTimeout((function(k) { return function() { find_correct_label(k) }; })(key), 1);
       }
   });
 
@@ -807,7 +807,7 @@ function upload(node, do_sync) {
   } );
 }
 
-function findCorrectLabel(key) {
+function find_correct_label(key) {
   jQuery.ajax( { 
       async: true,
       data: null,
@@ -822,20 +822,20 @@ function upload_all() {
   jQuery('#upload-ready li.complete').each(function(i,n) { upload(n, false) });
 }
 
-function isLoggedIn() {
+function is_logged_in() {
   var evt = document.createEvent('MouseEvents')
   evt.initMouseEvent("click", true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
   jQuery('#online_indicator a[href="#upload"]')[0].dispatchEvent(evt);  
 }
 
-function checkLoggedIn() {
+function check_logged_in() {
   jQuery('#login-login').focus();
   jQuery.ajax( { 
       async: true,
       url: '/logged-in?',
       type: 'GET',
       success: function(data, textStatus, xhr) {  
-        isLoggedIn();
+        is_logged_in();
       }
   } );
 }
@@ -851,7 +851,7 @@ function ajax_login() {
       error: function (XMLHttpRequest, textStatus, errorThrown) {      
       },
       success: function(data, textStatus, xhr) {  
-        isLoggedIn();
+        is_logged_in();
       },
       complete: function(xhr, textStatus) {
         jQuery('#login-button').attr('disabled', false);
@@ -860,7 +860,7 @@ function ajax_login() {
 }
 
 function finish_upload() {
-  setupVisits();
+  setup_visits();
   jQuery('#upload-uploaded ul').empty();
 }
 
@@ -870,11 +870,11 @@ jQuery(document).ready(function() {
     { 'hideOnContentClick': false,
       'autoScale': false,
       'autoDimension': true,
-      'onComplete': checkLoggedIn });
+      'onComplete': check_logged_in });
   jQuery('#online_indicator a[href="#upload"]').fancybox( 
     { 'hideOnContentClick': false,
       'autoScale': false,
       'autoDimension': true,
-      'onComplete': setupSavedVisits,
+      'onComplete': setup_saved_visits,
       'onClosed': finish_upload });
 });

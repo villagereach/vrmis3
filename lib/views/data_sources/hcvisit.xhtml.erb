@@ -246,7 +246,7 @@
       <%- end -%>
 <%- end -%>
       <xf:action ev:event="xforms-ready">
-        <xf:load resource="javascript:setupVisitMonths()" />
+        <xf:load resource="javascript:setup_visit_months()" />
         <xf:setvalue bind="i-visit-month" value="substring(jr:today(),1,7)" />
         <xf:setfocus control="access_code" />
       </xf:action>
@@ -362,7 +362,7 @@
             </xf:itemset>
           </xf:select1>
           <xf:action ev:event="xforms-value-changed">
-            <xf:load resource="javascript:setupVisits()" />
+            <xf:load resource="javascript:setup_visits()" />
             <xf:send ev:event="xforms-submit" submission="load"     if="instance('data')/selected-values/context-selected = true() and instance('data')/selected-values/selected-month-exists = true()" />
             <xf:send ev:event="xforms-submit" submission="new"      if="instance('data')/selected-values/context-selected = true() and instance('data')/selected-values/selected-month-exists = false()" />
           </xf:action>
