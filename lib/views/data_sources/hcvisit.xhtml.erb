@@ -174,8 +174,15 @@
       <xf:bind nodeset="/olmis/hcvisit/visit_month"   id="visit_month"/>
       <xf:bind nodeset="/olmis/hcvisit/health_center" id="health_center"/>
 
-      <xf:bind nodeset="/olmis/hcvisit/epi_data_ready"   id="epi_data_ready"   relevant="true()" type="xsd:boolean"    required="true()" />
-      <xf:bind nodeset="/olmis/hcvisit/epi_month"        id="epi_month"
+      <xf:bind nodeset="/olmis/hcvisit/epi_data_ready" id="epi_data_ready"
+<%- if Rails.env == "development" -%>
+        relevant="true()"
+        required="true()"
+<%- else -%>
+        calculate="true()"
+<%- end -%>
+        type="xsd:boolean" />
+      <xf:bind nodeset="/olmis/hcvisit/epi_month" id="epi_month"
         type="xsd:gYearMonth"
         constraint="jr:date(concat(.,'-01')) &lt;= jr:today()"
         calculate="olmis:previous_yearmonth(instance('data')/selected-values/visit_date_period)"
@@ -426,6 +433,7 @@
           <xf:switch>
             <xf:case id="case-visit">
               <div id="div-visit" class="block-form">
+<%- if Rails.env == "development" -%>
                 <xf:group>
                   <xf:select1 bind="epi_data_ready">
                     <xf:label><%= t("visits.health_center_monthly_visit.do_you_have_epi_data") %></xf:label>
@@ -439,6 +447,7 @@
                     <xf:label><%= t("epi_month") %>: </xf:label>
                   </xf:output>
                 </xf:group>
+<%- end -%>
                 <xf:group>
                   <xf:select1 bind="visited">
                     <xf:label id="was_hc_visited">
