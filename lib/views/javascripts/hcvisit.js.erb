@@ -38,6 +38,25 @@ window.addEventListener('load', function() {
   go_offline();
 }, false);
 
+function xf_user_init() {
+  // Run actions that must be performed *after* XSLTForms init() runs
+  fixup_nr_checkboxes();
+}
+
+function fixup_menu_tabs() {
+  jQuery('#tab-menu a').each(function() {
+    jQuery(this).focus(function() {
+      jQuery(this).blur();
+    });
+  });
+}
+
+function fixup_nr_checkboxes() {
+  jQuery('div.nr span.value').each(function() {
+    jQuery(this).insertBefore(jQuery(this).prev());
+  });
+}
+
 function do_download() {
   manifest_files['downloaded'] = 0;
   manifest_files['count'] = jQuery.
@@ -115,14 +134,6 @@ function check_update_status() {
 function set_active_tab(tab) {
   jQuery('.menu-tab').removeClass('selected-tab');
   jQuery('.menu-tab[id="tab-'+tab+'"]').addClass('selected-tab');
-}
-
-function fixup_menu_tabs() {
-  jQuery('#tab-menu a').each(function() {
-    jQuery(this).focus(function() {
-      jQuery(this).blur();
-    });
-  });
 }
 
 function get_available_visit_months() {
@@ -673,8 +684,8 @@ XPathCoreFunctions['http://www.w3.org/2005/xpath-functions selected'] =  new XPa
 
 //XPathCoreFunctions['http://openrosa.org/javarosa regex'] =  new XPathFunction(false, XPathFunction.DEFAULT_NONE, false,
 XPathCoreFunctions['http://www.w3.org/2005/xpath-functions regex'] =  new XPathFunction(false, XPathFunction.DEFAULT_NONE, false,
-    function(str, re) {
-      return new RegExp(re).test(stringValue(str));
+    function(nodeSet, re) {
+      return new RegExp(re).test(stringValue(nodeSet));
     } );
 
 //XPathCoreFunctions['http://openrosa.org/javarosa date'] =  new XPathFunction(false, XPathFunction.DEFAULT_NODESET, false,

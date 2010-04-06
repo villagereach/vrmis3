@@ -35,7 +35,7 @@
       <xf:bind id="selector"
         nodeset="instance('data')/selected-values/selector"
         relevant="instance('data')/selected-values/context-selected = true()"
-        constraint="jr:regex('^local://[^/]+/\d{4}-\d{2}$')"
+        constraint="jr:regex(., '^local://[^/]+/\d{4}-\d{2}$')"
         calculate="concat('local://', instance('data')/selected-values/visit_date_period, '/', instance('data')/selected-values/health_center)"
         />
 
@@ -230,12 +230,13 @@
       <%- tally_classes.each do |klass| -%>
         <%- klass.expected_params().each do |param, value_type|
           node = "/olmis/hcvisit/epi/#{ klass.name.tableize }/item[@for='#{ param }']"
-          type = (case value_type
-                  when :date then 'xf:date'
-                  else 'xf:nonNegativeInteger'
-                  end) -%>
+          type, constraint = (case value_type
+                              when :date then [ 'xf:string', "jr:regex(., '^\\\\d{2}/\\\\d{4}$')" ]
+
+                              else            [ 'xf:nonNegativeInteger', nil ]
+                              end) -%>
           <xf:bind id="<%= param %>:nr"    nodeset="<%= node %>/@nr"  required="false()"          type="xf:boolean" />
-          <xf:bind id="<%= param %>:value" nodeset="<%= node %>/@val" required="../@nr != true()" type="<%= type %>" />
+          <xf:bind id="<%= param %>:value" nodeset="<%= node %>/@val" required="../@nr != true()" type="<%= type %>" <%= %Q{constraint="#{constraint}"} if constraint %> />
         <%- end -%>
       <%- end -%>
 
@@ -537,7 +538,7 @@
                           <%- %w(existing delivered spoiled).each do |type|
                                 id = "inventory_#{package.code}_#{type}" -%>
                             <td>
-                              <div>
+                              <div class="tally">
                                 <xf:input bind="<%= id %>:qty" incremental="true">
                                   <xf:action ev:event="xforms-value-changed">
                                     <xf:setvalue if="string-length(.) &gt; 0"     bind="<%= id %>:nr" value="'false'" />
@@ -545,12 +546,14 @@
                                   </xf:action>
                                   <xf:alert><%= t(".errors.quantity") %></xf:alert>
                                 </xf:input>
-                                <xf:input bind="<%= id %>:nr" incremental="true">
-                                  <xf:label><%= t("NR") %></xf:label>
-                                  <xf:action ev:event="xforms-value-changed">
-                                    <xf:setvalue if=". = 'true'" bind="<%= id %>:qty" value="''" />
-                                  </xf:action>
-                                </xf:input>
+                                <div class="nr">
+                                  <xf:input bind="<%= id %>:nr" incremental="true">
+                                    <xf:label><%= t("NR") %></xf:label>
+                                    <xf:action ev:event="xforms-value-changed">
+                                      <xf:setvalue if=". = 'true'" bind="<%= id %>:qty" value="''" />
+                                    </xf:action>
+                                  </xf:input>
+                                </div>
                               </div>
                             </td>
                           <%- end -%>
@@ -584,7 +587,7 @@
                       <tr>
                         <th><%= type.label %></th>
                         <td>
-                          <div>
+                          <div class="tally">
                             <xf:input bind="<%= id %>:qty" incremental="true">
                               <xf:action ev:event="xforms-value-changed">
                                 <xf:setvalue if="string-length(.) &gt; 0"     bind="<%= id %>:nr" value="'false'" />
@@ -592,12 +595,14 @@
                               </xf:action>
                               <xf:alert><%= t(".errors.quantity") %></xf:alert>
                             </xf:input>
-                            <xf:input bind="<%= id %>:nr" incremental="true">
-                              <xf:label><%= t("NR") %></xf:label>
-                              <xf:action ev:event="xforms-value-changed">
-                                <xf:setvalue if=". = 'true'" bind="<%= id %>:qty" value="''" />
-                              </xf:action>
-                            </xf:input>
+                            <div class="nr">
+                              <xf:input bind="<%= id %>:nr" incremental="true">
+                                <xf:label><%= t("NR") %></xf:label>
+                                <xf:action ev:event="xforms-value-changed">
+                                  <xf:setvalue if=". = 'true'" bind="<%= id %>:qty" value="''" />
+                                </xf:action>
+                              </xf:input>
+                            </div>
                           </div>
                         </td>
                         <td>
@@ -658,7 +663,7 @@
                         </xf:select1>
                       </td>
                       <td>
-                        <div>
+                        <div class="tally">
                           <xf:input ref="@temp" incremental="true">
                             <xf:action ev:event="xforms-value-changed">
                               <xf:setvalue if="string-length(.) &gt; 0" ref="/olmis/hcvisit/visit/cold_chain/fridges/fridge[index('fridge-list')]/@nr" value="'false'" />
@@ -666,12 +671,14 @@
                             </xf:action>
                             <xf:alert><%= t(".errors.temperature") %></xf:alert>
                           </xf:input>
-                          <xf:input ref="@nr" incremental="true">
-                            <xf:label><%= t("NR") %></xf:label>
-                            <xf:action ev:event="xforms-value-changed">
-                              <xf:setvalue if=". = 'true'" ref="/olmis/hcvisit/visit/cold_chain/fridges/fridge[index('fridge-list')]/@temp" value="''" />
-                            </xf:action>
-                          </xf:input>
+                          <div class="nr">
+                            <xf:input ref="@nr" incremental="true">
+                              <xf:label><%= t("NR") %></xf:label>
+                              <xf:action ev:event="xforms-value-changed">
+                                <xf:setvalue if=". = 'true'" ref="/olmis/hcvisit/visit/cold_chain/fridges/fridge[index('fridge-list')]/@temp" value="''" />
+                              </xf:action>
+                            </xf:input>
+                          </div>
                         </div>
                       </td>
                       <td>
@@ -745,10 +752,10 @@
                     <p class="note"><%= t("visits.health_center_tally.instructions") %></p>
                     <%= tally_table(klass, lambda { |point|
                           node = klass.param_name(point)
-                          msg_key = expected_params.assoc(node).last == :date ? 'date' : 'quantity'
-                          incr = 'incremental="true"' #if msg_key == 'date'
-                          %Q{<xf:input bind="#{node}:value" #{incr}><xf:label /><xf:action ev:event="xforms-value-changed"><xf:setvalue if="string-length(.) &gt; 0" bind="#{node}:nr" value="'false'" /><xf:setvalue if=". = '' and ../@nr = 'false'" bind="#{node}:nr" /></xf:action><xf:alert>#{t(".errors.#{msg_key}")}</xf:alert></xf:input>} +
-                            %Q{<xf:input bind="#{node}:nr" incremental="true"><xf:label>#{t("NR")}</xf:label><xf:action ev:event="xforms-value-changed"><xf:setvalue if=". = 'true'" bind="#{node}:value" value="''" /></xf:action></xf:input>}
+                          msg_key, input_type = expected_params.assoc(node).last == :date ? [ 'date', 'month-year' ] : [ 'quantity', 'integer' ]
+                          incr = 'incremental="true"'
+                          %Q{<div class="tally #{input_type}"><xf:input bind="#{node}:value" #{incr}><xf:label /><xf:action ev:event="xforms-value-changed"><xf:setvalue if="string-length(.) &gt; 0" bind="#{node}:nr" value="'false'" /><xf:setvalue if=". = '' and ../@nr = 'false'" bind="#{node}:nr" /></xf:action><xf:alert>#{t(".errors.#{msg_key}")}</xf:alert></xf:input>} +
+                            %Q{<div class="nr"><xf:input bind="#{node}:nr" incremental="true"><xf:label>#{t("NR")}</xf:label><xf:action ev:event="xforms-value-changed"><xf:setvalue if=". = 'true'" bind="#{node}:value" value="''" /></xf:action></xf:input></div></div>}
                         }) %>
                   </xf:group>
                 </div>

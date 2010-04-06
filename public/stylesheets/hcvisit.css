@@ -520,20 +520,48 @@ table.calendar {
   height : 5em;
   display : block;
 }
-#case-full_vaccination_tallies table.spreadsheet,
-#case-child_vaccination_tallies table.spreadsheet,
-#case-adult_vaccination_tallies table.spreadsheet,
-#case-usage_tallies table.spreadsheet,
-#case-inventory table.spreadsheet,
-#case-equipment table.spreadsheet {
+table.spreadsheet {
   width : auto;
 }
-#case-full_vaccination_tallies input.xforms-value[type="text"],
-#case-child_vaccination_tallies input.xforms-value[type="text"],
-#case-adult_vaccination_tallies input.xforms-value[type="text"],
-#case-usage_tallies input.xforms-value[type="text"],
-#case-inventory input.xforms-value[type="text"],
-#case-equipment input.xforms-value[type="text"] {
+table.spreadsheet td {
+  padding: 0;
+}
+table.spreadsheet div.tally {
+  background-color: lightgray;
+  margin: 1px;
+  padding: 0 0 16px;
+  position: relative;
+}
+table.spreadsheet div.tally > span {
+  display: table;
+  margin: 0;
+}
+table.spreadsheet div.tally > span span.value {
+  display: table-cell;
+}
+table.spreadsheet div.tally input[type="text"] {
+  border: 1px solid gray;
+  display: block;
+  font-size: larger;
+  margin: 1px 1px 0 1px;
+  padding: 0;
+  text-align: right;
+  width: 69px;
+}
+table.spreadsheet div.tally.month-year input[type="text"] {
+  width: 80px;
+}
+table.spreadsheet div.tally div.nr {
+  position: absolute;
+  top: 24px;
+  left: 0;
+  padding: 0;
+  margin: 0;
+}
+table.spreadsheet div.tally div.nr > span {
+  margin: 0;
+}
+table.spreadsheet input.xforms-value[type="text"] {
   width : 3em;
 }
 #case-inventory .inventory thead th:first-child,
@@ -544,7 +572,6 @@ table.calendar {
 #case-adult_vaccination_tallies tr:first-child th {
   border-bottom : 0;
 }
-#case-usage_tallies table.spreadsheet td:last-child .xforms-value,
 #case-equipment #fridge-list tr th .xforms-value {
   width : 7em;
 }
