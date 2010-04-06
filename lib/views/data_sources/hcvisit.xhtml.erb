@@ -434,7 +434,7 @@
           </xf:group><!-- ref="instance('olmis')/hcvisit" -->
         </div><!-- id="tab-menu" -->
 
-        <xf:group ref="instance('olmis')/hcvisit">
+        <xf:group id="form-contents" ref="instance('olmis')/hcvisit">
           <xf:action ev:event="xforms-value-changed">
             <xf:send ev:event="xforms-submit" submission="save" if="instance('data')/selected-values/context-selected = true()" />
           </xf:action>
@@ -781,7 +781,7 @@
             <%- end -%>
 <%- end -%>
           </xf:switch>
-        </xf:group>
+        </xf:group><!-- id="form-contents" -->
       </xf:group><!-- bind="context-selected" -->
     </div>
     <div id="status_footer">

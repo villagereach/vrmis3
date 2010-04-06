@@ -479,54 +479,39 @@ table.calendar {
 }
 /* }}} */
 /* navigation {{{ */
-#tab-menu-inner {
-  display : table;
-  width : 100%;
-}
-#tab-menu-inner .xforms-group-content {
-  display : table-row;
+#tab-menu {
+  float: left;
+  margin-right: 10px;
+  width: 190px;
 }
 #tab-menu .menu-tab {
-  text-align : center;
-  display : table-cell;
+  display: block;
+  padding: 2px 0 2px 24px;
 }
-#tab-menu .menu-tab a {
-  color : #fff;
-  font-size : 1.1em;
-  font-weight : normal;
-  text-decoration : none;
-  white-space : nowrap;
-  padding : .2em 0;
-  background : #541;
-  border-left : 1px solid #784;
-  border-right : 1px solid #120;
-  display : block;
+#tab-menu-inner {
+  position: relative;
 }
-#tab-menu  a:hover,
-#tab-menu .selected-tab a,
-#tab-menu .selected-tab a:hover {
-  background : #900;
-  border-left : 1px solid #c33;
-  border-right : 1px solid #600;
+#tab-menu a,
+#tab-menu a:visited {
+  color: #09c;
+  cursor: pointer;
+  font-weight: bold;
+  text-decoration: underline;
 }
-#tab-menu .selected-tab a,
-#tab-menu .selected-tab a:hover {
-  text-decoration : none;
-  cursor : text;
+#tab-menu .selected-tab {
+  background-color: #f6f6f6;
+  border: 1px solid green;
+  border-right: none;
 }
-#tab-menu-inner .xforms-group-content span.menu-tab:first-child,
-#tab-menu-inner .xforms-group-content span.menu-tab:first-child a {
-  -moz-border-radius-topleft : 10px;
-  -webkit-border-top-left-radius : 10px;
-  border-top-left-radius : 10px;
-  border-left : none !important; /* to override hover */
+#tab-menu .selected-tab a {
+  color: black;
+  cursor: auto;
+  text-decoration: none;
 }
-#tab-menu-inner .last,
-#tab-menu-inner .last a {
-  -moz-border-radius-topright : 10px;
-  -webkit-border-top-right-radius : 10px;
-  border-top-right-radius : 10px;
-  border-right : none !important; /* to override hover */
+#form-contents {
+  float: left;
+  margin-left: -11px;
+  width: 750px;
 }
 /* }}} */
 /* individual sheets {{{ */
