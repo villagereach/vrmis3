@@ -170,8 +170,7 @@
       <xf:bind id="i-province"    nodeset="instance('data')/selected-values/province" required="true()" relevant="false()"/>
       <xf:bind id="i-district"    nodeset="instance('data')/selected-values/district" required="true()" relevant="false()"/>
       <xf:bind id="i-health-center" nodeset="instance('data')/selected-values/health_center" required="true()" relevant="false()"/>
-      <xf:bind id="i-visit-month" nodeset="instance('data')/selected-values/visit_date_period" required="true()"
-               relevant="instance('data')/selected-values/login-selected = true()" />
+      <xf:bind id="i-visit-month" nodeset="instance('data')/selected-values/visit_date_period" required="true()"/>
       <xf:bind id="i-delivery-zone" nodeset="instance('data')/selected-values/delivery_zone" required="true()"/>
       <xf:bind id="i-field-coordinator" nodeset="instance('data')/selected-values/field_coordinator" required="true()"/>
       <xf:bind id="i-visiting-field-coordinator" nodeset="instance('data')/selected-values/visiting_field_coordinator" required="true()"
@@ -281,9 +280,9 @@
             <xf:label ref="."/>
             <xf:value ref="../@code"/>
           </xf:itemset>
-          <xf:action ev:event="xforms-value-changed">
+          <!--xf:action ev:event="xforms-value-changed">
             <xf:setvalue if="instance('data')/selected-values/field_coordinator = ''" bind="i-field-coordinator" value="instance('data')/province/fc[@dz=instance('data')/selected-values/delivery_zone]/@name" />
-          </xf:action>
+          </xf:action-->
           <xf:alert><%= t(".errors.select_dz") %></xf:alert>
         </xf:select1>
         <xf:select1 id="fc-selector" ref="instance('data')/selected-values/field_coordinator">
@@ -292,16 +291,22 @@
             <xf:label ref="."/>
             <xf:value ref="."/>
           </xf:itemset>
-          <xf:action ev:event="xforms-value-changed">
+          <!--xf:action ev:event="xforms-value-changed">
             <xf:setvalue if="instance('data')/selected-values/delivery_zone = ''" bind="i-delivery-zone" value="instance('data')/province/fc[@name=instance('data')/selected-values/field_coordinator]/@dz" />
-          </xf:action>
+          </xf:action-->
           <xf:alert><%= t(".errors.select_fc") %></xf:alert>
+        </xf:select1>
+        <xf:select1 id="visit-month-selector" ref="instance('data')/selected-values/visit_date_period">
+          <xf:label><%= t(".visit_month") %></xf:label>
+          <xf:item><!-- dynamically generated --></xf:item>
+          <xf:alert><%= t(".errors.select_visit_month") %></xf:alert>
         </xf:select1>
         <xf:trigger>
           <xf:label><%= t("go") %></xf:label>
           <xf:action ev:event="DOMActivate" mode="synchronous">
             <xf:setvalue bind="field_coordinator" value="instance('data')/selected-values/field_coordinator"/>
             <xf:setvalue bind="delivery_zone"     value="instance('data')/selected-values/delivery_zone"/>
+            <Xf:setvalue bind="visit_month"       value="instance('data')/selected-values/visit_date_period"/>
             <xf:load resource="javascript:select_location()" />
           </xf:action>
         </xf:trigger>
@@ -338,10 +343,6 @@
     <div id="context-selector" class="container">
       <div id="year-month-selector" class="inline">
         <xf:group>
-          <xf:select1 id="visit-month-selector" ref="instance('data')/selected-values/visit_date_period">
-            <xf:item><!-- dynamically generated --></xf:item>
-            <xf:alert><%= t(".errors.select_visit_month") %></xf:alert>
-          </xf:select1>
           <xf:select1 id='province-selector' ref="instance('data')/selected-values/province">
             <xf:itemset nodeset="instance('data')/province">
               <xf:label ref="@name"/>

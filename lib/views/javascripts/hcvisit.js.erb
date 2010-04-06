@@ -1,4 +1,5 @@
 var online = true;
+var months_to_show = 6;
 var valid_forms = {};
 var manifest_files = {
   count:      1,
@@ -7,7 +8,7 @@ var manifest_files = {
 var containers = {
   login: 'login-form',
   main:  'location-selector',
-  month: 'context-selector',
+  hc:    'context-selector',
   visit: 'form'
 };
 
@@ -127,17 +128,18 @@ function fixup_menu_tabs() {
 
 function get_available_visit_months() {
   var now = new Date();
-  var month = now.getMonth() + 1;
+  var month = now.getMonth();
   var year = now.getFullYear();
   var months = [];
 
-  for (var i = 0; i < 4; i++) {
+  for (var i = 0; i < months_to_show; i++) {
     var y = year;
-    var m = month - 1 - i;
+    var m = month - i;
     if (m < 0) {
       y -= 1;
       m += 12;
     }
+    var month_current = (y == year && m == month);
     var month_value = y + '-' + ('0' + (m+1)).substr(-2,2);
     var month_text;
     try {
@@ -146,7 +148,7 @@ function get_available_visit_months() {
       month_text = '';
     }
 
-    months.push([month_value, month_text]);
+    months.push([month_value, month_text, month_current]);
   }
 
   return months;
@@ -159,41 +161,46 @@ function setupVisitMonths() {
   var select_control = month_selector.find('select');
   select_control.empty();
 
-  var ul = jQuery(document.createElement('ul'));
-  ul.attr('id', 'visit-month-menu');
+//  var ul = jQuery(document.createElement('ul'));
+//  ul.attr('id', 'visit-month-menu');
 
   var months = get_available_visit_months();
   for (var i = 0, l = months.length; i < l; i++) {
     var month_value = months[i][0];
     var month_text  = months[i][1];
+    var is_current_month  = months[i][2];
 
     var opt = jQuery(document.createElement('option'));
     opt.attr('text', month_text);
     opt.attr('value', month_value);
+    // FIXME: Set the default selection. Neither of the following methods work. Why?
+    // NOTE: This isn't terribly important as long as the current month is the first one in the list.
+    //opt.attr('selected', is_current_month);
+    //if (is_current_month) opt.attr('selected', 'selected');
     select_control.append(opt);
 
-    var li = jQuery(document.createElement('li'));
-    li.attr('id', 'month_'+month_value);
-
-    var span = jQuery(document.createElement('span'));
-    span.text(month_text);
-    span.click(function(item, value) {
-      return function() {
-        if (!item.hasClass('disabled')) {
-          item.parent().siblings().find('span').removeClass('selected');
-          item.addClass('selected');
-          setSelectedValue('health_center', '');
-          $('visit-month-selector').xfElement.selectValue(value);
-        }
-      };
-    }(span, month_value));
-
-    li.append(span);
-    ul.append(li);
+//    var li = jQuery(document.createElement('li'));
+//    li.attr('id', 'month_'+month_value);
+//
+//    var span = jQuery(document.createElement('span'));
+//    span.text(month_text);
+//    span.click(function(item, value) {
+//      return function() {
+//        if (!item.hasClass('disabled')) {
+//          item.parent().siblings().find('span').removeClass('selected');
+//          item.addClass('selected');
+//          setSelectedValue('health_center', '');
+//          $('visit-month-selector').xfElement.selectValue(value);
+//        }
+//      };
+//    }(span, month_value));
+//
+//    li.append(span);
+//    ul.append(li);
   }
 
-  month_selector.parent().append(ul);
-  month_selector.hide();
+//  month_selector.parent().append(ul);
+//  month_selector.hide();
 
   xforms.closeAction();
 }
@@ -346,24 +353,24 @@ function login() {
 }
 
 function logout() {
-  jQuery('#login-form input').each(function() { jQuery(this).val(''); });
   setSelectedValue('access_code', '');
   setSelectedValue('logged_in', 'false()');
   show_container(containers['login']);
+  jQuery('#login-form input').each(function() { jQuery(this).val(''); }).slice(0,1).focus();
 }
 
 function select_location() {
-  jQuery('#visit-month-menu span').removeClass();  // reset to empty state
+//  jQuery('#visit-month-menu span').removeClass();  // reset to empty state
   show_visits();
 }
 
 function show_visits() {
   setupVisits();
   // If no month is currently selected, autoselect the first month that is not finished
-  if (jQuery('#visit-month-menu span.selected').length === 0) {
-    jQuery('#visit-month-menu li:not(.accept):first').find('span').click();
-  }
-  show_container(containers['month']);
+  //if (jQuery('#visit-month-menu span.selected').length === 0) {
+  //  jQuery('#visit-month-menu li:not(.accept):first').find('span').click();
+  //}
+  show_container(containers['hc']);
 }
 
 function get_context_path_value(ctx, path) {

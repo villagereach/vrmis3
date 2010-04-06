@@ -608,7 +608,7 @@ en:
       upload:      "Upload"
       uploading:   "Uploading..."
     hcvisit:
-      go_to_context_selection:           "Change health center or month"
+      go_to_context_selection:           "Change health center"
       tab_title_adult_vaccination_tally: "Adult Vaccinations"
       tab_title_child_vaccination_tally: "Child Vaccinations"
       tab_title_full_vaccination_tally:  "Full Vaccinations"
