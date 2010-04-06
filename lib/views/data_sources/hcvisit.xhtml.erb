@@ -92,7 +92,6 @@
           <xf:setvalue bind="visit_month"   value="instance('data')/selected-values/visit_date_period"/>
           <xf:setvalue bind="delivery_zone" value="instance('data')/selected-values/delivery_zone"/>
           <xf:setvalue bind="field_coordinator" value="instance('data')/selected-values/field_coordinator"/>
-          <xf:setvalue bind="visiting_field_coordinator" value="instance('data')/selected-values/visiting_field_coordinator"/>
           <xf:setvalue ref="/olmis/meta/date" value="jr:today()"/>
 
           <xf:toggle case="case-visit"/>
@@ -116,7 +115,6 @@
           <xf:setvalue bind="visit_month"   value="instance('data')/selected-values/visit_date_period"/>
           <xf:setvalue bind="delivery_zone" value="instance('data')/selected-values/delivery_zone"/>
           <xf:setvalue bind="field_coordinator" value="instance('data')/selected-values/field_coordinator"/>
-          <xf:setvalue bind="visiting_field_coordinator" value="instance('data')/selected-values/visiting_field_coordinator"/>
           <xf:setvalue ref="instance('olmis')/meta/date" value="jr:today()"/>
           <xf:setvalue bind="visited_at" value="jr:date(concat(../visit_month,'-01'))" />
 
@@ -167,8 +165,6 @@
       <xf:bind id="i-visit-month" nodeset="instance('data')/selected-values/visit_date_period" required="true()"/>
       <xf:bind id="i-delivery-zone" nodeset="instance('data')/selected-values/delivery_zone" required="true()"/>
       <xf:bind id="i-field-coordinator" nodeset="instance('data')/selected-values/field_coordinator" required="true()"/>
-      <xf:bind id="i-visiting-field-coordinator" nodeset="instance('data')/selected-values/visiting_field_coordinator" required="true()"
-               relevant="instance('data')/selected-values/province != '' and instance('olmis')/hcvisit/visited = 'else'"/>
       <xf:bind nodeset="/olmis/meta/date" type="xf:date" readonly="true()"/>
 
       <xf:bind nodeset="/olmis/meta/province" id="province"/>
@@ -177,7 +173,6 @@
       <xf:bind nodeset="/olmis/meta/field_coordinator" id="field_coordinator"/>
       <xf:bind nodeset="/olmis/hcvisit/visit_month"   id="visit_month"/>
       <xf:bind nodeset="/olmis/hcvisit/health_center" id="health_center"/>
-      <xf:bind nodeset="/olmis/hcvisit/visiting_field_coordinator" id="visiting_field_coordinator"/>
 
       <xf:bind nodeset="/olmis/hcvisit/epi_data_ready"   id="epi_data_ready"   relevant="true()" type="xsd:boolean"    required="true()" />
       <xf:bind nodeset="/olmis/hcvisit/epi_month"        id="epi_month"
@@ -457,10 +452,6 @@
                       <xf:value>true</xf:value>
                     </xf:item>
                     <xf:item>
-                      <xf:label><%= t("visits.health_center_monthly_visit.yes_someone_else_visited") %></xf:label>
-                      <xf:value>else</xf:value>
-                    </xf:item>
-                    <xf:item>
                       <xf:label><%= t("visits.health_center_monthly_visit.no_noone_visited") %></xf:label>
                       <xf:value>false</xf:value>
                     </xf:item>
@@ -468,16 +459,6 @@
                   <xf:action ev:event="xforms-value-changed">
                     <xf:load resource="javascript:fixup_menu_tabs()" />
                   </xf:action>
-                </xf:group>
-                <xf:group>
-                  <xf:select1 id="visiting-fc-selector" ref="instance('data')/selected-values/visiting_field_coordinator">
-                    <xf:label><%= t("visits.health_center_monthly_visit.visiting_field_coordinator") %></xf:label>
-                    <xf:itemset nodeset="instance('data')/blank | instance('data')/province[@name=instance('data')/selected-values/province]/fc[@name != instance('data')/selected-values/field_coordinator]">
-                      <xf:label ref="@name"/>
-                      <xf:value ref="@name"/>
-                    </xf:itemset>
-                    <xf:alert><%= t(".errors.select_visiting_fc") %></xf:alert>
-                  </xf:select1>
                 </xf:group>
                 <xf:group>
                   <xf:input bind="visited_at" incremental="true">
