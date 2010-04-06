@@ -2,13 +2,7 @@
 <?xsltforms-options debug="no"?>
 <?css-conversion no?>
 <%-
-  generate_complete_form = true
-
-  # if !generate_complete_form, only the sections listed in form_components will be generated.
-  form_components = %w(equipment inventory) # Choose from %w(inventory equipment epi)
-
   tally_classes = HealthCenterVisit.tally_hash.map{|k,v| k.constantize}
-
   locale = I18n.locale
 -%>
 <html xmlns="http://www.w3.org/1999/xhtml"
@@ -201,7 +195,6 @@
       <xf:bind nodeset="/olmis/hcvisit/visit" id="visit_data" relevant="/olmis/hcvisit/visited != 'false'" />
       <xf:bind nodeset="/olmis/hcvisit/epi"   id="epi_data"   relevant="/olmis/hcvisit/epi_data_ready = true()" />
 
-<%- if generate_complete_form || form_components.include?("inventory") -%>
       <%- Package.all.reject{|p| p.product.product_type_code == 'test'}.each do |package| -%>
         <%- %w(existing delivered spoiled).each do |type|
               id = "inventory_#{package.code}_#{type}"
@@ -210,8 +203,7 @@
           <xf:bind id="<%= id %>:qty" nodeset="<%= node %>/@qty" required="../@nr != true()" type="xf:nonNegativeInteger" />
         <%- end -%>
       <%- end -%>
-<%- end -%>
-<%- if generate_complete_form || form_components.include?("equipment") -%>
+
       <%- EquipmentType.all.each do |type|
             id = "general_#{type.code}"
             node = "/olmis/hcvisit/visit/general/item[@for='#{ type.code }']"  -%>
@@ -220,6 +212,7 @@
         <xf:bind id="<%= id %>:status" nodeset="<%= node %>/@status" required="true()" />
         <xf:bind id="<%= id %>:notes"  nodeset="<%= node %>/@notes"  required="false()" />
       <%- end -%>
+
       <%- StockCard.all.each do |type|
             id = "stock_cards_#{type.code}"
             node = "/olmis/hcvisit/visit/stock_cards/item[@for='#{ type.code }']" -%>
@@ -231,8 +224,7 @@
       <xf:bind id="fridge:nr"     nodeset="/olmis/hcvisit/visit/cold_chain/fridges/fridge/@nr"     required="false()"         type="xf:boolean" relevant="../@status != 'BROKE' and ../@status != 'MISS'" />
       <xf:bind id="fridge:temp"   nodeset="/olmis/hcvisit/visit/cold_chain/fridges/fridge/@temp"   required="../@nr != true()" type="xf:integer" constraint="(. &gt;= 2 and . &lt;= 8 and ../@status = 'OK') or ../@status = 'PROB'" relevant="../@status != 'BROKE' and ../@status != 'MISS'" />
       <xf:bind id="fridge:notes"  nodeset="/olmis/hcvisit/visit/cold_chain/fridges/fridge/@notes"  required="false()" />
-<%- end -%>
-<%- if generate_complete_form || form_components.include?("epi") -%>
+
       <%- tally_classes.each do |klass| -%>
         <%- klass.expected_params().each do |param, value_type|
           node = "/olmis/hcvisit/epi/#{ klass.name.tableize }/item[@for='#{ param }']"
@@ -244,7 +236,7 @@
           <xf:bind id="<%= param %>:value" nodeset="<%= node %>/@val" required="../@nr != true()" type="<%= type %>" />
         <%- end -%>
       <%- end -%>
-<%- end -%>
+
       <xf:action ev:event="xforms-ready">
         <xf:load resource="javascript:setup_visit_months()" />
         <xf:setvalue bind="i-visit-month" value="substring(jr:today(),1,7)" />
@@ -401,7 +393,6 @@
               </xf:action>
             </xf:trigger>
 
-<%- if generate_complete_form || form_components.include?("inventory") -%>
             <xf:trigger bind="visit_data" id="tab-inventory" class="menu-tab" appearance="minimal">
               <xf:label><%= t("visits.health_center_monthly_tasks.inventory") %></xf:label>
               <xf:action ev:event="DOMActivate">
@@ -410,8 +401,6 @@
               </xf:action>
             </xf:trigger>
               
-<%- end -%>
-<%- if generate_complete_form || form_components.include?("equipment") -%>
             <xf:trigger bind="visit_data" id="tab-equipment" class="menu-tab" appearance="minimal">
               <xf:label><%= t("visits.health_center_monthly_tasks.equipment") %></xf:label>
               <xf:action ev:event="DOMActivate">
@@ -419,8 +408,7 @@
                 <xf:load resource="javascript:set_active_tab('equipment')" />
               </xf:action>
             </xf:trigger>
-<%- end -%>
-<%- if generate_complete_form || form_components.include?("epi") -%>
+
             <%- tally_classes.each do |klass| -%>
               <xf:trigger bind="epi_data" id="tab-<%= klass.name.tableize %>" class="menu-tab" appearance="minimal">
                 <xf:label><%= t(".tab_title_#{ klass.name.underscore }") %></xf:label>
@@ -430,7 +418,6 @@
                 </xf:action>
               </xf:trigger>
             <%- end -%>
-<%- end -%>
           </xf:group><!-- ref="instance('olmis')/hcvisit" -->
         </div><!-- id="tab-menu" -->
 
@@ -538,7 +525,7 @@
                 </xf:group>
               </div>
             </xf:case><!-- id="case-visit" -->
-<%- if generate_complete_form || form_components.include?("inventory") -%>
+
             <xf:case id="case-inventory">
               <div id="div-inventory" class="block-form">
                 <xf:group bind="visit_data">
@@ -587,8 +574,7 @@
                 </xf:group>
               </div>
             </xf:case><!-- id="case-inventory" -->
-<%- end -%>
-<%- if generate_complete_form || form_components.include?("equipment") -%>
+
             <xf:case id="case-equipment">
               <xf:group bind="visit_data">
                 <xf:label><%= t("visits.health_center_monthly_tasks.equipment") %></xf:label>
@@ -759,8 +745,7 @@
                 </table>
               </xf:group>
             </xf:case><!-- id="case-equipment" -->
-<%- end -%>
-<%- if generate_complete_form || form_components.include?("epi") -%>
+
             <%- tally_classes.each do |klass|
                   expected_params = klass.expected_params -%>
               <xf:case id="case-<%= klass.name.tableize %>" >
@@ -779,7 +764,6 @@
                 </div>
               </xf:case><!-- id="case-<%= klass.name.tableize %>" -->
             <%- end -%>
-<%- end -%>
           </xf:switch>
         </xf:group><!-- id="form-contents" -->
       </xf:group><!-- bind="context-selected" -->
