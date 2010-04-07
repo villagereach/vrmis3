@@ -472,7 +472,7 @@ en:
       inventory:   "Inventory"
       equipment:   "Equipment"
       general:     "General"
-      cold_chainp: "Cold Chain"
+      cold_chain:  "Cold Chain"
       stock_cards: "Stock Cards"
       delivery:    "Delivery"
       rdt:         "RDT"
