@@ -149,6 +149,21 @@ module VisitsHelper
     end
   end
 
+  def coverage_field(name, target_code, total)
+    # Given a target percentage code and a total-vaccinations cell, inserts a field that calculates the coverage based on the target population size
+    if target = TargetPercentage.find_by_code(target_code)
+      size = (@health_center.catchment_population * target.percentage / Date.date_periods_per_year / 100).to_i
+      expression_field(name, "100 * #{total} / #{size}", '%')
+    end
+  end
+  
+  def wastage_field(package_code, open_vials, total_doses)
+    # Given a package code and a total-vaccinations cell, inserts a field that calculates the wastage based on the number of doses in the package
+    if package = Package.find_by_code(package_code)
+      expression_field("#{package_code}_wastage", "100 * ((#{open_vials}) - ((#{total_doses}) / #{package.quantity})) / (#{open_vials})", "%")
+    end
+  end
+  
   def expression_field(name, expression, suffix='')
     # Inserts a calculated field based on the value of other fields.  The second argument should be a
     # Javascript expression where any words starting with an alphabetic character must be the IDs of
@@ -159,12 +174,12 @@ module VisitsHelper
     # If the resulting value is NaN, the field will appear blank. Otherwise, the value will be truncated
     # to an integer and the value of the third argument, if any, will be appended.
 
-    tokens = expression.split(/([a-z][^ ]+)/i) # every field starts with an alpha and contains no spaces
+    tokens = expression.split(/([a-z][^ \(\)]+)/i) # every field starts with an alpha and contains no spaces
     tokens.push('') if tokens.length % 2 == 0
 
-    fields = tokens.map_with_index { |t, i| i % 2 == 1 ? t : '' }.reject(&:blank?)
+    fields = tokens.map_with_index { |t, i| i % 2 == 1 ? t : '' }.reject(&:blank?).uniq
 
-    output = text_field_tag(nil, '', :disabled => 'disabled', :size => 3, :id => name)
+    output = '<div style="text-align: center">' + text_field_tag(nil, '', :disabled => 'disabled', :size => 3, :id => name) + '</div>'
 
     fnname = "_calculate_#{name.gsub(/\W+/, '_')}"
     fn = "function #{fnname}() { \nv = parseInt(" +
@@ -176,7 +191,8 @@ module VisitsHelper
       }.join("") +
         "); \n$('##{name}').val(isNaN(v) ? '' : (v + '#{suffix}')); $('##{name}').change(); }"
 
-      output + javascript_tag(fn + "\njQuery(document).ready(#{fnname});" + fields.map { |f| "\n$('##{f}').change(#{fnname}); " }.join(""))
+      output + javascript_tag(fn + "\njQuery(document).ready(#{fnname}); \n" +
+        "jQuery(document).ready(function() {" + fields.map { |f| "\n$('##{f}').change(#{fnname}); " }.join("") + "\n});")
   end
 
   def tally_form_field(type, name, options)
