@@ -633,6 +633,8 @@ en:
       hc:
         page_title:                      "Data for {{delivery_zone}}, {{visit_month}}"
         choose:                          "Choose Health Center"
+        before_warehouse_visit:          "Before Warehouse Visit: View amounts to request"
+        after_warehouse_visit:           "After Warehouse Visit: Enter amounts"
       status:
         login_and_upload: "Login and upload forms"
         updated:          "Updated"

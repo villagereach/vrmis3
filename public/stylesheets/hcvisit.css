@@ -71,9 +71,8 @@ p {
 
 #saved-forms {
   margin: 0 auto;
-  width: 250px;
+  width: 300px;
 }
-
 select#saved-forms-control, #saved-forms-search {
   width: 100%;
 }
@@ -86,13 +85,15 @@ select#saved-forms-control {
   display: inline;
   font-size: 90%;
 }
+#saved-forms-search label {
+  margin-right: 0.5em;
+}
 #saved-forms-search input {
-  /*margin: 0 1.25em 0 0.25em;*/
-  margin: 0 0.25em;
+  margin: 0;
   width: 10em;
 }
 #saved-forms-search button {
-  float: right;
+  margin-left: 1.0em;
 }
 
 .hidden {
@@ -433,7 +434,7 @@ h4 {
 #location-selector,
 #context-selector,
 #offline-reports {
-  margin : 5em auto 0;
+  margin : 2em auto 0;
 }
 #login-form {
   width: 400px;
@@ -477,6 +478,19 @@ h4 {
   margin: 0;
   padding: 0;
   text-align: center;
+}
+
+#warehouse-actions {
+  font-size: 105%;
+  font-weight: bold;
+  margin: 0 auto;
+  width: 400px;
+}
+#warehouse-actions ul {
+  line-height: 2em;
+  list-style: none;
+  margin: 0;
+  padding: 0;
 }
 
 .inline label {

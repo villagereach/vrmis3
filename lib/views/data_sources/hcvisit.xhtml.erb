@@ -381,6 +381,13 @@
                          sub("{{visit_month}}",%Q{<xf:output value="olmis:month_of_year(instance('data')/selected-values/visit_date_period)" />}) %>
       </h3>
 
+      <div id="warehouse-actions">
+        <ul>
+          <li><a href="#todo"><%= t(".hc.before_warehouse_visit") %></a></li>
+          <li><a href="#todo"><%= t(".hc.after_warehouse_visit") %></a></li>
+        </ul>
+      </div>
+
       <div>
         <h4><%= t(".hc.choose") %></h4>
         <div id="year-month-selector" class="inline">
