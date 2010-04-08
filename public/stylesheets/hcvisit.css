@@ -69,11 +69,16 @@ p {
   margin-right: 1ex; /* margin to the right of the label */
 }
 
-select#saved-forms-control, #saved-forms-search {
+#saved-forms {
+  margin: 0 auto;
   width: 250px;
-  margin: 10px;
+}
+
+select#saved-forms-control, #saved-forms-search {
+  width: 100%;
 }
 select#saved-forms-control {
+  display: block;
   height: 12em;
 }
 
@@ -81,10 +86,13 @@ select#saved-forms-control {
   display: inline;
   font-size: 90%;
 }
-
 #saved-forms-search input {
-  margin: 0 1.25em 0 0.25em;
+  /*margin: 0 1.25em 0 0.25em;*/
+  margin: 0 0.25em;
   width: 10em;
+}
+#saved-forms-search button {
+  float: right;
 }
 
 .hidden {
@@ -381,17 +389,22 @@ h1 a {
 }
 /* }}} */
 /* headings {{{ */
-h2 {font-size:2em;margin-bottom:0.75em;}
-h2 {
-  color : #541;
-  font-size : 2em;
-  font-weight : bold;
-  text-align : center;
-  margin : .5em 0;
+h2, h3, h4 {
+  border: none;
+  color: #541;
+  font-weight: bold;
+  margin: 0 0 0.5em 0;
+  padding: 0.5em 0 0 0;
+  text-align: center;
 }
 h2 {
-  padding : .5em 0 0 0;
-  margin : 0 0 .5em 0;
+  font-size: 2.0em;
+}
+h3 {
+  font-size: 1.8em;
+}
+h4 {
+  font-size: 1.6em;
 }
 /* }}} */
 /* container {{{ */
@@ -422,15 +435,14 @@ h2 {
 #offline-reports {
   margin : 5em auto 0;
 }
-#login-form,
-#context-selector {
+#login-form {
   width : 400px;
-}
-#location-selector {
-  width : 600px;
 }
 #login-form input {
   width: 8em;
+}
+#location-selector, #context-selector {
+  width : 600px;
 }
 .xforms-control span.focus {
   /* Not sure what purpose this span serves, but it messes up the form layout if it's shown */
@@ -440,7 +452,6 @@ h2 {
 #location-selector .xforms-control,
 #context-selector .xforms-control {
   clear : both;
-  display : block;
 }
 #login-form button,
 #location-selector button {

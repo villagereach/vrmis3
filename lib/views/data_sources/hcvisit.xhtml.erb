@@ -356,47 +356,58 @@
     </xf:group>
 
     <div id="context-selector" class="container">
-      <div id="year-month-selector" class="inline">
-        <xf:group>
-          <xf:select1 id="province-selector" ref="instance('data')/selected-values/province">
-            <xf:itemset nodeset="instance('data')/province">
-              <xf:label ref="@name"/>
-              <xf:value ref="@name"/>
-            </xf:itemset>
-          </xf:select1>
-          <xf:select1 id="district-selector" ref="instance('data')/selected-values/district">
-            <xf:itemset nodeset="instance('data')/province[@name=instance('data')/selected-values/province]/district">
-              <xf:label ref="@name"/>
-              <xf:value ref="@name"/>
-            </xf:itemset>
-          </xf:select1>
-          <xf:select1 id="health-center-selector" ref="instance('data')/selected-values/health_center">
-            <xf:itemset nodeset="instance('data')/province[@name=instance('data')/selected-values/province]/district[@name=instance('data')/selected-values/district]/health_center">
-              <xf:label ref="@name"/>
-              <xf:value ref="@code"/>
-            </xf:itemset>
-          </xf:select1>
-          <xf:action ev:event="xforms-value-changed">
-            <xf:load resource="javascript:setup_visits()" />
-            <xf:send ev:event="xforms-submit" submission="load" if="instance('data')/selected-values/context-selected = true() and instance('data')/selected-values/selected-month-exists = true()" />
-            <xf:send ev:event="xforms-submit" submission="new"  if="instance('data')/selected-values/context-selected = true() and instance('data')/selected-values/selected-month-exists = false()" />
-          </xf:action>
-        </xf:group>
-      </div>
+      <h3>
+        <!-- HACK: Evil, ugly hack to get at the raw translation. -->
+        <%= I18n.backend.send(:lookup, locale, "data_sources.hcvisit.hc.page_title").
+                         sub("{{delivery_zone}}",%Q{<xf:output value="instance('data')/province/delivery_zone[@code=instance('data')/selected-values/delivery_zone]/@name" />}).
+                         sub("{{visit_month}}",%Q{<xf:output value="olmis:month_of_year(instance('data')/selected-values/visit_date_period)" />}) %>
+      </h3>
 
-      <div id="saved-forms">
-        <form>
-          <div id="saved-forms-search">
-            <%= t("search_button") %> <input type="text" id="saved-forms-filter" />
-            <button id="saved-forms-search-reset" onclick="javascript:reset_saved_forms_search(); return false;"><%= t("reset_button") %></button>
-          </div>
-          <select size="10" id="saved-forms-control" />
-        </form>
+      <div>
+        <h4><%= t(".hc.choose") %></h4>
+        <div id="year-month-selector" class="inline">
+          <xf:group>
+            <xf:select1 id="province-selector" ref="instance('data')/selected-values/province">
+              <xf:itemset nodeset="instance('data')/province">
+                <xf:label ref="@name"/>
+                <xf:value ref="@name"/>
+              </xf:itemset>
+            </xf:select1>
+            <xf:select1 id="district-selector" ref="instance('data')/selected-values/district">
+              <xf:itemset nodeset="instance('data')/province[@name=instance('data')/selected-values/province]/district">
+                <xf:label ref="@name"/>
+                <xf:value ref="@name"/>
+              </xf:itemset>
+            </xf:select1>
+            <xf:select1 id="health-center-selector" ref="instance('data')/selected-values/health_center">
+              <xf:itemset nodeset="instance('data')/province[@name=instance('data')/selected-values/province]/district[@name=instance('data')/selected-values/district]/health_center">
+                <xf:label ref="@name"/>
+                <xf:value ref="@code"/>
+              </xf:itemset>
+            </xf:select1>
+            <xf:action ev:event="xforms-value-changed">
+              <xf:load resource="javascript:setup_visits()" />
+              <xf:send ev:event="xforms-submit" submission="load" if="instance('data')/selected-values/context-selected = true() and instance('data')/selected-values/selected-month-exists = true()" />
+              <xf:send ev:event="xforms-submit" submission="new"  if="instance('data')/selected-values/context-selected = true() and instance('data')/selected-values/selected-month-exists = false()" />
+            </xf:action>
+          </xf:group>
+        </div>
+
+        <div id="saved-forms">
+          <form>
+            <div id="saved-forms-search">
+              <label><%= t("search_button") %></label>
+              <input type="text" id="saved-forms-filter" />
+              <button id="saved-forms-search-reset" onclick="javascript:reset_saved_forms_search(); return false;"><%= t("reset_button") %></button>
+            </div>
+            <select size="10" id="saved-forms-control" />
+          </form>
+        </div>
       </div>
     </div>
 
     <div id="form" class="container">
-      <h2 id="current_hc">
+      <h3 id="current_hc">
         <xf:output value="instance('data')/province[@name=instance('data')/selected-values/province]/district[@name=instance('data')/selected-values/district]/health_center[@code=instance('data')/selected-values/health_center]/@name"/>, <xf:output value="olmis:month_of_year(instance('data')/selected-values/visit_date_period)" />
         <xf:trigger appearance="minimal">
           <xf:label><%= t(".go_to_hc_selection") %></xf:label>
@@ -404,7 +415,7 @@
             <xf:load resource="javascript:show_visits()" />
           </xf:action>
         </xf:trigger>
-      </h2>
+      </h3>
 
       <xf:group bind="context-selected">
         <div id="tab-menu">
