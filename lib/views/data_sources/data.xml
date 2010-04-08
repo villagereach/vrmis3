@@ -11,12 +11,14 @@
     <delivery_zone />
     <selector />
     <remote-selector />
+    <login-selector />
     <delivery-zone-selector />
     <selected-month-exists />
     <access_code/>
     <login-selected />
     <context-selected />
     <logged_in />
+    <visit_period_selected />
   </selected-values>
   <blank name="" />
   <%- Province.all.sort.each do |p| -%>

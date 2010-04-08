@@ -402,6 +402,7 @@ function select_location() {
     set_selected_value('default_visit_date', jQuery.datepicker.formatDate(dp.datepicker('option', 'dateFormat'), default_visit_date));
   }
 
+  set_selected_value('visit_period_selected', 'true()');
   show_visits();
 }
 
@@ -416,6 +417,7 @@ function show_visits() {
 
 function show_main_page() {
   set_selected_value('health_center', '');
+  set_selected_value('visit_period_selected', 'false()');
   show_container(containers['main']);
 }
 

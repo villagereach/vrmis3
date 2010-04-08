@@ -74,6 +74,13 @@
         calculate="instance('data')/selected-values/health_center != '' and instance('data')/selected-values/visit_date_period != ''"
         />
 
+      <xf:bind id="visit-period-selected"
+        type="xsd:boolean"
+        relevant=". = true()"
+        nodeset="instance('data')/selected-values/visit_period_selected"
+        calculate="instance('data')/selected-values/visit_period_selected = true()"
+        />
+
       <xf:bind id="selected-month-exists"
         nodeset="instance('data')/selected-values/selected-month-exists"
         relevant=". = true()"
@@ -327,14 +334,23 @@
       </xf:group>
       <xf:group bind="login-active" id="user" class="content">
         <div>
-          <!--em><%= t("logged_in_as") %></em>
-          <strong><xf:output value="instance('data')/selected-values/field_coordinator" /></strong-->
           <xf:trigger appearance="minimal">
             <xf:label><%= t("logout") %></xf:label>
             <xf:action ev:event="DOMActivate">
               <xf:load resource="javascript:logout()" />
             </xf:action>
           </xf:trigger>
+          <xf:group bind="visit-period-selected" class="content">
+            <em><%= t(".selected_fc") %></em>
+            <strong><xf:output value="instance('data')/selected-values/field_coordinator" /></strong>
+
+            <xf:trigger appearance="minimal">
+              <xf:label><%= t(".go_to_main_page") %></xf:label>
+              <xf:action ev:event="DOMActivate">
+                <xf:load resource="javascript:show_main_page()" />
+              </xf:action>
+            </xf:trigger>
+          </xf:group>
         </div>
       </xf:group>
     </xf:group>
@@ -342,19 +358,19 @@
     <div id="context-selector" class="container">
       <div id="year-month-selector" class="inline">
         <xf:group>
-          <xf:select1 id='province-selector' ref="instance('data')/selected-values/province">
+          <xf:select1 id="province-selector" ref="instance('data')/selected-values/province">
             <xf:itemset nodeset="instance('data')/province">
               <xf:label ref="@name"/>
               <xf:value ref="@name"/>
             </xf:itemset>
           </xf:select1>
-          <xf:select1 id='district-selector' ref="instance('data')/selected-values/district">
+          <xf:select1 id="district-selector" ref="instance('data')/selected-values/district">
             <xf:itemset nodeset="instance('data')/province[@name=instance('data')/selected-values/province]/district">
               <xf:label ref="@name"/>
               <xf:value ref="@name"/>
             </xf:itemset>
           </xf:select1>
-          <xf:select1 id='health-center-selector' ref="instance('data')/selected-values/health_center">
+          <xf:select1 id="health-center-selector" ref="instance('data')/selected-values/health_center">
             <xf:itemset nodeset="instance('data')/province[@name=instance('data')/selected-values/province]/district[@name=instance('data')/selected-values/district]/health_center">
               <xf:label ref="@name"/>
               <xf:value ref="@code"/>
@@ -383,7 +399,7 @@
       <h2 id="current_hc">
         <xf:output value="instance('data')/province[@name=instance('data')/selected-values/province]/district[@name=instance('data')/selected-values/district]/health_center[@code=instance('data')/selected-values/health_center]/@name"/>, <xf:output value="olmis:month_of_year(instance('data')/selected-values/visit_date_period)" />
         <xf:trigger appearance="minimal">
-          <xf:label><%= t(".go_to_context_selection") %></xf:label>
+          <xf:label><%= t(".go_to_hc_selection") %></xf:label>
           <xf:action ev:event="DOMActivate">
             <xf:load resource="javascript:show_visits()" />
           </xf:action>

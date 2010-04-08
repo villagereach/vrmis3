@@ -608,7 +608,9 @@ en:
       upload:      "Upload"
       uploading:   "Uploading..."
     hcvisit:
-      go_to_context_selection:           "Change health center"
+      selected_fc:                       "Recording data for"
+      go_to_hc_selection:                "Change health center"
+      go_to_main_page:                   "Go to main page"
       tab_title_adult_vaccination_tally: "Adult Vaccinations"
       tab_title_child_vaccination_tally: "Child Vaccinations"
       tab_title_full_vaccination_tally:  "Full Vaccinations"
