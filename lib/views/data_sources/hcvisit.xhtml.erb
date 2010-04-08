@@ -202,7 +202,7 @@
       <xf:bind nodeset="/olmis/hcvisit/visited"          id="visited"          required="true()" relevant="true()"/>
       <xf:bind nodeset="/olmis/hcvisit/visited_at"       id="visited_at"       required="true()" relevant="../visited != 'false'" type="xf:string" constraint="jr:date(.) &lt;= jr:today() and jr:date(.) &gt;= jr:date(concat(../visit_month,'-01')) and jr:date(.) &lt;= jr:date(concat(../visit_month,'-31'))" />
       <xf:bind nodeset="/olmis/hcvisit/vehicle_id"       id="vehicle_id"       required="true()" relevant="../visited != 'false'"/>
-      <xf:bind nodeset="/olmis/hcvisit/non_visit_reason" id="non_visit_reason" required="true()" relevant="../visited = 'false'" constraint="string-length(.) &gt; 0"/>
+      <xf:bind nodeset="/olmis/hcvisit/non_visit_reason" id="non_visit_reason" required="true()" relevant="../visited = 'false'" constraint="string-length(.) &gt; 0 and . != 'Visited'"/>
       <xf:bind nodeset="/olmis/hcvisit/notes"            id="notes"            required="../non_visit_reason = 'other'"/>
 
       <xf:bind nodeset="/olmis/hcvisit/visit" id="visit_data" relevant="/olmis/hcvisit/visited != 'false'" />
@@ -492,7 +492,7 @@
             <xf:case id="case-visit">
               <div id="div-visit" class="block-form">
 <%- if Rails.env == "development" -%>
-                <xf:group>
+                <xf:group id="have_epi_data">
                   <xf:select1 bind="epi_data_ready">
                     <xf:label><%= t("visits.health_center_monthly_visit.do_you_have_epi_data") %></xf:label>
                     <xf:item><xf:label><%= t("yes") %></xf:label><xf:value>true</xf:value></xf:item>
@@ -506,9 +506,9 @@
                   </xf:output>
                 </xf:group>
 <%- end -%>
-                <xf:group>
+                <xf:group id="was_hc_visited">
                   <xf:select1 bind="visited">
-                    <xf:label id="was_hc_visited">
+                    <xf:label>
                       <!-- HACK: Evil, ugly hack to get at the raw translation. -->
                       <%= I18n.backend.send(:lookup, locale, "visits.health_center_monthly_visit.was_this_visited").
                                        sub("{{name}}",%Q{<xf:output value="instance('data')/province[@name=instance('data')/selected-values/province]/district[@name=instance('data')/selected-values/district]/health_center[@code=instance('data')/selected-values/health_center]/@name"/>}).

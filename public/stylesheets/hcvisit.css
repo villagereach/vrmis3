@@ -160,7 +160,7 @@ div.xforms-alert-value {
 .xforms-valid   span.xforms-alert { display: inline; }
 .menu-tab.xforms-valid span.xforms-alert, .xforms-optional span.xforms-alert, 
 #context-selector span.xforms-alert, #user_tools span.xforms-alert,
-#was_hc_visited span.xforms-alert { display: none; }
+#have_epi_data span.xforms-alert, #was_hc_visited span.xforms-alert { display: none; }
 
 .xforms-group-label { 
   border-bottom:1px solid #CCCCCC;
