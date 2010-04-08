@@ -18,16 +18,20 @@
     <title><%= t("health_center_visit") %></title>
     <script type="text/javascript" src="/javascripts/jquery.min.js" />
     <script type="text/javascript">jQuery.noConflict();</script>
+    <script type="text/javascript" src="/javascripts/ui/ui.core.js" />
+    <script type="text/javascript" src="/javascripts/ui/ui.datepicker.js" />
+    <script type="text/javascript" src="/javascripts/ui/i18n/jquery-ui-i18n.js" />
     <script type="text/javascript" src="/javascripts/formgrid.js" />
     <script type="text/javascript" src="/javascripts/hcvisit.js" />
     <script type="text/javascript" src="/javascripts/json2.js" />
     <script type="text/javascript" src="/javascripts/date.js" />
     <script type="text/javascript" src="/javascripts/i18n.js" />
     <script type="text/javascript" src="/fancybox/jquery.fancybox.js" />
+    <link rel="stylesheet" href="/fancybox/jquery.fancybox.css" type="text/css" />
+    <link rel="stylesheet" href="/stylesheets/ui/jquery-ui-1.7.2.custom.css" type="text/css" />
     <link rel="stylesheet" href="/stylesheets/blueprint/screen.css" type="text/css" media="screen, projection" />
     <link rel="stylesheet" href="/stylesheets/theme.css" type="text/css" />
     <link rel="stylesheet" href="/stylesheets/hcvisit.css" type="text/css" />
-    <link rel="stylesheet" href="/fancybox/jquery.fancybox.css" type="text/css" />
     <xf:model id="default-model">
       <xf:instance id="olmis" src="/xforms/olmis.xml" />
       <xf:instance id="data"   src="/xforms/data.xml"   />
@@ -116,7 +120,7 @@
           <xf:setvalue bind="delivery_zone" value="instance('data')/selected-values/delivery_zone"/>
           <xf:setvalue bind="field_coordinator" value="instance('data')/selected-values/field_coordinator"/>
           <xf:setvalue ref="instance('olmis')/meta/date" value="jr:today()"/>
-          <xf:setvalue bind="visited_at" value="jr:date(concat(../visit_month,'-01'))" />
+          <xf:setvalue bind="visited_at" value="instance('data')/selected-values/default_visit_date" />
 
           <xf:insert context="instance('olmis')" nodeset="/olmis/hcvisit/visit/cold_chain/fridges/fridge" at="1" position="before" origin="instance('data')/province[@name=instance('data')/selected-values/province]/district[@name=instance('data')/selected-values/district]/health_center[@code=instance('data')/selected-values/health_center]/fridge" />
           <xf:delete nodeset="/olmis/hcvisit/visit/cold_chain/fridges/fridge" at="last()" />
@@ -189,7 +193,7 @@
         relevant="../epi_data_ready = true()" />
 
       <xf:bind nodeset="/olmis/hcvisit/visited"          id="visited"          required="true()" relevant="true()"/>
-      <xf:bind nodeset="/olmis/hcvisit/visited_at"       id="visited_at"       required="true()" relevant="../visited != 'false'" type="xf:date" constraint="jr:date(.) &lt;= jr:today() and jr:date(.) &gt;= jr:date(concat(../visit_month,'-01')) and jr:date(.) &lt;= jr:date(concat(../visit_month,'-31'))" />
+      <xf:bind nodeset="/olmis/hcvisit/visited_at"       id="visited_at"       required="true()" relevant="../visited != 'false'" type="xf:string" constraint="jr:date(.) &lt;= jr:today() and jr:date(.) &gt;= jr:date(concat(../visit_month,'-01')) and jr:date(.) &lt;= jr:date(concat(../visit_month,'-31'))" />
       <xf:bind nodeset="/olmis/hcvisit/vehicle_id"       id="vehicle_id"       required="true()" relevant="../visited != 'false'"/>
       <xf:bind nodeset="/olmis/hcvisit/non_visit_reason" id="non_visit_reason" required="true()" relevant="../visited = 'false'" constraint="string-length(.) &gt; 0"/>
       <xf:bind nodeset="/olmis/hcvisit/notes"            id="notes"            required="../non_visit_reason = 'other'"/>
@@ -358,8 +362,8 @@
           </xf:select1>
           <xf:action ev:event="xforms-value-changed">
             <xf:load resource="javascript:setup_visits()" />
-            <xf:send ev:event="xforms-submit" submission="load"     if="instance('data')/selected-values/context-selected = true() and instance('data')/selected-values/selected-month-exists = true()" />
-            <xf:send ev:event="xforms-submit" submission="new"      if="instance('data')/selected-values/context-selected = true() and instance('data')/selected-values/selected-month-exists = false()" />
+            <xf:send ev:event="xforms-submit" submission="load" if="instance('data')/selected-values/context-selected = true() and instance('data')/selected-values/selected-month-exists = true()" />
+            <xf:send ev:event="xforms-submit" submission="new"  if="instance('data')/selected-values/context-selected = true() and instance('data')/selected-values/selected-month-exists = false()" />
           </xf:action>
         </xf:group>
       </div>
@@ -374,6 +378,7 @@
         </form>
       </div>
     </div>
+
     <div id="form" class="container">
       <h2 id="current_hc">
         <xf:output value="instance('data')/province[@name=instance('data')/selected-values/province]/district[@name=instance('data')/selected-values/district]/health_center[@code=instance('data')/selected-values/health_center]/@name"/>, <xf:output value="olmis:month_of_year(instance('data')/selected-values/visit_date_period)" />
@@ -471,13 +476,15 @@
                   </xf:action>
                 </xf:group>
                 <xf:group>
-                  <xf:input bind="visited_at" incremental="true">
-                    <xf:label><%= t("visits.health_center_monthly_visit.date") %></xf:label>
-                    <xf:alert><%= t(".errors.date_for_visit_month") %></xf:alert>
-                    <xf:action ev:event="xforms-value-changed">
-                      <xf:load resource="javascript:visit_date_changed()" />
-                    </xf:action>
-                  </xf:input>
+                  <div class="datepicker">
+                    <xf:input bind="visited_at">
+                      <xf:label><%= t("visits.health_center_monthly_visit.date") %></xf:label>
+                      <xf:alert><%= t(".errors.date_for_visit_month") %></xf:alert>
+                      <xf:action ev:event="xforms-value-changed">
+                        <xf:load resource="javascript:visit_date_changed()" />
+                      </xf:action>
+                    </xf:input>
+                  </div>
                 </xf:group>
                 <xf:group>
                   <xf:input bind="vehicle_id">

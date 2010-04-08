@@ -477,6 +477,9 @@ h2 {
 table.calendar {
   width: inherit;
 }
+#case-visit div.datepicker input[type="text"] {
+  width: 8em;
+}
 /* }}} */
 /* navigation {{{ */
 #tab-menu {

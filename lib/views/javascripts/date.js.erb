@@ -24,14 +24,32 @@ Date.prototype.to_date_period = function() {
   return this.getFullYear() + '-' + ('0' + (this.getMonth() + 1).toString().substr(-2));
 }
 
+Date.today = function() {
+  var now = new Date();
+  return new Date(now.getFullYear(), now.getMonth(), now.getDate());
+}
+
 Date.prototype.previous_month = function() {
   var day = this.getDate();
   var month = this.getMonth() - 1;
   var year = this.getFullYear();
   if (month < 0) {
-    month = 12;
-    year -= 1;
+    month = 11;
+    year--;
   }
   return new Date(year, month, day);
 }
 
+Date.prototype.beginning_of_month = function() {
+  return new Date(this.getFullYear(), this.getMonth(), 1);
+}
+
+Date.prototype.end_of_month = function() {
+  var month = this.getMonth() + 1;
+  var year = this.getFullYear();
+  if (month > 11) {
+    month = 0;
+    year++;
+  }
+  return new Date(year, month, 0);
+}

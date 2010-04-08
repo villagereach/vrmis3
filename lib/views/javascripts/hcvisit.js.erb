@@ -1,5 +1,4 @@
 var online = true;
-var months_to_show = 6;
 var valid_forms = {};
 var manifest_files = {
   count:      1,
@@ -10,6 +9,10 @@ var containers = {
   main:  'location-selector',
   hc:    'context-selector',
   visit: 'form'
+};
+var options = {
+  months_to_show: 6,
+  autoset_default_visit_date: true
 };
 
 window.addEventListener('load', function() { 
@@ -41,6 +44,14 @@ window.addEventListener('load', function() {
 function xf_user_init() {
   // Run actions that must be performed *after* XSLTForms init() runs
   fixup_nr_checkboxes();
+
+  jQuery('#case-visit div.datepicker input[type="text"]').
+    datepicker(jQuery.extend(<%= js_datepicker_default_options %>,
+                             { onClose: function(dateText, inst) {
+                                          XMLEvents.dispatch($('olmis'), "xforms-value-changed");
+                                        }
+                             },
+                             jQuery.datepicker.regional[<%= js_datepicker_region(I18n.locale) %>]));
 }
 
 function fixup_menu_tabs() {
@@ -142,11 +153,11 @@ function get_available_visit_months() {
   var year = now.getFullYear();
   var months = [];
 
-  for (var i = 0; i < months_to_show; i++) {
+  for (var i = 0; i < options['months_to_show']; i++) {
     var y = year;
     var m = month - i;
     if (m < 0) {
-      y -= 1;
+      y--;
       m += 12;
     }
     var month_current = (y == year && m == month);
@@ -217,9 +228,16 @@ function setup_visit_months() {
 
 function set_selected_value(name, value) {
   var ctx = $('data');
-  if (!ctx) return null;
+  if (!ctx) {
+    DebugConsole.write('No data instance found');
+    return;
+  }
 
-  var xf_setvalue = new XFSetvalue(new Binding(false, "instance('data')/selected-values/"+name), value, null, null, null);
+  var literal_value = !value.match(/\([^)]*\)/);  // Does value look like a function call?
+  var xf_setvalue = new XFSetvalue(new Binding(false, "instance('data')/selected-values/"+name),
+                                   literal_value ? null : value,
+                                   literal_value ? value : null,
+                                   null, null);
   var xf_action = new XFAction(null, null).add(xf_setvalue);
 
   run(xf_action, "statusPanel", "DOMActivate", false, true);
@@ -227,7 +245,10 @@ function set_selected_value(name, value) {
 
 function get_selected_value(name) {
   var ctx = $('data');
-  if (!ctx) return null;
+  if (!ctx) {
+    DebugConsole.write('No data instance found');
+    return null;
+  }
   
   var xp = new XPath("instance('data')/selected-values/"+name,
              new PathExpr(
@@ -296,11 +317,11 @@ function find_health_centers_by_attr(attr, value) {
 }
 
 XFSelect.prototype.selectValue = function(value) {
-  selectElement = this.element.getElementsByTagName('select')[0];
+  var selectElement = this.element.getElementsByTagName('select')[0];
   for (var x = 0, l = selectElement.options.length; x < l; x++) {
     if (selectElement.options[x].value == value) {
       selectElement.selectedIndex = x;
-      event = document.createEvent('HTMLEvents');
+      var event = document.createEvent('HTMLEvents');
       event.initEvent('change', false, false);
       selectElement.dispatchEvent(event);
       break;
@@ -309,7 +330,7 @@ XFSelect.prototype.selectValue = function(value) {
 }
 
 function select_visit() {
-  savedVisits = $('saved-forms-control');
+  var savedVisits = $('saved-forms-control');
   if (savedVisits.selectedIndex == -1) {
     return;
   }
@@ -319,12 +340,12 @@ function select_visit() {
   Dialog.show("statusPanel");
 
   setTimeout(function() {
-    var text = savedVisits.options[savedVisits.selectedIndex].value;
-    if(xforms.focus) {
+    var key = savedVisits.options[savedVisits.selectedIndex].value;
+    if (xforms.focus) {
       xforms.blur();
     }
 
-    var selection = text.split('/', 2);
+    var selection = key.split('/', 2);
     var ym = selection[0];
     var hc = selection[1];
     var pdh = find_province_district_health_center(hc);
@@ -357,7 +378,7 @@ function login() {
   // FIXME: Implement something more than a trivial check
   if (get_selected_value('access_code').length > 0) {
     set_selected_value('logged_in', 'true()');
-    show_container(containers['main']);
+    show_main_page();
   }
 }
 
@@ -369,7 +390,18 @@ function logout() {
 }
 
 function select_location() {
-//  jQuery('#visit-month-menu span').removeClass();  // reset to empty state
+  //jQuery('#visit-month-menu span').removeClass();  // reset to empty state
+
+  var today = Date.today();
+  var date = Date.from_date_period(get_selected_value('visit_date_period'));
+  var dp = jQuery('#case-visit div.datepicker input[type="text"]');
+  dp.datepicker('option', 'minDate', date.beginning_of_month());
+  dp.datepicker('option', 'maxDate', new Date(Math.min(date.end_of_month(), today)));
+  if (options['autoset_default_visit_date']) {
+    var default_visit_date = date.getMonth() == today.getMonth() ? today : date.beginning_of_month();
+    set_selected_value('default_visit_date', jQuery.datepicker.formatDate(dp.datepicker('option', 'dateFormat'), default_visit_date));
+  }
+
   show_visits();
 }
 
@@ -380,6 +412,11 @@ function show_visits() {
   //  jQuery('#visit-month-menu li:not(.accept):first').find('span').click();
   //}
   show_container(containers['hc']);
+}
+
+function show_main_page() {
+  set_selected_value('health_center', '');
+  show_container(containers['main']);
 }
 
 function get_context_path_value(ctx, path) {
@@ -502,20 +539,20 @@ function setup_form_options(local_forms, only_set_monthly_status) {
     savedVisits.append(optgroup);
   }
 
-  if (month && statuses.length > 0) {
-    var selected_month = jQuery('#month_'+month).removeClass();
-    var overall_status = uniq(statuses);
-    if (overall_status.length == 1) {
-      var status = overall_status[0];
-      selected_month.addClass(status);
-      if (status === 'accept') {
-        selected_month.find('span').removeClass('selected').addClass('disabled');
-      }
-    } else {
-      // Multiple statuses were found so overall status is incomplete
-      selected_month.addClass('incomplete');
-    }
-  }
+  //if (month && statuses.length > 0) {
+  //  var selected_month = jQuery('#month_'+month).removeClass();
+  //  var overall_status = uniq(statuses);
+  //  if (overall_status.length == 1) {
+  //    var status = overall_status[0];
+  //    selected_month.addClass(status);
+  //    if (status === 'accept') {
+  //      selected_month.find('span').removeClass('selected').addClass('disabled');
+  //    }
+  //  } else {
+  //    // Multiple statuses were found so overall status is incomplete
+  //    selected_month.addClass('incomplete');
+  //  }
+  //}
 
   xforms.closeAction();
 }
@@ -661,7 +698,6 @@ XFSubmission.prototype.submit = function() {
           localStorage[_key] = Writer.toString(_node);
         }
         XMLEvents.dispatch(_this, "xforms-submit-done");
-        //setup_visits();
       }; })(this, node, key, this.element.id), 1000);
     } else {
       XMLEvents.dispatch(this, "xforms-submit-error");
@@ -690,13 +726,17 @@ XPathCoreFunctions['http://www.w3.org/2005/xpath-functions regex'] =  new XPathF
 
 //XPathCoreFunctions['http://openrosa.org/javarosa date'] =  new XPathFunction(false, XPathFunction.DEFAULT_NODESET, false,
 XPathCoreFunctions['http://www.w3.org/2005/xpath-functions date'] =  new XPathFunction(false, XPathFunction.DEFAULT_NODESET, false,
-    function(str) {
-      str = stringValue(str);
-      var d;
+    function(node) {
+      var str = stringValue(node);
+      var d, m, dp = jQuery('#case-visit div.datepicker input[type="text"]');
       if (m = /^\s*([0-9][0-9][0-9][0-9])-([0-9][0-9])\s*-([0-9][0-9])\s*$/.exec(str)) {
         d = new Date(parseInt(m[1],10), parseInt(m[2],10) - 1, parseInt(m[3],10));
+      } else if (dp.length > 0) {
+        d = jQuery.datepicker.parseDate(dp.datepicker('option', 'dateFormat'), str);
       } else {
-        d = Date.parse(str);
+        var millis = Date.parse(str);
+        if (isNaN(millis)) return false;
+        d = new Date(millis);
       }
       return d.format("%Y-%m-%d");
     } );
