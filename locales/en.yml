@@ -626,6 +626,10 @@ en:
         access_code:                     "Enter access code"
       main:
         page_title:                      "Main Page"
+        enter_data:                      "Enter Data"
+        other_actions:                   "or"
+        view_pickups:                    "View Pickup Amounts"
+        view_reports:                    "View Reports"
       hc:
         page_title:                      "Data for {{delivery_zone}}, {{visit_month}}"
         choose:                          "Choose Health Center"

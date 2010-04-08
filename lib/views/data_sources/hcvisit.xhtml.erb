@@ -277,48 +277,6 @@
       </xf:group>
     </div>
 
-    <div id="location-selector" class="container login inline">   
-      <h2><%= t(".main.page_title") %></h2>
-      <xf:group>
-        <xf:select1 id="dz-selector" ref="instance('data')/selected-values/delivery_zone">
-          <xf:label><%= t("delivery_zone") %></xf:label>
-          <xf:itemset nodeset="instance('data')/blank | olmis:sort(instance('data')/province/delivery_zone/@name)">
-            <xf:label ref="."/>
-            <xf:value ref="../@code"/>
-          </xf:itemset>
-          <!--xf:action ev:event="xforms-value-changed">
-            <xf:setvalue if="instance('data')/selected-values/field_coordinator = ''" bind="i-field-coordinator" value="instance('data')/province/fc[@dz=instance('data')/selected-values/delivery_zone]/@name" />
-          </xf:action-->
-          <xf:alert><%= t(".errors.select_dz") %></xf:alert>
-        </xf:select1>
-        <xf:select1 id="fc-selector" ref="instance('data')/selected-values/field_coordinator">
-          <xf:label><%= t("field_coordinator") %></xf:label>
-          <xf:itemset nodeset="instance('data')/blank | olmis:sort(instance('data')/province/fc/@name)">
-            <xf:label ref="."/>
-            <xf:value ref="."/>
-          </xf:itemset>
-          <!--xf:action ev:event="xforms-value-changed">
-            <xf:setvalue if="instance('data')/selected-values/delivery_zone = ''" bind="i-delivery-zone" value="instance('data')/province/fc[@name=instance('data')/selected-values/field_coordinator]/@dz" />
-          </xf:action-->
-          <xf:alert><%= t(".errors.select_fc") %></xf:alert>
-        </xf:select1>
-        <xf:select1 id="visit-month-selector" ref="instance('data')/selected-values/visit_date_period">
-          <xf:label><%= t(".visit_month") %></xf:label>
-          <xf:item><!-- dynamically generated --></xf:item>
-          <xf:alert><%= t(".errors.select_visit_month") %></xf:alert>
-        </xf:select1>
-        <xf:trigger>
-          <xf:label><%= t("go") %></xf:label>
-          <xf:action ev:event="DOMActivate" mode="synchronous">
-            <xf:setvalue bind="field_coordinator" value="instance('data')/selected-values/field_coordinator"/>
-            <xf:setvalue bind="delivery_zone"     value="instance('data')/selected-values/delivery_zone"/>
-            <Xf:setvalue bind="visit_month"       value="instance('data')/selected-values/visit_date_period"/>
-            <xf:load resource="javascript:select_location()" />
-          </xf:action>
-        </xf:trigger>
-      </xf:group>
-    </div>
-
     <xf:group id="user_tools">
       <xf:group id="language" class="content">
         <div>
@@ -355,7 +313,67 @@
       </xf:group>
     </xf:group>
 
-    <div id="context-selector" class="container">
+    <div id="context-selector" class="container login inline">   
+      <h2><%= t(".main.page_title") %></h2>
+
+      <table>
+        <tbody>
+          <tr>
+            <td id="enter-data">
+              <h3><%= t(".main.enter_data") %></h3>
+              <xf:group>
+                <xf:select1 id="dz-selector" ref="instance('data')/selected-values/delivery_zone">
+                  <xf:label><%= t("delivery_zone") %></xf:label>
+                  <xf:itemset nodeset="instance('data')/blank | olmis:sort(instance('data')/province/delivery_zone/@name)">
+                    <xf:label ref="."/>
+                    <xf:value ref="../@code"/>
+                  </xf:itemset>
+                  <!--xf:action ev:event="xforms-value-changed">
+                    <xf:setvalue if="instance('data')/selected-values/field_coordinator = ''" bind="i-field-coordinator" value="instance('data')/province/fc[@dz=instance('data')/selected-values/delivery_zone]/@name" />
+                  </xf:action-->
+                  <xf:alert><%= t(".errors.select_dz") %></xf:alert>
+                </xf:select1>
+                <xf:select1 id="fc-selector" ref="instance('data')/selected-values/field_coordinator">
+                  <xf:label><%= t("field_coordinator") %></xf:label>
+                  <xf:itemset nodeset="instance('data')/blank | olmis:sort(instance('data')/province/fc/@name)">
+                    <xf:label ref="."/>
+                    <xf:value ref="."/>
+                  </xf:itemset>
+                  <!--xf:action ev:event="xforms-value-changed">
+                    <xf:setvalue if="instance('data')/selected-values/delivery_zone = ''" bind="i-delivery-zone" value="instance('data')/province/fc[@name=instance('data')/selected-values/field_coordinator]/@dz" />
+                  </xf:action-->
+                  <xf:alert><%= t(".errors.select_fc") %></xf:alert>
+                </xf:select1>
+                <xf:select1 id="visit-month-selector" ref="instance('data')/selected-values/visit_date_period">
+                  <xf:label><%= t(".visit_month") %></xf:label>
+                  <xf:item><!-- dynamically generated --></xf:item>
+                  <xf:alert><%= t(".errors.select_visit_month") %></xf:alert>
+                </xf:select1>
+                <xf:trigger>
+                  <xf:label><%= t("go") %></xf:label>
+                  <xf:action ev:event="DOMActivate" mode="synchronous">
+                    <xf:setvalue bind="field_coordinator" value="instance('data')/selected-values/field_coordinator"/>
+                    <xf:setvalue bind="delivery_zone"     value="instance('data')/selected-values/delivery_zone"/>
+                    <Xf:setvalue bind="visit_month"       value="instance('data')/selected-values/visit_date_period"/>
+                    <xf:load resource="javascript:select_location()" />
+                  </xf:action>
+                </xf:trigger>
+              </xf:group>
+            </td><!-- id="enter-data" -->
+
+            <td id="other-actions">
+              <h3><%= t(".main.other_actions") %></h3>
+              <ul>
+                <li><a href="#todo"><%= t(".main.view_pickups") %></a></li>
+                <li><a href="#todo"><%= t(".main.view_reports") %></a></li>
+              </ul>
+            </td><!-- id="other-actions" -->
+          </tr>
+        </tbody>
+      </table>
+    </div><!-- id="context-selector" -->
+
+    <div id="location-selector" class="container">
       <h3>
         <!-- HACK: Evil, ugly hack to get at the raw translation. -->
         <%= I18n.backend.send(:lookup, locale, "data_sources.hcvisit.hc.page_title").
@@ -404,7 +422,7 @@
           </form>
         </div>
       </div>
-    </div>
+    </div><!-- id="location-selector" -->
 
     <div id="form" class="container">
       <h3 id="current_hc">

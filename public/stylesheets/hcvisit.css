@@ -158,7 +158,7 @@ div.xforms-alert-value {
 .xforms-invalid span.xforms-alert-icon { display: inline; background-image: url(/images/icons/silk/exclamation.png); }
 .xforms-valid   span.xforms-alert { display: inline; }
 .menu-tab.xforms-valid span.xforms-alert, .xforms-optional span.xforms-alert, 
-#location-selector span.xforms-alert, #user_tools span.xforms-alert,
+#context-selector span.xforms-alert, #user_tools span.xforms-alert,
 #was_hc_visited span.xforms-alert { display: none; }
 
 .xforms-group-label { 
@@ -319,7 +319,7 @@ h1 a {
   padding : 0 .3em;
   margin : 0;
 }
-#user_tools a {
+#user_tools a, .container a {
   cursor: pointer;
 }
 #user_tools .xforms-trigger a,
@@ -436,28 +436,49 @@ h4 {
   margin : 5em auto 0;
 }
 #login-form {
-  width : 400px;
+  width: 400px;
 }
 #login-form input {
   width: 8em;
 }
-#location-selector, #context-selector {
-  width : 600px;
+#context-selector {
+  width: 750px;
+}
+#location-selector {
+  width: 600px;
 }
 .xforms-control span.focus {
   /* Not sure what purpose this span serves, but it messes up the form layout if it's shown */
   display: none;
 }
 #login-form .xforms-control,
-#location-selector .xforms-control,
-#context-selector .xforms-control {
+#context-selector .xforms-control,
+#location-selector .xforms-control {
   clear : both;
 }
 #login-form button,
-#location-selector button {
+#context-selector button {
   font-size : 1em;
   margin : 1em 0 0 11em;
 }
+
+#context-selector table {
+  border-collapse: separate;
+  border-spacing: 4px 0;
+}
+#context-selector td {
+  border: 2px solid #541;
+  padding: 1em 0.5em;
+  vertical-align: top;
+}
+#context-selector #other-actions ul {
+  line-height: 3em;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  text-align: center;
+}
+
 .inline label {
   text-align : right;
   padding-right : 1em;
