@@ -254,7 +254,7 @@ module VisitsHelper
 
   def nr_field(builder, name, index, value, nr_checked, error, suppress_nr = false)
     content_tag(:div,
-      builder.text_field(name, :index => index, :value => value, :html => { :type => 'number', :min => '0', :step => 1 } ) +
+      builder.text_field(name, :index => index, :value => value, :type => 'number', :min => '0', :step => 1 ) +
         (suppress_nr ? '' : content_tag(:div,
           builder.check_box("#{name}/NR", :checked => nr_checked, :index => index) +
           builder.label("#{name}/NR", t("NR"), :index => index),

@@ -743,5 +743,9 @@ en:
       _all:
         username: "Username"
         password: "Password"
+
+        # NOTE: special case values which are also top-level keys
         date: "Date"
         role: "Role"
+        inventory_id: "Inventory"
+        package_id: "Package"

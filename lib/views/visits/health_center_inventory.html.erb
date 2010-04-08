@@ -41,15 +41,15 @@
         <tr>
           <th><%= package.label %></th>
           <td class="static"><%= h(number_with_delimiter( @stock[:ideal][index] )) if @stock[:ideal][index] %></td>
-          <%- existing_stock_value = default_field_value(params[:inventory_counts], index.to_s, :existing, @stock[:existing][index].quantity) -%>
-          <%- existing_nr_checked = !@stock[:existing][index].new_record? && default_field_value(params[:inventory_counts], index.to_s, "existing/NR", existing_stock_value.to_s.empty? ? '1' : '0') == '1' -%>
-          <%- delivered_stock_value = default_field_value(params[:inventory_counts], index.to_s, :delivered, @stock[:delivered][index].quantity) -%>
-          <%- delivered_nr_checked = !@stock[:delivered][index].new_record? && default_field_value(params[:inventory_counts], index.to_s, "delivered/NR", delivered_stock_value.to_s.empty? ? '1' : '0') == '1' -%>
+          <%- existing_stock_value = default_field_value(params[:inventory_counts], index.to_s, 'ExistingHealthCenterInventory', @stock['ExistingHealthCenterInventory'][index].quantity) -%>
+          <%- existing_nr_checked = !@stock['ExistingHealthCenterInventory'][index].new_record? && default_field_value(params[:inventory_counts], index.to_s, "existing/NR", existing_stock_value.to_s.empty? ? '1' : '0') == '1' -%>
+          <%- delivered_stock_value = default_field_value(params[:inventory_counts], index.to_s, 'DeliveredHealthCenterInventory', @stock['DeliveredHealthCenterInventory'][index].quantity) -%>
+          <%- delivered_nr_checked = !@stock['DeliveredHealthCenterInventory'][index].new_record? && default_field_value(params[:inventory_counts], index.to_s, "delivered/NR", delivered_stock_value.to_s.empty? ? '1' : '0') == '1' -%>
           <%- spoiled_stock_value = nil #default_field_value(params[:inventory_counts], index.to_s, :spoiled, @stock[:spoiled][index].quantity) -%>
           <%- spoiled_nr_checked = false #!@stock[:spoiled][index].new_record? && default_field_value(params[:inventory_counts], index.to_s, "spoiled/NR", spoiled_stock_value.to_s.empty? ? '1' : '0') == '1' -%>
-          <td><%= nr_field(f, :existing,  index, existing_stock_value,  existing_nr_checked,  (@errors[index][:existing].on(:quantity) rescue nil)) %></td>
-          <td><%= nr_field(f, :delivered, index, delivered_stock_value, delivered_nr_checked, (@errors[index][:delivered].on(:quantity) rescue nil), true) %></td>
-          <td><%= nr_field(f, :spoiled,   index, spoiled_stock_value,   spoiled_nr_checked,   (@errors[index][:spoiled].on(:quantity) rescue nil)) if package.product.product_type_code == 'vaccine' %></td>
+          <td><%= nr_field(f, 'ExistingHealthCenterInventory',  index, existing_stock_value,  existing_nr_checked,  (@errors[index]['ExistingHealthCenterInventory'].on(:quantity) rescue nil)) %></td>
+          <td><%= nr_field(f, 'DeliveredHealthCenterInventory', index, delivered_stock_value, delivered_nr_checked, (@errors[index]['DeliveredHealthCenterInventory'].on(:quantity) rescue nil), true) %></td>
+          <td><%= nr_field(f, 'SpoiledHealthCenterInventory',   index, spoiled_stock_value,   spoiled_nr_checked,   (@errors[index]['SpoiledHealthCenterInventory'].on(:quantity) rescue nil)) if package.product.product_type_code == 'vaccine' %></td>
         </tr>
       <%- end -%>
     </tbody>
@@ -75,7 +75,7 @@
         <%- end -%>
       </tr>
     
-      <% [:existing, :delivered].each do |t| %> 
+      <% ['ExistingHealthCenterInventory', 'DeliveredHealthCenterInventory'].each do |t| %> 
       <tr>
         <th><%= t(".#{t}_quantity") %></th>
           

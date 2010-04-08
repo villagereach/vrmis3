@@ -199,7 +199,7 @@ class HealthCenterVisit < ActiveRecord::Base
     do_inventory = true  # NOTE: All HCs require inventory now, but may not in the future
     entry_counts[inventory_type] ||= begin
       if inventory = Inventory.first(:conditions => { :stock_room_id => health_center.stock_room, :inventory_type => inventory_type, :date => date })
-        package_counts = inventory.package_counts_by_package
+        package_counts = inventory.package_counts_by_package_code
         entries = package_counts.reject{|k,v| v.id.nil?}.size
         expected_entries = package_counts.size
       end
@@ -325,13 +325,13 @@ class HealthCenterVisit < ActiveRecord::Base
   end
 
   def ideal_stock
-    existing, delivered = find_or_create_inventory_records
-    {
-      :ideal     => health_center ? IdealStockAmount.all(:conditions => { :stock_room_id => health_center.stock_room.id },
-                                                          :include => :package, :order => 'packages.position').group_by(&:package) : nil,
-      :existing  => existing.package_counts_by_package,
-      :delivered => delivered.package_counts_by_package
-    }
+    inventories = find_or_create_inventory_records
+
+    Hash[*inventories.map { |i| [i.inventory_type, i.package_counts_by_package_code] }.flatten].merge(
+      {
+        :ideal     => health_center ? IdealStockAmount.all(:conditions => { :stock_room_id => health_center.stock_room.id },
+                                                            :include => :package, :order => 'packages.position').group_by(&:package) : nil,
+      })
   end
   
   def equipment_count_and_status_by_type

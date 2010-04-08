@@ -262,18 +262,20 @@ class DataSubmission < ActiveRecord::Base
   end
 
   def process_inventory
-    existing, delivered = @visit.find_or_create_inventory_records
+    inventories = @visit.find_or_create_inventory_records
     stock = @visit.ideal_stock
 
+    inventories.each(&:save)
+    
     @params[:inventory_counts].each do |key, value|
-      [ :existing, :delivered ].each do |type|
-        if record = stock[type][key]
+      (stock.keys - [:ideal]).each do |type|
+        if (record = stock[type][key]) && value.has_key?(type)
           if value[type].blank? && value["#{type}/NR"].to_i == 0
             # No quantity value is specified and NR is not checked
             record.delete unless record.new_record?
           else
             # A quantity value is specified or NR is checked
-            record.quantity = value.has_key?("#{type}/NR") && value["#{type}/NR"].to_i == 1 ? nil : value[type]
+            record.quantity = (value.has_key?("#{type}/NR") && value["#{type}/NR"].to_i == 1) ? nil : value[type]
             record.save
             unless record.errors.empty?
               @visit_errors[key] ||= {}
@@ -285,11 +287,9 @@ class DataSubmission < ActiveRecord::Base
     end
 
     # Remove any blank package counts
-    existing.package_counts.delete_if{|pc| pc.id.nil?}
-    delivered.package_counts.delete_if{|pc| pc.id.nil?}
-
-    existing.save
-    delivered.save
+    inventories.each { |i|
+      i.package_counts.delete_if{|pc| pc.id.nil?}
+    }
   end
   
   def process_tallies
