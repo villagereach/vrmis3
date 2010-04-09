@@ -30,7 +30,11 @@ class DataSubmission < ActiveRecord::Base
   validates_presence_of :data_source
 
   def self.last_submit_time
-    self.last(:order => 'created_at').created_at
+    if last = self.last(:order => 'created_at')
+      last.created_at
+    else
+      Time.parse('2010-01-01 00:00:00')
+    end
   end
 
   def content_type=(type)

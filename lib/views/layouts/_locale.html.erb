@@ -1,11 +1,11 @@
-<%- if Locale.count > 1 -%>
+<%- if I18n.available_locales.length > 1 -%>
   <p id="language-select">
     <em><label for="locale"><%= t('.select_language') %></label></em>
-    <%- Locale.all.sort_by{|locale| locale.name.downcase}.each do |locale| -%>
-      <%- if I18n.locale.to_s == locale.code -%>
-        <strong><%= h locale.name %></strong>
+    <%- I18n.available_locales.each do |locale| -%>
+      <%- if I18n.locale.to_sym == locale -%>
+        <strong><%= h Languages.native_languages[locale] %></strong>
       <%- else -%>
-        <%= link_to(h(locale.name), url_for({ :overwrite_params => { :locale => locale.code } })) %>
+        <%= link_to(h(Languages.native_languages[locale]), url_for({ :overwrite_params => { :locale => locale } })) %>
       <%- end -%>
     <%- end -%>
   </p>

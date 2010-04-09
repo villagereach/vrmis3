@@ -6,7 +6,7 @@ namespace :olmis do
       directory = File.dirname(__FILE__) + "/../"
       destdir = "#{Rails.root}/public"
       mkdir_p destdir
-      sh "rsync -rvu #{directory}/public/* #{destdir}"
+      sh "rsync -rlvu #{directory}/public/* #{destdir}"
     end
   end
 end

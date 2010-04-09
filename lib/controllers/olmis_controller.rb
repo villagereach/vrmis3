@@ -129,7 +129,7 @@ class OlmisController < ActionController::Base
   private
 
   def set_locale
-    if params[:locale].present? && Locale.available_locales.include?(params[:locale].to_sym)
+    if params[:locale].present? && I18n.available_locales.include?(params[:locale].to_sym)
       session[:locale] = params.delete(:locale)
     elsif !session[:locale] && @current_user && @current_user.language.present?
       session[:locale] = @current_user.language

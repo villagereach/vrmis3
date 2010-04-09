@@ -63,18 +63,12 @@ plugin "activerecord_i18n_defaults",
 plugin "i18n_label",
   :git => "git://github.com/iain/i18n_label.git",
   :submodule => use_submodules
-plugin "i18n_backend_database",
-  :git => "git://github.com/joelhoffman/i18n_backend_database.git",
-  :submodule => use_submodules
-
-gsub_file "config/routes.rb", /^( *)(map.connect.*)/, '\1#\2'
-route "map.from_plugin 'i18n_backend_database'"
-route "map.from_plugin 'olmis'"
 
 gem "mysql"
 gem "fastercsv"
 gem "stringex"
 gem "ick"
+gem "nokogiri", :version => '1.4.1'
 
 environment "config.load_paths += ['lib', 'lib/mixins', 'lib/helpers', 'lib/models', 'lib/controllers'].map { |d| Rails.root.join('vendor','plugins', 'olmis', d) }"
 environment "config.plugins = [:all, :olmis]"
@@ -82,13 +76,26 @@ environment "config.plugins = [:all, :olmis]"
 environment "config.i18n.load_path += Dir[Rails.root.join('vendor','plugins','olmis','locales','*.yml')]"
 environment "config.i18n.default_locale = :en"
 
-initializer 'i18n.rb', <<I18N
-I18n.backend = I18n::Backend::Database.new # registers the backend
-I18n.backend.cache_store = :memory_store   # optional: specify an alternate cache store
-I18n.backend.localize_text_tag = '##'      # optional: specify an alternate localize text tag, the default is ^^
-I18N
+initializer 'routing.rb', <<ROUTING
+ActionController::Routing::RouteSet::Mapper.class_eval do
+  # Loads the set of routes from within a plugin and 
+  # evaluates them at this point within an application’s 
+  # main routes.rb file. 
+  def from_plugin(name)
+    map = self # to make 'map' available within the plugin route file
+    plugin_root = File.join(RAILS_ROOT, 'vendor', 'plugins') 
+    routes_path = File.join(plugin_root, name.to_s, 'routes.rb') 
+    eval(IO.read(routes_path), binding, routes_path) if File.file?(routes_path)
+  end
+end 
+ROUTING
 
 initializer 'ick.rb', 'Ick.sugarize'
+
+gsub_file "config/routes.rb", /^( *)(map.connect.*)/, '\1#\2'
+route '  Dir["#{Rails.root}/vendor/plugins/*"].each do |plugin_dir|'
+route '    map.from_plugin File.basename(plugin_dir)'
+route '  end'
 
 db_name = ask("Enter the database name (default is #{appname})")
 db_name.strip!

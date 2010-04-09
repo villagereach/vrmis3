@@ -23,10 +23,11 @@ class Olmis
     def bootstrap
       definition = configuration
       ActiveRecord::Base.transaction do
-        definition['languages'].each do |l|
-          Locale.find_or_create_by_code(l).update_attributes!(:name => Languages.native_languages[l.to_sym])
+        @translations = { }
+        definition['languages'].each do |lc|
+          @translations[lc] = (YAML.load_file(Rails.root.join('config','locales',"#{lc}.yml")) rescue {})
         end
-  
+          
         definition['roles'].each do |l, options|
           Role.find_or_initialize_by_code(l).update_attributes!(options)
         end
@@ -86,6 +87,14 @@ class Olmis
         definition['targets'].each do |target, target_def|
           create_target(target, target_def)
         end
+        
+        @translations.each do |lc, hash|
+          fn = Rails.root.join('config','locales',lc+'.yml').to_s
+          File.open(fn + '~', 'w') do |f|
+            f.write( hash.to_yaml )
+          end
+          File.rename(fn + '~', fn)
+        end
       end
     end
 
@@ -93,10 +102,11 @@ class Olmis
       code = name.to_url
 
       if klass
-        Locale.all.each do |l|
-          tr = l.translations.find_by_raw_key("#{klass}.#{code}")
-          tr ||= l.translations.build(:key => "#{klass}.#{code}")
-          tr.update_attributes!(:value => name, :pluralization_index => 1)
+        @translations.each do |lc, hash|
+          key = "#{klass}.#{code}"
+          hash[lc] ||= {}
+          hash[lc][klass] ||= {}
+          hash[lc][klass][code] ||= name
         end
       end
 

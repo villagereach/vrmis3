@@ -16,7 +16,7 @@
         </li>
         <li>
           <%= f.label :language %>
-          <%= f.select :language, Locale.all.sort_by{|l| l.name.to_s.downcase}.map{|l| [ l.name || l.code, l.code ]}, :include_blank => t(:select_blank) %>
+          <%= f.select :language, I18n.available_locales.map{|l| [ Languages.native_languages[l] || l, l ]}, :include_blank => t(:select_blank) %>
         </li>
         <li>
           <%= f.label :timezone %>

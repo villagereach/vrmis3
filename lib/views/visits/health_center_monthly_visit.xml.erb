@@ -39,7 +39,7 @@
         <%- stock = @visit.ideal_stock -%>    
         <%- Package.all.sort.each do |package| -%>
           <%- index = package.code -%>
-          <%- [:existing, :delivered].each do |type| -%>
+          <%- ['ExistingHealthCenterInventory', 'DeliveredHealthCenterInventory'].each do |type| -%>
             <item for="<%= package.code %>" type="<%= type %>" nr="<%= stock[type][index].nr %>" qty="<%= stock[type][index].quantity %>" />
           <%- end -%>
           <item for="<%= package.code %>" type="spoiled" nr="false" qty="" />
