@@ -2,6 +2,7 @@
 <?xsltforms-options debug="no"?>
 <?css-conversion no?>
 <%-
+  inventory_types = Inventory.directly_collected_types
   tally_classes = HealthCenterVisit.tally_hash.map{|k,v| k.constantize}
   locale = I18n.locale
 -%>
@@ -209,11 +210,13 @@
       <xf:bind nodeset="/olmis/hcvisit/epi"   id="epi_data"   relevant="/olmis/hcvisit/epi_data_ready = true()" />
 
       <%- Package.all.each do |package| -%>
-        <%- Inventory.types.each do |type|
+        <%- if inventory_types.any?{|t| package.inventoried_by_type?(t)} -%>
+          <%- inventory_types.each do |type|
               id = "inventory_#{package.code}_#{type}"
               node = "/olmis/hcvisit/visit/inventory/item[@for='#{ package.code }' and @type='#{ type }']"  -%>
-          <xf:bind id="<%= id %>:nr"  nodeset="<%= node %>/@nr"  required="false()"          type="xf:boolean" />
-          <xf:bind id="<%= id %>:qty" nodeset="<%= node %>/@qty" required="../@nr != true()" type="xf:nonNegativeInteger" />
+            <xf:bind id="<%= id %>:nr"  nodeset="<%= node %>/@nr"  required="false()"          type="xf:boolean" />
+            <xf:bind id="<%= id %>:qty" nodeset="<%= node %>/@qty" required="../@nr != true()" type="xf:nonNegativeInteger" />
+          <%- end -%>
         <%- end -%>
       <%- end -%>
 
@@ -682,8 +685,6 @@
               </xf:group>
             </xf:case><!-- id="case-cold_chain" -->
 
-            <%- types = Inventory.directly_collected_types %>
-
             <xf:case id="case-epi_inventory">
               <div id="div-epi_inventory" class="block-form">
                 <xf:group bind="visit_data">
@@ -694,41 +695,41 @@
                     <thead>
                       <tr>
                         <th><%= t("visits.health_center_inventory.product") %></th>
-                        <%- types.each do |t| -%>
-                        <th><%= t("visits.health_center_inventory.#{t}") %></th>
+                        <%- inventory_types.each do |t| -%>
+                          <th><%= t("visits.health_center_inventory.#{t}") %></th>
                         <%- end -%>
                       </tr>
                     </thead>
                     <tbody>
                       <%- Package.all.reject{|p| p.product.product_type_code == 'test'}.sort.each do |package| -%>
-                        <%- if types.any? { |t| package.inventoried_by_type?(t) } -%>
-                        <tr>
-                          <th><%= package.label %></th>
-                          <%- types.each do |type|
-                                id = "inventory_#{package.code}_#{type}" -%>
-                            <td>
-                              <%- if package.inventoried_by_type?(type) -%>
-                              <div class="tally">
-                                <xf:input bind="<%= id %>:qty" incremental="true">
-                                  <xf:action ev:event="xforms-value-changed">
-                                    <xf:setvalue if="string-length(.) &gt; 0"     bind="<%= id %>:nr" value="'false'" />
-                                    <xf:setvalue if=". = '' and ../@nr = 'false'" bind="<%= id %>:nr" />
-                                  </xf:action>
-                                  <xf:alert><%= t(".errors.quantity") %></xf:alert>
-                                </xf:input>
-                                <div class="nr">
-                                  <xf:input bind="<%= id %>:nr" incremental="true">
-                                    <xf:label><%= t("NR") %></xf:label>
-                                    <xf:action ev:event="xforms-value-changed">
-                                      <xf:setvalue if=". = 'true'" bind="<%= id %>:qty" value="''" />
-                                    </xf:action>
-                                  </xf:input>
-                                </div>
-                              </div>
-                              <%- end -%>
-                            </td>
-                          <%- end -%>
-                        </tr>
+                        <%- if inventory_types.any? { |t| package.inventoried_by_type?(t) } -%>
+                          <tr>
+                            <th><%= package.label %></th>
+                            <%- inventory_types.each do |type|
+                                  id = "inventory_#{package.code}_#{type}" -%>
+                              <td>
+                                <%- if package.inventoried_by_type?(type) -%>
+                                  <div class="tally">
+                                    <xf:input bind="<%= id %>:qty" incremental="true">
+                                      <xf:action ev:event="xforms-value-changed">
+                                        <xf:setvalue if="string-length(.) &gt; 0"     bind="<%= id %>:nr" value="'false'" />
+                                        <xf:setvalue if=". = '' and ../@nr = 'false'" bind="<%= id %>:nr" />
+                                      </xf:action>
+                                      <xf:alert><%= t(".errors.quantity") %></xf:alert>
+                                    </xf:input>
+                                    <div class="nr">
+                                      <xf:input bind="<%= id %>:nr" incremental="true">
+                                        <xf:label><%= t("NR") %></xf:label>
+                                        <xf:action ev:event="xforms-value-changed">
+                                          <xf:setvalue if=". = 'true'" bind="<%= id %>:qty" value="''" />
+                                        </xf:action>
+                                      </xf:input>
+                                    </div>
+                                  </div>
+                                <%- end -%>
+                              </td>
+                            <%- end -%>
+                          </tr>
                         <%- end -%>
                       <%- end -%>
                     </tbody>
@@ -749,41 +750,41 @@
                     <thead>
                       <tr>
                         <th><%= t("visits.health_center_inventory.product") %></th>
-                        <%- types.each do |t| -%>
-                        <th><%= t("visits.health_center_inventory.#{t}") %></th>
+                        <%- inventory_types.each do |t| -%>
+                          <th><%= t("visits.health_center_inventory.#{t}") %></th>
                         <%- end -%>
                       </tr>
                     </thead>
                     <tbody>
                       <%- Package.all.select{|p| p.product.product_type_code == 'test'}.sort.each do |package| -%>
-                        <%- if types.any? { |t| package.inventoried_by_type?(t) } -%>
-                        <tr>
-                          <th><%= package.label %></th>
-                          <%- types.each do |type|
-                                id = "inventory_#{package.code}_#{type}" -%>
-                            <td>
-                              <%- if package.inventoried_by_type?(type) -%>
-                              <div class="tally">
-                                <xf:input bind="<%= id %>:qty" incremental="true">
-                                  <xf:action ev:event="xforms-value-changed">
-                                    <xf:setvalue if="string-length(.) &gt; 0"     bind="<%= id %>:nr" value="'false'" />
-                                    <xf:setvalue if=". = '' and ../@nr = 'false'" bind="<%= id %>:nr" />
-                                  </xf:action>
-                                  <xf:alert><%= t(".errors.quantity") %></xf:alert>
-                                </xf:input>
-                                <div class="nr">
-                                  <xf:input bind="<%= id %>:nr" incremental="true">
-                                    <xf:label><%= t("NR") %></xf:label>
-                                    <xf:action ev:event="xforms-value-changed">
-                                      <xf:setvalue if=". = 'true'" bind="<%= id %>:qty" value="''" />
-                                    </xf:action>
-                                  </xf:input>
-                                </div>
-                              </div>
-                              <%- end -%>
-                            </td>
-                          <%- end -%>
-                        </tr>
+                        <%- if inventory_types.any? { |t| package.inventoried_by_type?(t) } -%>
+                          <tr>
+                            <th><%= package.label %></th>
+                            <%- inventory_types.each do |type|
+                                  id = "inventory_#{package.code}_#{type}" -%>
+                              <td>
+                                <%- if package.inventoried_by_type?(type) -%>
+                                  <div class="tally">
+                                    <xf:input bind="<%= id %>:qty" incremental="true">
+                                      <xf:action ev:event="xforms-value-changed">
+                                        <xf:setvalue if="string-length(.) &gt; 0"     bind="<%= id %>:nr" value="'false'" />
+                                        <xf:setvalue if=". = '' and ../@nr = 'false'" bind="<%= id %>:nr" />
+                                      </xf:action>
+                                      <xf:alert><%= t(".errors.quantity") %></xf:alert>
+                                    </xf:input>
+                                    <div class="nr">
+                                      <xf:input bind="<%= id %>:nr" incremental="true">
+                                        <xf:label><%= t("NR") %></xf:label>
+                                        <xf:action ev:event="xforms-value-changed">
+                                          <xf:setvalue if=". = 'true'" bind="<%= id %>:qty" value="''" />
+                                        </xf:action>
+                                      </xf:input>
+                                    </div>
+                                  </div>
+                                <%- end -%>
+                              </td>
+                            <%- end -%>
+                          </tr>
                         <%- end -%>
                       <%- end -%>
                     </tbody>
