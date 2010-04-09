@@ -18,22 +18,33 @@ class Inventory < ActiveRecord::Base
   
   has_many :package_counts
 
-  def package_counts_by_package(return_package_hash=false)
-    pc_hash = Hash[*package_counts.map { |pc| [pc.package_code, pc] }.flatten]
-    package_hash = {}
-    Package.all.each do |p|
-      pc_hash[p.code] ||= package_counts.build(:package => p, :quantity => nil)
-      package_hash[p] = pc_hash[p.code].maybe.quantity
-    end    
-    return_package_hash ? package_hash : pc_hash
-  end
-
   validates_presence_of :stock_room_id
   validates_presence_of :user_id
   validates_presence_of :date
   validates_presence_of :inventory_type
   validates_uniqueness_of :date, :scope=>[:stock_room_id, :inventory_type]
   validates_associated :package_counts
+
+  def package_count_quantity_by_package
+    Hash[*package_counts_by_package.map { |pkg, count| [pkg, count.quantity] }.flatten]
+  end
+
+  def package_counts_by_package_code
+    Hash[*package_counts_by_package.map { |pkg, count| [pkg.code, count] }.flatten]
+  end
+  
+  protected
+
+  def package_counts_by_package(package_options={})
+    pc_hash = Hash[*package_counts.map { |pc| [pc.package, pc] }.flatten]
+    
+    Package.all(package_options).each do |p|
+      pc_hash[p] ||= package_counts.build(:package => p, :quantity => nil)
+      pc_hash[p].inventory = self
+    end
+    
+    pc_hash
+  end
 end
 
 

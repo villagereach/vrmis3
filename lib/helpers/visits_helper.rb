@@ -139,6 +139,62 @@ module VisitsHelper
       content_tag(:table, colgroups + content_tag(:thead, column_headers) + content_tag(:tbody, body), :class => 'spreadsheet')
   end
 
+  def target_group_form_field(code)
+    # Inserts a read-only field containing the expected target group size for the selected health center,
+    # for the target percentage identified by the first argument.
+
+    if target = TargetPercentage.find_by_code(code)
+      size = (@health_center.catchment_population * target.percentage / Date.date_periods_per_year / 100).to_i
+      text_field_tag(code + '_target', size, :disabled => 'disabled', :size => [3, size.to_s.length + 1].max )
+    end
+  end
+
+  def coverage_field(name, target_code, total)
+    # Given a target percentage code and a total-vaccinations cell, inserts a field that calculates the coverage based on the target population size
+    if target = TargetPercentage.find_by_code(target_code)
+      size = (@health_center.catchment_population * target.percentage / Date.date_periods_per_year / 100).to_i
+      expression_field(name, "100 * #{total} / #{size}", '%')
+    end
+  end
+  
+  def wastage_field(package_code, open_vials, total_doses)
+    # Given a package code and a total-vaccinations cell, inserts a field that calculates the wastage based on the number of doses in the package
+    if package = Package.find_by_code(package_code)
+      expression_field("#{package_code}_wastage", "100 * ((#{open_vials}) - ((#{total_doses}) / #{package.quantity})) / (#{open_vials})", "%")
+    end
+  end
+  
+  def expression_field(name, expression, suffix='')
+    # Inserts a calculated field based on the value of other fields.  The second argument should be a
+    # Javascript expression where any words starting with an alphabetic character must be the IDs of
+    # other fields in the page -- this will be evaluated as the floating point value of those fields.
+    # You cannot therefore use reserved words or call Javascript functions unless the name begins with
+    # an underscore.
+    #
+    # If the resulting value is NaN, the field will appear blank. Otherwise, the value will be truncated
+    # to an integer and the value of the third argument, if any, will be appended.
+
+    tokens = expression.split(/([a-z][^ \(\)]+)/i) # every field starts with an alpha and contains no spaces
+    tokens.push('') if tokens.length % 2 == 0
+
+    fields = tokens.map_with_index { |t, i| i % 2 == 1 ? t : '' }.reject(&:blank?).uniq
+
+    output = '<div style="text-align: center">' + text_field_tag(nil, '', :disabled => 'disabled', :size => 3, :id => name) + '</div>'
+
+    fnname = "_calculate_#{name.gsub(/\W+/, '_')}"
+    fn = "function #{fnname}() { \nv = parseInt(" +
+      tokens.map { |f|
+        if fields.include?(f)
+          'parseFloat(0 + $("#' + f + '").val())'
+        else f
+        end
+      }.join("") +
+        "); \n$('##{name}').val(isNaN(v) ? '' : (v + '#{suffix}')); $('##{name}').change(); }"
+
+      output + javascript_tag(fn + "\njQuery(document).ready(#{fnname}); \n" +
+        "jQuery(document).ready(function() {" + fields.map { |f| "\n$('##{f}').change(#{fnname}); " }.join("") + "\n});")
+  end
+
   def tally_form_field(type, name, options)
     @record_value_hash ||= {}
     
@@ -157,7 +213,7 @@ module VisitsHelper
            o = options.merge({ :value => value, :size => 8, :class => "datepicker" })
            ActionView::Helpers::InstanceTag.new(type.name, name, self).to_input_field_tag("date", o)
          else
-           o = options.merge({ :value => value.to_s, :size => 4, :min => '0', :step => '1' })
+           o = options.merge({ :value => value.to_s, :size => 4, :min => '0', :step => '1', :id => type.name + '_' + name.gsub(/[,:\]]/,'-') })
            ActionView::Helpers::InstanceTag.new(type.name, name, self).to_input_field_tag("number", o)
          end
          
@@ -175,7 +231,7 @@ module VisitsHelper
     field ||= 'value'
     type = type.constantize
     field_type = type.fields_hash[field.to_sym] == :date ? 'date' : 'tally'
-    %Q{<div class="#{field_type}" id="#{name.gsub(',','-')}">} + self.send(form_field_proc, type, name, options) + '</div>'
+    %Q{<div class="#{field_type}" id="#{name.gsub(/[,:]/,'-')}">} + self.send(form_field_proc, type, name, options) + '</div>'
   end
 
   def options_for_visits_month(date)
@@ -198,7 +254,7 @@ module VisitsHelper
 
   def nr_field(builder, name, index, value, nr_checked, error, suppress_nr = false)
     content_tag(:div,
-      builder.text_field(name, :index => index, :value => value, :html => { :type => 'number', :min => '0', :step => 1 } ) +
+      builder.text_field(name, :index => index, :value => value, :type => 'number', :min => '0', :step => 1 ) +
         (suppress_nr ? '' : content_tag(:div,
           builder.check_box("#{name}/NR", :checked => nr_checked, :index => index) +
           builder.label("#{name}/NR", t("NR"), :index => index),

@@ -42,7 +42,7 @@ class PickupsController < OlmisController
       @comparison_column = I18n.t('inventory.amount_picked_up')
       @comparisons = {}
       @comparison_class = "pickup_box not_on_screen"
-      @amounts = @inventory.package_counts_by_package(true)
+      @amounts = @inventory.package_count_quantity_by_package
       render :template=>'pickups/inventory_table'
     end
   end
@@ -55,7 +55,7 @@ class PickupsController < OlmisController
     if @inventory.nil?
       redirect_to :action=>'unload_new', :date=>params[:date], :delivery_zone=>params[:delivery_zone]
     else
-      @amounts = @inventory.package_counts_by_package(true)
+      @amounts = @inventory.package_count_quantity_by_package
       render :template=>'pickups/inventory_table'
     end
   end
@@ -67,7 +67,7 @@ class PickupsController < OlmisController
     if @inventory.nil?
       redirect_to :action=>'pickup_new', :date=>params[:date], :delivery_zone=>params[:delivery_zone]
     else
-      @amounts = params[:inventory] ? amounts_from_params : @inventory.package_counts_by_package(true)
+      @amounts = params[:inventory] ? amounts_from_params : @inventory.package_count_quantity_by_package
       save_if_post_and_redirect_or_render_form('DeliveryPickup', :pickup)
     end
   end
@@ -79,7 +79,7 @@ class PickupsController < OlmisController
     if @inventory.nil?
       redirect_to :action=>'unload_new', :date=>params[:date], :delivery_zone=>params[:delivery_zone]
     else
-      @amounts = params[:inventory] ? amounts_from_params : @inventory.package_counts_by_package(true)
+      @amounts = params[:inventory] ? amounts_from_params : @inventory.package_count_quantity_by_package
       save_if_post_and_redirect_or_render_form('DeliveryReturn', :unload)
     end
   end

@@ -102,17 +102,17 @@ module Olmis::Dependencies
       # if we recognise this type
       # (this regexp splits out the module/filename from any instances of app/#{type}, so that
       #  modules are still respected.)
-      if file_name =~ /^(.*app\/#{dir}\/)+(.*#{suffix})(\.rb)?$/
+      if file_name =~ /^(.*app\/#{dir}\/)+(.*#{suffix}(?:\.rb)?)$/
         base_name = $2
 
         plugin_file_name = File.expand_path(File.join('vendor','plugins', 'olmis', 'lib', dir, base_name))
-        if File.file?("#{plugin_file_name}.rb")
+        if File.file?(plugin_file_name)
           file_loaded = true if require_or_load_without_olmis_additions(plugin_file_name, const_path)
         end
-    
+        
         # Ensure we are only loading from the /app directory at this point
         app_file_name = File.join(RAILS_ROOT, 'app', dir, base_name)
-        if File.file?("#{app_file_name}.rb")
+        if File.file?(app_file_name)
           file_loaded = true if require_or_load_without_olmis_additions(app_file_name, const_path)
         end
       end 
