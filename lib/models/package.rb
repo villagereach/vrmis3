@@ -29,6 +29,10 @@ class Package < ActiveRecord::Base
   def <=>(other)
     position <=> other.position
   end
+
+  def inventoried_by_type?(t)
+    true
+  end
   
   def self.inheritance_column
     ''

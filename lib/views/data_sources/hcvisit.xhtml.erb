@@ -209,7 +209,7 @@
       <xf:bind nodeset="/olmis/hcvisit/epi"   id="epi_data"   relevant="/olmis/hcvisit/epi_data_ready = true()" />
 
       <%- Package.all.reject{|p| p.product.product_type_code == 'test'}.each do |package| -%>
-        <%- %w(existing delivered spoiled).each do |type|
+        <%- Inventory.types.each do |type|
               id = "inventory_#{package.code}_#{type}"
               node = "/olmis/hcvisit/visit/inventory/item[@for='#{ package.code }' and @type='#{ type }']"  -%>
           <xf:bind id="<%= id %>:nr"  nodeset="<%= node %>/@nr"  required="false()"          type="xf:boolean" />
@@ -354,7 +354,7 @@
                   <xf:action ev:event="DOMActivate" mode="synchronous">
                     <xf:setvalue bind="field_coordinator" value="instance('data')/selected-values/field_coordinator"/>
                     <xf:setvalue bind="delivery_zone"     value="instance('data')/selected-values/delivery_zone"/>
-                    <Xf:setvalue bind="visit_month"       value="instance('data')/selected-values/visit_date_period"/>
+                    <xf:setvalue bind="visit_month"       value="instance('data')/selected-values/visit_date_period"/>
                     <xf:load resource="javascript:select_location()" />
                   </xf:action>
                 </xf:trigger>
@@ -376,7 +376,7 @@
     <div id="location-selector" class="container">
       <h3>
         <!-- HACK: Evil, ugly hack to get at the raw translation. -->
-        <%= I18n.backend.send(:lookup, locale, "data_sources.hcvisit.hc.page_title").
+        <%= (I18n.backend.send(:lookup, locale, "data_sources.hcvisit.hc.page_title") || '').
                          sub("{{delivery_zone}}",%Q{<xf:output value="instance('data')/province/delivery_zone[@code=instance('data')/selected-values/delivery_zone]/@name" />}).
                          sub("{{visit_month}}",%Q{<xf:output value="olmis:month_of_year(instance('data')/selected-values/visit_date_period)" />}) %>
       </h3>
@@ -542,7 +542,7 @@
                   <xf:select1 bind="visited">
                     <xf:label>
                       <!-- HACK: Evil, ugly hack to get at the raw translation. -->
-                      <%= I18n.backend.send(:lookup, locale, "visits.health_center_monthly_visit.was_this_visited").
+                      <%= (I18n.backend.send(:lookup, locale, "visits.health_center_monthly_visit.was_this_visited") || '').
                                        sub("{{name}}",%Q{<xf:output value="instance('data')/province[@name=instance('data')/selected-values/province]/district[@name=instance('data')/selected-values/district]/health_center[@code=instance('data')/selected-values/health_center]/@name"/>}).
                                        sub("{{month}}",%Q{<xf:output value="olmis:month_of_year(instance('data')/selected-values/visit_date_period)"/>}) %>
                     </xf:label>
@@ -682,27 +682,32 @@
               </xf:group>
             </xf:case><!-- id="case-cold_chain" -->
 
+            <%- types = Inventory.directly_collected_types %>
+
             <xf:case id="case-epi_inventory">
               <div id="div-epi_inventory" class="block-form">
                 <xf:group bind="visit_data">
                   <xf:label><%= t("visits.health_center_monthly_tasks.epi_inventory") %></xf:label>
                   <p class="note"><%= t("visits.health_center_inventory.instructions") %></p>
+
                   <table class="inventory spreadsheet">
                     <thead>
                       <tr>
                         <th><%= t("visits.health_center_inventory.product") %></th>
-                        <th><%= t("visits.health_center_inventory.existing_quantity") %></th>
-                        <th><%= t("visits.health_center_inventory.delivered_quantity") %></th>
-                        <th><%= t("visits.health_center_inventory.spoiled_quantity") %></th>
+                        <%- types.each do |t| -%>
+                        <th><%= t("visits.health_center_inventory.#{t}") %></th>
+                        <%- end -%>
                       </tr>
                     </thead>
                     <tbody>
                       <%- Package.all.reject{|p| p.product.product_type_code == 'test'}.sort.each do |package| -%>
+                        <%- if types.any? { |t| package.inventoried_by_type?(t) } -%>
                         <tr>
                           <th><%= package.label %></th>
-                          <%- %w(existing delivered spoiled).each do |type|
+                          <%- types.each do |type|
                                 id = "inventory_#{package.code}_#{type}" -%>
                             <td>
+                              <%- if package.inventoried_by_type?(type) -%>
                               <div class="tally">
                                 <xf:input bind="<%= id %>:qty" incremental="true">
                                   <xf:action ev:event="xforms-value-changed">
@@ -720,9 +725,11 @@
                                   </xf:input>
                                 </div>
                               </div>
+                              <%- end -%>
                             </td>
                           <%- end -%>
                         </tr>
+                        <%- end -%>
                       <%- end -%>
                     </tbody>
                   </table>
@@ -742,18 +749,20 @@
                     <thead>
                       <tr>
                         <th><%= t("visits.health_center_inventory.product") %></th>
-                        <th><%= t("visits.health_center_inventory.existing_quantity") %></th>
-                        <th><%= t("visits.health_center_inventory.delivered_quantity") %></th>
-                        <th><%= t("visits.health_center_inventory.spoiled_quantity") %></th>
+                        <%- types.each do |t| -%>
+                        <th><%= t("visits.health_center_inventory.#{t}") %></th>
+                        <%- end -%>
                       </tr>
                     </thead>
                     <tbody>
                       <%- Package.all.select{|p| p.product.product_type_code == 'test'}.sort.each do |package| -%>
+                        <%- if types.any? { |t| package.inventoried_by_type?(t) } -%>
                         <tr>
                           <th><%= package.label %></th>
-                          <%- %w(existing delivered spoiled).each do |type|
+                          <%- types.each do |type|
                                 id = "inventory_#{package.code}_#{type}" -%>
                             <td>
+                              <%- if package.inventoried_by_type?(type) -%>
                               <div class="tally">
                                 <xf:input bind="<%= id %>:qty" incremental="true">
                                   <xf:action ev:event="xforms-value-changed">
@@ -771,9 +780,11 @@
                                   </xf:input>
                                 </div>
                               </div>
+                              <%- end -%>
                             </td>
                           <%- end -%>
                         </tr>
+                        <%- end -%>
                       <%- end -%>
                     </tbody>
                   </table>
