@@ -1,0 +1,37 @@
+var I18n = {
+  dict: <%= Hash[*I18n.available_locales.map { |l|
+                  [l, I18n.t("", :locale => l)]
+                }.flatten_once].to_json %>,
+  l: function(date, params) {
+    format = this.t('date.formats.' + params.format);
+    return date.format(format);
+  },
+  t: function(key, params) {
+    nesting = key.split('.');
+    var str = this.dict[this.locale];
+
+    while (nesting.length > 0 && typeof str == 'object')
+      str = str[nesting.shift()]
+
+    if (str) {
+      if (params)
+        for (var x in params)
+          str = str.replace(new RegExp('\\{\\{\\s*'+x+'\\s*\\}\\}', 'i'), params[x]);
+      return str;
+    }
+    return key;
+  },
+}
+
+I18n.locale = (function() {
+  var re = window.location.search.match(/locale=(..)/); 
+  if (re) { return re[1] }
+  else { 
+    l = (navigator.language || '').substr(0,2);
+    if (I18n.dict[l])
+      return l;
+    else 
+      return 'pt'
+  }
+})();
+

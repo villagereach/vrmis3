@@ -17,3 +17,7 @@ end
 
 Dispatcher.to_prepare do
 end
+
+# For development, remove this plugin's files from load_once_paths. This avoids errors such
+# as "A copy of UsersController has been removed from the module tree but is still active!"
+ActiveSupport::Dependencies.load_once_paths.delete(File.join(File.dirname(__FILE__), 'lib')) if config.environment == 'development'

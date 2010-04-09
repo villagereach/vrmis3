@@ -1,6 +1,4 @@
 class VisitsController < OlmisController
-  unloadable
-
   helper :progress
   
   before_filter :setup_visit_entry_pages_and_clear_caches, :except => [:index,:search,:by_month,:nuke_caches]

@@ -1,6 +1,5 @@
 class HealthCenterVisitPeriodicProgress
-  unloadable
-  
+
   def initialize
     @health_center_visits_by_date_period = {}
     @health_center_status_by_date_period = {}

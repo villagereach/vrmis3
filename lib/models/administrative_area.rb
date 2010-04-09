@@ -1,6 +1,4 @@
 class AdministrativeArea < ActiveRecord::Base
-  unloadable
-
   include BasicModelSecurity
   referenced_by :code
   has_one :street_address, :as => 'addressed'

@@ -74,7 +74,7 @@ en:
     polio1: Polio 1
     polio3: Polio 3
     full:   Fully vaccinated children
-  EpiUsageTally:
+  UsageTally:
     doses_received:    Doses received
     doses_distributed: Doses distributed
     loss:              Doses lost

@@ -17,8 +17,6 @@
 #
 
 class User < ActiveRecord::Base
-  unloadable
-  
   include BasicModelSecurity
 #  attr_accessor :password_hash_confirmation
 

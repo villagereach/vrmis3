@@ -9,8 +9,6 @@
 #
 
 class StockRoom < ActiveRecord::Base
-  unloadable
-
   include BasicModelSecurity
 
   referenced_by :health_center_code

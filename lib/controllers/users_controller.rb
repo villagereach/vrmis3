@@ -1,6 +1,4 @@
 class UsersController < OlmisController
-  unloadable
-
   add_breadcrumb 'breadcrumb.users', 'users_path', :except => [ :profile ]
 
   def index

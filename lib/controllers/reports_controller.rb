@@ -1,6 +1,4 @@
 class ReportsController < OlmisController
-  unloadable
-
   skip_before_filter :check_logged_in, :set_locale, :only => [ :offline_index, :offline_report, :offline_autoeval ]
   before_filter :set_locale_without_session, :only => [ :offline_index, :offline_report, :offline_autoeval ]
   helper :date_period_range

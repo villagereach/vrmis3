@@ -470,12 +470,15 @@ en:
     health_center_monthly_tasks:
       visit:       "Visit"
       inventory:   "Inventory"
+      epi_inventory: "EPI Inventory"
+      rdt_inventory: "RDT Inventory"
       equipment:   "Equipment"
       general:     "General"
       cold_chain:  "Cold Chain"
       stock_cards: "Stock Cards"
       delivery:    "Delivery"
       rdt:         "RDT"
+      confirm:     "Visit Observations and Confirmation/Verification"
       save_and_go_to: "Save and continue to {{next_page}}"
     health_center_monthly_visit:
       date:                       "Visit date"
@@ -500,7 +503,7 @@ en:
       page_title_adult_vaccination_tally: "Adult Vaccination Tallies"
       page_title_child_vaccination_tally: "Child Vaccination Tallies"
       page_title_full_vaccination_tally:  "Full Vaccination Tallies"
-      page_title_epi_usage_tally:         "EPI Usage Tallies"
+      page_title_usage_tally:             "Usage Tallies"
       page_title_rdt_tally:               "RDT Tallies"
     health_center_inventory:
       instructions: "Note: Check “not recorded” (NR) if the quantity is not available; if there are none, record a zero (0)."
@@ -508,6 +511,7 @@ en:
       ideal_quantity:     "Ideal Quantity"
       existing_quantity:  "Existing Quantity"
       delivered_quantity: "Delivered Quantity"
+      spoiled_quantity:   "Spoiled Quantity"
     health_center_equipment:
       instructions: "Note: Check “not recorded” (NR) if the quantity is not available; if there are none, record a zero (0)."
       type:     "Equipment"
@@ -607,42 +611,33 @@ en:
       upload:      "Upload"
       uploading:   "Uploading..."
     hcvisit:
-      visit_intro:
-        label: "Visit Intro"
-        hint:  "Additional text TBD"
-      inventory_intro:
-        label: "Inventory Intro"
-        hint:  "Additional text TBD"
-      general_intro:
-        label: "General Equipment Intro"
-        hint:  "Additional text TBD"
-      cold_chain_intro:
-        label: "Cold Chain Intro"
-        hint:  "Additional text TBD"
-      stock_cards_intro:
-        label: "Stock Cards Intro"
-        hint:  "Additional text TBD"
-      visit_month:       "Visit Month"
-      quantity_error:    "Value must be a non-negative integer or a dash (-)"
-      quantity_hint:     "Enter a dash (-) if the quantity is not available; if there are none, record a zero (0)."
-      temperature_error: "The temperature must be an integer value. A working fridge temperature must be between 2 and 8 °C."
-      temperature_hint:  "Enter a dash (-) if the temperature is not available"
-    list_xforms:
-      visit_all:   "Health Center Visits"
-      visit_by_dz: "{{delivery_zone}} Visits"
-    'hcvisit-nojr':
-      go_to_context_selection:           "Change health center or month"
+      selected_fc:                       "Recording data for"
+      go_to_hc_selection:                "Change health center"
+      go_to_main_page:                   "Go to main page"
       tab_title_adult_vaccination_tally: "Adult Vaccinations"
       tab_title_child_vaccination_tally: "Child Vaccinations"
       tab_title_full_vaccination_tally:  "Full Vaccinations"
-      tab_title_epi_usage_tally:         "EPI Usage"
+      tab_title_usage_tally:             "Usage"
       tab_title_rdt_tally:               "RDTs"
       add_fridge:                        "Add new fridge"
       upload_all:                        "Upload all completed forms"
       upload_empty:                      "You have no completed forms available for uploading"
       submit_failed:                     "Form submission failed"
       login_to_server:                   "Log in to server"
-      logout:                            "Logout / Change delivery zone"
+      logout:                            "Logout"
+      login:
+        access_code:                     "Enter access code"
+      main:
+        page_title:                      "Main Page"
+        enter_data:                      "Enter Data"
+        other_actions:                   "or"
+        view_pickups:                    "View Pickup Amounts"
+        view_reports:                    "View Reports"
+      hc:
+        page_title:                      "Data for {{delivery_zone}}, {{visit_month}}"
+        choose:                          "Choose Health Center"
+        before_warehouse_visit:          "Before Warehouse Visit: View amounts to request"
+        after_warehouse_visit:           "After Warehouse Visit: Enter amounts"
       status:
         login_and_upload: "Login and upload forms"
         updated:          "Updated"
@@ -672,6 +667,30 @@ en:
         temperature:          "The temperature must be an integer value. A working fridge temperature must be between 2 and 8 °C."
         quantity:             "The quantity must be a non-negative integer value"
         select_yes_or_no:     'Select either "yes" or "no"'
+      # ODK-specific data
+      visit_intro:
+        label: "Visit Intro"
+        hint:  "Additional text TBD"
+      inventory_intro:
+        label: "Inventory Intro"
+        hint:  "Additional text TBD"
+      general_intro:
+        label: "General Equipment Intro"
+        hint:  "Additional text TBD"
+      cold_chain_intro:
+        label: "Cold Chain Intro"
+        hint:  "Additional text TBD"
+      stock_cards_intro:
+        label: "Stock Cards Intro"
+        hint:  "Additional text TBD"
+      visit_month:       "Visit Month"
+      quantity_error:    "Value must be a non-negative integer or a dash (-)"
+      quantity_hint:     "Enter a dash (-) if the quantity is not available; if there are none, record a zero (0)."
+      temperature_error: "The temperature must be an integer value. A working fridge temperature must be between 2 and 8 °C."
+      temperature_hint:  "Enter a dash (-) if the temperature is not available"
+    list_xforms:
+      visit_all:   "Health Center Visits"
+      visit_by_dz: "{{delivery_zone}} Visits"
   sms_messages:
     index:
       sms_messages: "SMS messages"
@@ -695,7 +714,7 @@ en:
     vehicle_problem:      "Vehicle problem"
     health_center_closed: "Health center closed"
     other:                "Other (Enter reason below)"
-  EpiUsageTally:
+  UsageTally:
     doses_received:    "Doses received"
     doses_distributed: "Doses distributed"
     loss:              "Doses lost"

@@ -18,8 +18,6 @@
 #
 
 class HealthCenterVisit < ActiveRecord::Base
-  unloadable
-
   belongs_to :field_coordinator, :foreign_key => 'user_id', :class_name => 'User'
   belongs_to :health_center
 

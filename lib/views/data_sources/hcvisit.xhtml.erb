@@ -1,0 +1,969 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xsltforms-options debug="no"?>
+<?css-conversion no?>
+<%-
+  tally_classes = HealthCenterVisit.tally_hash.map{|k,v| k.constantize}
+  locale = I18n.locale
+-%>
+<html xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:xf="http://www.w3.org/2002/xforms"
+        xmlns:ev="http://www.w3.org/2001/xml-events"
+        xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+        xmlns:jr="http://openrosa.org/javarosa"
+        xmlns:ajx="http://www.ajaxforms.net/2006/ajx" 
+        xmlns:olmis="http://openlmis.org/xpath-functions"
+        lang="<%= locale %>"
+        manifest="<%= manifest_url(:locale => locale) %>">
+  <head>
+    <title><%= t("health_center_visit") %></title>
+    <script type="text/javascript" src="/javascripts/jquery.min.js" />
+    <script type="text/javascript">jQuery.noConflict();</script>
+    <script type="text/javascript" src="/javascripts/ui/ui.core.js" />
+    <script type="text/javascript" src="/javascripts/ui/ui.datepicker.js" />
+    <script type="text/javascript" src="/javascripts/ui/i18n/jquery-ui-i18n.js" />
+    <script type="text/javascript" src="/javascripts/formgrid.js" />
+    <script type="text/javascript" src="/javascripts/hcvisit.js" />
+    <script type="text/javascript" src="/javascripts/json2.js" />
+    <script type="text/javascript" src="/javascripts/date.js" />
+    <script type="text/javascript" src="/javascripts/i18n.js" />
+    <script type="text/javascript" src="/fancybox/jquery.fancybox.js" />
+    <link rel="stylesheet" href="/fancybox/jquery.fancybox.css" type="text/css" />
+    <link rel="stylesheet" href="/stylesheets/ui/jquery-ui-1.7.2.custom.css" type="text/css" />
+    <link rel="stylesheet" href="/stylesheets/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="/stylesheets/theme.css" type="text/css" />
+    <link rel="stylesheet" href="/stylesheets/hcvisit.css" type="text/css" />
+    <xf:model id="default-model">
+      <xf:instance id="olmis" src="/xforms/olmis.xml" />
+      <xf:instance id="data"   src="/xforms/data.xml"   />
+
+      <xf:bind id="selector"
+        nodeset="instance('data')/selected-values/selector"
+        relevant="instance('data')/selected-values/context-selected = true()"
+        constraint="jr:regex(., '^local://[^/]+/\d{4}-\d{2}$')"
+        calculate="concat('local://', instance('data')/selected-values/visit_date_period, '/', instance('data')/selected-values/health_center)"
+        />
+
+      <xf:bind id="remote-selector"
+        nodeset="instance('data')/selected-values/remote-selector"
+        relevant="instance('data')/selected-values/context-selected = true() and olmis:currently_online()"
+        calculate="concat('<%= visits_url %>', '/', instance('data')/selected-values/selector, '.', 'xml')"
+        />
+
+      <xf:bind id="login-selector"
+        nodeset="instance('data')/selected-values/login-selector"
+        calculate="concat(instance('data')/selected-values/field_coordinator, ':', instance('data')/selected-values/delivery_zone)"/>
+
+      <xf:bind id="login-selected"
+        type="xsd:boolean"
+        relevant=". = true()"
+        nodeset="instance('data')/selected-values/login-selected"
+        calculate="instance('data')/selected-values/field_coordinator != '' and instance('data')/selected-values/delivery_zone != ''"
+        />
+
+      <xf:bind id="login-active"
+        type="xsd:boolean"
+        relevant=". = true()"
+        nodeset="instance('data')/selected-values/logged_in"
+        calculate="instance('data')/selected-values/logged_in = true()"
+        />
+
+      <xf:bind id="context-selected"
+        type="xsd:boolean"
+        relevant=". = true()"
+        nodeset="instance('data')/selected-values/context-selected"
+        calculate="instance('data')/selected-values/health_center != '' and instance('data')/selected-values/visit_date_period != ''"
+        />
+
+      <xf:bind id="visit-period-selected"
+        type="xsd:boolean"
+        relevant=". = true()"
+        nodeset="instance('data')/selected-values/visit_period_selected"
+        calculate="instance('data')/selected-values/visit_period_selected = true()"
+        />
+
+      <xf:bind id="selected-month-exists"
+        nodeset="instance('data')/selected-values/selected-month-exists"
+        relevant=". = true()"
+        calculate="exists(instance('data')/selected-values/selector)" />
+
+      <xf:bind nodeset="instance('olmis')/hcvisit" relevant="true()" />
+
+      <xf:submission id="load"
+        replace="instance"
+        instance="olmis"
+        ref="/olmis"
+        method="get"
+        validate="false"
+        includenamespaceprefixes="">
+        <xf:resource value="instance('data')/selected-values/selector" />
+        <xf:action ev:event="xforms-submit-done">
+          <xf:setvalue bind="province"      value="instance('data')/selected-values/province"/>
+          <xf:setvalue bind="district"      value="instance('data')/selected-values/district"/>
+          <xf:setvalue bind="health_center" value="instance('data')/selected-values/health_center"/>
+          <xf:setvalue bind="visit_month"   value="instance('data')/selected-values/visit_date_period"/>
+          <xf:setvalue bind="delivery_zone" value="instance('data')/selected-values/delivery_zone"/>
+          <xf:setvalue bind="field_coordinator" value="instance('data')/selected-values/field_coordinator"/>
+          <xf:setvalue ref="/olmis/meta/date" value="jr:today()"/>
+
+          <xf:toggle case="case-visit"/>
+          <xf:load resource="javascript:set_active_tab('visit')" />
+        </xf:action>
+      </xf:submission>
+
+      <xf:submission id="new"
+        replace="instance"
+        instance="olmis"
+        ref="/nothing"
+        method="get"
+        validate="false"
+        action="olmis.xml"
+        includenamespaceprefixes="">
+        <xf:action ev:event="xforms-submit" mode="synchronous" />
+        <xf:action ev:event="xforms-submit-done">
+          <xf:setvalue bind="province"      value="instance('data')/selected-values/province"/>
+          <xf:setvalue bind="district"      value="instance('data')/selected-values/district"/>
+          <xf:setvalue bind="health_center" value="instance('data')/selected-values/health_center"/>
+          <xf:setvalue bind="visit_month"   value="instance('data')/selected-values/visit_date_period"/>
+          <xf:setvalue bind="delivery_zone" value="instance('data')/selected-values/delivery_zone"/>
+          <xf:setvalue bind="field_coordinator" value="instance('data')/selected-values/field_coordinator"/>
+          <xf:setvalue ref="instance('olmis')/meta/date" value="jr:today()"/>
+          <xf:setvalue bind="visited_at" value="instance('data')/selected-values/default_visit_date" />
+
+          <xf:insert context="instance('olmis')" nodeset="/olmis/hcvisit/visit/cold_chain/fridges/fridge" at="1" position="before" origin="instance('data')/province[@name=instance('data')/selected-values/province]/district[@name=instance('data')/selected-values/district]/health_center[@code=instance('data')/selected-values/health_center]/fridge" />
+          <xf:delete nodeset="/olmis/hcvisit/visit/cold_chain/fridges/fridge" at="last()" />
+          
+          <!-- HACK: Force the form to be fully rebuilt. -->
+          <xf:load resource="javascript:xforms.building = true" />
+            <xf:dispatch name="xforms-rebuild" target="default-model" />
+          <xf:load resource="javascript:xforms.building = false" />
+
+          <xf:toggle case="case-visit"/>
+          <xf:load resource="javascript:set_active_tab('visit')" />
+        </xf:action>
+      </xf:submission>
+
+      <xf:submission id="save"
+        replace="instance"
+        instance="olmis"
+        ref="/olmis"
+        method="put"
+        validate="false"
+        includenamespaceprefixes="">
+        <xf:resource value="instance('data')/selected-values/selector" />
+      </xf:submission>
+
+      <xf:submission id="accept"
+        replace="instance"
+        instance="olmis"
+        ref="/olmis"
+        method="put"
+        includenamespaceprefixes="">
+        <xf:resource value="instance('data')/selected-values/selector" />
+      </xf:submission>
+
+      <xf:submission id="reject"
+        replace="instance"
+        instance="olmis"
+        ref="/olmis"
+        method="put"
+        includenamespaceprefixes="">
+        <xf:resource value="instance('data')/selected-values/selector" />
+      </xf:submission>
+
+      <xf:bind id="i-province"    nodeset="instance('data')/selected-values/province" required="true()" relevant="false()"/>
+      <xf:bind id="i-district"    nodeset="instance('data')/selected-values/district" required="true()" relevant="false()"/>
+      <xf:bind id="i-health-center" nodeset="instance('data')/selected-values/health_center" required="true()" relevant="false()"/>
+      <xf:bind id="i-visit-month" nodeset="instance('data')/selected-values/visit_date_period" required="true()"/>
+      <xf:bind id="i-delivery-zone" nodeset="instance('data')/selected-values/delivery_zone" required="true()"/>
+      <xf:bind id="i-field-coordinator" nodeset="instance('data')/selected-values/field_coordinator" required="true()"/>
+      <xf:bind nodeset="/olmis/meta/date" type="xf:date" readonly="true()"/>
+
+      <xf:bind nodeset="/olmis/meta/province" id="province"/>
+      <xf:bind nodeset="/olmis/meta/district" id="district"/>
+      <xf:bind nodeset="/olmis/meta/delivery_zone" id="delivery_zone"/>
+      <xf:bind nodeset="/olmis/meta/field_coordinator" id="field_coordinator"/>
+      <xf:bind nodeset="/olmis/hcvisit/visit_month"   id="visit_month"/>
+      <xf:bind nodeset="/olmis/hcvisit/health_center" id="health_center"/>
+
+      <xf:bind nodeset="/olmis/hcvisit/epi_data_ready" id="epi_data_ready"
+<%- if Rails.env == "development" -%>
+        relevant="true()"
+        required="true()"
+<%- else -%>
+        calculate="true()"
+<%- end -%>
+        type="xsd:boolean" />
+      <xf:bind nodeset="/olmis/hcvisit/epi_month" id="epi_month"
+        type="xsd:gYearMonth"
+        constraint="jr:date(concat(.,'-01')) &lt;= jr:today()"
+        calculate="olmis:previous_yearmonth(instance('data')/selected-values/visit_date_period)"
+        relevant="../epi_data_ready = true()" />
+
+      <xf:bind nodeset="/olmis/hcvisit/visited"          id="visited"          required="true()" relevant="true()"/>
+      <xf:bind nodeset="/olmis/hcvisit/visited_at"       id="visited_at"       required="true()" relevant="../visited != 'false'" type="xf:string" constraint="jr:date(.) &lt;= jr:today() and jr:date(.) &gt;= jr:date(concat(../visit_month,'-01')) and jr:date(.) &lt;= jr:date(concat(../visit_month,'-31'))" />
+      <xf:bind nodeset="/olmis/hcvisit/vehicle_id"       id="vehicle_id"       required="true()" relevant="../visited != 'false'"/>
+      <xf:bind nodeset="/olmis/hcvisit/non_visit_reason" id="non_visit_reason" required="true()" relevant="../visited = 'false'" constraint="string-length(.) &gt; 0 and . != 'Visited'"/>
+      <xf:bind nodeset="/olmis/hcvisit/notes"            id="notes"            required="../non_visit_reason = 'other'"/>
+
+      <xf:bind nodeset="/olmis/hcvisit/visit" id="visit_data" relevant="/olmis/hcvisit/visited != 'false'" />
+      <xf:bind nodeset="/olmis/hcvisit/epi"   id="epi_data"   relevant="/olmis/hcvisit/epi_data_ready = true()" />
+
+      <%- Package.all.reject{|p| p.product.product_type_code == 'test'}.each do |package| -%>
+        <%- %w(existing delivered spoiled).each do |type|
+              id = "inventory_#{package.code}_#{type}"
+              node = "/olmis/hcvisit/visit/inventory/item[@for='#{ package.code }' and @type='#{ type }']"  -%>
+          <xf:bind id="<%= id %>:nr"  nodeset="<%= node %>/@nr"  required="false()"          type="xf:boolean" />
+          <xf:bind id="<%= id %>:qty" nodeset="<%= node %>/@qty" required="../@nr != true()" type="xf:nonNegativeInteger" />
+        <%- end -%>
+      <%- end -%>
+
+      <%- EquipmentType.all.each do |type|
+            id = "general_#{type.code}"
+            node = "/olmis/hcvisit/visit/general/item[@for='#{ type.code }']"  -%>
+        <xf:bind id="<%= id %>:nr"     nodeset="<%= node %>/@nr"     required="false()"          type="xf:boolean" />
+        <xf:bind id="<%= id %>:qty"    nodeset="<%= node %>/@qty"    required="../@nr != true()" type="xf:nonNegativeInteger" />
+        <xf:bind id="<%= id %>:status" nodeset="<%= node %>/@status" required="true()" />
+        <xf:bind id="<%= id %>:notes"  nodeset="<%= node %>/@notes"  required="false()" />
+      <%- end -%>
+
+      <%- StockCard.all.each do |type|
+            id = "stock_cards_#{type.code}"
+            node = "/olmis/hcvisit/visit/stock_cards/item[@for='#{ type.code }']" -%>
+        <xf:bind id="<%= id %>:have" nodeset="<%= node %>/@have" required="true()" />
+        <xf:bind id="<%= id %>:use"  nodeset="<%= node %>/@use"  required="true()" relevant="../@have = 'true'" />
+      <%- end -%>
+      <xf:bind id="fridge:code"   nodeset="/olmis/hcvisit/visit/cold_chain/fridges/fridge/@code"   required="true()" readonly=". != ''" />
+      <xf:bind id="fridge:status" nodeset="/olmis/hcvisit/visit/cold_chain/fridges/fridge/@status" required="true()" />
+      <xf:bind id="fridge:nr"     nodeset="/olmis/hcvisit/visit/cold_chain/fridges/fridge/@nr"     required="false()"         type="xf:boolean" relevant="../@status != 'BROKE' and ../@status != 'MISS'" />
+      <xf:bind id="fridge:temp"   nodeset="/olmis/hcvisit/visit/cold_chain/fridges/fridge/@temp"   required="../@nr != true()" type="xf:integer" constraint="(. &gt;= 2 and . &lt;= 8 and ../@status = 'OK') or ../@status = 'PROB'" relevant="../@status != 'BROKE' and ../@status != 'MISS'" />
+      <xf:bind id="fridge:notes"  nodeset="/olmis/hcvisit/visit/cold_chain/fridges/fridge/@notes"  required="false()" />
+
+      <%- tally_classes.each do |klass| -%>
+        <%- klass.expected_params().each do |param, value_type|
+          node = "/olmis/hcvisit/epi/#{ klass.name.tableize }/item[@for='#{ param }']"
+          type, constraint = (case value_type
+                              when :date then [ 'xf:string', "jr:regex(., '^\\\\d{2}/\\\\d{4}$')" ]
+
+                              else            [ 'xf:nonNegativeInteger', nil ]
+                              end) -%>
+          <xf:bind id="<%= param %>:nr"    nodeset="<%= node %>/@nr"  required="false()"          type="xf:boolean" />
+          <xf:bind id="<%= param %>:value" nodeset="<%= node %>/@val" required="../@nr != true()" type="<%= type %>" <%= %Q{constraint="#{constraint}"} if constraint %> />
+        <%- end -%>
+      <%- end -%>
+
+      <xf:action ev:event="xforms-ready">
+        <xf:load resource="javascript:setup_visit_months()" />
+        <xf:setvalue bind="i-visit-month" value="substring(jr:today(),1,7)" />
+        <xf:setfocus control="access_code" />
+      </xf:action>
+    </xf:model>
+  </head>
+  <body>
+    <h1><a href="/">Village Reach Prototype olmis</a></h1>
+    <div id="login-form" class="container login inline">
+      <h2><%= t("login.login.login_to", :name => "VR MIS3") %></h2>
+      <xf:group>
+        <xf:secret id="access_code" ref="instance('data')/selected-values/access_code">
+          <xf:label><%= t(".login.access_code") %></xf:label>
+        </xf:secret>
+
+        <xf:trigger>
+          <xf:label><%= t("login.login.submit_button") %></xf:label>
+        </xf:trigger>
+
+        <xf:action ev:event="DOMActivate" mode="synchronous">
+          <xf:load resource="javascript:login()" />
+        </xf:action>
+      </xf:group>
+    </div>
+
+    <xf:group id="user_tools">
+      <xf:group id="language" class="content">
+        <div>
+          <em><%= t("layouts.locale.select_language") %></em>
+          <%- Locale.all.sort_by{|locale| locale.name.downcase}.each do |locale| -%>
+            <%- if I18n.locale.to_s == locale.code -%>
+              <strong><%= h locale.name %></strong>
+            <%- else -%>
+              <%= link_to(h(locale.name), url_for({ :overwrite_params => { :locale => locale.code } })) %>
+            <%- end -%>
+          <%- end -%>
+        </div>
+      </xf:group>
+      <xf:group bind="login-active" id="user" class="content">
+        <div>
+          <xf:trigger appearance="minimal">
+            <xf:label><%= t("logout") %></xf:label>
+            <xf:action ev:event="DOMActivate">
+              <xf:load resource="javascript:logout()" />
+            </xf:action>
+          </xf:trigger>
+          <xf:group bind="visit-period-selected" class="content">
+            <em><%= t(".selected_fc") %></em>
+            <strong><xf:output value="instance('data')/selected-values/field_coordinator" /></strong>
+
+            <xf:trigger appearance="minimal">
+              <xf:label><%= t(".go_to_main_page") %></xf:label>
+              <xf:action ev:event="DOMActivate">
+                <xf:load resource="javascript:show_main_page()" />
+              </xf:action>
+            </xf:trigger>
+          </xf:group>
+        </div>
+      </xf:group>
+    </xf:group>
+
+    <div id="context-selector" class="container login inline">   
+      <h2><%= t(".main.page_title") %></h2>
+
+      <table>
+        <tbody>
+          <tr>
+            <td id="enter-data">
+              <h3><%= t(".main.enter_data") %></h3>
+              <xf:group>
+                <xf:select1 id="dz-selector" ref="instance('data')/selected-values/delivery_zone">
+                  <xf:label><%= t("delivery_zone") %></xf:label>
+                  <xf:itemset nodeset="instance('data')/blank | olmis:sort(instance('data')/province/delivery_zone/@name)">
+                    <xf:label ref="."/>
+                    <xf:value ref="../@code"/>
+                  </xf:itemset>
+                  <!--xf:action ev:event="xforms-value-changed">
+                    <xf:setvalue if="instance('data')/selected-values/field_coordinator = ''" bind="i-field-coordinator" value="instance('data')/province/fc[@dz=instance('data')/selected-values/delivery_zone]/@name" />
+                  </xf:action-->
+                  <xf:alert><%= t(".errors.select_dz") %></xf:alert>
+                </xf:select1>
+                <xf:select1 id="fc-selector" ref="instance('data')/selected-values/field_coordinator">
+                  <xf:label><%= t("field_coordinator") %></xf:label>
+                  <xf:itemset nodeset="instance('data')/blank | olmis:sort(instance('data')/province/fc/@name)">
+                    <xf:label ref="."/>
+                    <xf:value ref="."/>
+                  </xf:itemset>
+                  <!--xf:action ev:event="xforms-value-changed">
+                    <xf:setvalue if="instance('data')/selected-values/delivery_zone = ''" bind="i-delivery-zone" value="instance('data')/province/fc[@name=instance('data')/selected-values/field_coordinator]/@dz" />
+                  </xf:action-->
+                  <xf:alert><%= t(".errors.select_fc") %></xf:alert>
+                </xf:select1>
+                <xf:select1 id="visit-month-selector" ref="instance('data')/selected-values/visit_date_period">
+                  <xf:label><%= t(".visit_month") %></xf:label>
+                  <xf:item><!-- dynamically generated --></xf:item>
+                  <xf:alert><%= t(".errors.select_visit_month") %></xf:alert>
+                </xf:select1>
+                <xf:trigger>
+                  <xf:label><%= t("go") %></xf:label>
+                  <xf:action ev:event="DOMActivate" mode="synchronous">
+                    <xf:setvalue bind="field_coordinator" value="instance('data')/selected-values/field_coordinator"/>
+                    <xf:setvalue bind="delivery_zone"     value="instance('data')/selected-values/delivery_zone"/>
+                    <Xf:setvalue bind="visit_month"       value="instance('data')/selected-values/visit_date_period"/>
+                    <xf:load resource="javascript:select_location()" />
+                  </xf:action>
+                </xf:trigger>
+              </xf:group>
+            </td><!-- id="enter-data" -->
+
+            <td id="other-actions">
+              <h3><%= t(".main.other_actions") %></h3>
+              <ul>
+                <li><a href="#todo"><%= t(".main.view_pickups") %></a></li>
+                <li><a href="#todo"><%= t(".main.view_reports") %></a></li>
+              </ul>
+            </td><!-- id="other-actions" -->
+          </tr>
+        </tbody>
+      </table>
+    </div><!-- id="context-selector" -->
+
+    <div id="location-selector" class="container">
+      <h3>
+        <!-- HACK: Evil, ugly hack to get at the raw translation. -->
+        <%= I18n.backend.send(:lookup, locale, "data_sources.hcvisit.hc.page_title").
+                         sub("{{delivery_zone}}",%Q{<xf:output value="instance('data')/province/delivery_zone[@code=instance('data')/selected-values/delivery_zone]/@name" />}).
+                         sub("{{visit_month}}",%Q{<xf:output value="olmis:month_of_year(instance('data')/selected-values/visit_date_period)" />}) %>
+      </h3>
+
+      <div id="warehouse-actions">
+        <ul>
+          <li><a href="#todo"><%= t(".hc.before_warehouse_visit") %></a></li>
+          <li><a href="#todo"><%= t(".hc.after_warehouse_visit") %></a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h4><%= t(".hc.choose") %></h4>
+        <div id="year-month-selector" class="inline">
+          <xf:group>
+            <xf:select1 id="province-selector" ref="instance('data')/selected-values/province">
+              <xf:itemset nodeset="instance('data')/province">
+                <xf:label ref="@name"/>
+                <xf:value ref="@name"/>
+              </xf:itemset>
+            </xf:select1>
+            <xf:select1 id="district-selector" ref="instance('data')/selected-values/district">
+              <xf:itemset nodeset="instance('data')/province[@name=instance('data')/selected-values/province]/district">
+                <xf:label ref="@name"/>
+                <xf:value ref="@name"/>
+              </xf:itemset>
+            </xf:select1>
+            <xf:select1 id="health-center-selector" ref="instance('data')/selected-values/health_center">
+              <xf:itemset nodeset="instance('data')/province[@name=instance('data')/selected-values/province]/district[@name=instance('data')/selected-values/district]/health_center">
+                <xf:label ref="@name"/>
+                <xf:value ref="@code"/>
+              </xf:itemset>
+            </xf:select1>
+            <xf:action ev:event="xforms-value-changed">
+              <xf:load resource="javascript:setup_visits()" />
+              <xf:send ev:event="xforms-submit" submission="load" if="instance('data')/selected-values/context-selected = true() and instance('data')/selected-values/selected-month-exists = true()" />
+              <xf:send ev:event="xforms-submit" submission="new"  if="instance('data')/selected-values/context-selected = true() and instance('data')/selected-values/selected-month-exists = false()" />
+            </xf:action>
+          </xf:group>
+        </div>
+
+        <div id="saved-forms">
+          <form>
+            <div id="saved-forms-search">
+              <label><%= t("search_button") %></label>
+              <input type="text" id="saved-forms-filter" />
+              <button id="saved-forms-search-reset" onclick="javascript:reset_saved_forms_search(); return false;"><%= t("reset_button") %></button>
+            </div>
+            <select size="10" id="saved-forms-control" />
+          </form>
+        </div>
+      </div>
+    </div><!-- id="location-selector" -->
+
+    <div id="form" class="container">
+      <h3 id="current_hc">
+        <xf:output value="instance('data')/province[@name=instance('data')/selected-values/province]/district[@name=instance('data')/selected-values/district]/health_center[@code=instance('data')/selected-values/health_center]/@name"/>, <xf:output value="olmis:month_of_year(instance('data')/selected-values/visit_date_period)" />
+        <xf:trigger appearance="minimal">
+          <xf:label><%= t(".go_to_hc_selection") %></xf:label>
+          <xf:action ev:event="DOMActivate">
+            <xf:load resource="javascript:show_visits()" />
+          </xf:action>
+        </xf:trigger>
+      </h3>
+
+      <xf:group bind="context-selected">
+        <div id="tab-menu">
+          <xf:group id="tab-menu-inner">
+            <xf:trigger id="tab-visit" class="menu-tab selected-tab" appearance="minimal">
+              <xf:label><%= t("visits.health_center_monthly_tasks.visit") %></xf:label>              
+              <xf:action ev:event="DOMActivate">
+                <xf:toggle case="case-visit"/>
+                <xf:load resource="javascript:set_active_tab('visit')" />
+              </xf:action>
+            </xf:trigger>
+
+            <xf:trigger bind="visit_data" id="tab-cold_chain" class="menu-tab" appearance="minimal">
+              <xf:label><%= t("visits.health_center_monthly_tasks.cold_chain") %></xf:label>
+              <xf:action ev:event="DOMActivate">
+                <xf:toggle case="case-cold_chain"/>
+                <xf:load resource="javascript:set_active_tab('cold_chain')" />
+              </xf:action>
+            </xf:trigger>
+              
+            <xf:trigger bind="visit_data" id="tab-epi_inventory" class="menu-tab" appearance="minimal">
+              <xf:label><%= t("visits.health_center_monthly_tasks.epi_inventory") %></xf:label>
+              <xf:action ev:event="DOMActivate">
+                <xf:toggle case="case-epi_inventory"/>
+                <xf:load resource="javascript:set_active_tab('epi_inventory')" />
+              </xf:action>
+            </xf:trigger>
+              
+            <xf:trigger bind="visit_data" id="tab-rdt_inventory" class="menu-tab" appearance="minimal">
+              <xf:label><%= t("visits.health_center_monthly_tasks.rdt_inventory") %></xf:label>
+              <xf:action ev:event="DOMActivate">
+                <xf:toggle case="case-rdt_inventory"/>
+                <xf:load resource="javascript:set_active_tab('rdt_inventory')" />
+              </xf:action>
+            </xf:trigger>
+              
+            <xf:trigger bind="visit_data" id="tab-equipment" class="menu-tab" appearance="minimal">
+              <xf:label><%= t("visits.health_center_monthly_tasks.equipment") %></xf:label>
+              <xf:action ev:event="DOMActivate">
+                <xf:toggle case="case-equipment"/>
+                <xf:load resource="javascript:set_active_tab('equipment')" />
+              </xf:action>
+            </xf:trigger>
+
+            <xf:trigger bind="visit_data" id="tab-stock_cards" class="menu-tab" appearance="minimal">
+              <xf:label><%= t("visits.health_center_monthly_tasks.stock_cards") %></xf:label>
+              <xf:action ev:event="DOMActivate">
+                <xf:toggle case="case-stock_cards"/>
+                <xf:load resource="javascript:set_active_tab('stock_cards')" />
+              </xf:action>
+            </xf:trigger>
+
+            <%- tally_classes.each do |klass| -%>
+              <xf:trigger bind="epi_data" id="tab-<%= klass.name.tableize %>" class="menu-tab" appearance="minimal">
+                <xf:label><%= t(".tab_title_#{ klass.name.underscore }") %></xf:label>
+                <xf:action ev:event="DOMActivate">
+                  <xf:toggle case="case-<%= klass.name.tableize %>"/>
+                  <xf:load resource="javascript:set_active_tab('<%= klass.name.tableize %>')" />
+                </xf:action>
+              </xf:trigger>
+            <%- end -%>
+              
+            <xf:trigger id="tab-confirm" class="menu-tab" appearance="minimal">
+              <xf:label><%= t("visits.health_center_monthly_tasks.confirm") %></xf:label>
+              <xf:action ev:event="DOMActivate">
+                <xf:toggle case="case-confirm"/>
+                <xf:load resource="javascript:set_active_tab('confirm')" />
+              </xf:action>
+            </xf:trigger>
+          </xf:group><!-- ref="instance('olmis')/hcvisit" -->
+        </div><!-- id="tab-menu" -->
+
+        <xf:group id="form-contents" ref="instance('olmis')/hcvisit">
+          <xf:action ev:event="xforms-value-changed">
+            <xf:send ev:event="xforms-submit" submission="save" if="instance('data')/selected-values/context-selected = true()" />
+          </xf:action>
+          <xf:action ev:event="DOMFocusOut">
+            <xf:send ev:event="xforms-submit" submission="save" if="instance('data')/selected-values/context-selected = true()" />
+          </xf:action>
+          <xf:switch>
+            <xf:case id="case-visit">
+              <div id="div-visit" class="block-form">
+<%- if Rails.env == "development" -%>
+                <xf:group id="have_epi_data">
+                  <xf:select1 bind="epi_data_ready">
+                    <xf:label><%= t("visits.health_center_monthly_visit.do_you_have_epi_data") %></xf:label>
+                    <xf:item><xf:label><%= t("yes") %></xf:label><xf:value>true</xf:value></xf:item>
+                    <xf:item><xf:label><%= t("no") %></xf:label><xf:value>false</xf:value></xf:item>
+                  </xf:select1>
+                  <xf:action ev:event="xforms-value-changed">
+                    <xf:load resource="javascript:fixup_menu_tabs()" />
+                  </xf:action>
+                  <xf:output value="olmis:month_of_year(/olmis/hcvisit/epi_month)">
+                    <xf:label><%= t("epi_month") %>: </xf:label>
+                  </xf:output>
+                </xf:group>
+<%- end -%>
+                <xf:group id="was_hc_visited">
+                  <xf:select1 bind="visited">
+                    <xf:label>
+                      <!-- HACK: Evil, ugly hack to get at the raw translation. -->
+                      <%= I18n.backend.send(:lookup, locale, "visits.health_center_monthly_visit.was_this_visited").
+                                       sub("{{name}}",%Q{<xf:output value="instance('data')/province[@name=instance('data')/selected-values/province]/district[@name=instance('data')/selected-values/district]/health_center[@code=instance('data')/selected-values/health_center]/@name"/>}).
+                                       sub("{{month}}",%Q{<xf:output value="olmis:month_of_year(instance('data')/selected-values/visit_date_period)"/>}) %>
+                    </xf:label>
+                    <xf:item>
+                      <xf:label><%= t("visits.health_center_monthly_visit.yes_i_visited") %></xf:label>
+                      <xf:value>true</xf:value>
+                    </xf:item>
+                    <xf:item>
+                      <xf:label><%= t("visits.health_center_monthly_visit.no_noone_visited") %></xf:label>
+                      <xf:value>false</xf:value>
+                    </xf:item>
+                  </xf:select1>
+                  <xf:action ev:event="xforms-value-changed">
+                    <xf:load resource="javascript:fixup_menu_tabs()" />
+                  </xf:action>
+                </xf:group>
+                <xf:group>
+                  <div class="datepicker">
+                    <xf:input bind="visited_at">
+                      <xf:label><%= t("visits.health_center_monthly_visit.date") %></xf:label>
+                      <xf:alert><%= t(".errors.date_for_visit_month") %></xf:alert>
+                      <xf:action ev:event="xforms-value-changed">
+                        <xf:load resource="javascript:visit_date_changed()" />
+                      </xf:action>
+                    </xf:input>
+                  </div>
+                </xf:group>
+                <xf:group>
+                  <xf:input bind="vehicle_id">
+                    <xf:label><%= t("visits.health_center_monthly_visit.vehicle_code") %></xf:label>
+                    <xf:alert><%= t(".errors.vehicle_id") %></xf:alert>
+                  </xf:input>
+                </xf:group>
+                <xf:group>
+                  <xf:select1 bind="non_visit_reason">
+                    <xf:label><%= t("visits.health_center_monthly_visit.reason_for_not_visiting") %></xf:label>
+                    <xf:item>
+                      <xf:label><%= t("select_blank") %></xf:label>
+                      <xf:value></xf:value>
+                    </xf:item>
+                    <%- %w(road_problem vehicle_problem health_center_closed).each do |reason| -%>
+                      <xf:item>
+                        <xf:label><%= t("HealthCenterVisit.#{reason}") %></xf:label>
+                        <xf:value><%= reason %></xf:value>
+                      </xf:item>
+                    <%- end -%>
+                    <xf:item>
+                      <xf:label><%= t("HealthCenterVisit.other") %></xf:label>
+                      <xf:value>other</xf:value>
+                    </xf:item>
+                    <xf:alert><%= t(".errors.select_non_visit") %></xf:alert>
+                    <xf:action ev:event="xforms-value-changed">
+                      <xf:load resource="javascript:non_visit_reason_changed()" />
+                    </xf:action>
+                  </xf:select1>
+                </xf:group>
+                <xf:group id="visit-notes">
+                  <xf:textarea bind="notes">
+                    <xf:label><%= t("visits.health_center_monthly_visit.notes") %></xf:label>
+                    <xf:alert><%= t(".errors.non_visit_reason") %></xf:alert>
+                  </xf:textarea>
+                </xf:group>
+              </div>
+            </xf:case><!-- id="case-visit" -->
+
+            <xf:case id="case-cold_chain">
+              <xf:group bind="visit_data">
+                <xf:label><%= t("visits.health_center_monthly_tasks.cold_chain") %></xf:label>
+                <p class="note"><%= t("visits.health_center_cold_chain.instructions") %></p>
+                <table class="equipment cold_chain spreadsheet">
+                  <thead>
+                    <tr>
+                      <th><%= t("visits.health_center_cold_chain.fridge") %></th>
+                      <th><%= t("visits.health_center_cold_chain.status") %></th>
+                      <th><%= t("visits.health_center_cold_chain.temperature") %></th>
+                      <th><%= t("visits.health_center_cold_chain.notes") %></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <xf:repeat id="fridge-list" nodeset="/olmis/hcvisit/visit/cold_chain/fridges/fridge">
+                      <th>
+                        <xf:input ref="@code">
+                          <xf:alert><%= t(".errors.fridge_code") %></xf:alert>
+                        </xf:input>
+                      </th>
+                      <td>
+                        <xf:select1 ref="@status">
+                          <xf:item>
+                            <xf:label><%= t("select_blank") %></xf:label>
+                            <xf:value></xf:value>
+                          </xf:item>
+                          <%- FridgeStatus.status_options.each do |label,value| -%>
+                            <xf:item>
+                              <xf:label><%= label %></xf:label>
+                              <xf:value><%= value %></xf:value>
+                            </xf:item>
+                          <%- end -%>
+                          <xf:alert><%= t(".errors.select_status") %></xf:alert>
+                        </xf:select1>
+                      </td>
+                      <td>
+                        <div class="tally">
+                          <xf:input ref="@temp" incremental="true">
+                            <xf:action ev:event="xforms-value-changed">
+                              <xf:setvalue if="string-length(.) &gt; 0" ref="/olmis/hcvisit/visit/cold_chain/fridges/fridge[index('fridge-list')]/@nr" value="'false'" />
+                              <xf:setvalue if=". = '' and /olmis/hcvisit/visit/cold_chain/fridges/fridge[index('fridge-list')]/@nr = 'false'" ref="/olmis/hcvisit/visit/cold_chain/fridges/fridge[index('fridge-list')]/@nr" />
+                            </xf:action>
+                            <xf:alert><%= t(".errors.temperature") %></xf:alert>
+                          </xf:input>
+                          <div class="nr">
+                            <xf:input ref="@nr" incremental="true">
+                              <xf:label><%= t("NR") %></xf:label>
+                              <xf:action ev:event="xforms-value-changed">
+                                <xf:setvalue if=". = 'true'" ref="/olmis/hcvisit/visit/cold_chain/fridges/fridge[index('fridge-list')]/@temp" value="''" />
+                              </xf:action>
+                            </xf:input>
+                          </div>
+                        </div>
+                      </td>
+                      <td>
+                        <xf:textarea ref="@notes"/>
+                      </td>
+                    </xf:repeat>
+                  </tbody>
+                </table>
+                <xf:trigger>
+                  <xf:label><%= t(".add_fridge") %></xf:label>
+                  <xf:action ev:event="DOMActivate">
+                    <xf:insert nodeset="/olmis/hcvisit/visit/cold_chain/fridges/fridge" at="last()" position="after" />
+                    <xf:setvalue ref="/olmis/hcvisit/visit/cold_chain/fridges/fridge[index('fridge-list')]/@code" value="" />
+                    <xf:setvalue ref="/olmis/hcvisit/visit/cold_chain/fridges/fridge[index('fridge-list')]/@temp" value="" />
+                    <xf:setvalue ref="/olmis/hcvisit/visit/cold_chain/fridges/fridge[index('fridge-list')]/@nr" value="" />
+                    <xf:setvalue ref="/olmis/hcvisit/visit/cold_chain/fridges/fridge[index('fridge-list')]/@status" value="" />
+                    <xf:setvalue ref="/olmis/hcvisit/visit/cold_chain/fridges/fridge[index('fridge-list')]/@notes" value="" />
+                  </xf:action>
+                </xf:trigger>
+              </xf:group>
+            </xf:case><!-- id="case-cold_chain" -->
+
+            <xf:case id="case-epi_inventory">
+              <div id="div-epi_inventory" class="block-form">
+                <xf:group bind="visit_data">
+                  <xf:label><%= t("visits.health_center_monthly_tasks.epi_inventory") %></xf:label>
+                  <p class="note"><%= t("visits.health_center_inventory.instructions") %></p>
+                  <table class="inventory spreadsheet">
+                    <thead>
+                      <tr>
+                        <th><%= t("visits.health_center_inventory.product") %></th>
+                        <th><%= t("visits.health_center_inventory.existing_quantity") %></th>
+                        <th><%= t("visits.health_center_inventory.delivered_quantity") %></th>
+                        <th><%= t("visits.health_center_inventory.spoiled_quantity") %></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <%- Package.all.reject{|p| p.product.product_type_code == 'test'}.sort.each do |package| -%>
+                        <tr>
+                          <th><%= package.label %></th>
+                          <%- %w(existing delivered spoiled).each do |type|
+                                id = "inventory_#{package.code}_#{type}" -%>
+                            <td>
+                              <div class="tally">
+                                <xf:input bind="<%= id %>:qty" incremental="true">
+                                  <xf:action ev:event="xforms-value-changed">
+                                    <xf:setvalue if="string-length(.) &gt; 0"     bind="<%= id %>:nr" value="'false'" />
+                                    <xf:setvalue if=". = '' and ../@nr = 'false'" bind="<%= id %>:nr" />
+                                  </xf:action>
+                                  <xf:alert><%= t(".errors.quantity") %></xf:alert>
+                                </xf:input>
+                                <div class="nr">
+                                  <xf:input bind="<%= id %>:nr" incremental="true">
+                                    <xf:label><%= t("NR") %></xf:label>
+                                    <xf:action ev:event="xforms-value-changed">
+                                      <xf:setvalue if=". = 'true'" bind="<%= id %>:qty" value="''" />
+                                    </xf:action>
+                                  </xf:input>
+                                </div>
+                              </div>
+                            </td>
+                          <%- end -%>
+                        </tr>
+                      <%- end -%>
+                    </tbody>
+                  </table>
+                  <xf:action ev:event="xforms-value-changed">
+                    <xf:load resource="javascript:update_stockouts()" />
+                  </xf:action>
+                </xf:group>
+              </div>
+            </xf:case><!-- id="case-epi_inventory" -->
+
+            <xf:case id="case-rdt_inventory">
+              <div id="div-epi_inventory" class="block-form">
+                <xf:group bind="visit_data">
+                  <xf:label><%= t("visits.health_center_monthly_tasks.epi_inventory") %></xf:label>
+                  <p class="note"><%= t("visits.health_center_inventory.instructions") %></p>
+                  <table class="inventory spreadsheet">
+                    <thead>
+                      <tr>
+                        <th><%= t("visits.health_center_inventory.product") %></th>
+                        <th><%= t("visits.health_center_inventory.existing_quantity") %></th>
+                        <th><%= t("visits.health_center_inventory.delivered_quantity") %></th>
+                        <th><%= t("visits.health_center_inventory.spoiled_quantity") %></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <%- Package.all.select{|p| p.product.product_type_code == 'test'}.sort.each do |package| -%>
+                        <tr>
+                          <th><%= package.label %></th>
+                          <%- %w(existing delivered spoiled).each do |type|
+                                id = "inventory_#{package.code}_#{type}" -%>
+                            <td>
+                              <div class="tally">
+                                <xf:input bind="<%= id %>:qty" incremental="true">
+                                  <xf:action ev:event="xforms-value-changed">
+                                    <xf:setvalue if="string-length(.) &gt; 0"     bind="<%= id %>:nr" value="'false'" />
+                                    <xf:setvalue if=". = '' and ../@nr = 'false'" bind="<%= id %>:nr" />
+                                  </xf:action>
+                                  <xf:alert><%= t(".errors.quantity") %></xf:alert>
+                                </xf:input>
+                                <div class="nr">
+                                  <xf:input bind="<%= id %>:nr" incremental="true">
+                                    <xf:label><%= t("NR") %></xf:label>
+                                    <xf:action ev:event="xforms-value-changed">
+                                      <xf:setvalue if=". = 'true'" bind="<%= id %>:qty" value="''" />
+                                    </xf:action>
+                                  </xf:input>
+                                </div>
+                              </div>
+                            </td>
+                          <%- end -%>
+                        </tr>
+                      <%- end -%>
+                    </tbody>
+                  </table>
+                  <xf:action ev:event="xforms-value-changed">
+                    <xf:load resource="javascript:update_stockouts()" />
+                  </xf:action>
+                </xf:group>
+              </div>
+            </xf:case><!-- id="case-rdt_inventory" -->
+
+            <xf:case id="case-equipment">
+              <xf:group bind="visit_data">
+                <xf:label><%= t("visits.health_center_monthly_tasks.equipment") %></xf:label>
+                <p class="note"><%= t("visits.health_center_equipment.instructions") %></p>
+                <table class="equipment spreadsheet">
+                  <thead>
+                    <tr>
+                      <th><%= t("visits.health_center_equipment.type") %></th>
+                      <th><%= t("visits.health_center_equipment.quantity") %></th>
+                      <th><%= t("visits.health_center_equipment.status") %></th>
+                      <th><%= t("visits.health_center_equipment.notes") %></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <%- EquipmentType.all.sort.each do |type|
+                          id = "general_#{type.code}" -%>
+                      <tr>
+                        <th><%= type.label %></th>
+                        <td>
+                          <div class="tally">
+                            <xf:input bind="<%= id %>:qty" incremental="true">
+                              <xf:action ev:event="xforms-value-changed">
+                                <xf:setvalue if="string-length(.) &gt; 0"     bind="<%= id %>:nr" value="'false'" />
+                                <xf:setvalue if=". = '' and ../@nr = 'false'" bind="<%= id %>:nr" />
+                              </xf:action>
+                              <xf:alert><%= t(".errors.quantity") %></xf:alert>
+                            </xf:input>
+                            <div class="nr">
+                              <xf:input bind="<%= id %>:nr" incremental="true">
+                                <xf:label><%= t("NR") %></xf:label>
+                                <xf:action ev:event="xforms-value-changed">
+                                  <xf:setvalue if=". = 'true'" bind="<%= id %>:qty" value="''" />
+                                </xf:action>
+                              </xf:input>
+                            </div>
+                          </div>
+                        </td>
+                        <td>
+                          <xf:select1 bind="<%= id %>:status">
+                            <xf:item>
+                              <xf:label><%= t("select_blank") %></xf:label>
+                              <xf:value></xf:value>
+                            </xf:item>
+                            <%- EquipmentStatus.status_options.each do |label,value| -%>
+                              <xf:item>
+                                <xf:label><%= label %></xf:label>
+                                <xf:value><%= value %></xf:value>
+                              </xf:item>
+                            <%- end -%>
+                            <xf:alert><%= t(".errors.select_status") %></xf:alert>
+                          </xf:select1>
+                        </td>
+                        <td>
+                          <xf:textarea bind="<%= id %>:notes"/>
+                        </td>
+                      </tr>
+                    <%- end -%>
+                  </tbody>
+                </table>
+              </xf:group>
+            </xf:case><!-- id="case-equipment" -->
+
+            <xf:case id="case-stock_cards">
+              <xf:group bind="visit_data">
+                <xf:label><%= t("visits.health_center_monthly_tasks.stock_cards") %></xf:label>
+                <table class="equipment spreadsheet">
+                  <thead>
+                    <tr>
+                      <th><%= t("visits.health_center_stock_cards.name") %></th>
+                      <th><%= t("visits.health_center_stock_cards.have") %></th>
+                      <th><%= t("visits.health_center_stock_cards.use") %></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <%- StockCard.all.sort.each do |type|
+                          id = "stock_cards_#{type.code}" -%>
+                      <tr>
+                        <th><%= type.label %></th>
+                        <td>
+                          <xf:select1 bind="<%= id %>:have" appearance="full" class="radio horizontal">
+                            <%- [ [ t("yes"), "true" ], [ t("no"), "false" ] ].each do |label,value| -%>
+                              <xf:item>
+                                <xf:label><%= label %></xf:label>
+                                <xf:value><%= value %></xf:value>
+                              </xf:item>
+                            <%- end -%>
+                            <xf:alert><%= t(".errors.select_yes_or_no") %></xf:alert>
+                          </xf:select1>
+                        </td>
+                        <td>
+                          <xf:select1 bind="<%= id %>:use" appearance="full" class="radio horizontal">
+                            <%- [ [ t("yes"), "true" ], [ t("no"), "false" ] ].each do |label,value| -%>
+                              <xf:item>
+                                <xf:label><%= label %></xf:label>
+                                <xf:value><%= value %></xf:value>
+                              </xf:item>
+                            <%- end -%>
+                            <xf:alert><%= t(".errors.select_yes_or_no") %></xf:alert>
+                          </xf:select1>
+                        </td>
+                      </tr>
+                    <%- end -%>
+                  </tbody>
+                </table>
+              </xf:group>
+            </xf:case><!-- id="case-stock_cards" -->
+
+            <%- tally_classes.each do |klass|
+                  expected_params = klass.expected_params -%>
+              <xf:case id="case-<%= klass.name.tableize %>" >
+                <div class="block-form">
+                  <xf:group bind="epi_data">
+                    <xf:label><%= t("visits.health_center_tally.page_title_#{klass.name.underscore}") %></xf:label>
+                    <p class="note"><%= t("visits.health_center_tally.instructions") %></p>
+                    <%= tally_table(klass, lambda { |point|
+                          node = klass.param_name(point)
+                          msg_key, input_type = expected_params.assoc(node).last == :date ? [ 'date', 'month-year' ] : [ 'quantity', 'integer' ]
+                          incr = 'incremental="true"'
+                          %Q{<div class="tally #{input_type}"><xf:input bind="#{node}:value" #{incr}><xf:label /><xf:action ev:event="xforms-value-changed"><xf:setvalue if="string-length(.) &gt; 0" bind="#{node}:nr" value="'false'" /><xf:setvalue if=". = '' and ../@nr = 'false'" bind="#{node}:nr" /></xf:action><xf:alert>#{t(".errors.#{msg_key}")}</xf:alert></xf:input>} +
+                            %Q{<div class="nr"><xf:input bind="#{node}:nr" incremental="true"><xf:label>#{t("NR")}</xf:label><xf:action ev:event="xforms-value-changed"><xf:setvalue if=". = 'true'" bind="#{node}:value" value="''" /></xf:action></xf:input></div></div>}
+                        }) %>
+                  </xf:group>
+                </div>
+              </xf:case><!-- id="case-<%= klass.name.tableize %>" -->
+            <%- end -%>
+
+            <xf:case id="case-confirm">
+              <div id="div-observations">
+                <p>TODO</p>
+              </div>
+
+              <div id="div-verify_confirm">
+                <p>TODO</p>
+              </div>
+            </xf:case><!-- id="case-confirm" -->
+          </xf:switch>
+        </xf:group><!-- id="form-contents" -->
+      </xf:group><!-- bind="context-selected" -->
+    </div>
+    <div id="status_footer">
+      <xf:group bind="login-active">
+        <div id="online_indicator">
+          <div class="online"><a class="inline" href="#login"><%= t(".status.login_and_upload") %></a><a class="inline" style="display: none" href="#upload"></a></div>
+          <div class="offline"><%= t(".status.offline") %></div>
+        </div>
+      </xf:group>
+      <xf:group>
+        <div id="status_indicator">
+          <div>
+            <a href="<%= request.url %>"><%= t(".status.updated") %></a>
+          </div>
+        </div>
+        <div id="download_indicator">
+          <div>
+            <p><%= t(".status.downloading") %> ... <span id="download-pct"></span></p>
+            <em id="download-progress-bar" style="width: 0"></em>
+          </div>
+        </div>
+      </xf:group>
+    </div>
+    <div id="lightbox-data" style="display: none">
+      <div id="login" class="lightbox-container">
+        <h3><%= t(".login_to_server") %></h3>
+        <form action="javascript:ajax_login()">
+          <label for="login-login"><%= t("username") %></label><input type="text" id="login-login" /><br />
+          <label for="login-password"><%= t("password") %></label><input type="password" id="login-password" /><br />
+          <input id="login-button" type="submit" value="<%= t('login.login.submit_button') %>" />
+        </form>
+      </div>
+      <div id="upload" class="lightbox-container">
+        <h3><%= t(".upload.ready") %></h3>
+        <div id="upload-ready">
+          <p id="upload-empty" style="display:none"><%= t(".upload_empty") %></p>
+          <ul></ul>
+          <p id="upload-button" style="display:none"><input type="button" onclick="upload_all()" value="<%= t('.upload_all') %>" /></p>
+        </div>
+        
+        <h3><%= t(".upload.uploaded") %></h3>
+        <div id="upload-uploaded"><ul></ul></div>
+      </div>
+    </div>
+  </body>
+</html>

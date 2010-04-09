@@ -14,8 +14,6 @@
 #
 
 class FridgeModel < ActiveRecord::Base
-  unloadable
-
   include BasicModelSecurity
   referenced_by :code
   has_many :fridges

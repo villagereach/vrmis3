@@ -1,0 +1,46 @@
+<root>
+  <selected-values>
+    <province/>
+    <district/>
+    <health_center/>
+    <visit_year />
+    <visit_month />
+    <default_visit_date />
+    <visit_date_period />
+    <field_coordinator />
+    <delivery_zone />
+    <selector />
+    <remote-selector />
+    <login-selector />
+    <delivery-zone-selector />
+    <selected-month-exists />
+    <access_code/>
+    <login-selected />
+    <context-selected />
+    <logged_in />
+    <visit_period_selected />
+  </selected-values>
+  <blank name="" />
+  <%- Province.all.sort.each do |p| -%>
+    <province name="<%= h(p.name) %>">
+      <%- p.delivery_zones.sort.each do |dz| -%>
+        <delivery_zone name="<%= h(dz.name) %>" code="<%= h(dz.code) %>" />
+      <%- end -%>
+      <%- p.delivery_zones.map(&:field_coordinator).compact.sort.each do |fc| -%>
+        <fc name="<%= h(fc.name) %>" dz="<%= h(fc.delivery_zone.code) %>" />
+      <%- end -%>
+      <%- p.districts.sort.each do |d| -%>
+        <district name="<%= h(d.name) %>">
+          <%- d.health_centers.sort.each do |hc| -%>
+            <health_center code="<%= h hc.code %>" name="<%= h hc.name %>" dz="<%= h hc.delivery_zone.code %>">
+              <%- hc.fridges.sort.each do |fridge| -%>
+                <fridge code="<%= h fridge.code %>" nr="" temp="" status="" notes="" />
+              <%- end -%>
+            </health_center>
+          <%- end -%>
+        </district>
+      <%- end -%>
+    </province>
+  <%- end -%>
+</root>
+

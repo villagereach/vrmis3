@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<vrmis3>
+<olmis>
   <meta>
     <date><%= [Date.today, @visit.updated_at, @visit.created_at].compact.max.to_date.to_s %></date>
     <province><%= @visit.health_center && @visit.health_center.province.name %></province>
@@ -12,14 +12,13 @@
     <epi_month><%= @visit.epi_month %></epi_month>
     <visited><%= @visit.visited? %></visited>
     <epi_data_ready><%= @visit.epi_data_ready? %></epi_data_ready>
-    <visiting_field_coordinator><%= @visit.field_coordinator_name %></visiting_field_coordinator>
     <visited_at><%= @visit.visited_at %></visited_at>
     <visit_month><%= @visit.date_period %></visit_month>
     <vehicle_id><%= @visit.vehicle_code %></vehicle_id>
     <non_visit_reason><%= @visit.visit_status %></non_visit_reason>
     <notes><%= @visit.notes %></notes>
     <epi>
-    <%- [EpiUsageTally,AdultVaccinationTally,ChildVaccinationTally,FullVaccinationTally,RdtTally].each do |klass| -%>
+    <%- HealthCenterVisit.tally_hash.map{|k,v| k.constantize}.each do |klass| -%>
       <<%= klass.name.tableize %>>
         <%- record_value_hash = klass.records_by_param_names_for_keys(@visit.health_center, @visit.epi_month) -%>
         <%- klass.expected_params().each do |param, type| -%>
@@ -43,6 +42,7 @@
           <%- [:existing, :delivered].each do |type| -%>
             <item for="<%= package.code %>" type="<%= type %>" nr="<%= stock[type][index].nr %>" qty="<%= stock[type][index].quantity %>" />
           <%- end -%>
+          <item for="<%= package.code %>" type="spoiled" nr="false" qty="" />
         <%- end -%>
       </inventory>
       <general>
@@ -65,5 +65,4 @@
       </stock_cards>
     </visit>
   </hcvisit>
-</vrmis3>
-
+</olmis>

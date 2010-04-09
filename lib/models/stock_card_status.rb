@@ -15,8 +15,6 @@
 #
 
 class StockCardStatus < ActiveRecord::Base
-  unloadable
-
   include BasicModelSecurity
 
   belongs_to :stock_card

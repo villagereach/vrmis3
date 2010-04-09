@@ -1,6 +1,4 @@
 class ProductType < ActiveRecord::Base
-  unloadable
-
   has_many :products
   referenced_by :code
 

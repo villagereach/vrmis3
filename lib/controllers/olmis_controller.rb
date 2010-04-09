@@ -2,8 +2,6 @@
 # Likewise, all the methods added will be available for all controllers.
 
 class OlmisController < ActionController::Base
-  unloadable
-
   protect_from_forgery # See ActionController::RequestForgeryProtection for details
   
   def nuke_caches

@@ -12,8 +12,6 @@
 #
 
 class PackageCount < ActiveRecord::Base
-  unloadable
-
   belongs_to :inventory
   belongs_to :package
 

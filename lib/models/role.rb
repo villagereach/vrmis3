@@ -11,8 +11,6 @@
 #
 
 class Role < ActiveRecord::Base
-  unloadable
-  
   include BasicModelSecurity
   has_many :users
   referenced_by :code

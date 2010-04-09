@@ -20,7 +20,6 @@
 #
 
 class DataSubmission < ActiveRecord::Base
-  unloadable
   belongs_to :user
   belongs_to :data_source
   has_and_belongs_to_many :health_center_visits
