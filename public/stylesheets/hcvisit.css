@@ -624,10 +624,10 @@ table.spreadsheet input.xforms-value[type="text"] {
 #case-equipment #fridge-list tr th .xforms-value {
   width : 7em;
 }
-#case-equipment span.radio span.value {
+span.radio.horizontal span.value {
   float: left;
 }
-#case-equipment span.radio div.xforms-item {
+span.radio.horizontal div.xforms-item {
   float: left;
   margin-right: 0.5em;
 }

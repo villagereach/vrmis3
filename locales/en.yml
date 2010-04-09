@@ -470,12 +470,15 @@ en:
     health_center_monthly_tasks:
       visit:       "Visit"
       inventory:   "Inventory"
+      epi_inventory: "EPI Inventory"
+      rdt_inventory: "RDT Inventory"
       equipment:   "Equipment"
       general:     "General"
       cold_chain:  "Cold Chain"
       stock_cards: "Stock Cards"
       delivery:    "Delivery"
       rdt:         "RDT"
+      confirm:     "Visit Observations and Confirmation/Verification"
       save_and_go_to: "Save and continue to {{next_page}}"
     health_center_monthly_visit:
       date:                       "Visit date"
