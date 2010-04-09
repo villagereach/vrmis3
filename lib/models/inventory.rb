@@ -46,7 +46,7 @@ class Inventory < ActiveRecord::Base
   def package_counts_by_package(package_options={})
     pc_hash = Hash[*package_counts.map { |pc| [pc.package, pc] }.flatten]
     
-    Package.all(package_options).each do |p|
+    Package.all(package_options).select { |p| p.inventoried_by_type?(self) }.each do |p|
       pc_hash[p] ||= package_counts.build(:package => p, :quantity => nil)
       pc_hash[p].inventory = self
     end
