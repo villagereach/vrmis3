@@ -34,7 +34,7 @@ class Inventory < ActiveRecord::Base
   end
   
   def self.nullable_types
-    %w(ExistingHealthCenterInventory  SpoiledHealthCenterInventory)
+    types - ['DeliveredHealthCenterInventory']
   end
 
   def package_count_quantity_by_package

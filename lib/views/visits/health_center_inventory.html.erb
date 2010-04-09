@@ -75,9 +75,9 @@
         <%- end -%>
       </tr>
     
-      <% ['ExistingHealthCenterInventory', 'DeliveredHealthCenterInventory'].each do |t| %> 
+      <% Inventory.directly_collected_types.each do |t| %> 
       <tr>
-        <th><%= t(".#{t}_quantity") %></th>
+        <th><%= t(".#{t}") %></th>
           
         <%- test.each do |package| -%>
           <%- index = package.code -%>
