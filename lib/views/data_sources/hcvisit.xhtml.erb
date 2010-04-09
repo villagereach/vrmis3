@@ -208,7 +208,7 @@
       <xf:bind nodeset="/olmis/hcvisit/visit" id="visit_data" relevant="/olmis/hcvisit/visited != 'false'" />
       <xf:bind nodeset="/olmis/hcvisit/epi"   id="epi_data"   relevant="/olmis/hcvisit/epi_data_ready = true()" />
 
-      <%- Package.all.reject{|p| p.product.product_type_code == 'test'}.each do |package| -%>
+      <%- Package.all.each do |package| -%>
         <%- Inventory.types.each do |type|
               id = "inventory_#{package.code}_#{type}"
               node = "/olmis/hcvisit/visit/inventory/item[@for='#{ package.code }' and @type='#{ type }']"  -%>

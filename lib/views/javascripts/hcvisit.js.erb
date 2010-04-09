@@ -455,14 +455,14 @@ function update_visit_history(obj) {
 function inventory_quantities(type) {
   return get_context_path_value($('olmis'), '/hcvisit/visit/inventory/entry').
     filter(function(e) { return e.getAttributeNS(null, 'type') == type; }).
-    filter(function(e) { return <%= Package.trackable.all.map(&:sku).to_json %>.indexOf(e.getAttributeNS(null, 'for')) >= 0; }).  
+    filter(function(e) { return <%= Package.trackable.all.map(&:code).to_json %>.indexOf(e.getAttributeNS(null, 'for')) >= 0; }).  
     filter(function(e) { nr = e.getElementsByTagName('nr')[0]; return !nr || nr.getTextContent() == '' || nr.getTextContent() == 'false'; }).
     map(   function(e) { q = e.getElementsByTagName('quantity')[0]; return q ? [e.getAttributeNS(null, 'for'), q.getTextContent()] : null; });
 }
 
 function update_stockouts() {
-  var e = inventory_quantities('existing');
-  var d = inventory_quantities('delivered');
+  var e = inventory_quantities('ExistingHealthCenterInventory');
+  var d = inventory_quantities('DeliveredHealthCenterInventory');
   
   update_visit_history({ 'existing': e, 'delivered': d });
 }
