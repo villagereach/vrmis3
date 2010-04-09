@@ -95,6 +95,10 @@ class DataSourcesController < OlmisController
             xsl = Nokogiri::XML(File.read(xsltfile))
             output_node = xsl.xpath('//xsl:output').first
 
+            # XSLTforms is encoded as ISO-8859-1 but our XML is UTF-8 -- the characters are translated
+            # correctly by Nokogiri but the encoding declaration is not.
+            output_node['encoding'] = 'UTF-8'
+
             # The default XML output format doesn't work so it's changed to HTML (which has been the
             # default in some versions of XSLTForms).
             output_node['method'] = 'html'
