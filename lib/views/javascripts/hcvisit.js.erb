@@ -62,6 +62,11 @@ function fixup_menu_tabs() {
   });
 }
 
+function fixup_form_container_size() {
+  // Adjust form container size to be at least as tall as the menu
+  jQuery('.xforms-switch .xforms-case div.block-form').css('min-height', jQuery('#tab-menu').css('height'))
+}
+
 function fixup_nr_checkboxes() {
   jQuery('div.nr span.value').each(function() {
     jQuery(this).insertBefore(jQuery(this).prev());
@@ -364,6 +369,7 @@ function select_visit() {
     }
     Dialog.hide("statusPanel");
     show_container(containers['visit']);
+    fixup_form_container_size();
   }, 1);
   
   xforms.closeAction();
