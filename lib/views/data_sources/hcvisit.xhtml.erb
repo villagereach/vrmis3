@@ -214,8 +214,10 @@
           <%- inventory_types.each do |type|
               id = "inventory_#{package.code}_#{type}"
               node = "/olmis/hcvisit/visit/inventory/item[@for='#{ package.code }' and @type='#{ type }']"  -%>
-            <xf:bind id="<%= id %>:nr"  nodeset="<%= node %>/@nr"  required="false()"          type="xf:boolean" />
             <xf:bind id="<%= id %>:qty" nodeset="<%= node %>/@qty" required="../@nr != true()" type="xf:nonNegativeInteger" />
+            <%- if Inventory.nullable_types.include?(type) -%>
+              <xf:bind id="<%= id %>:nr" nodeset="<%= node %>/@nr" required="false()" type="xf:boolean" />
+            <%- end -%>
           <%- end -%>
         <%- end -%>
       <%- end -%>
@@ -717,14 +719,16 @@
                                       </xf:action>
                                       <xf:alert><%= t(".errors.quantity") %></xf:alert>
                                     </xf:input>
-                                    <div class="nr">
-                                      <xf:input bind="<%= id %>:nr" incremental="true">
-                                        <xf:label><%= t("NR") %></xf:label>
-                                        <xf:action ev:event="xforms-value-changed">
-                                          <xf:setvalue if=". = 'true'" bind="<%= id %>:qty" value="''" />
-                                        </xf:action>
-                                      </xf:input>
-                                    </div>
+                                    <%- if Inventory.nullable_types.include?(type) -%>
+                                      <div class="nr">
+                                        <xf:input bind="<%= id %>:nr" incremental="true">
+                                          <xf:label><%= t("NR") %></xf:label>
+                                          <xf:action ev:event="xforms-value-changed">
+                                            <xf:setvalue if=". = 'true'" bind="<%= id %>:qty" value="''" />
+                                          </xf:action>
+                                        </xf:input>
+                                      </div>
+                                    <%- end -%>
                                   </div>
                                 <%- end -%>
                               </td>
@@ -772,14 +776,16 @@
                                       </xf:action>
                                       <xf:alert><%= t(".errors.quantity") %></xf:alert>
                                     </xf:input>
-                                    <div class="nr">
-                                      <xf:input bind="<%= id %>:nr" incremental="true">
-                                        <xf:label><%= t("NR") %></xf:label>
-                                        <xf:action ev:event="xforms-value-changed">
-                                          <xf:setvalue if=". = 'true'" bind="<%= id %>:qty" value="''" />
-                                        </xf:action>
-                                      </xf:input>
-                                    </div>
+                                    <%- if Inventory.nullable_types.include?(type) -%>
+                                      <div class="nr">
+                                        <xf:input bind="<%= id %>:nr" incremental="true">
+                                          <xf:label><%= t("NR") %></xf:label>
+                                          <xf:action ev:event="xforms-value-changed">
+                                            <xf:setvalue if=". = 'true'" bind="<%= id %>:qty" value="''" />
+                                          </xf:action>
+                                        </xf:input>
+                                      </div>
+                                    <%- end -%>
                                   </div>
                                 <%- end -%>
                               </td>

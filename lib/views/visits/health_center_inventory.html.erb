@@ -29,10 +29,10 @@
     <tr>
       <th><%= t('.product') %></th>
       <th><%= t('.ideal_quantity') %></th>
-      <th><%= t('.existing_quantity') %></th>
-      <th><%= t('.delivered_quantity') %></th>
-      <th><%= t('.spoiled_quantity') %></th>
-    </tr>
+      <%- Inventory.directly_collected_types.each do |t| -%>
+      <th><%= t('.'+t) %></th>
+      <%- end -%>
+      </tr>
   </thead>
   <%- packages.partition_by{|package| package.product.product_type_code}.each do |type, stocks| -%>
     <tbody>
@@ -41,15 +41,15 @@
         <tr>
           <th><%= package.label %></th>
           <td class="static"><%= h(number_with_delimiter( @stock[:ideal][index] )) if @stock[:ideal][index] %></td>
-          <%- existing_stock_value = default_field_value(params[:inventory_counts], index.to_s, 'ExistingHealthCenterInventory', @stock['ExistingHealthCenterInventory'][index].quantity) -%>
-          <%- existing_nr_checked = !@stock['ExistingHealthCenterInventory'][index].new_record? && default_field_value(params[:inventory_counts], index.to_s, "existing/NR", existing_stock_value.to_s.empty? ? '1' : '0') == '1' -%>
-          <%- delivered_stock_value = default_field_value(params[:inventory_counts], index.to_s, 'DeliveredHealthCenterInventory', @stock['DeliveredHealthCenterInventory'][index].quantity) -%>
-          <%- delivered_nr_checked = !@stock['DeliveredHealthCenterInventory'][index].new_record? && default_field_value(params[:inventory_counts], index.to_s, "delivered/NR", delivered_stock_value.to_s.empty? ? '1' : '0') == '1' -%>
-          <%- spoiled_stock_value = nil #default_field_value(params[:inventory_counts], index.to_s, :spoiled, @stock[:spoiled][index].quantity) -%>
-          <%- spoiled_nr_checked = false #!@stock[:spoiled][index].new_record? && default_field_value(params[:inventory_counts], index.to_s, "spoiled/NR", spoiled_stock_value.to_s.empty? ? '1' : '0') == '1' -%>
-          <td><%= nr_field(f, 'ExistingHealthCenterInventory',  index, existing_stock_value,  existing_nr_checked,  (@errors[index]['ExistingHealthCenterInventory'].on(:quantity) rescue nil)) %></td>
-          <td><%= nr_field(f, 'DeliveredHealthCenterInventory', index, delivered_stock_value, delivered_nr_checked, (@errors[index]['DeliveredHealthCenterInventory'].on(:quantity) rescue nil), true) %></td>
-          <td><%= nr_field(f, 'SpoiledHealthCenterInventory',   index, spoiled_stock_value,   spoiled_nr_checked,   (@errors[index]['SpoiledHealthCenterInventory'].on(:quantity) rescue nil)) if package.product.product_type_code == 'vaccine' %></td>
+          <%- Inventory.directly_collected_types.each do |t| -%>
+            <td>
+              <%- if package.inventoried_by_type?(t) -%>
+                <%- stock_value = default_field_value(params[:inventory_counts], index.to_s, t, @stock[t][index].quantity) -%>
+                <%- nr_checked = !@stock[t][index].new_record? && default_field_value(params[:inventory_counts], index.to_s, "#{t}/NR", stock_value.to_s.empty? ? '1' : '0') == '1' -%>
+                <%= nr_field(f, t,  index, stock_value,  nr_checked,  (@errors[index][t].on(:quantity) rescue nil), !Inventory.nullable_types.include?(t)) %>
+              <%- end -%>
+            </td>
+          <%- end -%>
         </tr>
       <%- end -%>
     </tbody>
@@ -57,7 +57,7 @@
   </table>
 
   <% test = Package.all(:include => { :product => :product_type }, :conditions => { 'product_types.code' => 'test' } ) %>
-
+  <% if test.present? %>
   <table class="inventory">
     <thead>
       <tr>
@@ -75,9 +75,9 @@
         <%- end -%>
       </tr>
     
-      <% ['ExistingHealthCenterInventory', 'DeliveredHealthCenterInventory'].each do |t| %> 
+      <% Inventory.directly_collected_types.each do |t| %> 
       <tr>
-        <th><%= t(".#{t}_quantity") %></th>
+        <th><%= t(".#{t}") %></th>
           
         <%- test.each do |package| -%>
           <%- index = package.code -%>
@@ -91,6 +91,7 @@
       <%- end -%>
     </tbody>
 </table>
+<%- end -%>
 <%- end -%>
 <%= save_and_continue %>
 <%- end -%>

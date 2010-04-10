@@ -372,21 +372,12 @@ class HealthCenterVisit < ActiveRecord::Base
   end
 
   def find_or_create_inventory_records
-    @inventory ||= begin
-      existing_inventory = Inventory.find_or_initialize_by_date_and_stock_room_id_and_inventory_type(
-        self.visited_at ? self.visited_at.to_date : Date.today,
-        self.health_center ? self.health_center.stock_room.id : nil,
-        'ExistingHealthCenterInventory')
-  
-      delivered_inventory = Inventory.find_or_initialize_by_date_and_stock_room_id_and_inventory_type(
-        self.visited_at ? self.visited_at.to_date : Date.today,
-        self.health_center ? self.health_center.stock_room.id : nil,
-        'DeliveredHealthCenterInventory')
-
-      existing_inventory.user_id = delivered_inventory.user_id = self.user_id
-      
-      [ existing_inventory, delivered_inventory ]
-    end
+    @inventory ||= Inventory.types.map { |t|
+      Inventory.find_or_initialize_by_date_and_stock_room_id_and_inventory_type(
+          self.visited_at ? self.visited_at.to_date : Date.today,
+          self.health_center ? self.health_center.stock_room.id : nil,
+          t).tap { |i| i.user_id ||= self.user_id }
+    }
   end
 end
 

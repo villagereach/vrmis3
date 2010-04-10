@@ -32,6 +32,10 @@ class Inventory < ActiveRecord::Base
   def self.directly_collected_types
     %w(ExistingHealthCenterInventory DeliveredHealthCenterInventory SpoiledHealthCenterInventory)
   end
+  
+  def self.nullable_types
+    types - ['DeliveredHealthCenterInventory']
+  end
 
   def package_count_quantity_by_package
     Hash[*package_counts_by_package.map { |pkg, count| [pkg, count.quantity] }.flatten]
@@ -46,7 +50,7 @@ class Inventory < ActiveRecord::Base
   def package_counts_by_package(package_options={})
     pc_hash = Hash[*package_counts.map { |pc| [pc.package, pc] }.flatten]
     
-    Package.all(package_options).each do |p|
+    Package.all(package_options).select { |p| p.inventoried_by_type?(self) }.each do |p|
       pc_hash[p] ||= package_counts.build(:package => p, :quantity => nil)
       pc_hash[p].inventory = self
     end

@@ -1,3 +1,4 @@
+require 'yaml/encoding'
 class Olmis
   class << self
     def path
@@ -87,11 +88,11 @@ class Olmis
         definition['targets'].each do |target, target_def|
           create_target(target, target_def)
         end
-        
+
         @translations.each do |lc, hash|
           fn = Rails.root.join('config','locales',lc+'.yml').to_s
           File.open(fn + '~', 'w') do |f|
-            f.write( hash.to_yaml )
+            f.write( YAML.unescape(hash.to_yaml() ) )
           end
           File.rename(fn + '~', fn)
         end
