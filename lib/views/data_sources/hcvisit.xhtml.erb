@@ -4,7 +4,6 @@
 <%-
   inventory_types = Inventory.directly_collected_types
   tally_classes = HealthCenterVisit.tally_hash.map{|k,v| k.constantize}
-  locale = I18n.locale
 -%>
 <html xmlns="http://www.w3.org/1999/xhtml"
         xmlns:xf="http://www.w3.org/2002/xforms"
@@ -13,8 +12,8 @@
         xmlns:jr="http://openrosa.org/javarosa"
         xmlns:ajx="http://www.ajaxforms.net/2006/ajx" 
         xmlns:olmis="http://openlmis.org/xpath-functions"
-        lang="<%= locale %>"
-        manifest="<%= manifest_url(:locale => locale) %>">
+        lang="<%= I18n.locale %>"
+        manifest="<%= manifest_url(:locale => I18n.locale) %>">
   <head>
     <title><%= t("health_center_visit") %></title>
     <script type="text/javascript" src="/javascripts/jquery.min.js" />
@@ -287,7 +286,7 @@
         <div>
           <em><%= t("layouts.locale.select_language") %></em>
           <%- I18n.available_locales.each do |locale| -%>
-            <%- if I18n.locale == locale -%>
+            <%- if I18n.locale.to_s == locale.to_s -%>
               <strong><%= h Languages.native_languages[locale] %></strong>
             <%- else -%>
               <%= link_to(h(Languages.native_languages[locale]), url_for({ :overwrite_params => { :locale => locale } })) %>
@@ -381,7 +380,7 @@
     <div id="location-selector" class="container">
       <h3>
         <!-- HACK: Evil, ugly hack to get at the raw translation. -->
-        <%= (I18n.backend.send(:lookup, locale, "data_sources.hcvisit.hc.page_title") || '').
+        <%= (I18n.backend.send(:lookup, I18n.locale, "data_sources.hcvisit.hc.page_title") || '').
                          sub("{{delivery_zone}}",%Q{<xf:output value="instance('data')/province/delivery_zone[@code=instance('data')/selected-values/delivery_zone]/@name" />}).
                          sub("{{visit_month}}",%Q{<xf:output value="olmis:month_of_year(instance('data')/selected-values/visit_date_period)" />}) %>
       </h3>
@@ -547,7 +546,7 @@
                   <xf:select1 bind="visited">
                     <xf:label>
                       <!-- HACK: Evil, ugly hack to get at the raw translation. -->
-                      <%= (I18n.backend.send(:lookup, locale, "visits.health_center_monthly_visit.was_this_visited") || '').
+                      <%= (I18n.backend.send(:lookup, I18n.locale, "visits.health_center_monthly_visit.was_this_visited") || '').
                                        sub("{{name}}",%Q{<xf:output value="instance('data')/province[@name=instance('data')/selected-values/province]/district[@name=instance('data')/selected-values/district]/health_center[@code=instance('data')/selected-values/health_center]/@name"/>}).
                                        sub("{{month}}",%Q{<xf:output value="olmis:month_of_year(instance('data')/selected-values/visit_date_period)"/>}) %>
                     </xf:label>
