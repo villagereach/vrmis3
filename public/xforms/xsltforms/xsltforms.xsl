@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <!--
 
-Copyright (C) 2008-2010 agenceXML - Alain COUTHURES
+Copyright (C) 2008-2009 agenceXML - Alain COUTHURES
 Contact at : info@agencexml.com
 
 Copyright (C) 2006 AJAXForms S.L.
@@ -43,6 +43,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 		<xsl:param xmlns:xsl="http://www.w3.org/1999/XSL/Transform" name="xsltforms_debug"/>
 		<xsl:param xmlns:xsl="http://www.w3.org/1999/XSL/Transform" name="xsltforms_lang"/>
 		<xsl:variable xmlns:xsl="http://www.w3.org/1999/XSL/Transform" name="config" select="document('config.xsl')/xsl:stylesheet/xsl:template[@name='config']"/>
+		<xsl:variable xmlns:xsl="http://www.w3.org/1999/XSL/Transform" name="main" select="/"/>
 		<msxsl:script language="JScript" implements-prefix="exslt">
 			this['node-set'] =  function (x) {
 			return x;
@@ -1281,6 +1282,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 	  <xsl:template xmlns:xsl="http://www.w3.org/1999/XSL/Transform" name="xpath">
 			<xsl:param name="xp"/>
+			<xsl:param name="main"/>
 			<xsl:variable name="xp2jsres"><xsl:call-template name="xp2js"><xsl:with-param name="xp" select="$xp"/></xsl:call-template></xsl:variable>
 			<xsl:variable name="xp2jsres2">
 				<xsl:choose>
@@ -1309,11 +1311,11 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 					<xsl:text>,'</xsl:text>
 					<xsl:variable name="p" select="substring-before(substring($js2,2),&quot;'&quot;)"/>
 					<xsl:choose>
-						<xsl:when test="(//*|//@*)/namespace::*[name()=$p]">
-							<xsl:value-of select="((//*|//@*)/namespace::*[name()=$p])[1]"/>
+						<xsl:when test="($main/descendant::*|$main/descendant::*/@*)/namespace::*[name()=$p]">
+							<xsl:value-of select="(($main/descendant::*|$main/descendant::*/@*)/namespace::*[name()=$p])[1]"/>
 						</xsl:when>
-						<xsl:when test="(//*|//@*)[starts-with(name(),concat($p,':'))]">
-							<xsl:value-of select="namespace-uri((//*|//@*)[starts-with(name(),concat($p,':'))][1])"/>
+						<xsl:when test="($main/descendant::*|$main/descendant::*/@*)[starts-with(name(),concat($p,':'))]">
+							<xsl:value-of select="namespace-uri(($main/descendant::*|$main/descendant::*/@*)[starts-with(name(),concat($p,':'))][1])"/>
 						</xsl:when>
 						<xsl:otherwise>notfound</xsl:otherwise>
 					</xsl:choose>
@@ -1321,6 +1323,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 				</xsl:if>
 				<xsl:call-template name="js2ns">
 					<xsl:with-param name="js" select="substring-after($js2,')')"/>
+					<xsl:with-param name="main" select="$main"/>
 				</xsl:call-template>
 			</xsl:if>
 		</xsl:template>
@@ -1845,9 +1848,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 				<xsl:when test="contains($fctname,':')">
 					<xsl:variable name="ns" select="substring-before($fctname,':')"/>
 					<xsl:choose>
-						<xsl:when test="//namespace::*[name()=$ns]"><xsl:value-of select="//namespace::*[name()=$ns][1]"/></xsl:when>
-						<xsl:when test="//*[starts-with(name(),concat($ns,':'))]"><xsl:value-of select="namespace-uri(//*[starts-with(name(),concat($ns,':'))][1])"/></xsl:when>
-						<xsl:when test="//@*[starts-with(name(),concat($ns,':'))]"><xsl:value-of select="namespace-uri(//@*[starts-with(name(),concat($ns,':'))][1])"/></xsl:when>
+						<xsl:when test="($main/descendant::*|$main/descendant::*/@*)/namespace::*[name()=$ns]"><xsl:value-of select="($main/descendant::*|$main/descendant::*/@*)/namespace::*[name()=$ns][1]"/></xsl:when>
+						<xsl:when test="($main/descendant::*|$main/descendant::*/@*)[starts-with(name(),concat($ns,':'))]"><xsl:value-of select="namespace-uri(($main/descendant::*|$main/descendant::*/@*)[starts-with(name(),concat($ns,':'))][1])"/></xsl:when>
 						<xsl:when test="$ns = 'xf' or $ns = 'xforms'">http://www.w3.org/2002/xforms</xsl:when>
 						<xsl:otherwise>http://www.w3.org/2005/xpath-functions</xsl:otherwise>
 					</xsl:choose>

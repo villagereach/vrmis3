@@ -717,23 +717,17 @@ XFSubmission.prototype.submit = function() {
   xforms.closeAction();
 }
 
-// FIXME: XPath functions have the wrong namespace applied to them because of an apparent bug in XSLTForms.
-// Revert the namespaces to the correct ones when XSLTForms is updated.
-
-//XPathCoreFunctions['http://openrosa.org/javarosa selected'] =  new XPathFunction(false, XPathFunction.DEFAULT_NONE, false,
-XPathCoreFunctions['http://www.w3.org/2005/xpath-functions selected'] =  new XPathFunction(false, XPathFunction.DEFAULT_NONE, false,
+XPathCoreFunctions['http://openrosa.org/javarosa selected'] =  new XPathFunction(false, XPathFunction.DEFAULT_NONE, false,
     function(nodeSet, str) {
       return xmlValue(nodeSet[0]) == str;
     } );
 
-//XPathCoreFunctions['http://openrosa.org/javarosa regex'] =  new XPathFunction(false, XPathFunction.DEFAULT_NONE, false,
-XPathCoreFunctions['http://www.w3.org/2005/xpath-functions regex'] =  new XPathFunction(false, XPathFunction.DEFAULT_NONE, false,
+XPathCoreFunctions['http://openrosa.org/javarosa regex'] =  new XPathFunction(false, XPathFunction.DEFAULT_NONE, false,
     function(nodeSet, re) {
       return new RegExp(re).test(stringValue(nodeSet));
     } );
 
-//XPathCoreFunctions['http://openrosa.org/javarosa date'] =  new XPathFunction(false, XPathFunction.DEFAULT_NODESET, false,
-XPathCoreFunctions['http://www.w3.org/2005/xpath-functions date'] =  new XPathFunction(false, XPathFunction.DEFAULT_NODESET, false,
+XPathCoreFunctions['http://openrosa.org/javarosa date'] =  new XPathFunction(false, XPathFunction.DEFAULT_NODESET, false,
     function(node) {
       var str = stringValue(node);
       var d, m, dp = jQuery('#case-visit div.datepicker input[type="text"]');
@@ -749,8 +743,7 @@ XPathCoreFunctions['http://www.w3.org/2005/xpath-functions date'] =  new XPathFu
       return d.format("%Y-%m-%d");
     } );
 
-//XPathCoreFunctions['http://openrosa.org/javarosa today'] =  new XPathFunction(false, XPathFunction.DEFAULT_NODESET, false,
-XPathCoreFunctions['http://www.w3.org/2005/xpath-functions today'] =  new XPathFunction(false, XPathFunction.DEFAULT_NODESET, false,
+XPathCoreFunctions['http://openrosa.org/javarosa today'] =  new XPathFunction(false, XPathFunction.DEFAULT_NODESET, false,
     function(str) {
       return new Date().format("%Y-%m-%d");
     } );
@@ -768,8 +761,7 @@ XPathCoreFunctions['http://www.w3.org/2005/xpath-functions exists'] =  new XPath
       return false;
     } );
 
-//XPathCoreFunctions['http://openlmis.org/xpath-functions previous_yearmonth'] =  new XPathFunction(false, XPathFunction.DEFAULT_NODESET, false,
-XPathCoreFunctions['http://www.w3.org/2005/xpath-functions previous_yearmonth'] =  new XPathFunction(false, XPathFunction.DEFAULT_NODESET, false,
+XPathCoreFunctions['http://openlmis.org/xpath-functions previous_yearmonth'] =  new XPathFunction(false, XPathFunction.DEFAULT_NODESET, false,
     function(yearmonth) {
       ym = stringValue(yearmonth);
      
@@ -777,22 +769,19 @@ XPathCoreFunctions['http://www.w3.org/2005/xpath-functions previous_yearmonth'] 
     });
 
 
-//XPathCoreFunctions['http://openlmis.org/xpath-functions month_of_year'] =  new XPathFunction(false, XPathFunction.DEFAULT_NODESET, false,
-XPathCoreFunctions['http://www.w3.org/2005/xpath-functions month_of_year'] =  new XPathFunction(false, XPathFunction.DEFAULT_NODESET, false,
+XPathCoreFunctions['http://openlmis.org/xpath-functions month_of_year'] =  new XPathFunction(false, XPathFunction.DEFAULT_NODESET, false,
     function(yearmonth) {
       ym = stringValue(yearmonth);
      
       return ym.match(/^\d{4}-\d{2}$/) ? I18n.l(Date.from_date_period(ym), { format: 'month_of_year' }) : '';
     });
 
-//XPathCoreFunctions['http://openlmis.org/xpath-functions currently_online'] =  new XPathFunction(false, XPathFunction.DEFAULT_NONE, false,
-XPathCoreFunctions['http://www.w3.org/2005/xpath-functions currently_online'] =  new XPathFunction(false, XPathFunction.DEFAULT_NONE, false,
+XPathCoreFunctions['http://openlmis.org/xpath-functions currently_online'] =  new XPathFunction(false, XPathFunction.DEFAULT_NONE, false,
     function() {
       return navigator.onLine;
     });
 
-//XPathCoreFunctions['http://openlmis.org/xpath-functions sort'] =  new XPathFunction(false, XPathFunction.DEFAULT_NONE, false,
-XPathCoreFunctions['http://www.w3.org/2005/xpath-functions sort'] =  new XPathFunction(false, XPathFunction.DEFAULT_NONE, false,
+XPathCoreFunctions['http://openlmis.org/xpath-functions sort'] =  new XPathFunction(false, XPathFunction.DEFAULT_NONE, false,
     function(arr) {
         // Sort an array of strings
         return arr.sort(function(a,b) {
