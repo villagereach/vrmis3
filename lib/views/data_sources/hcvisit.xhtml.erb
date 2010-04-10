@@ -233,7 +233,7 @@
             id = "stock_cards_#{type.code}"
             node = "/olmis/hcvisit/visit/stock_cards/item[@for='#{ type.code }']" -%>
         <xf:bind id="<%= id %>:have" nodeset="<%= node %>/@have" required="true()" />
-        <xf:bind id="<%= id %>:use"  nodeset="<%= node %>/@use"  required="true()" relevant="../@have = 'true'" />
+        <xf:bind id="<%= id %>:use"  nodeset="<%= node %>/@use"  required="true()" />
       <%- end -%>
       <xf:bind id="fridge:code"   nodeset="/olmis/hcvisit/visit/cold_chain/fridges/fridge/@code"   required="true()" readonly=". != ''" />
       <xf:bind id="fridge:status" nodeset="/olmis/hcvisit/visit/cold_chain/fridges/fridge/@status" required="true()" />
@@ -864,7 +864,7 @@
                 <table class="equipment spreadsheet">
                   <thead>
                     <tr>
-                      <th><%= t("visits.health_center_stock_cards.name") %></th>
+                      <th></th>
                       <th><%= t("visits.health_center_stock_cards.have") %></th>
                       <th><%= t("visits.health_center_stock_cards.use") %></th>
                     </tr>
@@ -876,24 +876,24 @@
                         <th><%= type.label %></th>
                         <td>
                           <xf:select1 bind="<%= id %>:have" appearance="full" class="radio horizontal">
-                            <%- [ [ t("yes"), "true" ], [ t("no"), "false" ] ].each do |label,value| -%>
+                            <%- [ [ t("yes"), "true" ], [ t("no"), "false" ], [ t("NR"), "nr" ] ].each do |label,value| -%>
                               <xf:item>
                                 <xf:label><%= label %></xf:label>
                                 <xf:value><%= value %></xf:value>
                               </xf:item>
                             <%- end -%>
-                            <xf:alert><%= t(".errors.select_yes_or_no") %></xf:alert>
+                            <xf:alert><%= t(".errors.select_an_option") %></xf:alert>
                           </xf:select1>
                         </td>
                         <td>
                           <xf:select1 bind="<%= id %>:use" appearance="full" class="radio horizontal">
-                            <%- [ [ t("yes"), "true" ], [ t("no"), "false" ] ].each do |label,value| -%>
+                            <%- [ [ t("yes"), "true" ], [ t("no"), "false" ], [ t("NR"), "nr" ] ].each do |label,value| -%>
                               <xf:item>
                                 <xf:label><%= label %></xf:label>
                                 <xf:value><%= value %></xf:value>
                               </xf:item>
                             <%- end -%>
-                            <xf:alert><%= t(".errors.select_yes_or_no") %></xf:alert>
+                            <xf:alert><%= t(".errors.select_an_option") %></xf:alert>
                           </xf:select1>
                         </td>
                       </tr>

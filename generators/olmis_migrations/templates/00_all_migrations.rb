@@ -298,7 +298,7 @@ class OlmisAllMigrations < ActiveRecord::Migration
       t.references :stock_cards, :null => false
       t.references :stock_rooms, :null => false
       t.references :health_center_visits, :null => false
-      t.boolean :have,           :null => false
+      t.boolean :have,           :null => true
       t.boolean :used_correctly, :null => true
       t.date    :reported_at,    :null => true
       t.timestamps

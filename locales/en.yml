@@ -526,8 +526,8 @@ en:
       notes:        "Notes"
     health_center_stock_cards:
       name: "Stock Card"
-      have: "Have?"
-      use:  "Use correctly?"
+      have: "Present?"
+      use:  "Used correctly?"
   pickups:
     no_pickup:
       no_pickup: "No pickup for {{name}} found for {{date}}"
@@ -666,7 +666,7 @@ en:
         fridge_code:          "A fridge code must be entered"
         temperature:          "The temperature must be an integer value. A working fridge temperature must be between 2 and 8 °C."
         quantity:             "The quantity must be a non-negative integer value"
-        select_yes_or_no:     'Select either "yes" or "no"'
+        select_an_option:     'An option must be selected'
       # ODK-specific data
       visit_intro:
         label: "Visit Intro"
