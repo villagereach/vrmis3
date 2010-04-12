@@ -236,6 +236,7 @@
         <xf:bind id="<%= id %>:have" nodeset="<%= node %>/@have" required="true()" />
         <xf:bind id="<%= id %>:use"  nodeset="<%= node %>/@use"  required="true()" />
       <%- end -%>
+
       <xf:bind id="fridge:code"   nodeset="/olmis/hcvisit/visit/cold_chain/fridges/fridge/@code"   required="true()" readonly=". != ''" />
       <xf:bind id="fridge:status" nodeset="/olmis/hcvisit/visit/cold_chain/fridges/fridge/@status" required="true()" />
       <xf:bind id="fridge:nr"     nodeset="/olmis/hcvisit/visit/cold_chain/fridges/fridge/@nr"     required="false()"         type="xf:boolean" relevant="../@status != 'BROKE' and ../@status != 'MISS'" />
@@ -353,7 +354,7 @@
                   <xf:item><!-- dynamically generated --></xf:item>
                   <xf:alert><%= t(".errors.select_visit_month") %></xf:alert>
                 </xf:select1>
-                <xf:trigger>
+                <xf:trigger bind="login-selected">
                   <xf:label><%= t("go") %></xf:label>
                   <xf:action ev:event="DOMActivate" mode="synchronous">
                     <xf:setvalue bind="field_coordinator" value="instance('data')/selected-values/field_coordinator"/>
