@@ -1,5 +1,5 @@
 <%- form_tag do -%>
-<h3><%= current_link.first %></h3>
+<h3><%= h current_link.first %></h3>
 
 <%- if !@errors.empty? -%>
 <div id="error">
@@ -15,15 +15,15 @@
 </div>
 <%- end -%>
 
-<p class="note"><%= t(".instructions") %></p>
+<p class="note"><%= h(t(".instructions")) %></p>
 
 <table class="equipment">
 	<thead>
 		<tr>
-			<th><%= t(".fridge") %></th>
-			<th><%= t(".status") %></th>
-			<th><%= t(".temperature") %></th>
-			<th><%= t(".notes") %></th>
+			<th><%= h(t(".fridge")) %></th>
+			<th><%= h(t(".status")) %></th>
+			<th><%= h(t(".temperature")) %></th>
+			<th><%= h(t(".notes")) %></th>
 		</tr>
 	</thead>
 	<tbody>
@@ -35,14 +35,14 @@
 		<%- notes_value = default_field_value(params[:fridge_status], index, 'notes', fridge_status.notes) -%>
 		<%- checked = !fridge_status.new_record? && default_field_value(params[:fridge_status], index, 'temperature/NR', temperature_value.to_s.empty? ? '1' : '0') == '1' -%>
 		<tr>
-			<th><%= fridge_status.fridge_code %></th>
+			<th><%= h fridge_status.fridge_code %></th>
 			<td>
 				<div class="status <%= 'error' if @errors[index].on(:status_code) rescue nil %>">
-					<%= f.select :status_code, FridgeStatus.status_options, { :include_blank => t("select_blank"), :selected => status_value }, :index => index %>
+					<%= f.select :status_code, FridgeStatus.status_options, { :include_blank => h(t("select_blank")), :selected => status_value }, :index => index %>
 				</div>
 			</td>
 			<td>
-        <%= nr_field(f, :temperature, index, temperature_value, checked, (@errors[index].on(:temperature) rescue nil)) %> 
+				<%= nr_field(f, :temperature, index, temperature_value, checked, (@errors[index].on(:temperature) rescue nil)) %> 
 			</td>
 			<td>
 				<div class="notes <%= 'error' if @errors[index].on(:name) rescue nil %>">

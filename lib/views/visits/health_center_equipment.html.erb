@@ -1,5 +1,5 @@
 <%- form_tag do -%>
-<h3><%= current_link.first %></h3>
+<h3><%= h current_link.first %></h3>
 <%- if !@errors.empty? -%>
 <div id="error">
   <ul>
@@ -14,15 +14,15 @@
 </div>
 <%- end -%>
 
-<p class="note"><%= t(".instructions") %></p>
+<p class="note"><%= h(t(".instructions")) %></p>
 
 <table class="equipment">
 	<thead>
 		<tr>
-			<th><%= t(".type") %></th>
-			<th><%= t(".quantity") %></th>
-			<th><%= t(".status") %></th>
-			<th><%= t(".notes") %></th>
+			<th><%= h(t(".type")) %></th>
+			<th><%= h(t(".quantity")) %></th>
+			<th><%= h(t(".status")) %></th>
+			<th><%= h(t(".notes")) %></th>
 		</tr>
 	</thead>
 	<tbody>
@@ -33,7 +33,7 @@
 		<%- notes_value = default_field_value(params[:equipment_status], index, 'notes', item.last.notes) -%>
 		<%- checked = !item.first.new_record? && default_field_value(params[:equipment_count], index, 'quantity/NR', quantity_value.to_s.empty? ? '1' : '0') == '1' -%>
 		<tr>
-			<th><%= item.first.equipment_type.label %></th>
+			<th><%= h item.first.equipment_type.label %></th>
 			<td>
         <%- fields_for :equipment_count do |f| -%>
           <%= nr_field(f, 'quantity', index, quantity_value, checked, (@errors[index][:equipment_count].on(:quantity) rescue nil)) %>
@@ -41,7 +41,7 @@
 			</td>
 			<td>
 				<div class="<%= 'error' if @errors[index][:equipment_status].on(:status_code) rescue nil %>">
-					<%= select :equipment_status, :status_code, EquipmentStatus.status_options, { :include_blank => t("select_blank"), :selected => status_value }, :index => index %>
+					<%= select :equipment_status, :status_code, EquipmentStatus.status_options, { :include_blank => h(t("select_blank")), :selected => status_value }, :index => index %>
 				</div>
 			</td>
 			<td>

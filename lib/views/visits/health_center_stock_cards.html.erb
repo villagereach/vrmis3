@@ -1,5 +1,5 @@
 <%- form_tag do -%>
-<h3><%= current_link.first %></h3>
+<h3><%= h current_link.first %></h3>
 
 <%- if !@errors.empty? -%>
 <div id="error">
@@ -18,9 +18,9 @@
 <table class="equipment">
 	<thead>
 		<tr>
-			<th><%= t(".name") %></th>
-			<th><%= t(".have") %></th>
-			<th><%= t(".use") %></th>
+			<th><%= h(t(".name")) %></th>
+			<th><%= h(t(".have")) %></th>
+			<th><%= h(t(".use")) %></th>
 		</tr>
 	</thead>
 	<tbody>
@@ -33,17 +33,17 @@
 			<td>
 				<div class="boolean <%= 'error' if @errors[:stock_card_status][index].on(:have) rescue nil %>">
 					<%= radio_button :stock_card_status, :have, true, :index => index, :checked => have_value == "true", :onclick => js_show("stock_card_status_#{index.parameterize}_used_correctly") %>
-                                        <%= label :stock_card_status, true, t("yes"), :for => "stock_card_status_#{index}_have_true" %>
+                                        <%= label :stock_card_status, true, h(t("yes")), :for => "stock_card_status_#{index}_have_true" %>
 					<%= radio_button :stock_card_status, :have, false, :index => index, :checked => have_value == "false", :onclick => js_hide("stock_card_status_#{index.parameterize}_used_correctly") %>
-                                        <%= label :stock_card_status, false, t("no"), :for => "stock_card_status_#{index}_have" %>
+                                        <%= label :stock_card_status, false, h(t("no")), :for => "stock_card_status_#{index}_have" %>
 				</div>
 			</td>
 			<td>
 				<div class="boolean <%= 'error' if @errors[:stock_card_status][index].on(:used_correctly) rescue nil %>" id="stock_card_status_<%= index.parameterize %>_used_correctly" style="<%= have_value == 'true' ? '' : 'display:none' %>">
 					<%= radio_button :stock_card_status, :used_correctly, true, :index => index, :checked => used_correctly_value == "true" %>
-                                        <%= label :stock_card_status, true, t("yes"), :for => "stock_card_status_#{index}_used_correctly_true" %>
+                                        <%= label :stock_card_status, true, h(t("yes")), :for => "stock_card_status_#{index}_used_correctly_true" %>
 					<%= radio_button :stock_card_status, :used_correctly, false, :index => index, :checked => used_correctly_value == "false" %>
-                                        <%= label :stock_card_status, false, t("no"), :for => "stock_card_status_#{index}_used_correctly_false" %>
+                                        <%= label :stock_card_status, false, h(t("no")), :for => "stock_card_status_#{index}_used_correctly_false" %>
 				</div>
 			</td>
 		</tr>

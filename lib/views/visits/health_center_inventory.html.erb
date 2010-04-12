@@ -1,5 +1,5 @@
 <% form_tag do %>
-<h3><%= current_link.first %></h3>
+<h3><%= h current_link.first %></h3>
 
 <%- if !@errors.empty? -%>
 <div id="error">
@@ -20,7 +20,7 @@
 </div>
 <%- end -%>
 
-<p class="note"><%= t(".instructions") %></p>
+<p class="note"><%= h(t(".instructions")) %></p>
 
 <%- packages = Package.all.select { |p| Inventory.directly_collected_types.any? { |t| p.inventoried_by_type?(t, params[:screen]) } } -%> 
 <%- types = Inventory.directly_collected_types.select { |t| packages.any? { |p| p.inventoried_by_type?(t, params[:screen]) } } -%>
@@ -29,10 +29,10 @@
 <table class="inventory">
   <thead>
     <tr>
-      <th><%= t('.product') %></th>
-      <th><%= t('.ideal_quantity') %></th>
+      <th><%= h(t(".product")) %></th>
+      <th><%= h(t(".ideal_quantity")) %></th>
       <%- types.each do |t| -%>
-      <th><%= t('.'+t) %></th>
+      <th><%= h(t(".#{t}")) %></th>
       <%- end -%>
       </tr>
   </thead>
@@ -41,7 +41,7 @@
       <%- stocks.each do |package| -%>
         <%- index = package.code -%>
         <tr>
-          <th><%= package.label %></th>
+          <th><%= h package.label %></th>
           <td class="static"><%= h(number_with_delimiter( @stock[:ideal][index] )) if @stock[:ideal][index] %></td>
           <%- types.each do |t| -%>
             <td>

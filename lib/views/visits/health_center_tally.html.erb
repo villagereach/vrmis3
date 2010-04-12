@@ -1,5 +1,5 @@
 <%- form_tag( { } ) do -%>
-<h3><%= t('.page_title_' + params[:tally].underscore) %></h3>
+<h3><%= h(t(".page_title_#{params[:tally].underscore}")) %></h3>
 
 <div class="epi">
   <%- if !@errors.empty? -%>
@@ -14,7 +14,7 @@
     </div>
   <%- end -%>
 
-  <p class="note"><%= t(".instructions") %></p>
+  <p class="note"><%= h(t(".instructions")) %></p>
 
   <% begin %>
     <%= render :partial => params[:tally].underscore %>

@@ -1,47 +1,47 @@
 <%- form_for(@visit, :url => health_center_visit_path(visit_month, @health_center.code), :html => { :multipart => true }) do |f| -%>
     <%= f.error_messages %>
 
-    <p class="radio_label"><%= t('.was_this_visited', :name => @health_center.label, :month => l(Date.from_date_period(visit_month), :format => "month_of_year")) %></p>
+    <p class="radio_label"><%= h(t(".was_this_visited", :name => @health_center.label, :month => l(Date.from_date_period(visit_month), :format => "month_of_year"))) %></p>
 
     <ul class="radio was_visited">
         <li>
             <%= f.radio_button :visited, true, :checked => @visit.new_record? || (@visit.visited && @current_user == @visit.field_coordinator), :onclick => js_show_hide(:visit_fields, :nonvisit_fields) %>
-            <%= f.label :visited_true, t('.yes_i_visited') %>
+            <%= f.label :visited_true, h(t(".yes_i_visited")) %>
         </li>
         <li>
           <%= f.radio_button :visited, 'else', :checked => !@visit.new_record? && @visit.visited? && @current_user != @visit.field_coordinator, :onclick => js_show_hide(:visit_fields, :nonvisit_fields) %>
-            <%= f.label :visited_else, t('.yes_someone_else_visited') %>:
+            <%= f.label :visited_else, h(t(".yes_someone_else_visited")) %>:
             <%= f.select :user_id, fc_options_by_delivery_zone(@health_center.delivery_zone, @current_user), {},
             :onclick => js_show_hide(:visit_fields, :nonvisit_fields) + js_set_checked('health_center_visit_visited_else')  %>
         </li>
         <li>
             <%= f.radio_button :visited, false, :checked => !@visit.visited, :onclick => js_show_hide(:nonvisit_fields,:visit_fields) %>
-            <%= f.label :visited_false, t('.no_noone_visited') %>
+            <%= f.label :visited_false, h(t(".no_noone_visited")) %>
         </li>
     </ul>
 
     <%- visible_container('visit_fields', @visit.visited, 'dl', 'stacked') do -%>
-        <dt><%= f.label :date, t(".date") %></dt>
+        <dt><%= f.label :date, h(t(".date")) %></dt>
         <dd><%= f.text_field :date, :class => "datepicker", :value => I18n.l(@visit.date || Date.from_date_period(visit_month)) %></dd>
 
-        <dt><%= f.label :vehicle_code, t(".vehicle_code") %></dt>
+        <dt><%= f.label :vehicle_code, h(t(".vehicle_code")) %></dt>
         <dd><%= f.text_field :vehicle_code %></dd>
-        <%#= f.label :hour, t(".time") %>
+        <%#= f.label :hour, h(t(".time")) %>
         <%#= f.select :hour, (0..23).map { |i| "%02d:00" % i } %>
     <%- end -%>
 
     <%- visible_container('nonvisit_fields', !@visit.visited, 'dl', 'stacked') do -%>
-        <dt><%= f.label :reason_for_not_visiting, t('.reason_for_not_visiting') %></dt>
-        <dd><%= f.select :reason_for_not_visiting, HealthCenterVisit.unvisited_options, :include_blank => t('.select_reason') %></dd>
+        <dt><%= f.label :reason_for_not_visiting, h(t(".reason_for_not_visiting")) %></dt>
+        <dd><%= f.select :reason_for_not_visiting, HealthCenterVisit.unvisited_options, :include_blank => h(t(".select_reason")) %></dd>
     <%- end -%>
 
     <hr />
 
-    <%#= f.label :epi_data_ready, t('.do_you_have_epi_data') %>
-    <%#= f.select :epi_data_ready, [[t('yes'),true],[t('no'),false]] %>
+    <%#= f.label :epi_data_ready, h(t(".do_you_have_epi_data")) %>
+    <%#= f.select :epi_data_ready, [[h(t("yes")),true],[h(t("no")),false]] %>
 
     <dl class="stacked">
-        <dt><%= f.label :notes, t('.notes') %></dt>
+        <dt><%= f.label :notes, h(t(".notes")) %></dt>
         <dd><%= f.text_area :notes, :rows => 6, :cols => 60 %></dd>
     </dl>
 
