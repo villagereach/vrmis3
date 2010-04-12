@@ -483,6 +483,13 @@ h4 {
   padding: 0;
   text-align: center;
 }
+#context-selector span.xforms-optional.xforms-disabled {
+  display: block !important;
+  visibility: hidden;
+}
+#context-selector span.xforms-optional.xforms-enabled {
+  visiblity: visible;
+}
 
 #warehouse-actions {
   font-size: 105%;
@@ -574,8 +581,8 @@ table.calendar {
   height: 2em;
 }
 #case-confirm .xforms-textarea textarea {
-  width: 50em;
   height: 8em;
+  width: 90%;
 }
 table.spreadsheet {
   width : auto;
