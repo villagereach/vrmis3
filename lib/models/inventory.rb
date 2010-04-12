@@ -33,8 +33,18 @@ class Inventory < ActiveRecord::Base
     %w(ExistingHealthCenterInventory DeliveredHealthCenterInventory SpoiledHealthCenterInventory)
   end
   
+  def self.inventory_screens
+    %w(epi_inventory)
+  end
+  
   def self.nullable_types
     types - ['DeliveredHealthCenterInventory']
+  end
+
+  def self.possible_fields
+    Enumerable.multicross(Inventory.types, Package.all, Inventory.inventory_screens).
+      select { |type, pkg, screen| pkg.inventoried_by_type?(type, screen) }.
+      uniq
   end
 
   def package_count_quantity_by_package
@@ -50,7 +60,7 @@ class Inventory < ActiveRecord::Base
   def package_counts_by_package(package_options={})
     pc_hash = Hash[*package_counts.map { |pc| [pc.package, pc] }.flatten]
     
-    Package.all(package_options).select { |p| p.inventoried_by_type?(self) }.each do |p|
+    Package.all(package_options).select { |p| Inventory.inventory_screens.any? { |s| p.inventoried_by_type?(self, s) } }.each do |p|
       pc_hash[p] ||= package_counts.build(:package => p, :quantity => nil)
       pc_hash[p].inventory = self
     end

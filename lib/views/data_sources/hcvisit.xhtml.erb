@@ -2,7 +2,6 @@
 <?xsltforms-options debug="no"?>
 <?css-conversion no?>
 <%-
-  inventory_types = Inventory.directly_collected_types
   tally_classes = HealthCenterVisit.tally_hash.map{|k,v| k.constantize}
 -%>
 <html xmlns="http://www.w3.org/1999/xhtml"
@@ -212,16 +211,13 @@
       <xf:bind nodeset="/olmis/hcvisit/visit" id="visit_data" relevant="/olmis/hcvisit/visited != 'false'" />
       <xf:bind nodeset="/olmis/hcvisit/epi"   id="epi_data"   relevant="/olmis/hcvisit/epi_data_ready = true()" />
 
-      <%- Package.all.each do |package| -%>
-        <%- if inventory_types.any?{|t| package.inventoried_by_type?(t)} -%>
-          <%- inventory_types.each do |type|
-              id = "inventory_#{package.code}_#{type}"
-              node = "/olmis/hcvisit/visit/inventory/item[@for='#{ package.code }' and @type='#{ type }']"  -%>
-            <xf:bind id="<%= id %>:qty" nodeset="<%= node %>/@qty" required="../@nr != true()" type="xf:nonNegativeInteger" />
-            <%- if Inventory.nullable_types.include?(type) -%>
-              <xf:bind id="<%= id %>:nr" nodeset="<%= node %>/@nr" required="false()" type="xf:boolean" />
-            <%- end -%>
-          <%- end -%>
+      <%- Inventory.possible_fields.each do |type, package, screen|
+        id = "inventory_#{package.code}_#{type}"
+        node = "/olmis/hcvisit/visit/inventory/item[@for='#{ package.code }' and @type='#{ type }']"  
+      -%>
+        <xf:bind id="<%= id %>:qty" nodeset="<%= node %>/@qty" required="../@nr != true()" type="xf:nonNegativeInteger" />
+        <%- if Inventory.nullable_types.include?(type) -%>
+          <xf:bind id="<%= id %>:nr" nodeset="<%= node %>/@nr" required="false()" type="xf:boolean" />
         <%- end -%>
       <%- end -%>
 
@@ -470,21 +466,15 @@
               </xf:action>
             </xf:trigger>
               
-            <xf:trigger bind="visit_data" id="tab-epi_inventory" class="menu-tab" appearance="minimal">
-              <xf:label><%= t("visits.health_center_monthly_tasks.epi_inventory") %></xf:label>
+            <%- Inventory.inventory_screens.each do |screen| -%>
+            <xf:trigger bind="visit_data" id="tab-<%= screen %>" class="menu-tab" appearance="minimal">
+              <xf:label><%= t("visits.health_center_monthly_tasks.#{screen}") %></xf:label>
               <xf:action ev:event="DOMActivate">
-                <xf:toggle case="case-epi_inventory"/>
-                <xf:load resource="javascript:set_active_tab('epi_inventory')" />
+                <xf:toggle case="case-<%= screen %>"/>
+                <xf:load resource="javascript:set_active_tab('<%= screen %>')" />
               </xf:action>
             </xf:trigger>
-              
-            <xf:trigger bind="visit_data" id="tab-rdt_inventory" class="menu-tab" appearance="minimal">
-              <xf:label><%= t("visits.health_center_monthly_tasks.rdt_inventory") %></xf:label>
-              <xf:action ev:event="DOMActivate">
-                <xf:toggle case="case-rdt_inventory"/>
-                <xf:load resource="javascript:set_active_tab('rdt_inventory')" />
-              </xf:action>
-            </xf:trigger>
+            <%- end -%>
               
             <xf:trigger bind="visit_data" id="tab-equipment" class="menu-tab" appearance="minimal">
               <xf:label><%= t("visits.health_center_monthly_tasks.equipment") %></xf:label>
@@ -692,30 +682,32 @@
               </div>
             </xf:case><!-- id="case-cold_chain" -->
 
-            <xf:case id="case-epi_inventory">
-              <div id="div-epi_inventory" class="block-form">
-                <xf:group bind="visit_data">
-                  <xf:label><%= t("visits.health_center_monthly_tasks.epi_inventory") %></xf:label>
-                  <p class="note"><%= t("visits.health_center_inventory.instructions") %></p>
-
-                  <table class="inventory spreadsheet">
-                    <thead>
-                      <tr>
-                        <th><%= t("visits.health_center_inventory.product") %></th>
-                        <%- inventory_types.each do |t| -%>
-                          <th><%= t("visits.health_center_inventory.#{t}") %></th>
-                        <%- end -%>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <%- Package.all.reject{|p| p.product.product_type_code == 'test'}.sort.each do |package| -%>
-                        <%- if inventory_types.any? { |t| package.inventoried_by_type?(t) } -%>
+            <%- Inventory.inventory_screens.each do |screen| -%>
+              <%- packages = Package.all.select { |p| Inventory.directly_collected_types.any? { |t| p.inventoried_by_type?(t, screen) } } -%>
+              <%- types = Inventory.directly_collected_types.select { |t| packages.any? { |p| p.inventoried_by_type?(t, screen) } } -%>
+              <xf:case id="case-<%= screen %>">
+                <div id="div-<%= screen %>" class="block-form">
+                  <xf:group bind="visit_data">
+                    <xf:label><%= t("visits.health_center_monthly_tasks.#{ screen }") %></xf:label>
+                    <p class="note"><%= t("visits.health_center_inventory.instructions") %></p>
+  
+                    <table class="inventory spreadsheet">
+                      <thead>
+                        <tr>
+                          <th><%= t("visits.health_center_inventory.product") %></th>
+                          <%- types.each do |t| -%>
+                            <th><%= t("visits.health_center_inventory.#{t}") %></th>
+                          <%- end -%>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <%- packages.sort.each do |package| -%>
                           <tr>
                             <th><%= package.label %></th>
-                            <%- inventory_types.each do |type|
+                            <%- types.each do |type|
                                   id = "inventory_#{package.code}_#{type}" -%>
                               <td>
-                                <%- if package.inventoried_by_type?(type) -%>
+                                <%- if package.inventoried_by_type?(type, screen) -%>
                                   <div class="tally">
                                     <xf:input bind="<%= id %>:qty" incremental="true">
                                       <xf:action ev:event="xforms-value-changed">
@@ -740,72 +732,15 @@
                             <%- end -%>
                           </tr>
                         <%- end -%>
-                      <%- end -%>
-                    </tbody>
-                  </table>
-                  <xf:action ev:event="xforms-value-changed">
-                    <xf:load resource="javascript:update_stockouts()" />
-                  </xf:action>
-                </xf:group>
-              </div>
-            </xf:case><!-- id="case-epi_inventory" -->
-
-            <xf:case id="case-rdt_inventory">
-              <div id="div-rdt_inventory" class="block-form">
-                <xf:group bind="visit_data">
-                  <xf:label><%= t("visits.health_center_monthly_tasks.epi_inventory") %></xf:label>
-                  <p class="note"><%= t("visits.health_center_inventory.instructions") %></p>
-                  <table class="inventory spreadsheet">
-                    <thead>
-                      <tr>
-                        <th><%= t("visits.health_center_inventory.product") %></th>
-                        <%- inventory_types.each do |t| -%>
-                          <th><%= t("visits.health_center_inventory.#{t}") %></th>
-                        <%- end -%>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <%- Package.all.select{|p| p.product.product_type_code == 'test'}.sort.each do |package| -%>
-                        <%- if inventory_types.any? { |t| package.inventoried_by_type?(t) } -%>
-                          <tr>
-                            <th><%= package.label %></th>
-                            <%- inventory_types.each do |type|
-                                  id = "inventory_#{package.code}_#{type}" -%>
-                              <td>
-                                <%- if package.inventoried_by_type?(type) -%>
-                                  <div class="tally">
-                                    <xf:input bind="<%= id %>:qty" incremental="true">
-                                      <xf:action ev:event="xforms-value-changed">
-                                        <xf:setvalue if="string-length(.) &gt; 0"     bind="<%= id %>:nr" value="'false'" />
-                                        <xf:setvalue if=". = '' and ../@nr = 'false'" bind="<%= id %>:nr" />
-                                      </xf:action>
-                                      <xf:alert><%= t(".errors.quantity") %></xf:alert>
-                                    </xf:input>
-                                    <%- if Inventory.nullable_types.include?(type) -%>
-                                      <div class="nr">
-                                        <xf:input bind="<%= id %>:nr" incremental="true">
-                                          <xf:label><%= t("NR") %></xf:label>
-                                          <xf:action ev:event="xforms-value-changed">
-                                            <xf:setvalue if=". = 'true'" bind="<%= id %>:qty" value="''" />
-                                          </xf:action>
-                                        </xf:input>
-                                      </div>
-                                    <%- end -%>
-                                  </div>
-                                <%- end -%>
-                              </td>
-                            <%- end -%>
-                          </tr>
-                        <%- end -%>
-                      <%- end -%>
-                    </tbody>
-                  </table>
-                  <xf:action ev:event="xforms-value-changed">
-                    <xf:load resource="javascript:update_stockouts()" />
-                  </xf:action>
-                </xf:group>
-              </div>
-            </xf:case><!-- id="case-rdt_inventory" -->
+                      </tbody>
+                    </table>
+                    <xf:action ev:event="xforms-value-changed">
+                      <xf:load resource="javascript:update_stockouts()" />
+                    </xf:action>
+                  </xf:group>
+                </div>
+              </xf:case><!-- id="case-<%= screen %>" -->
+            <%- end -%>
 
             <xf:case id="case-equipment">
               <div id="div-equipment" class="block-form">
@@ -914,8 +849,8 @@
                       <%- end -%>
                     </tbody>
                   </table>
-                </div>
-              </xf:group>
+                </xf:group>
+              </div>
             </xf:case><!-- id="case-stock_cards" -->
 
             <%- tally_classes.each do |klass|
