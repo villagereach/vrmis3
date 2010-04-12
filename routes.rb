@@ -63,7 +63,7 @@
   map.health_center_equipment_coldchain '/visits/:visit_month/:health_center/equipment/coldchain', :controller => 'visits', :action => 'health_center_cold_chain'
   map.health_center_equipment_stockcards '/visits/:visit_month/:health_center/equipment/stockcards', :controller => 'visits', :action => 'health_center_stock_cards'
 
-  map.health_center_inventory '/visits/:visit_month/:health_center/inventory', :controller => 'visits', :action => 'health_center_inventory'
+  map.health_center_inventory '/visits/:visit_month/:health_center/inv/:screen', :controller => 'visits', :action => 'health_center_inventory'
 
   map.root :controller => 'dashboard', :action => 'homepage'
 

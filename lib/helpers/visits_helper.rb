@@ -37,7 +37,9 @@ module VisitsHelper
         }
       ],
       [ I18n.t('visits.health_center_monthly_tasks.inventory'),
-        [ [:inventory, [I18n.t('visits.health_center_monthly_tasks.inventory'), health_center_inventory_path] ] ] ],
+        Inventory.inventory_screens.map { |s| 
+          [s, [I18n.t("visits.health_center_monthly_tasks.#{s}"), health_center_inventory_path(:screen => s)] ]
+        } ],
       [ I18n.t('visits.health_center_monthly_tasks.equipment'), 
         [ [:general, [I18n.t('visits.health_center_monthly_tasks.general'), health_center_equipment_general_path ] ],
           [:cold_chain, [I18n.t('visits.health_center_monthly_tasks.cold_chain'), health_center_equipment_coldchain_path ] ],

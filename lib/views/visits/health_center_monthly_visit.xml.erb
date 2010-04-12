@@ -38,12 +38,10 @@
     <visit>
       <inventory>
         <%- stock = @visit.ideal_stock -%>    
-        <%- Package.all.each do |package| -%>
+        <%- Inventory.possible_fields.each do |type, package, screen| -%>
           <%- index = package.code -%>
-          <%- Inventory.types.select { |t| package.inventoried_by_type?(t) }.each do |type| -%>
-            <%- if stock[type][index] -%>
-              <item for="<%= package.code %>" type="<%= type %>" nr="<%= !stock[type][index].new_record? && stock[type][index].quantity.nil? %>" qty="<%= stock[type][index].quantity %>" />
-            <%- end -%>
+          <%- if stock[type][index] -%>
+            <item for="<%= package.code %>" type="<%= type %>" nr="<%= !stock[type][index].new_record? && stock[type][index].quantity.nil? %>" qty="<%= stock[type][index].quantity %>" />
           <%- end -%>
         <%- end -%>
       </inventory>

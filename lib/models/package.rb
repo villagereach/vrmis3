@@ -30,7 +30,7 @@ class Package < ActiveRecord::Base
     position <=> other.position
   end
 
-  def inventoried_by_type?(t)
+  def inventoried_by_type?(t, screen)
     true
   end
   
