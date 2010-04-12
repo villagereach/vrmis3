@@ -16,6 +16,7 @@
     <visit_month><%= @visit.date_period %></visit_month>
     <vehicle_id><%= @visit.vehicle_code %></vehicle_id>
     <non_visit_reason><%= @visit.visit_status %></non_visit_reason>
+    <other_non_visit_reason><%= @visit.other_non_visit_reason %></other_non_visit_reason>
     <notes><%= @visit.notes %></notes>
     <epi>
     <%- HealthCenterVisit.tally_hash.map{|k,v| k.constantize}.each do |klass| -%>

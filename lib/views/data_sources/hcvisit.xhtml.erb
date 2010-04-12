@@ -199,11 +199,15 @@
         calculate="olmis:previous_yearmonth(instance('data')/selected-values/visit_date_period)"
         relevant="../epi_data_ready = true()" />
 
-      <xf:bind nodeset="/olmis/hcvisit/visited"          id="visited"          required="true()" relevant="true()"/>
-      <xf:bind nodeset="/olmis/hcvisit/visited_at"       id="visited_at"       required="true()" relevant="../visited != 'false'" type="xf:string" constraint="jr:date(.) &lt;= jr:today() and jr:date(.) &gt;= jr:date(concat(../visit_month,'-01')) and jr:date(.) &lt;= jr:date(concat(../visit_month,'-31'))" />
-      <xf:bind nodeset="/olmis/hcvisit/vehicle_id"       id="vehicle_id"       required="true()" relevant="../visited != 'false'"/>
-      <xf:bind nodeset="/olmis/hcvisit/non_visit_reason" id="non_visit_reason" required="true()" relevant="../visited = 'false'" constraint="string-length(.) &gt; 0 and . != 'Visited'"/>
-      <xf:bind nodeset="/olmis/hcvisit/notes"            id="notes"            required="../non_visit_reason = 'other'"/>
+      <xf:bind nodeset="/olmis/hcvisit/visited" id="visited" required="true()" relevant="true()"/>
+
+      <xf:bind nodeset="/olmis/hcvisit/visited_at" id="visited_at" required="true()" relevant="../visited != 'false'" type="xf:string" constraint="jr:date(.) &lt;= jr:today() and jr:date(.) &gt;= jr:date(concat(../visit_month,'-01')) and jr:date(.) &lt;= jr:date(concat(../visit_month,'-31'))" />
+      <xf:bind nodeset="/olmis/hcvisit/vehicle_id" id="vehicle_id" required="true()" relevant="../visited != 'false'"/>
+
+      <xf:bind nodeset="/olmis/hcvisit/non_visit_reason"       id="non_visit_reason"        required="true()" relevant="../visited = 'false'" constraint="string-length(.) &gt; 0 and . != 'Visited'"/>
+      <xf:bind nodeset="/olmis/hcvisit/other_non_visit_reason" id="other_non_visit_reason"  required="true()" relevant="../visited = 'false' and ../non_visit_reason = 'other'" constraint="string-length(.) &gt; 0"/>
+
+      <xf:bind nodeset="/olmis/hcvisit/notes" id="notes" />
 
       <xf:bind nodeset="/olmis/hcvisit/visit" id="visit_data" relevant="/olmis/hcvisit/visited != 'false'" />
       <xf:bind nodeset="/olmis/hcvisit/epi"   id="epi_data"   relevant="/olmis/hcvisit/epi_data_ready = true()" />
@@ -604,9 +608,8 @@
                     </xf:action>
                   </xf:select1>
                 </xf:group>
-                <xf:group id="visit-notes">
-                  <xf:textarea bind="notes">
-                    <xf:label><%= t("visits.health_center_monthly_visit.notes") %></xf:label>
+                <xf:group>
+                  <xf:textarea bind="other_non_visit_reason">
                     <xf:alert><%= t(".errors.non_visit_reason") %></xf:alert>
                   </xf:textarea>
                 </xf:group>
@@ -938,7 +941,7 @@
               <div id="div-confirm" class="block-form">
                 <xf:group id="div-observations">
                   <xf:label><%= t("visits.health_center_monthly_tasks.observations") %></xf:label>
-                  <p class="note">TODO</p>
+                  <xf:textarea bind="notes"/>
                 </xf:group>
 
                 <xf:group id="div-verify_confirm">
