@@ -627,13 +627,14 @@ table.spreadsheet div.tally div.nr > span {
 table.spreadsheet input.xforms-value[type="text"] {
   width : 3em;
 }
-#case-inventory .inventory thead th:first-child,
-#case-equipment .equipment:not(.cold_chain) thead th:first-child {
-  text-align : right;
+#case-epi_inventory .inventory thead th:first-child,
+#case-rdt_inventory .inventory thead th:first-child {
+  text-align: center;
 }
 #case-child_vaccination_tallies tr:first-child th,
 #case-adult_vaccination_tallies tr:first-child th {
-  border-bottom : 0;
+  border-bottom: 0;
+  text-align: center;
 }
 #case-equipment #fridge-list tr th .xforms-value {
   width : 7em;

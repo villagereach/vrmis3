@@ -608,7 +608,7 @@
             <xf:case id="case-cold_chain">
               <div id="div-cold_chain" class="block-form">
                 <xf:group bind="visit_data">
-                  <xf:label><%= h(t("visits.health_center_monthly_tasks.cold_chain")) %></xf:label>
+                  <xf:label><%= h(t("visits.health_center_cold_chain.page_title")) %></xf:label>
                   <p class="note"><%= h(t("visits.health_center_cold_chain.instructions")) %></p>
                   <table class="equipment cold_chain spreadsheet">
                     <thead>
@@ -687,13 +687,13 @@
               <xf:case id="case-<%= screen %>">
                 <div id="div-<%= screen %>" class="block-form">
                   <xf:group bind="visit_data">
-                    <xf:label><%= h(t("visits.health_center_monthly_tasks.#{ screen }")) %></xf:label>
+                    <xf:label><%= h(t("visits.health_center_inventory.#{screen}.page_title")) %></xf:label>
                     <p class="note"><%= h(t("visits.health_center_inventory.instructions")) %></p>
   
                     <table class="inventory spreadsheet">
                       <thead>
                         <tr>
-                          <th><%= h(t("visits.health_center_inventory.product")) %></th>
+                          <th><%= h(t("visits.health_center_inventory.#{screen}.product_header")) %></th>
                           <%- types.each do |t| -%>
                             <th><%= h(t("visits.health_center_inventory.#{t}")) %></th>
                           <%- end -%>
@@ -744,12 +744,12 @@
             <xf:case id="case-equipment">
               <div id="div-equipment" class="block-form">
                 <xf:group bind="visit_data">
-                  <xf:label><%= h(t("visits.health_center_monthly_tasks.equipment")) %></xf:label>
+                  <xf:label><%= h(t("visits.health_center_equipment.page_title")) %></xf:label>
                   <p class="note"><%= h(t("visits.health_center_equipment.instructions")) %></p>
                   <table class="equipment spreadsheet">
                     <thead>
                       <tr>
-                        <th><%= h(t("visits.health_center_equipment.type")) %></th>
+                        <th></th>
                         <th><%= h(t("visits.health_center_equipment.quantity")) %></th>
                         <th><%= h(t("visits.health_center_equipment.status")) %></th>
                         <th><%= h(t("visits.health_center_equipment.notes")) %></th>
@@ -808,7 +808,7 @@
             <xf:case id="case-stock_cards">
               <div id="div-stock_cards" class="block-form">
                 <xf:group bind="visit_data">
-                  <xf:label><%= h(t("visits.health_center_monthly_tasks.stock_cards")) %></xf:label>
+                  <xf:label><%= h(t("visits.health_center_stock_cards.page_title")) %></xf:label>
                   <table class="equipment spreadsheet">
                     <thead>
                       <tr>
