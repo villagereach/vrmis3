@@ -31,16 +31,15 @@ class HealthCenterVisitPeriodicProgress
 
   def counts_by_health_center_visit_for_date_period(dps)
     tally_hash = Hash[*Olmis.configuration['tallies'].map { |k, v| [k, 0] }.flatten]
-    
+    inv_screen_hash = Hash[*Inventory.inventory_screens.map { |s| [s, [0,0]] }.flatten_once]
     counts = Hash.new do |hash, key|      
       hash[key] = Hash[*dps.map { |dp|
         [dp, {
-          'ExistingHealthCenterInventory' => [0, 0],
-          'DeliveredHealthCenterInventory' => [0, 0],
           'cold_chain' => [0, 0],
           'stock_cards' => [0, 0],          
           'equipment' => [0, 0]
-        }.merge(tally_hash) 
+        }.merge(tally_hash).
+         merge(inv_screen_hash)
       ] }.flatten]
     end
     
@@ -73,13 +72,13 @@ class HealthCenterVisitPeriodicProgress
         [stock_cards            + r['have'].to_i, 
          r['have_entered'].to_i + r['usage_entered'].to_i] 
     end
-    
-    packages = Package.count
-    ['ExistingHealthCenterInventory', 'DeliveredHealthCenterInventory'].each do |table|
-      conn.select_all(inventory_query(table, dp_sql)).each do |r| 
-        counts[r['id'].to_i][r['date_period']][table] = [packages, r['package_counts'].to_i]  
-      end
-    end    
+
+    inv_fields = Inventory.possible_fields
+    fields_by_screen = Hash[*inv_fields.group_by { |type, package, screen| screen }.map { |screen, fields| [screen, fields.length] }.flatten_once]
+
+    conn.select_all(inventory_query(inv_fields, dp_sql)).each do |r|
+      counts[r['id'].to_i][r['date_period']][r['screen']] = [fields_by_screen[r['screen']], r['package_counts'].to_i]
+    end
     counts
   end
   
@@ -187,22 +186,33 @@ class HealthCenterVisitPeriodicProgress
     EQUIP
   end
 
-  def inventory_query(inventory_type,month_ids)
+  def inventory_query(inv_fields,month_ids)
+    screen_statement = inv_fields.group_by { |type, package, screen| [type, screen] }.map { |locator, fields|
+      type, screen = *locator
+      "when inventory_type = '#{sanitize_sql(type)}' " +
+      "and packages.code in (" +
+        fields.map(&:second).map { |p| "'" + sanitize_sql(p.code) + "'" }.join(", ") +
+      ") then '#{sanitize_sql(screen)}'"
+    }.join("\n      ")
     <<-INV
-      select health_center_visits.id as id, 
-        health_center_visits.visit_month as date_period,
-        count(distinct package_counts.id) as package_counts
+      select id, date_period, screen, count(distinct pkg_count_id) as package_counts
+      from (
+        select
+          health_center_visits.id as id, 
+          health_center_visits.visit_month as date_period,
+          package_counts.id as pkg_count_id,
+          case #{screen_statement} else '' end as screen
       from health_center_visits
         left join health_centers on health_centers.id = health_center_id
         left join stock_rooms on stock_rooms.id = health_centers.stock_room_id
         left join inventories
-          on inventories.inventory_type = '#{inventory_type}'
-          and inventories.stock_room_id = stock_rooms.id
+          on inventories.stock_room_id = stock_rooms.id
           and inventories.date = health_center_visits.visited_at
-        left join package_counts
-          on package_counts.inventory_id = inventories.id
-      where health_center_visits.visit_month in (#{month_ids})
-      group by health_center_visits.id 
+        left join package_counts on package_counts.inventory_id = inventories.id
+        left join packages       on packages.id = package_counts.package_id
+      where health_center_visits.visit_month in (#{month_ids})) x
+      where screen != ''
+      group by id, screen
     INV
   end
   

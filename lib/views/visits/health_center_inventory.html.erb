@@ -22,14 +22,15 @@
 
 <p class="note"><%= h(t(".instructions")) %></p>
 
-<%- packages = Package.all.select { |p| Inventory.directly_collected_types.any? { |t| p.inventoried_by_type?(t, params[:screen]) } } -%> 
-<%- types = Inventory.directly_collected_types.select { |t| packages.any? { |p| p.inventoried_by_type?(t, params[:screen]) } } -%>
+<%- screen = params[:screen].underscore -%>
+<%- packages = Package.all.select { |p| Inventory.directly_collected_types.any? { |t| p.inventoried_by_type?(t, screen) } } -%> 
+<%- types = Inventory.directly_collected_types.select { |t| packages.any? { |p| p.inventoried_by_type?(t, screen) } } -%>
 
 <%- fields_for :inventory_counts do |f| -%>
 <table class="inventory">
   <thead>
     <tr>
-      <th><%= h(t("visits.health_center_inventory.#{params[:screen]}.product_header")) %></th>
+      <th><%= h(t("visits.health_center_inventory.#{screen}.product_header")) %></th>
       <th><%= h(t(".ideal_quantity")) %></th>
       <%- types.each do |t| -%>
       <th><%= h(t(".#{t}")) %></th>
@@ -45,7 +46,7 @@
           <td class="static"><%= h(number_with_delimiter( @stock[:ideal][index] )) if @stock[:ideal][index] %></td>
           <%- types.each do |t| -%>
             <td>
-              <%- if package.inventoried_by_type?(t, params[:screen]) -%>
+              <%- if package.inventoried_by_type?(t, screen) -%>
                 <%- stock_value = default_field_value(params[:inventory_counts], index.to_s, t, @stock[t][index].quantity) -%>
                 <%- nr_checked = !@stock[t][index].new_record? && default_field_value(params[:inventory_counts], index.to_s, "#{t}/NR", stock_value.to_s.empty? ? '1' : '0') == '1' -%>
                 <%= nr_field(f, t,  index, stock_value,  nr_checked,  (@errors[index][t].on(:quantity) rescue nil), !Inventory.nullable_types.include?(t)) %>

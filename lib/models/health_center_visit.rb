@@ -196,23 +196,24 @@ class HealthCenterVisit < ActiveRecord::Base
     }
   end
 
-  def count_inventory(inventory_type)
+  def count_inventory(screen)
     do_inventory = true  # NOTE: All HCs require inventory now, but may not in the future
-    entry_counts[inventory_type] ||= begin
-      if inventory = Inventory.first(:conditions => { :stock_room_id => health_center.stock_room, :inventory_type => inventory_type, :date => date })
-        package_counts = inventory.package_counts_by_package_code
-        entries = package_counts.reject{|k,v| v.id.nil?}.size
+    expected, actual = entry_counts[screen] ||= begin
+      packages = Package.all.select { |p| Inventory.directly_collected_types.any? { |t| p.inventoried_by_type?(t, screen) } }
+      types = Inventory.directly_collected_types.select { |t| packages.any? { |p| p.inventoried_by_type?(t, screen) } }
+      if inventories = Inventory.all(:conditions => { :stock_room_id => health_center.stock_room, :inventory_type => types, :date => date })
+        package_codes = packages.map(&:code)
+        package_counts = inventories.map{|inventory| inventory.package_counts_by_package_code.delete_if{|k,v| !package_codes.include?(k)}.values}.flatten
+        entries = package_counts.reject{|pc| pc.id.nil?}.size
         expected_entries = package_counts.size
       end
       [entries || 0, expected_entries || (do_inventory ? 1 : 0)]
     end
   end
 
-  def inventory_status
+  def inventory_status(screen)
     if date
-      e_entries, e_expected = count_inventory('ExistingHealthCenterInventory')
-      d_entries, d_expected = count_inventory('DeliveredHealthCenterInventory')
-      reporting_status_field(e_entries + d_entries, e_expected + d_expected)
+      reporting_status_field(*count_inventory(screen))
     end
   end
   
@@ -266,13 +267,16 @@ class HealthCenterVisit < ActiveRecord::Base
   def status_by_table(table=nil)
     @status ||= returning ActiveSupport::OrderedHash.new do |h|
       self.class.tally_hash.sort.each do |k, v|
-        h[k]         = epi_data_ready? ? tally_status(k.constantize)         : REPORT_NOT_VISITED
+        h[k] = epi_data_ready? ? tally_status(k.constantize) : REPORT_NOT_VISITED
+      end
+
+      self.class.inventory_screen_hash.sort.each do |k, v|
+        h[v] = visited ? inventory_status(k) : REPORT_NOT_VISITED
       end
       
-      h['HealthCenterInventory'] = visited ? inventory_status                            : REPORT_NOT_VISITED
-      h['GeneralEquipment']      = visited ? equipment_status                            : REPORT_NOT_VISITED
-      h['ColdChainEquipment']    = visited ? cold_chain_status                           : REPORT_NOT_VISITED
-      h['StockCardEquipment']    = visited ? stock_card_status                           : REPORT_NOT_VISITED
+      h['GeneralEquipment']   = visited ? equipment_status  : REPORT_NOT_VISITED
+      h['ColdChainEquipment'] = visited ? cold_chain_status : REPORT_NOT_VISITED
+      h['StockCardEquipment'] = visited ? stock_card_status : REPORT_NOT_VISITED
     end
     table.nil? ? @status : @status[table]    
   end

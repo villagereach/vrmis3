@@ -33,12 +33,12 @@ module VisitsHelper
         [ [:visit, [I18n.t('visits.health_center_monthly_tasks.visit'), health_center_visit_path]]]],
       [ I18n.t('EPI'), 
         HealthCenterVisit.tally_hash.map { |k, v|
-          [k, [I18n.t('epi.'+k), health_center_tally_path(:tally => k)]]
+          [k, [I18n.t("visits.health_center_monthly_tasks.#{k.underscore}"), health_center_tally_path(:tally => k)]]
         }
       ],
       [ I18n.t('visits.health_center_monthly_tasks.inventory'),
-        Inventory.inventory_screens.map { |s| 
-          [s, [I18n.t("visits.health_center_monthly_tasks.#{s}"), health_center_inventory_path(:screen => s)] ]
+        HealthCenterVisit.inventory_screen_hash.map { |k, v|
+          [k, [I18n.t("visits.health_center_monthly_tasks.#{k}"), health_center_inventory_path(:screen => v)] ]
         } ],
       [ I18n.t('visits.health_center_monthly_tasks.equipment'), 
         [ [:general, [I18n.t('visits.health_center_monthly_tasks.general'), health_center_equipment_general_path ] ],

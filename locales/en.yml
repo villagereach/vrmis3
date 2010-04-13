@@ -469,6 +469,11 @@ en:
       did_not_visit: "Did not visit"
     health_center_monthly_tasks:
       visit:       "Visit"
+      adult_vaccination_tally: "Adult Vaccinations"
+      child_vaccination_tally: "Child Vaccinations"
+      full_vaccination_tally:  "Fully Vaccinated Children"
+      epi_usage_tally:         "EPI Stock"
+      rdt_tally:               "RDT Usage"
       inventory:   "Inventory"
       epi_inventory: "EPI Inventory"
       rdt_inventory: "RDT Inventory"

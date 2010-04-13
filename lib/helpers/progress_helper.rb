@@ -13,7 +13,7 @@ module ProgressHelper
   end
 
   def progress_class_for_task(visit, task)
-    progress_class(visit.status_by_table(HealthCenterVisit.tasks_and_tables[task]))
+    progress_class(visit.status_by_table(HealthCenterVisit.tasks_and_tables[task.to_s]))
   end
 
   def progress_class_for_visit(visit)
@@ -86,9 +86,10 @@ module ProgressHelper
                        end
 
     # Inventory
-    contents << progress_bar_field(status['HealthCenterInventory'],
-                                   I18n.t('visits.health_center_monthly_tasks.inventory'),
-                                   icon_size)
+    HealthCenterVisit.inventory_screen_hash.each do |k, v|
+      title = I18n.t("visits.health_center_monthly_tasks.#{k}")
+      contents << progress_bar_field(status[v], title, icon_size)
+    end
 
     # General Equipment
     contents << progress_bar_field(status['GeneralEquipment'],
@@ -106,8 +107,8 @@ module ProgressHelper
                                    icon_size)
 
     # EPI Tallies
-    [ EpiUsageTally, AdultVaccinationTally, ChildVaccinationTally, FullVaccinationTally, RdtTally ].each do |tally_klass|
-      title = tally_klass.tally_name  # TODO: Localize
+    HealthCenterVisit.tally_hash.each do |tally_klass, v|
+      title = I18n.t("visits.health_center_monthly_tasks.#{tally_klass.underscore}")
       contents << progress_bar_field(status[tally_klass.to_s], title, icon_size)
     end
 
@@ -243,7 +244,7 @@ module ProgressHelper
     }
 
     HealthCenterVisit.inventory_screen_hash.each do |k,v|
-      routes[v] = health_center_inventory_url(path_params.merge(:screen => k))
+      routes[v] = health_center_inventory_url(path_params.merge(:screen => v))
     end
     
     HealthCenterVisit.tally_hash.each do |k,v|

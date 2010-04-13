@@ -268,8 +268,6 @@ class DataSubmission < ActiveRecord::Base
     inventories = @visit.find_or_create_inventory_records
     stock = @visit.ideal_stock
 
-    inventories.each(&:save)
-    
     @params[:inventory_counts].each do |key, value|
       (stock.keys - [:ideal]).each do |type|
         if (record = stock[type][key]) && value.has_key?(type)
@@ -292,6 +290,7 @@ class DataSubmission < ActiveRecord::Base
     # Remove any blank package counts
     inventories.each { |i|
       i.package_counts.delete_if{|pc| pc.id.nil?}
+      i.save
     }
   end
   
