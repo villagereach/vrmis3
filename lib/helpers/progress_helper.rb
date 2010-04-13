@@ -237,13 +237,16 @@ module ProgressHelper
 
   def named_route_for_step(name, path_params)
     routes = {
-      'HealthCenterInventory'          => health_center_inventory_url(path_params),
-      'GeneralEquipment'               => health_center_equipment_general_url(path_params),
-      'ColdChainEquipment'             => health_center_equipment_coldchain_url(path_params),
-      'StockCardEquipment'             => health_center_equipment_stockcards_url(path_params),      
+      'GeneralEquipment'   => health_center_equipment_general_url(path_params),
+      'ColdChainEquipment' => health_center_equipment_coldchain_url(path_params),
+      'StockCardEquipment' => health_center_equipment_stockcards_url(path_params),      
     }
+
+    HealthCenterVisit.inventory_screen_hash.each do |k,v|
+      routes[v] = health_center_inventory_url(path_params.merge(:screen => k))
+    end
     
-    HealthCenterVisit.tally_hash.each do |k|
+    HealthCenterVisit.tally_hash.each do |k,v|
       routes[k] = health_center_tally_url(path_params.merge(:tally => k))
     end
     

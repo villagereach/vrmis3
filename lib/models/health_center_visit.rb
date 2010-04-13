@@ -73,13 +73,16 @@ class HealthCenterVisit < ActiveRecord::Base
     @tally_hash ||= Hash[*Olmis.configuration['tallies'].map { |k, v| [k, k] }.flatten]
   end
   
+  def self.inventory_screen_hash
+    @inventory_hash ||= Inventory.inventory_screens.inject({}) { |hash, screen| hash[screen] = screen.camelize ; hash }
+  end
+  
   def self.tasks_and_tables
-    tally_hash.merge({
-      :visit => "Visit",
-      :inventory => 'HealthCenterInventory',
-      :general => 'GeneralEquipment',
-      :cold_chain => 'ColdChainEquipment',
-      :stock_cards => 'StockCardEquipment'
+    tally_hash.merge(inventory_screen_hash).merge({
+      "visit"       => "Visit",
+      "general"     => "GeneralEquipment",
+      "cold_chain"  => "ColdChainEquipment",
+      "stock_cards" => "StockCardEquipment"
     })
   end
   
