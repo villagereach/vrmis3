@@ -29,7 +29,7 @@
 <table class="inventory">
   <thead>
     <tr>
-      <th><%= h(t(".product")) %></th>
+      <th><%= h(t("visits.health_center_inventory.#{params[:screen]}.product_header")) %></th>
       <th><%= h(t(".ideal_quantity")) %></th>
       <%- types.each do |t| -%>
       <th><%= h(t(".#{t}")) %></th>
