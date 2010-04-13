@@ -111,7 +111,7 @@ class VisitsController < OlmisController
   end
 
   def health_center_inventory
-    @existing_inventory, @delivered_inventory = @visit.find_or_create_inventory_records
+    @inventories = @visit.find_or_create_inventory_records
     @stock = @visit.ideal_stock 
 
     handle_submit if request.post?

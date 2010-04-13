@@ -13,10 +13,9 @@
     <%- end -%>
   </ul>
 </div>
-<%- elsif !@existing_inventory.errors.empty? || !@delivered_inventory.errors.empty?-%>
+<%- elsif @inventories.any?{|i| !i.errors.empty?} -%>
 <div id="error">
-  <%= @existing_inventory.errors.full_message unless @existing_inventory.errors.empty? %>
-  <%= @delivered_inventory.errors.full_message unless @delivered_inventory.errors.empty? %>
+  <%= @inventories.reject{|i| i.errors.empty?}.each{|i| i.errors.full_message} %>
 </div>
 <%- end -%>
 
