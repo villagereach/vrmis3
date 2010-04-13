@@ -403,9 +403,8 @@ dl.inline dd.stacked input {
   padding : 1em;
   background : #f6f6f6;
   border : 1px solid green;
-  margin-top : 1em;
   width : 90%;
-  min-height : 400px;
+  /*min-height : 400px;*/
 }
 /* }}} */
 /* report scope {{{ */

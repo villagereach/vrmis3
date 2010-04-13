@@ -10,6 +10,7 @@ FRIDGE_ENTRY_DETAILS_REGEX = /fridge-entry-details-(\d+)/;
 jQuery( document ).ready( function() {
     init_collapser_lists();
     init_fridge_list();
+    init_switcher_panes();
     
     call_anchor_method();
 
@@ -102,6 +103,13 @@ function hide_fridge_details( entry, details ) {
   return false;
 }
 // }}} /fridge list
+// {{{ switcher panes
+function init_switcher_panes() {
+  var content_pane = jQuery('.switcher_pane .switcher_pane_content .content');
+  var excess = parseInt(content_pane.css('padding-top')) + parseInt(content_pane.css('padding-bottom'));
+  content_pane.css('min-height', (jQuery('.switcher_pane .switcher_pane_menu').height() - excess)+'px');
+}
+// }}} /switcher panes
 
 function call_anchor_method() {  
   // so /visits/2009-11#name loads with the 'name' tab selected
