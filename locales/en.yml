@@ -655,7 +655,7 @@ en:
         before_warehouse_visit:          "Before Warehouse Visit: View amounts to request"
         after_warehouse_visit:           "After Warehouse Visit: Enter amounts"
       status:
-        login_and_upload: "Login and upload forms"
+        login_and_upload: "Login to server and upload forms"
         updated:          "Updated"
         downloading:      "Downloading"
         online:           "Online"

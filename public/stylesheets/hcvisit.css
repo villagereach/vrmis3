@@ -476,6 +476,9 @@ h4 {
   padding: 1em 0.5em;
   vertical-align: top;
 }
+#context-selector td#enter-data {
+  width: 60%;
+}
 #context-selector #other-actions ul {
   line-height: 3em;
   list-style: none;
@@ -723,6 +726,13 @@ body {
   border: 2px solid red;
   color: red;
   display: block;
+}
+
+#upload_link.online {
+  display: block;
+}
+#upload_link.offline {
+  display: none;
 }
 /* }}} */
 /* lightbox {{{ */

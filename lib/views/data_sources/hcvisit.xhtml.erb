@@ -370,6 +370,7 @@
               <ul>
                 <li><a href="#todo"><%= h(t(".main.view_pickups")) %></a></li>
                 <li><a href="#todo"><%= h(t(".main.view_reports")) %></a></li>
+                <li id="upload_link" class="online"><a class="inline" href="#login"><%= h(t(".status.login_and_upload")) %></a><a class="inline" style="display: none" href="#upload"></a></li>
               </ul>
             </td><!-- id="other-actions" -->
           </tr>
@@ -891,7 +892,7 @@
     <div id="status_footer">
       <xf:group bind="login-active">
         <div id="online_indicator">
-          <div class="online"><a class="inline" href="#login"><%= h(t(".status.login_and_upload")) %></a><a class="inline" style="display: none" href="#upload"></a></div>
+          <div class="online"><%= h(t(".status.online")) %></div>
           <div class="offline"><%= h(t(".status.offline")) %></div>
         </div>
       </xf:group>

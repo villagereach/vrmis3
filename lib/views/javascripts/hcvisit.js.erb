@@ -64,7 +64,7 @@ function fixup_menu_tabs() {
 
 function fixup_form_container_size() {
   // Adjust form container size to be at least as tall as the menu
-  jQuery('.xforms-switch .xforms-case div.block-form').css('min-height', jQuery('#tab-menu').css('height'))
+  jQuery('.xforms-switch .xforms-case div.block-form').css('min-height', jQuery('#tab-menu').css('height'));
 }
 
 function fixup_nr_checkboxes() {
@@ -126,14 +126,14 @@ function do_cached() {
 
 function go_online() {
   online = true;
-  jQuery('#online_indicator').addClass("online");
-  jQuery('#online_indicator').removeClass("offline");
+  jQuery("#online_indicator").addClass("online").removeClass("offline");
+  jQuery("#upload_link").addClass("online").removeClass("offline");
 }
 
 function go_offline() {
   online = false;
-  jQuery('#online_indicator').addClass("offline");
-  jQuery('#online_indicator').removeClass("online");
+  jQuery("#online_indicator").addClass("offline").removeClass("online");
+  jQuery("#upload_link").addClass("offline").removeClass("online");
 }
 
 function check_update_status() {
