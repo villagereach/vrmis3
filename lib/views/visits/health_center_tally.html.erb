@@ -38,7 +38,8 @@
 <%- end -%>
 
 <% if @current_user.admin? %>
-<%= link_to("Generate ERB", :overwrite_params => { :format => :erb }) %>
+<%= link_to("Generate Online ERB", :overwrite_params => { :format => :erb, :type => :html }) %>
+<%= link_to("Generate Xforms ERB", :overwrite_params => { :format => :erb, :type => :xforms }) %>
 <% end %>  
 
 <%- javascript_tag do -%>

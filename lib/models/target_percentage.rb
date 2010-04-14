@@ -69,7 +69,17 @@ class TargetPercentage < ActiveRecord::Base
     "SELECT SUM(value) as value, health_center_id, date_period FROM #{stat_tally_klass.tableize} WHERE #{conditions} AND value IS NOT NULL GROUP BY health_center_id, date_period"
   end
   
-  private
+  def relevant_parameter_names
+    tally.expected_entries.select { |hash| 
+      categories_to_values.all? { |cat, vals|
+        vals.map(&:code).include?(hash[tally.dimension_code(cat)])
+      }
+    }.map { |hash|
+      tally.param_name(hash)
+    }
+  end
+  
+#  private
   
   def tally
     stat_tally_klass.constantize
@@ -93,11 +103,11 @@ class TargetPercentage < ActiveRecord::Base
   end
 
   def tally_columns_to_relevant_values
-    Hash[*categories_to_columns.map { |cat, col| [col, categories_to_values[cat]] }.inject { |a,b| a + b }]
+    Hash[*categories_to_columns.map { |cat, col| [col, categories_to_values[cat]] }.flatten_once]
   end
   
   def categories_to_values
-    @cv ||= Hash[*descriptive_values.group_by(&:descriptive_category_code).inject { |a,b| a + b }]
+    @cv ||= Hash[*descriptive_values.group_by(&:descriptive_category_code).flatten_once]
   end
   
   def categories_to_columns

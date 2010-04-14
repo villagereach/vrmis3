@@ -282,6 +282,11 @@ module ActsAsStatTally
       cc = _categories.detect { |c| c.first == dim }
       cc.last if cc.present?
     end
+
+    def dimension_code(cat)
+      cc = _categories.detect { |c| c.last == cat }
+      cc.first if cc.present?
+    end
     
     def possible_key_values(dim)
       case fields_hash[dim]

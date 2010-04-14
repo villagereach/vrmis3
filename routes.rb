@@ -55,7 +55,7 @@
   map.health_center_visit_format '/visits/:visit_month/:health_center.:format', :controller => 'visits', :action => 'health_center_monthly_visit'
 
   map.health_center_tally     '/visits/:visit_month/:health_center/epi/:tally', :controller => 'visits', :action => 'health_center_tally'
-  map.health_center_tally_fmt '/visits/:visit_month/:health_center/epi/:tally.:format', :controller => 'visits', :action => 'health_center_tally'
+  map.health_center_tally_fmt '/visits/:visit_month/:health_center/epi/:tally.:type.:format', :controller => 'visits', :action => 'health_center_tally'
 
   map.nuke_caches             '/nuke_caches', :controller => 'olmis', :action => 'nuke_caches'
 

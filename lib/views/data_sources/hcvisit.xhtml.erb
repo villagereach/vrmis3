@@ -35,6 +35,11 @@
       <xf:instance id="olmis" src="/xforms/olmis.xml" />
       <xf:instance id="data"   src="/xforms/data.xml"   />
 
+      <% begin %>
+        <%= render :partial => '/visits/model.xforms.erb' %>
+      <% rescue ActionView::MissingTemplate %>
+      <% end %>
+      
       <xf:bind id="selector"
         nodeset="instance('data')/selected-values/selector"
         relevant="instance('data')/selected-values/context-selected = true()"
@@ -260,7 +265,8 @@
         <xf:setvalue bind="i-visit-month" value="substring(jr:today(),1,7)" />
         <xf:setfocus control="access_code" />
       </xf:action>
-    </xf:model>
+      
+      </xf:model>
   </head>
   <body>
     <h1><a href="/">Village Reach Prototype olmis</a></h1>
@@ -860,13 +866,18 @@
                   <xf:group bind="epi_data">
                     <xf:label><%= h(t("visits.health_center_tally.page_title_#{klass.name.underscore}")) %></xf:label>
                     <p class="note"><%= h(t("visits.health_center_tally.instructions")) %></p>
-                    <%= tally_table(klass, lambda { |point|
-                          node = klass.param_name(point)
-                          msg_key, input_type = expected_params.assoc(node).last == :date ? [ 'date', 'month-year' ] : [ 'quantity', 'integer' ]
-                          incr = 'incremental="true"'
-                          %Q{<div class="tally #{input_type}"><xf:input bind="#{node}:value" #{incr}><xf:label /><xf:action ev:event="xforms-value-changed"><xf:setvalue if="string-length(.) &gt; 0" bind="#{node}:nr" value="'false'" /><xf:setvalue if=". = '' and ../@nr = 'false'" bind="#{node}:nr" /></xf:action><xf:alert>#{h(t(".errors.#{msg_key}"))}</xf:alert></xf:input>} +
-                            %Q{<div class="nr"><xf:input bind="#{node}:nr" incremental="true"><xf:label>#{h(t("NR"))}</xf:label><xf:action ev:event="xforms-value-changed"><xf:setvalue if=". = 'true'" bind="#{node}:value" value="''" /></xf:action></xf:input></div></div>}
-                        }) %>
+                    
+                    <% begin %>
+                      <%= render :partial => '/visits/' + klass.name.underscore + '.xforms.erb' %>
+                    <% rescue ActionView::MissingTemplate %>  
+                      <%= tally_table(klass, lambda { |point|
+                            node = klass.param_name(point)
+                            msg_key, input_type = expected_params.assoc(node).last == :date ? [ 'date', 'month-year' ] : [ 'quantity', 'integer' ]
+                            incr = 'incremental="true"'
+                            %Q{<div class="tally #{input_type}"><xf:input bind="#{node}:value" #{incr}><xf:label /><xf:action ev:event="xforms-value-changed"><xf:setvalue if="string-length(.) &gt; 0" bind="#{node}:nr" value="'false'" /><xf:setvalue if=". = '' and ../@nr = 'false'" bind="#{node}:nr" /></xf:action><xf:alert>#{h(t(".errors.#{msg_key}"))}</xf:alert></xf:input>} +
+                              %Q{<div class="nr"><xf:input bind="#{node}:nr" incremental="true"><xf:label>#{h(t("NR"))}</xf:label><xf:action ev:event="xforms-value-changed"><xf:setvalue if=". = 'true'" bind="#{node}:value" value="''" /></xf:action></xf:input></div></div>}
+                          }) %>
+                    <% end %>
                   </xf:group>
                 </div>
               </xf:case><!-- id="case-<%= klass.name.tableize %>" -->
