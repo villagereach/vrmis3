@@ -93,9 +93,7 @@ ROUTING
 initializer 'ick.rb', 'Ick.sugarize'
 
 gsub_file "config/routes.rb", /^( *)(map.connect.*)/, '\1#\2'
-route '  Dir["#{Rails.root}/vendor/plugins/*"].each do |plugin_dir|'
-route '    map.from_plugin File.basename(plugin_dir)'
-route '  end'
+route 'Dir["#{Rails.root}/vendor/plugins/*"].each { |plugin_dir| map.from_plugin File.basename(plugin_dir) }'
 
 db_name = ask("Enter the database name (default is #{appname})")
 db_name.strip!
@@ -122,11 +120,9 @@ rake 'db:create'
 log '', 'Required gems will now be installed with the sudo command.'
 rake 'gems:install', :sudo => true
 
-generate 'i18n_backend_database'
 generate 'olmis_migrations'
 
 rake 'db:migrate'
-rake 'i18n:populate:from_rails'
 
 if use_git
   git :add => '.'
@@ -153,7 +149,6 @@ if yes?('Apply sample Pacific NW OLMIS configuration (y/n)?')
   end
 
   rake 'db:migrate'
-  rake 'i18n:populate:from_rails'
   rake 'olmis:db:bootstrap'
   
   log '', 'Next steps:'
@@ -166,7 +161,6 @@ else
   log '', '* Run script/generate olmis_areas'
   log '', '  and script/generate olmis_tallies'
   log '', '* Run rake db:migrate to create tables for your configured EPI tallies'
-  log '', '* Run rake i18n:populate:from_rails to add translations to the database'
   log '', '* Run rake olmis:db:bootstrap to populate the database with an initial'
   log '', '  system and create the "admin" user'
 end
