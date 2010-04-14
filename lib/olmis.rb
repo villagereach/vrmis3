@@ -38,7 +38,7 @@ class Olmis
 
         unless User.find_by_username('admin')
           User.create!(
-            :username => 'admin', :role_code => 'admin',
+            :username => 'admin', :role => Role.find_by_code('admin'),
             :password => 'olmis', :password_confirmation => 'olmis', 
             :language => definition['languages'].first, 
             :timezone => definition['time_zone'])
