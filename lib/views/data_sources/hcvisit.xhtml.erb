@@ -122,7 +122,9 @@
         validate="false"
         action="olmis.xml"
         includenamespaceprefixes="">
-        <xf:action ev:event="xforms-submit" mode="synchronous" />
+        <xf:action ev:event="xforms-submit" mode="synchronous">
+          <xf:load resource="javascript:populate_fridge_form()" />
+        </xf:action>
         <xf:action ev:event="xforms-submit-done">
           <xf:setvalue bind="visited_at"        value="instance('data')/selected-values/default_visit_date" />
           <xf:setvalue bind="province"          value="instance('data')/selected-values/province"/>
@@ -132,8 +134,6 @@
           <xf:setvalue bind="field_coordinator" value="instance('data')/selected-values/field_coordinator"/>
           <xf:setvalue bind="visit_month"       value="instance('data')/selected-values/visit_date_period"/>
           <xf:setvalue ref="/olmis/meta/date"   value="jr:today()"/>
-
-          <xf:load resource="javascript:populate_fridge_form()" />
 
           <xf:toggle case="case-visit"/>
           <xf:load resource="javascript:set_active_tab('visit')" />

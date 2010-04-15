@@ -237,7 +237,6 @@ function set_selected_value(name, value) {
     DebugConsole.write('No data instance found');
     return;
   }
-  DebugConsole.write("+++ Setting instance('data')/selected-values/"+name+" = "+value);
 
   var literal_value = !value.match(/\([^)]*\)/);  // Does value look like a function call?
   var xf_setvalue = new XFSetvalue(new Binding(false, "instance('data')/selected-values/"+name),
@@ -333,7 +332,7 @@ function populate_fridge_form() {
         var path = "instance('olmis')/hcvisit/visit/cold_chain/fridges/fridge["+(i+1)+"]/@code"
         var xp = XPath.get(path) || new XPath(path,
                                       new PathExpr(
-                                        new FunctionCallExpr('http://www.w3.org/2002/xforms instance', new CteExpr('data')),
+                                        new FunctionCallExpr('http://www.w3.org/2002/xforms instance', new CteExpr('olmis')),
                                         new LocationExpr(false,
                                           new StepExpr('child', new NodeTestName('', 'hcvisit')),
                                           new StepExpr('child', new NodeTestName('', 'visit')),
@@ -526,7 +525,7 @@ function get_context_path_value(ctx, path) {
     newdoc = []
     doc.forEach(function(n, ni) {
       newdoc = newdoc.concat(n.childNodes.filter(function(c) { return c.nodeName == p; }));
-          });
+    });
     doc = newdoc
   })
   return doc;
