@@ -96,13 +96,13 @@
         includenamespaceprefixes="">
         <xf:resource value="instance('data')/selected-values/selector" />
         <xf:action ev:event="xforms-submit-done">
-          <xf:setvalue bind="province"      value="instance('data')/selected-values/province"/>
-          <xf:setvalue bind="district"      value="instance('data')/selected-values/district"/>
-          <xf:setvalue bind="health_center" value="instance('data')/selected-values/health_center"/>
-          <xf:setvalue bind="visit_month"   value="instance('data')/selected-values/visit_date_period"/>
-          <xf:setvalue bind="delivery_zone" value="instance('data')/selected-values/delivery_zone"/>
+          <xf:setvalue bind="province"          value="instance('data')/selected-values/province"/>
+          <xf:setvalue bind="district"          value="instance('data')/selected-values/district"/>
+          <xf:setvalue bind="health_center"     value="instance('data')/selected-values/health_center"/>
+          <xf:setvalue bind="delivery_zone"     value="instance('data')/selected-values/delivery_zone"/>
           <xf:setvalue bind="field_coordinator" value="instance('data')/selected-values/field_coordinator"/>
-          <xf:setvalue ref="/olmis/meta/date" value="jr:today()"/>
+          <xf:setvalue bind="visit_month"       value="instance('data')/selected-values/visit_date_period"/>
+          <xf:setvalue ref="/olmis/meta/date"   value="jr:today()"/>
 
           <xf:toggle case="case-visit"/>
           <xf:load resource="javascript:set_active_tab('visit')" />
@@ -119,22 +119,16 @@
         includenamespaceprefixes="">
         <xf:action ev:event="xforms-submit" mode="synchronous" />
         <xf:action ev:event="xforms-submit-done">
-          <xf:setvalue bind="province"      value="instance('data')/selected-values/province"/>
-          <xf:setvalue bind="district"      value="instance('data')/selected-values/district"/>
-          <xf:setvalue bind="health_center" value="instance('data')/selected-values/health_center"/>
-          <xf:setvalue bind="visit_month"   value="instance('data')/selected-values/visit_date_period"/>
-          <xf:setvalue bind="delivery_zone" value="instance('data')/selected-values/delivery_zone"/>
+          <xf:setvalue bind="visited_at"        value="instance('data')/selected-values/default_visit_date" />
+          <xf:setvalue bind="province"          value="instance('data')/selected-values/province"/>
+          <xf:setvalue bind="district"          value="instance('data')/selected-values/district"/>
+          <xf:setvalue bind="health_center"     value="instance('data')/selected-values/health_center"/>
+          <xf:setvalue bind="delivery_zone"     value="instance('data')/selected-values/delivery_zone"/>
           <xf:setvalue bind="field_coordinator" value="instance('data')/selected-values/field_coordinator"/>
-          <xf:setvalue ref="instance('olmis')/meta/date" value="jr:today()"/>
-          <xf:setvalue bind="visited_at" value="instance('data')/selected-values/default_visit_date" />
+          <xf:setvalue bind="visit_month"       value="instance('data')/selected-values/visit_date_period"/>
+          <xf:setvalue ref="/olmis/meta/date"   value="jr:today()"/>
 
-          <xf:insert context="instance('olmis')" nodeset="/olmis/hcvisit/visit/cold_chain/fridges/fridge" at="1" position="before" origin="instance('data')/province[@name=instance('data')/selected-values/province]/district[@name=instance('data')/selected-values/district]/health_center[@code=instance('data')/selected-values/health_center]/fridge" />
-          <xf:delete nodeset="/olmis/hcvisit/visit/cold_chain/fridges/fridge" at="last()" />
-          
-          <!-- HACK: Force the form to be fully rebuilt. -->
-          <xf:load resource="javascript:xforms.building = true" />
-            <xf:dispatch name="xforms-rebuild" target="default-model" />
-          <xf:load resource="javascript:xforms.building = false" />
+          <xf:load resource="javascript:populate_fridge_form()" />
 
           <xf:toggle case="case-visit"/>
           <xf:load resource="javascript:set_active_tab('visit')" />
@@ -236,11 +230,11 @@
         <xf:bind id="<%= id %>:use"  nodeset="<%= node %>/@use"  required="true()" />
       <%- end -%>
 
-      <xf:bind id="fridge:code"   nodeset="/olmis/hcvisit/visit/cold_chain/fridges/fridge/@code"   required="true()" readonly=". != ''" />
-      <xf:bind id="fridge:status" nodeset="/olmis/hcvisit/visit/cold_chain/fridges/fridge/@status" required="true()" />
-      <xf:bind id="fridge:nr"     nodeset="/olmis/hcvisit/visit/cold_chain/fridges/fridge/@nr"     required="false()"         type="xf:boolean" relevant="../@status != 'BROKE' and ../@status != 'MISS'" />
-      <xf:bind id="fridge:temp"   nodeset="/olmis/hcvisit/visit/cold_chain/fridges/fridge/@temp"   required="../@nr != true()" type="xf:integer" constraint="(. &gt;= 2 and . &lt;= 8 and ../@status = 'OK') or ../@status = 'PROB'" relevant="../@status != 'BROKE' and ../@status != 'MISS'" />
-      <xf:bind id="fridge:notes"  nodeset="/olmis/hcvisit/visit/cold_chain/fridges/fridge/@notes"  required="false()" />
+      <xf:bind id="fridge:code"   nodeset="/olmis/hcvisit/visit/cold_chain/fridges/fridge/@code"   required="false()" />
+      <xf:bind id="fridge:status" nodeset="/olmis/hcvisit/visit/cold_chain/fridges/fridge/@status" required="true()" relevant="../@code != ''" />
+      <xf:bind id="fridge:nr"     nodeset="/olmis/hcvisit/visit/cold_chain/fridges/fridge/@nr"     required="false()" type="xf:boolean" relevant="../@code != '' and ../@status != 'BROKE' and ../@status != 'MISS'" />
+      <xf:bind id="fridge:temp"   nodeset="/olmis/hcvisit/visit/cold_chain/fridges/fridge/@temp"   required="../@nr != true()" type="xf:integer" constraint="(. &gt;= 2 and . &lt;= 8 and ../@status = 'OK') or ../@status = 'PROB'" relevant="../@code != '' and ../@status != 'BROKE' and ../@status != 'MISS'" />
+      <xf:bind id="fridge:notes"  nodeset="/olmis/hcvisit/visit/cold_chain/fridges/fridge/@notes"  required="false()" relevant="../@code != ''" />
 
       <%- tally_classes.each do |klass| -%>
         <%- klass.expected_params().each do |param, value_type|
@@ -667,17 +661,6 @@
                       </xf:repeat>
                     </tbody>
                   </table>
-                  <xf:trigger>
-                    <xf:label><%= h(t(".add_fridge")) %></xf:label>
-                    <xf:action ev:event="DOMActivate">
-                      <xf:insert nodeset="/olmis/hcvisit/visit/cold_chain/fridges/fridge" at="last()" position="after" />
-                      <xf:setvalue ref="/olmis/hcvisit/visit/cold_chain/fridges/fridge[index('fridge-list')]/@code" value="" />
-                      <xf:setvalue ref="/olmis/hcvisit/visit/cold_chain/fridges/fridge[index('fridge-list')]/@temp" value="" />
-                      <xf:setvalue ref="/olmis/hcvisit/visit/cold_chain/fridges/fridge[index('fridge-list')]/@nr" value="" />
-                      <xf:setvalue ref="/olmis/hcvisit/visit/cold_chain/fridges/fridge[index('fridge-list')]/@status" value="" />
-                      <xf:setvalue ref="/olmis/hcvisit/visit/cold_chain/fridges/fridge[index('fridge-list')]/@notes" value="" />
-                    </xf:action>
-                  </xf:trigger>
                 </xf:group>
               </div>
             </xf:case><!-- id="case-cold_chain" -->

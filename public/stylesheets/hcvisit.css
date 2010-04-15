@@ -614,7 +614,8 @@ table.spreadsheet div.tally input[type="text"] {
   text-align: right;
   width: 69px;
 }
-table.spreadsheet div.tally.month-year input[type="text"] {
+table.spreadsheet div.tally.month-year input[type="text"],
+table.spreadsheet tbody#fridge-list th input[type="text"] {
   width: 80px;
 }
 table.spreadsheet div.tally div.nr {

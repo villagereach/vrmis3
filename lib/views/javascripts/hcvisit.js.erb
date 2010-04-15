@@ -237,6 +237,7 @@ function set_selected_value(name, value) {
     DebugConsole.write('No data instance found');
     return;
   }
+  DebugConsole.write("+++ Setting instance('data')/selected-values/"+name+" = "+value);
 
   var literal_value = !value.match(/\([^)]*\)/);  // Does value look like a function call?
   var xf_setvalue = new XFSetvalue(new Binding(false, "instance('data')/selected-values/"+name),
@@ -257,10 +258,10 @@ function get_selected_value(name) {
   
   var xp = new XPath("instance('data')/selected-values/"+name,
              new PathExpr(
-               new FunctionCallExpr('http://www.w3.org/2002/xforms instance',new CteExpr('data')),
+               new FunctionCallExpr('http://www.w3.org/2002/xforms instance', new CteExpr('data')),
                new LocationExpr(false,
-                 new StepExpr('child',new NodeTestName('','selected-values')),
-                 new StepExpr('child',new NodeTestName('',name)))), []);
+                 new StepExpr('child', new NodeTestName('', 'selected-values')),
+                 new StepExpr('child', new NodeTestName('', name)))), []);
 
   var nodeset = xp.evaluate(ctx);
 
@@ -270,15 +271,15 @@ function get_selected_value(name) {
 function find_province_district_health_center(hc) {
   var xp = new XPath("instance('data')/province/district/health_center[@code='"+hc+"']",
              new PathExpr(
-               new FunctionCallExpr('http://www.w3.org/2002/xforms instance',new CteExpr('data')),
+               new FunctionCallExpr('http://www.w3.org/2002/xforms instance', new CteExpr('data')),
                new LocationExpr(false,
-                 new StepExpr('child',new NodeTestName('','province')),
-                 new StepExpr('child',new NodeTestName('','district')),
+                 new StepExpr('child', new NodeTestName('', 'province')),
+                 new StepExpr('child', new NodeTestName('', 'district')),
                  new StepExpr('child',
-                   new NodeTestName('','health_center'),
+                   new NodeTestName('', 'health_center'),
                    new PredicateExpr(
                      new BinaryExpr(
-                       new LocationExpr(false, new StepExpr('attribute',new NodeTestName(null, 'code'))),
+                       new LocationExpr(false, new StepExpr('attribute', new NodeTestName(null, 'code'))),
                        '=',
                        new CteExpr(hc)))))), []);
 
@@ -309,16 +310,105 @@ function find_health_centers_by_attr(attr, value) {
              new PathExpr(
                new FunctionCallExpr('http://www.w3.org/2002/xforms instance', new CteExpr('data')),
                new LocationExpr(false,
-                 new StepExpr('child', new NodeTestName('','province')),
-                 new StepExpr('child', new NodeTestName('','district')),
+                 new StepExpr('child', new NodeTestName('', 'province')),
+                 new StepExpr('child', new NodeTestName('', 'district')),
                  new StepExpr('child',
-                   new NodeTestName('','health_center'),
+                   new NodeTestName('', 'health_center'),
                    new PredicateExpr(
                      new BinaryExpr(
                        new LocationExpr(false, new StepExpr('attribute', new NodeTestName(null, attr))),
                        '=',
                        new CteExpr(value)))))), []);
   return xp.evaluate($('data'));
+}
+
+var fridges_xpaths = [];
+
+function populate_fridge_form() {
+  try {
+    if (fridges_xpaths.length == 0) {
+      // Initialize the XPaths for the fridges (required when setting the values below)
+      var fridges = get_context_path_value($('olmis'), "/hcvisit/visit/cold_chain/fridges/fridge");
+      for (var i = 0, l = fridges.length; i < l; i++) {
+        var path = "instance('olmis')/hcvisit/visit/cold_chain/fridges/fridge["+(i+1)+"]/@code"
+        var xp = XPath.get(path) || new XPath(path,
+                                      new PathExpr(
+                                        new FunctionCallExpr('http://www.w3.org/2002/xforms instance', new CteExpr('data')),
+                                        new LocationExpr(false,
+                                          new StepExpr('child', new NodeTestName('', 'hcvisit')),
+                                          new StepExpr('child', new NodeTestName('', 'visit')),
+                                          new StepExpr('child', new NodeTestName('', 'cold_chain')),
+                                          new StepExpr('child', new NodeTestName('', 'fridges')),
+                                          new StepExpr('child', new NodeTestName('', 'fridge'),
+                                            new PredicateExpr(new CteExpr(i+1))),
+                                          new StepExpr('attribute', new NodeTestName('', 'code')))), []);
+      }
+    }
+  
+    var fridge_codes = get_fridge_codes_for_health_center();
+
+    if (fridge_codes.length > 0) {
+      var xf_action = new XFAction(null, null);
+      for (var i = 0, l = fridge_codes.length; i < l; i++) {
+        xf_action.add(new XFSetvalue(new Binding(false, "instance('olmis')/hcvisit/visit/cold_chain/fridges/fridge["+(i+1)+"]/@code"),
+                                     null, fridge_codes[i], null, null));
+      }
+      // FIXME: Something, probably in the setup above, is wrong which results in a silent failure of XFSetvalue
+      run(xf_action, "statusPanel", "DOMActivate", false, true);
+    }
+  } catch(e) {
+    alert("Error populating fridge form: " + e.message);
+    DebugConsole.write("Error populating fridge form: " + e.message + "\n" + e.stack.split("\n"));
+  }
+}
+
+function get_fridge_codes_for_health_center() {
+  var path = "instance('data')/province[@name=instance('data')/selected-values/province]/district[@name=instance('data')/selected-values/district]/health_center[@code=instance('data')/selected-values/health_center]/fridge";
+  var xp = XPath.get(path) || new XPath(path,
+                                new PathExpr(
+                                  new FunctionCallExpr('http://www.w3.org/2002/xforms instance', new CteExpr('data')),
+                                    new LocationExpr(false,
+                                      new StepExpr('child',
+                                        new NodeTestName('', 'province'),
+                                        new PredicateExpr(
+                                          new BinaryExpr(
+                                            new LocationExpr(false, new StepExpr('attribute', new NodeTestName(null, 'name'))),
+                                            '=',
+                                            new PathExpr(
+                                              new FunctionCallExpr('http://www.w3.org/2002/xforms instance', new CteExpr('data')),
+                                                new LocationExpr(false,
+                                                  new StepExpr('child', new NodeTestName('', 'selected-values')),
+                                                  new StepExpr('child', new NodeTestName('', 'province'))))))),
+                                      new StepExpr('child',
+                                        new NodeTestName('', 'district'),
+                                        new PredicateExpr(
+                                          new BinaryExpr(
+                                            new LocationExpr(false, new StepExpr('attribute', new NodeTestName(null, 'name'))),
+                                            '=',
+                                            new PathExpr(
+                                              new FunctionCallExpr('http://www.w3.org/2002/xforms instance', new CteExpr('data')),
+                                                new LocationExpr(false,
+                                                  new StepExpr('child', new NodeTestName('', 'selected-values')),
+                                                  new StepExpr('child', new NodeTestName('', 'district'))))))),
+                                      new StepExpr('child',
+                                        new NodeTestName('', 'health_center'),
+                                          new PredicateExpr(
+                                            new BinaryExpr(
+                                              new LocationExpr(false, new StepExpr('attribute', new NodeTestName(null, 'code'))),
+                                              '=',
+                                              new PathExpr(
+                                                new FunctionCallExpr('http://www.w3.org/2002/xforms instance', new CteExpr('data')),
+                                                  new LocationExpr(false,
+                                                    new StepExpr('child', new NodeTestName('', 'selected-values')),
+                                                    new StepExpr('child', new NodeTestName('', 'health_center'))))))),
+                                      new StepExpr('child', new NodeTestName('', 'fridge')))), []);
+
+  var nodeset = xp.evaluate($('data'));
+  var fridge_codes = [];
+  for (var i = 0, l = nodeset.length; i < l; i++) {
+    fridge_codes.push(nodeset[i].getAttributeNS(null, 'code'));
+  }
+  return fridge_codes;
 }
 
 XFSelect.prototype.selectValue = function(value) {
@@ -436,7 +526,7 @@ function get_context_path_value(ctx, path) {
     newdoc = []
     doc.forEach(function(n, ni) {
       newdoc = newdoc.concat(n.childNodes.filter(function(c) { return c.nodeName == p; }));
-    });
+          });
     doc = newdoc
   })
   return doc;

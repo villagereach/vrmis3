@@ -53,7 +53,7 @@
       </general>
       <cold_chain>
         <fridges>
-          <%- @visit.find_or_initialize_fridge_statuses.each do |fs| -%>
+          <%- @visit.find_or_initialize_fridge_statuses(:min_count => 2).each do |fs| -%>
             <fridge code="<%= fs.fridge_code %>" nr="<%= !fs.new_record? && fs.temperature.nil? %>" temp="<%= fs.temperature %>" status="<%= fs.status_code %>" notes="<%= fs.notes %>" />
           <%- end -%>
         </fridges>

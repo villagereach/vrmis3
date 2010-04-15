@@ -361,9 +361,12 @@ class HealthCenterVisit < ActiveRecord::Base
     return equipment_counts, equipment_statuses
   end    
   
-  def find_or_initialize_fridge_statuses
-    (health_center ? health_center.stock_room.fridges : [nil]).
-      collect{|fridge| 
+  def find_or_initialize_fridge_statuses(options = {})
+    fridges = health_center ? health_center.stock_room.fridges : [nil]
+    if options[:min_count]
+      fridges.length.upto(options[:min_count] - 1) { |i| fridges << nil }
+    end
+    fridges.collect{|fridge| 
         FridgeStatus.find_by_reported_at_and_fridge_id_and_user_id(visited_at && (visited_at.beginning_of_day..visited_at.end_of_day), fridge, user_id) ||
           FridgeStatus.new(:reported_at => visited_at, :fridge => fridge, :user => field_coordinator)
       }
