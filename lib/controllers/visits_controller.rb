@@ -125,13 +125,46 @@ class VisitsController < OlmisController
       }
       if @current_user.admin? 
         format.erb  {
-          tally_class = params[:tally].constantize
+          tally_klass = params[:tally].constantize
+          expected_params = tally_klass.expected_params 
           render :text =>
-            "<!-- Save this as #{Rails.root.join("app/views/visits/_#{params[:tally].underscore}.html.erb")} -->\n" +
-            "<!-- Modifications made there will appear in the online form. -->\n" +
-            helpers.tally_table(tally_class, 
-              lambda { |point| helpers.tally_field(tally_class.name, tally_class.param_name(point), {}, :tally_form_erb) },
-              lambda { |val1, val2| "<%= #{tally_class}.header_for(#{[val1, val2].map(&:inspect).join(", ")}) %>" })
+            "<!-- Save this as #{Rails.root.join("app/views/visits/_#{params[:tally].underscore}.#{params[:type]}.erb")} -->\n" +
+            "<!-- Modifications made there will appear in the appropriate form. -->\n" +
+                if params[:type] == 'html'
+                  helpers.tally_table(tally_klass, 
+                    lambda { |point| helpers.tally_field(tally_klass.name, tally_klass.param_name(point), {}, :tally_form_erb) },
+                    lambda { |val1, val2| "<%= h #{tally_klass}.header_for(#{[val1, val2].map(&:inspect).join(", ")}) %>" })
+                elsif params[:type] == 'xforms'       
+                  helpers.tally_table(tally_klass, 
+                    lambda { |point|
+                      node = tally_klass.param_name(point)
+                      msg_key, input_type = expected_params.assoc(node).last == :date ? [ 'date', 'month-year' ] : [ 'quantity', 'integer' ]
+                      incr = 'incremental="true"'
+                      <<-XFORMS
+\n<div class="tally #{input_type}">
+  <xf:input bind="#{node}:value" #{incr}>
+    <xf:label />
+    <xf:action ev:event="xforms-value-changed">
+      <xf:setvalue if="string-length(.) &gt; 0" bind="#{node}:nr" value="'false'" />
+      <xf:setvalue if=". = '' and ../@nr = 'false'" bind="#{node}:nr" />
+    </xf:action>
+    <xf:alert><%= h t("data_sources.hcvisit.errors.#{msg_key}") %></xf:alert>
+  </xf:input>
+  <div class="nr">
+    <xf:input bind="#{node}:nr" incremental="true">
+      <xf:label><%= h t("NR") %></xf:label>
+      <xf:action ev:event="xforms-value-changed">
+        <xf:setvalue if=". = 'true'" bind="#{node}:value" value="''" />
+      </xf:action>
+    </xf:input>
+  </div>
+</div>
+                      XFORMS
+                    }, 
+                  lambda { |val1, val2| "<%= h #{tally_klass}.header_for(#{[val1, val2].map(&:inspect).join(", ")}) %>" })
+                else
+                  "Unknown type #{params[:type]}"
+                end
         }
       end
     end
