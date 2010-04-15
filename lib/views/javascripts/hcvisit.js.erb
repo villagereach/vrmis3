@@ -321,15 +321,17 @@ function find_health_centers_by_attr(attr, value) {
   return xp.evaluate($('data'));
 }
 
-var fridges_xpaths = [];
-
 function populate_fridge_form() {
   try {
-    if (fridges_xpaths.length == 0) {
-      // Initialize the XPaths for the fridges (required when setting the values below)
-      var fridges = get_context_path_value($('olmis'), "/hcvisit/visit/cold_chain/fridges/fridge");
-      for (var i = 0, l = fridges.length; i < l; i++) {
+    var fridge_codes = get_fridge_codes_for_health_center();
+
+    if (fridge_codes.length > 0) {
+      var xf_action = new XFAction(null, null);
+
+      for (var i = 0, l = fridge_codes.length; i < l; i++) {
         var path = "instance('olmis')/hcvisit/visit/cold_chain/fridges/fridge["+(i+1)+"]/@code"
+
+        // Create an XPath (required by setvalue) for the fridge code node if it doesn't already exist
         var xp = XPath.get(path) || new XPath(path,
                                       new PathExpr(
                                         new FunctionCallExpr('http://www.w3.org/2002/xforms instance', new CteExpr('olmis')),
@@ -341,22 +343,12 @@ function populate_fridge_form() {
                                           new StepExpr('child', new NodeTestName('', 'fridge'),
                                             new PredicateExpr(new CteExpr(i+1))),
                                           new StepExpr('attribute', new NodeTestName('', 'code')))), []);
-      }
-    }
-  
-    var fridge_codes = get_fridge_codes_for_health_center();
 
-    if (fridge_codes.length > 0) {
-      var xf_action = new XFAction(null, null);
-      for (var i = 0, l = fridge_codes.length; i < l; i++) {
-        xf_action.add(new XFSetvalue(new Binding(false, "instance('olmis')/hcvisit/visit/cold_chain/fridges/fridge["+(i+1)+"]/@code"),
-                                     null, fridge_codes[i], null, null));
+        xf_action.add(new XFSetvalue(new Binding(false, path), null, fridge_codes[i], null, null));
       }
-      // FIXME: Something, probably in the setup above, is wrong which results in a silent failure of XFSetvalue
       run(xf_action, "statusPanel", "DOMActivate", false, true);
     }
   } catch(e) {
-    alert("Error populating fridge form: " + e.message);
     DebugConsole.write("Error populating fridge form: " + e.message + "\n" + e.stack.split("\n"));
   }
 }
