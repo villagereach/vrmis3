@@ -596,8 +596,9 @@ table.spreadsheet td {
 table.spreadsheet div.tally {
   background-color: lightgray;
   margin: 1px;
-  padding: 0 0 16px;
+  padding: 2px 0 14px 2px;
   position: relative;
+  min-width: 75px;
 }
 table.spreadsheet div.tally > span {
   display: table;
@@ -612,7 +613,7 @@ table.spreadsheet div.tally input[type="text"] {
   margin: 1px 1px 0 1px;
   padding: 0;
   text-align: right;
-  width: 69px;
+  width: 50px;
 }
 table.spreadsheet div.tally.month-year input[type="text"],
 table.spreadsheet tbody#fridge-list th input[type="text"] {
@@ -620,7 +621,7 @@ table.spreadsheet tbody#fridge-list th input[type="text"] {
 }
 table.spreadsheet div.tally div.nr {
   position: absolute;
-  top: 24px;
+  top: 20px;
   left: 0;
   padding: 0;
   margin: 0;
