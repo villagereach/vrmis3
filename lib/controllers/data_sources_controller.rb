@@ -84,7 +84,9 @@ class DataSourcesController < OlmisController
         jsfile   = File.join(vendor_root, 'public', 'xforms', 'xsltforms', 'xsltforms.js')
         cssfile  = File.join(vendor_root, 'public', 'xforms', 'xsltforms', 'xsltforms.css')
         xsltfile = File.join(vendor_root, 'public', 'xforms', 'xsltforms', 'xsltforms.xsl')
-        last_mod_time = [ File.mtime(file), File.mtime(jsfile), File.mtime(cssfile), File.mtime(xsltfile), File.mtime(__FILE__) ].max
+
+        files = Dir.glob(File.join(Rails.root, 'app', 'views', 'visits', '*.xforms.erb')) + [ file, jsfile, cssfile, xsltfile, __FILE__ ]
+        last_mod_time = files.map{ |f| File.mtime(f) }.max
 
         if_modified_since(last_mod_time) do
           text = cache("#{params[:name]}-#{I18n.locale}-#{last_mod_time.to_i}") do
