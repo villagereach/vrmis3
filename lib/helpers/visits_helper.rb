@@ -154,8 +154,7 @@ module VisitsHelper
   def coverage_field(name, target_code, total)
     # Given a target percentage code and a total-vaccinations cell, inserts a field that calculates the coverage based on the target population size
     if target = TargetPercentage.find_by_code(target_code)
-      size = (@health_center.catchment_population * target.percentage / Date.date_periods_per_year / 100).to_i
-      expression_field(name, "100 * #{total} / #{size}", '%')
+      expression_field(name, "100 * #{total} / #{target_code}_target", '%')
     end
   end
   
@@ -181,20 +180,20 @@ module VisitsHelper
 
     fields = tokens.map_with_index { |t, i| i % 2 == 1 ? t : '' }.reject(&:blank?).uniq
 
-    output = '<div style="text-align: center">' + text_field_tag(nil, '', :disabled => 'disabled', :size => 3, :id => name) + '</div>'
+    output = '<div style="text-align: center">' + text_field_tag(nil, '', :disabled => 'disabled', :size => 3, :id => name, :class => 'expression') + '</div>'
 
     fnname = "_calculate_#{name.gsub(/\W+/, '_')}"
     fn = "function #{fnname}() { \nv = parseInt(" +
       tokens.map { |f|
         if fields.include?(f)
-          'parseFloat(0 + $("#' + f + '").val())'
+          'parseFloat(0 + jQuery("#' + f + '").findInput().val())'
         else f
         end
       }.join("") +
-        "); \n$('##{name}').val(isNaN(v) ? '' : (v + '#{suffix}')); $('##{name}').change(); }"
+        "); \njQuery('##{name}').val(isNaN(v) ? '' : (v + '#{suffix}')); jQuery('##{name}').findInput().change(); }"
 
       output + javascript_tag(fn + "\njQuery(document).ready(#{fnname}); \n" +
-        "jQuery(document).ready(function() {" + fields.map { |f| "\n$('##{f}').change(#{fnname}); " }.join("") + "\n});")
+        "jQuery(document).ready(function() {" + fields.map { |f| "\njQuery('##{f}').findInput().change(#{fnname}); " }.join("") + "\n});")
   end
 
   def tally_form_field(type, name, options)
@@ -233,7 +232,8 @@ module VisitsHelper
     field ||= 'value'
     type = type.constantize
     field_type = type.fields_hash[field.to_sym] == :date ? 'date' : 'tally'
-    %Q{<div class="#{field_type}" id="#{name.gsub(/[,:]/,'-')}">} + self.send(form_field_proc, type, name, options) + '</div>'
+    id = name.gsub(/[,:]/,'-')
+    %Q{<div class="#{field_type}" id="#{id}">} + self.send(form_field_proc, type, name, options) + '</div>'
   end
 
   def options_for_visits_month(date)
@@ -262,5 +262,33 @@ module VisitsHelper
           builder.label("#{name}/NR", t("NR"), :index => index),
           :class => 'nr')),
       :class => ['tally', error ? 'error' : ''].reject(&:blank?).join(" "))
+  end
+  
+  def xforms_tally_field(input_type, node, tally, msg_key, incr='', suppress_nr=false)
+    id="#{node}:#{tally}".gsub(/[,:]/,'-')
+    
+    xf = <<-XFORMS
+    <xf:input id="#{id}" bind="#{node}:#{tally}" #{incr}>
+        <xf:label />
+        <xf:action ev:event="xforms-value-changed">
+          <xf:setvalue if="string-length(.) &gt; 0" bind="#{node}:nr" value="'false'" />
+          <xf:setvalue if=". = '' and ../@nr = 'false'" bind="#{node}:nr" />
+        </xf:action>
+        <xf:alert>#{ h t("data_sources.hcvisit.errors.#{msg_key}") }</xf:alert>
+      </xf:input>
+    XFORMS
+    
+    nr = suppress_nr ? '' : <<-NR
+      <div class="nr">
+        <xf:input bind="#{node}:nr" incremental="true">
+        <xf:label>#{ h t("NR") }</xf:label>
+          <xf:action ev:event="xforms-value-changed">
+            <xf:setvalue if=". = 'true'" bind="#{node}:value" value="''" />
+          </xf:action>
+        </xf:input>
+      </div>
+    NR
+
+    "\n<div class='tally #{input_type}'>#{xf}#{nr}</div>"
   end
 end

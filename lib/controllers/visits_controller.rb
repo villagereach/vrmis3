@@ -140,26 +140,7 @@ class VisitsController < OlmisController
                       node = tally_klass.param_name(point)
                       msg_key, input_type = expected_params.assoc(node).last == :date ? [ 'date', 'month-year' ] : [ 'quantity', 'integer' ]
                       incr = 'incremental="true"'
-                      <<-XFORMS
-\n<div class="tally #{input_type}">
-  <xf:input bind="#{node}:value" #{incr}>
-    <xf:label />
-    <xf:action ev:event="xforms-value-changed">
-      <xf:setvalue if="string-length(.) &gt; 0" bind="#{node}:nr" value="'false'" />
-      <xf:setvalue if=". = '' and ../@nr = 'false'" bind="#{node}:nr" />
-    </xf:action>
-    <xf:alert><%= h t("data_sources.hcvisit.errors.#{msg_key}") %></xf:alert>
-  </xf:input>
-  <div class="nr">
-    <xf:input bind="#{node}:nr" incremental="true">
-      <xf:label><%= h t("NR") %></xf:label>
-      <xf:action ev:event="xforms-value-changed">
-        <xf:setvalue if=". = 'true'" bind="#{node}:value" value="''" />
-      </xf:action>
-    </xf:input>
-  </div>
-</div>
-                      XFORMS
+                      "<%= xforms_tally_field('#{input_type}', '#{node}', 'value', '#{msg_key}', '#{incr}') %>\n"
                     }, 
                   lambda { |val1, val2| "<%= h #{tally_klass}.header_for(#{[val1, val2].map(&:inspect).join(", ")}) %>" })
                 else
