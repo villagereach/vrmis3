@@ -532,6 +532,8 @@ en:
       quantity: "Quantity"
       status:   "Status"
       notes:    "Notes"
+      present:  "Present?"
+      working:  "Working?"
     health_center_cold_chain:
       page_title:   "Refrigerator Information"
       instructions: "Note: Check “not recorded” (NR) if the temperature is not available."

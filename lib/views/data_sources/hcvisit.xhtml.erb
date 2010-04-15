@@ -222,11 +222,10 @@
       <%- EquipmentType.all.each do |type|
             id = "general_#{type.code}"
             node = "/olmis/hcvisit/visit/general/item[@for='#{ type.code }']"  -%>
-        <xf:bind id="<%= id %>:nr"     nodeset="<%= node %>/@nr"     required="false()"          type="xf:boolean" />
-        <xf:bind id="<%= id %>:qty"    nodeset="<%= node %>/@qty"    required="../@nr != true()" type="xf:nonNegativeInteger" />
-        <xf:bind id="<%= id %>:status" nodeset="<%= node %>/@status" required="true()" />
-        <xf:bind id="<%= id %>:notes"  nodeset="<%= node %>/@notes"  required="false()" />
+        <xf:bind id="<%= id %>:present" nodeset="<%= node %>/@present" required="true()" />
+        <xf:bind id="<%= id %>:working" nodeset="<%= node %>/@working" required="true()" />
       <%- end -%>
+      <xf:bind id="equipment:notes" nodeset="/olmis/hcvisit/visit/general/notes" required="false()" />
 
       <%- StockCard.all.each do |type|
             id = "stock_cards_#{type.code}"
@@ -732,61 +731,53 @@
             <%- end -%>
 
             <xf:case id="case-equipment">
+              <xf:action ev:event="xforms-select">
+                <xf:load resource="javascript:set_equipment_notes_area_size()" />
+              </xf:action>
               <div id="div-equipment" class="block-form">
                 <xf:group bind="visit_data">
                   <xf:label><%= h(t("visits.health_center_equipment.page_title")) %></xf:label>
-                  <p class="note"><%= h(t("visits.health_center_equipment.instructions")) %></p>
                   <table class="equipment spreadsheet">
                     <thead>
                       <tr>
                         <th></th>
-                        <th><%= h(t("visits.health_center_equipment.quantity")) %></th>
-                        <th><%= h(t("visits.health_center_equipment.status")) %></th>
+                        <th><%= h(t("visits.health_center_equipment.present")) %></th>
+                        <th><%= h(t("visits.health_center_equipment.working")) %></th>
                         <th><%= h(t("visits.health_center_equipment.notes")) %></th>
                       </tr>
                     </thead>
                     <tbody>
-                      <%- EquipmentType.all.sort.each do |type|
+                      <%- EquipmentType.all.sort.each_with_index do |type, idx|
                             id = "general_#{type.code}" -%>
                         <tr>
                           <th><%= h type.label %></th>
                           <td>
-                            <div class="tally">
-                              <xf:input bind="<%= id %>:qty">
-                                <xf:action ev:event="xforms-value-changed">
-                                  <xf:setvalue if="string-length(.) &gt; 0"     bind="<%= id %>:nr" value="'false'" />
-                                  <xf:setvalue if=". = '' and ../@nr = 'false'" bind="<%= id %>:nr" />
-                                </xf:action>
-                                <xf:alert><%= h(t(".errors.quantity")) %></xf:alert>
-                              </xf:input>
-                              <div class="nr">
-                                <xf:input bind="<%= id %>:nr" incremental="true">
-                                  <xf:label><%= h(t("NR")) %></xf:label>
-                                  <xf:action ev:event="xforms-value-changed">
-                                    <xf:setvalue if=". = 'true'" bind="<%= id %>:qty" value="''" />
-                                  </xf:action>
-                                </xf:input>
-                              </div>
-                            </div>
-                          </td>
-                          <td>
-                            <xf:select1 bind="<%= id %>:status">
-                              <xf:item>
-                                <xf:label><%= h(t("select_blank")) %></xf:label>
-                                <xf:value></xf:value>
-                              </xf:item>
-                              <%- EquipmentStatus.status_options.each do |label,value| -%>
+                            <xf:select1 bind="<%= id %>:present" appearance="full" class="radio horizontal">
+                              <%- [ [ h(t("yes")), "true" ], [ h(t("no")), "false" ], [ h(t("NR")), "nr" ] ].each do |label,value| -%>
                                 <xf:item>
                                   <xf:label><%= h label %></xf:label>
                                   <xf:value><%= h value %></xf:value>
                                 </xf:item>
                               <%- end -%>
-                              <xf:alert><%= h(t(".errors.select_status")) %></xf:alert>
+                              <xf:alert><%= h(t(".errors.select_an_option")) %></xf:alert>
                             </xf:select1>
                           </td>
                           <td>
-                            <xf:textarea bind="<%= id %>:notes"/>
+                            <xf:select1 bind="<%= id %>:working" appearance="full" class="radio horizontal">
+                              <%- [ [ h(t("yes")), "true" ], [ h(t("no")), "false" ], [ h(t("NR")), "nr" ] ].each do |label,value| -%>
+                                <xf:item>
+                                  <xf:label><%= h label %></xf:label>
+                                  <xf:value><%= h value %></xf:value>
+                                </xf:item>
+                              <%- end -%>
+                              <xf:alert><%= h(t(".errors.select_an_option")) %></xf:alert>
+                            </xf:select1>
                           </td>
+                          <%- if idx == 0 -%>
+                            <td rowspan="<%= EquipmentType.count %>">
+                              <xf:textarea bind="equipment:notes"/>
+                            </td>
+                          <%- end -%>
                         </tr>
                       <%- end -%>
                     </tbody>
@@ -811,7 +802,7 @@
                       <%- StockCard.all.sort.each do |type|
                             id = "stock_cards_#{type.code}" -%>
                         <tr>
-                          <th><%= type.label %></th>
+                          <th><%= h type.label %></th>
                           <td>
                             <xf:select1 bind="<%= id %>:have" appearance="full" class="radio horizontal">
                               <%- [ [ h(t("yes")), "true" ], [ h(t("no")), "false" ], [ h(t("NR")), "nr" ] ].each do |label,value| -%>

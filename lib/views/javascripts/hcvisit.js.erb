@@ -73,6 +73,11 @@ function fixup_nr_checkboxes() {
   });
 }
 
+function set_equipment_notes_area_size() {
+  var ta = jQuery('#case-equipment .xforms-textarea textarea');
+  ta.height(ta.parents('td').attr('rowspan') * ta.parents('td').prev().height() * 0.7);
+}
+
 function do_download() {
   manifest_files['downloaded'] = 0;
   manifest_files['count'] = jQuery.

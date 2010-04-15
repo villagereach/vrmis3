@@ -46,10 +46,10 @@
         <%- end -%>
       </inventory>
       <general>
-        <%- equipment = @visit.equipment_count_and_status_by_type -%>
         <%- EquipmentType.all.each do |type| -%>
-          <item for="<%= type.code %>" nr="<%= !equipment[type].first.new_record? && equipment[type].first.quantity.nil? %>" qty="<%= equipment[type].first.quantity %>" status="<%= equipment[type].last.status_code %>" notes="<%= equipment[type].last.notes %>" />
+          <item for="<%= type.code %>" present="" working="" />
         <%- end -%>
+        <notes/>
       </general>
       <cold_chain>
         <fridges>
