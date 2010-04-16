@@ -182,37 +182,26 @@ class DataSubmission < ActiveRecord::Base
   end
 
   def process_equipment
-    equipment_counts, equipment_statuses = @visit.find_or_initialize_equipment
+    equipment_statuses = @visit.find_or_initialize_equipment_statuses
+
+    equipment_notes = @params[:equipment_status].delete(:notes)
+    @visit.update_attributes(:equipment_notes => equipment_notes) unless equipment_notes.blank?
 
     @params[:equipment_status].each do |key, values|
-      # Skip if no data entered for this item
-      next if @params[:equipment_count][key]["quantity"].blank? && 
-        @params[:equipment_count][key]["quantity/NR"].to_i == 0 && 
-        values["status_code"].blank? && values["notes"].blank?
-
       record = equipment_statuses.detect{|es| es.equipment_type_code == key }
-      record.date = @visit.date
-      record.update_attributes(values)
-      unless record.errors.empty?
-        @visit_errors[key] ||= {}
-        @visit_errors[key][:equipment_status] = record.errors
-      end
-    end
-    
-    @params[:equipment_count].each do |key, values|
-      # Skip if no data entered for this item
-      next if values["quantity"].blank? && values["quantity/NR"].to_i == 0 && 
-        @params[:equipment_status][key]["status_code"].blank? && 
-        @params[:equipment_status][key]["notes"].blank?
 
-      record = equipment_counts.detect{|ec| ec.equipment_type_code == key }
-      record.update_attributes(process_equipment_nr_params(values))
+      # Skip if no data entered for a new item
+      next if record.new_record? && values["present"].blank? && values["working"].blank?
+
+      db_values = values.inject({}){|hash,(key,value)| hash[key] = value == "true" || (value == "false" ? false : nil) ; hash }
+
+      record.date = @visit.date
+      record.update_attributes(db_values)
       unless record.errors.empty?
-        @visit_errors[key] ||= {}
-        @visit_errors[key][:equipment_count] = record.errors
+        @visit_errors[:equipment_status] ||= {}
+        @visit_errors[:equipment_status][key] = record.errors
       end
     end
-    
   end    
   
   def process_health_center_visit

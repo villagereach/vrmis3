@@ -25,34 +25,30 @@
     </thead>
     <tbody>
       <%- @equipment_statuses.each_with_index do |status,idx| -%>
-        <%- index = status.equipment_type_code.to_s -%>
-        <%- present_value = !status.new_record? ? default_field_value(params[:equipment_status], index, 'present', (status.present || "nr").to_s) : nil -%>
-        <%- working_value = !status.new_record? ? default_field_value(params[:equipment_status], index, 'working', (status.working || "nr").to_s) : nil -%>
+        <%- index = status.equipment_type_code.to_s
+            values = { :present => nil, :working => nil }
+            unless status.new_record?
+              [ :present, :working ].each do |column|
+                default_value = default_field_value(params[:equipment_status], index, column.to_s, status.send(column).to_s)
+                values[column] = default_value.blank? ? "nr" : default_value
+              end
+            end
+         -%>
         <tr>
           <th><%= h status.equipment_type.label %></th>
-          <td>
-            <div class="boolean <%= 'error' if @errors[index][:equipment_status].on(:present) rescue nil %>">
-              <%= radio_button :equipment_status, :present, "true", :index => index, :checked => present_value == "true" %>
-              <%= label :equipment_status, true, h(t("yes")), :for => "equipment_status_#{index}_present_true" %>
-              <%= radio_button :equipment_status, :present, "false", :index => index, :checked => present_value == "false" %>
-              <%= label :equipment_status, false, h(t("no")), :for => "equipment_status_#{index}_present_false" %>
-              <%= radio_button :equipment_status, :present, "nr", :index => index, :checked => present_value == "nr" %>
-              <%= label :equipment_status, nil, h(t("NR")), :for => "equipment_status_#{index}_present_nr" %>
-            </div>
-          </td>
-          <td>
-            <div class="boolean <%= 'error' if @errors[index][:equipment_status].on(:working) rescue nil %>">
-              <%= radio_button :equipment_status, :working, "true", :index => index, :checked => working_value == "true" %>
-              <%= label :equipment_status, true, h(t("yes")), :for => "equipment_status_#{index}_working_true" %>
-              <%= radio_button :equipment_status, :working, "false", :index => index, :checked => working_value == "false" %>
-              <%= label :equipment_status, false, h(t("no")), :for => "equipment_status_#{index}_working_false" %>
-              <%= radio_button :equipment_status, :working, "nr", :index => index, :checked => working_value == "nr" %>
-              <%= label :equipment_status, nil, h(t("NR")), :for => "equipment_status_#{index}_working_nr" %>
-            </div>
-          </td>
+          <%- [ :present, :working ].each do |column| -%>
+            <td>
+              <div class="boolean <%= 'error' if @errors[:equipment_status][index].on(column) rescue nil %>">
+                <%- [ [ h(t("yes")), "true" ], [ h(t("no")), "false" ], [ h(t("NR")), "nr" ] ].each do |l,v| -%>
+                  <%= radio_button :equipment_status, column, v, :index => index, :checked => values[column] == v %>
+                  <%= label :equipment_status, v, l, :for => "equipment_status_#{index}_#{column}_#{v}" %>
+                <%- end -%>
+              </div>
+            </td>
+          <%- end -%>
           <%- if idx == 0 -%>
             <td rowspan="<%= @equipment_statuses.count %>">
-              <div class="<%= 'error' if @errors[index][:equipment_status].on(:notes) rescue nil %>">
+              <div class="<%= 'error' if @errors[:equipment_status][index].on(:notes) rescue nil %>">
                 <%= text_area :equipment_status, :notes, :size => "30x8", :value => status.health_center_visit.equipment_notes %>
               </div>
             </td>

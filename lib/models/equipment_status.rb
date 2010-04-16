@@ -22,21 +22,17 @@ class EquipmentStatus < ActiveRecord::Base
   belongs_to :health_center_visit
   belongs_to :user
   
-  validates_presence_of :equipment_type_id, :stock_room_id, :status_code
-  validates_presence_of :stock_room_id
-  validates_presence_of :health_center_visit_id
+  #def self.status_codes
+  #  Olmis.configuration['equipment_statuses']
+  #end
 
-  def self.status_codes
-    Olmis.configuration['equipment_statuses']
-  end
-
-  def self.status_options
-    status_codes.collect{|code| [ I18n.t("EquipmentStatus.#{code}"), code ]}
-  end
+  #def self.status_options
+  #  status_codes.collect{|code| [ I18n.t("EquipmentStatus.#{code}"), code ]}
+  #end
   
-  def i18n_status_code
-    I18n.t("EquipmentStatus.#{status_code}")
-  end
+  #def i18n_status_code
+  #  I18n.t("EquipmentStatus.#{status_code}")
+  #end
   
   def date
     reported_at.to_date
@@ -46,13 +42,13 @@ class EquipmentStatus < ActiveRecord::Base
     self.reported_at = d.to_date + 12.hours
   end
   
-  def to_label
-    if value.blank?
-      "#{ i18n_status_code } #{ I18n.l(reported_at.to_date, :format => :short) }"
-    else
-      "#{ i18n_status_code } (#{ value }) #{ I18n.l(reported_at.to_date, :format => :short) }"
-    end
-  end
+  #def to_label
+  #  if value.blank?
+  #    "#{ i18n_status_code } #{ I18n.l(reported_at.to_date, :format => :short) }"
+  #  else
+  #    "#{ i18n_status_code } (#{ value }) #{ I18n.l(reported_at.to_date, :format => :short) }"
+  #  end
+  #end
 
   #def damage_alert_level
   #  case status_code
