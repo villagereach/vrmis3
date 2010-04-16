@@ -1,54 +1,53 @@
-<%- form_tag do -%>
 <h3><%= h current_link.first %></h3>
-
-<%- if !@errors.empty? -%>
-<div id="error">
-  <ul>
-    <%- @errors.each do |key,hash| -%>
-      <%- hash.each do |part,errors| -%>
-        <%- errors.each_full do |msg| -%>
-          <li><%= h msg %></li>
+<%- form_tag do -%>
+  <%- if !@errors.empty? -%>
+    <div id="error">
+      <ul>
+        <%- @errors.each do |key,hash| -%>
+          <%- hash.each do |part,errors| -%>
+            <%- errors.each_full do |msg| -%>
+              <li><%= h msg %></li>
+            <%- end -%>
+          <%- end -%>
         <%- end -%>
-      <%- end -%>
-    <%- end -%>
-  </ul>
-</div>
-<%- end -%>
+      </ul>
+    </div>
+  <%- end -%>
 
-<table class="equipment">
-	<thead>
-		<tr>
-			<th></th>
-			<th><%= h(t(".have")) %></th>
-			<th><%= h(t(".use")) %></th>
-		</tr>
-	</thead>
-	<tbody>
-		<%- @stock_card_statuses.each do |status| -%>
-		<%- index = status.stock_card_code.to_s -%>
-		<%- have_value = default_field_value(params[:stock_card_status], index, 'have', status.have.to_s) rescue nil -%>
-		<%- used_correctly_value = default_field_value(params[:stock_card_status], index, 'used_correctly', status.used_correctly.to_s) rescue nil -%>
-		<tr>
-			<th><%= status.stock_card.label %></th>
-			<td>
-				<div class="boolean <%= 'error' if @errors[:stock_card_status][index].on(:have) rescue nil %>">
-					<%= radio_button :stock_card_status, :have, true, :index => index, :checked => have_value == "true", :onclick => js_show("stock_card_status_#{index.parameterize}_used_correctly") %>
-                                        <%= label :stock_card_status, true, h(t("yes")), :for => "stock_card_status_#{index}_have_true" %>
-					<%= radio_button :stock_card_status, :have, false, :index => index, :checked => have_value == "false", :onclick => js_hide("stock_card_status_#{index.parameterize}_used_correctly") %>
-                                        <%= label :stock_card_status, false, h(t("no")), :for => "stock_card_status_#{index}_have" %>
-				</div>
-			</td>
-			<td>
-				<div class="boolean <%= 'error' if @errors[:stock_card_status][index].on(:used_correctly) rescue nil %>" id="stock_card_status_<%= index.parameterize %>_used_correctly" style="<%= have_value == 'true' ? '' : 'display:none' %>">
-					<%= radio_button :stock_card_status, :used_correctly, true, :index => index, :checked => used_correctly_value == "true" %>
-                                        <%= label :stock_card_status, true, h(t("yes")), :for => "stock_card_status_#{index}_used_correctly_true" %>
-					<%= radio_button :stock_card_status, :used_correctly, false, :index => index, :checked => used_correctly_value == "false" %>
-                                        <%= label :stock_card_status, false, h(t("no")), :for => "stock_card_status_#{index}_used_correctly_false" %>
-				</div>
-			</td>
-		</tr>
-		<%- end -%>
-	</tbody>
-</table>
-<%= save_and_continue %>
+  <table class="equipment">
+    <thead>
+      <tr>
+        <th></th>
+        <th><%= h(t(".have")) %></th>
+        <th><%= h(t(".use")) %></th>
+      </tr>
+    </thead>
+    <tbody>
+      <%- @stock_card_statuses.each do |status| -%>
+        <%- index = status.stock_card_code.to_s
+            values = { :have => nil, :used_correctly => nil }
+            unless status.new_record?
+              [ :have, :used_correctly ].each do |column|
+                default_value = default_field_value(params[:equipment_status], index, column.to_s, status.send(column).to_s)
+                values[column] = default_value.blank? ? "nr" : default_value
+              end
+            end
+         -%>
+        <tr>
+          <th><%= h status.stock_card.label %></th>
+          <%- [ :have, :used_correctly ].each do |column| -%>
+            <td>
+              <div class="boolean <%= 'error' if @errors[:stock_card_status][index].on(column) rescue nil %>">
+                <%- [ [ h(t("yes")), "true" ], [ h(t("no")), "false" ], [ h(t("NR")), "nr" ] ].each do |l,v| -%>
+                  <%= radio_button :stock_card_status, column, v, :index => index, :checked => values[column] == v %>
+                  <%= label :stock_card_status, v, l, :for => "stock_card_status_#{index}_#{column}_#{v}" %>
+                <%- end -%>
+              </div>
+            </td>
+          <%- end -%>
+        </tr>
+      <%- end -%>
+    </tbody>
+  </table>
+  <%= save_and_continue %>
 <%- end -%>

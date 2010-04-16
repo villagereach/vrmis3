@@ -167,16 +167,18 @@ class DataSubmission < ActiveRecord::Base
     stock_card_statuses = @visit.find_or_initialize_stock_card_statuses
 
     @params[:stock_card_status].each do |key, values|
-      unless values["have"].blank?
-        if record = stock_card_statuses.detect{|s| s.stock_card_code == key}
-          record.date = @visit.date
-          values["used_correctly"] = nil unless values["have"] == "true"
-          record.update_attributes(values)
-          unless record.errors.empty?
-            @visit_errors[:stock_card_status] ||= {}
-            @visit_errors[:stock_card_status][key] = record.errors
-          end
-        end
+      record = stock_card_statuses.detect{|s| s.stock_card_code == key}
+
+      # Skip if no data entered for a new item
+      next if record.new_record? && values["have"].blank? && values["used_correctly"].blank?
+
+      db_values = values.inject({}){|hash,(key,value)| hash[key] = value == "true" || (value == "false" ? false : nil) ; hash }
+
+      record.date = @visit.date
+      record.update_attributes(db_values)
+      unless record.errors.empty?
+        @visit_errors[:stock_card_status] ||= {}
+        @visit_errors[:stock_card_status][key] = record.errors
       end
     end
   end
