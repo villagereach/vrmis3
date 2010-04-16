@@ -98,9 +98,7 @@ class VisitsController < OlmisController
   end
 
   def health_center_equipment
-    equipment_counts, equipment_statuses = @visit.find_or_initialize_equipment
-    @equipment = equipment_counts.zip(equipment_statuses)
-
+    @equipment_statuses = @visit.find_or_initialize_equipment_statuses
     handle_submit if request.post?
   end
 

@@ -344,22 +344,30 @@ class HealthCenterVisit < ActiveRecord::Base
     Hash[*counts.zip(statuses).map { |c,s| [c.equipment_type, [c, s]] }.flatten_once]
   end
 
-  def find_or_initialize_equipment
-    equipment_types = EquipmentType.all.sort
-    equipment_counts = equipment_types.collect{|type| 
-      EquipmentCount.find_or_initialize_by_equipment_type_id_and_stock_room_id_and_health_center_visit_id(
-        type.id,
-        self.health_center ? self.health_center.stock_room.id : nil,
-        self.id) }
-    
-    equipment_statuses = equipment_types.collect{|type| 
+  # def find_or_initialize_equipment
+  #   equipment_types = EquipmentType.all.sort
+  #   equipment_counts = equipment_types.collect{|type| 
+  #     EquipmentCount.find_or_initialize_by_equipment_type_id_and_stock_room_id_and_health_center_visit_id(
+  #       type.id,
+  #       self.health_center ? self.health_center.stock_room.id : nil,
+  #       self.id) }
+  #
+  #   equipment_statuses = equipment_types.collect{|type| 
+  #     EquipmentStatus.find_or_initialize_by_equipment_type_id_and_stock_room_id_and_health_center_visit_id(
+  #       type.id,
+  #       self.health_center ? self.health_center.stock_room.id : nil,
+  #       self.id) }
+  #
+  #   return equipment_counts, equipment_statuses
+  # end    
+
+  def find_or_initialize_equipment_statuses()
+    EquipmentType.all.sort.collect{|type| 
       EquipmentStatus.find_or_initialize_by_equipment_type_id_and_stock_room_id_and_health_center_visit_id(
         type.id,
         self.health_center ? self.health_center.stock_room.id : nil,
         self.id) }
-      
-    return equipment_counts, equipment_statuses
-  end    
+  end
   
   def find_or_initialize_fridge_statuses(options = {})
     fridges = health_center ? health_center.stock_room.fridges : [nil]

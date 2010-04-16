@@ -1,58 +1,65 @@
-<%- form_tag do -%>
 <h3><%= h current_link.first %></h3>
-<%- if !@errors.empty? -%>
-<div id="error">
-  <ul>
-    <%- @errors.each do |key,hash| -%>
-      <%- hash.each do |part,errors| -%>
-        <%- errors.each_full do |msg| -%>
-          <li><%= h msg %></li>
+<%- form_tag do -%>
+  <%- if !@errors.empty? -%>
+    <div id="error">
+      <ul>
+        <%- @errors.each do |key,hash| -%>
+          <%- hash.each do |part,errors| -%>
+            <%- errors.each_full do |msg| -%>
+              <li><%= h msg %></li>
+            <%- end -%>
+          <%- end -%>
         <%- end -%>
+      </ul>
+    </div>
+  <%- end -%>
+
+  <table class="equipment">
+    <thead>
+      <tr>
+        <th></th>
+        <th><%= h(t(".present")) %></th>
+        <th><%= h(t(".working")) %></th>
+        <th><%= h(t(".notes")) %></th>
+      </tr>
+    </thead>
+    <tbody>
+      <%- @equipment_statuses.each_with_index do |status,idx| -%>
+        <%- index = status.equipment_type_code.to_s -%>
+        <%- present_value = !status.new_record? ? default_field_value(params[:equipment_status], index, 'present', (status.present || "nr").to_s) : nil -%>
+        <%- working_value = !status.new_record? ? default_field_value(params[:equipment_status], index, 'working', (status.working || "nr").to_s) : nil -%>
+        <tr>
+          <th><%= h status.equipment_type.label %></th>
+          <td>
+            <div class="boolean <%= 'error' if @errors[index][:equipment_status].on(:present) rescue nil %>">
+              <%= radio_button :equipment_status, :present, "true", :index => index, :checked => present_value == "true" %>
+              <%= label :equipment_status, true, h(t("yes")), :for => "equipment_status_#{index}_present_true" %>
+              <%= radio_button :equipment_status, :present, "false", :index => index, :checked => present_value == "false" %>
+              <%= label :equipment_status, false, h(t("no")), :for => "equipment_status_#{index}_present_false" %>
+              <%= radio_button :equipment_status, :present, "nr", :index => index, :checked => present_value == "nr" %>
+              <%= label :equipment_status, nil, h(t("NR")), :for => "equipment_status_#{index}_present_nr" %>
+            </div>
+          </td>
+          <td>
+            <div class="boolean <%= 'error' if @errors[index][:equipment_status].on(:working) rescue nil %>">
+              <%= radio_button :equipment_status, :working, "true", :index => index, :checked => working_value == "true" %>
+              <%= label :equipment_status, true, h(t("yes")), :for => "equipment_status_#{index}_working_true" %>
+              <%= radio_button :equipment_status, :working, "false", :index => index, :checked => working_value == "false" %>
+              <%= label :equipment_status, false, h(t("no")), :for => "equipment_status_#{index}_working_false" %>
+              <%= radio_button :equipment_status, :working, "nr", :index => index, :checked => working_value == "nr" %>
+              <%= label :equipment_status, nil, h(t("NR")), :for => "equipment_status_#{index}_working_nr" %>
+            </div>
+          </td>
+          <%- if idx == 0 -%>
+            <td rowspan="<%= @equipment_statuses.count %>">
+              <div class="<%= 'error' if @errors[index][:equipment_status].on(:notes) rescue nil %>">
+                <%= text_area :equipment_status, :notes, :size => "30x8", :value => status.health_center_visit.equipment_notes %>
+              </div>
+            </td>
+          <%- end -%>
+        </tr>
       <%- end -%>
-    <%- end -%>
-  </ul>
-</div>
-<%- end -%>
-
-<p class="note"><%= h(t(".instructions")) %></p>
-
-<table class="equipment">
-	<thead>
-		<tr>
-			<th></th>
-			<th><%= h(t(".quantity")) %></th>
-			<th><%= h(t(".status")) %></th>
-			<th><%= h(t(".notes")) %></th>
-		</tr>
-	</thead>
-	<tbody>
-		<%- @equipment.each do |item| -%>
-		<%- index = item.first.equipment_type_code.to_s -%>
-		<%- quantity_value = default_field_value(params[:equipment_count], index, 'quantity', item.first.quantity) -%>
-		<%- status_value = default_field_value(params[:equipment_status], index, 'status_code', item.last.status_code) -%>
-		<%- notes_value = default_field_value(params[:equipment_status], index, 'notes', item.last.notes) -%>
-		<%- checked = !item.first.new_record? && default_field_value(params[:equipment_count], index, 'quantity/NR', quantity_value.to_s.empty? ? '1' : '0') == '1' -%>
-		<tr>
-			<th><%= h item.first.equipment_type.label %></th>
-			<td>
-        <%- fields_for :equipment_count do |f| -%>
-          <%= nr_field(f, 'quantity', index, quantity_value, checked, (@errors[index][:equipment_count].on(:quantity) rescue nil)) %>
-        <%- end -%>
-			</td>
-			<td>
-				<div class="<%= 'error' if @errors[index][:equipment_status].on(:status_code) rescue nil %>">
-					<%= select :equipment_status, :status_code, EquipmentStatus.status_options, { :include_blank => h(t("select_blank")), :selected => status_value }, :index => index %>
-				</div>
-			</td>
-			<td>
-				<div class="<%= 'error' if @errors[index][:equipment_status].on(:notes) rescue nil %>">
-					<%= text_area :equipment_status, :notes, :size => "30x2", :value => notes_value, :index => index %>
-				</div>
-			</td>
-		</tr>
-		<%- end -%>
-	</tbody>
-</table>
-<%= save_and_continue %>
-</fieldset>
+    </tbody>
+  </table>
+  <%= save_and_continue %>
 <%- end -%>
