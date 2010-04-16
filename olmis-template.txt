@@ -37,7 +37,7 @@ end
 
 log '', 'Installing plugins.'
 plugin "olmis",
-  :git => "git@villagereach.unfuddle.com:villagereach/olmis.git",
+  :git => "git://github.com/villagereach/openLMIS.git",
   :submodule => use_submodules
 plugin "referenced-by",
   :git => "git://github.com/joelhoffman/referenced-by.git",

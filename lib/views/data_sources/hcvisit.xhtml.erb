@@ -25,6 +25,7 @@
     <script type="text/javascript" src="/javascripts/json2.js" />
     <script type="text/javascript" src="/javascripts/date.js" />
     <script type="text/javascript" src="/javascripts/i18n.js" />
+    <script type="text/javascript" src="/javascripts/forms.js" />
     <script type="text/javascript" src="/fancybox/jquery.fancybox.js" />
     <link rel="stylesheet" href="/fancybox/jquery.fancybox.css" type="text/css" />
     <link rel="stylesheet" href="/stylesheets/ui/jquery-ui-1.7.2.custom.css" type="text/css" />
@@ -836,6 +837,9 @@
             <%- tally_classes.each do |klass|
                   expected_params = klass.expected_params -%>
               <xf:case id="case-<%= klass.name.tableize %>" >
+                <xf:action ev:event="xforms-select">
+                  <xf:load resource="javascript:jQuery('#div-<%= klass.name.tableize %> .xforms-value:input').change();" />
+                </xf:action>
                 <div id="div-<%= klass.name.tableize %>" class="block-form">
                   <xf:group bind="epi_data">
                     <xf:label><%= h(t("visits.health_center_tally.page_title_#{klass.name.underscore}")) %></xf:label>
