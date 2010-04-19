@@ -164,7 +164,13 @@ module VisitsHelper
       expression_field("#{package_code}_wastage", "100 * ((#{open_vials}) - ((#{total_doses}) / #{package.quantity})) / (#{open_vials})", "%")
     end
   end
-  
+
+  def inventory_field(f, inventory_type, package_code)
+    inv = @visit.ideal_stock[inventory_type][package_code]
+    nr_field(f, inventory_type, package_code, inv.quantity, inv.new_record? ? false : inv.quantity.nil?,
+      (@errors[package_code][inventory_type].on(:quantity) rescue nil))
+  end
+
   def expression_field(name, expression, suffix='')
     # Inserts a calculated field based on the value of other fields.  The second argument should be a
     # Javascript expression where any words starting with an alphabetic character must be the IDs of
@@ -217,10 +223,14 @@ module VisitsHelper
            o = options.merge({ :value => value.to_s, :size => 4, :min => '0', :step => '1', :id => type.name + '_' + name.gsub(/[,:\]]/,'-') })
            ActionView::Helpers::InstanceTag.new(type.name, name, self).to_input_field_tag("number", o)
          end
-         
-     tf + content_tag(:div,
-       check_box(type, name + '/NR', :checked => nr_checked) + 
-        label(type, name + '/NR', t('NR')), :class => 'nr')
+
+    content_tag(:div,
+      tf +
+        content_tag(:div,
+          check_box(type, name + '/NR', :checked => nr_checked) +
+            label(type, name + '/NR', t('NR')),
+          :class => 'nr'),
+      :class => 'tally', :id => name.gsub(/[,:]/,'-'))
   end
     
   def tally_form_erb(type, name, options)
@@ -232,8 +242,7 @@ module VisitsHelper
     field ||= 'value'
     type = type.constantize
     field_type = type.fields_hash[field.to_sym] == :date ? 'date' : 'tally'
-    id = name.gsub(/[,:]/,'-')
-    %Q{<div class="#{field_type}" id="#{id}">} + self.send(form_field_proc, type, name, options) + '</div>'
+    self.send(form_field_proc, type, name, options)
   end
 
   def options_for_visits_month(date)
