@@ -63,7 +63,7 @@ class HealthCenterVisitPeriodicProgress
 
     equipment_types = EquipmentType.count
     conn.select_all(equipment_query(dp_sql)).each do |r| 
-      counts[r['id'].to_i][r['date_period']]['equipment'] = [equipment_types, r['statuses'].to_i, r['counts'].to_i] 
+      counts[r['id'].to_i][r['date_period']]['equipment'] = [equipment_types, r['statuses'].to_i] 
     end
 
     stock_cards = StockCard.count
@@ -176,11 +176,9 @@ class HealthCenterVisitPeriodicProgress
     <<-EQUIP
       select health_center_visits.id as id, 
         health_center_visits.visit_month as date_period,
-        count(distinct equipment_statuses.id) as statuses,
-        count(distinct equipment_counts.id) as counts
+        count(distinct equipment_statuses.id) as statuses
       from health_center_visits 
         left join equipment_statuses on equipment_statuses.health_center_visit_id = health_center_visits.id
-        left join equipment_counts on equipment_counts.health_center_visit_id = health_center_visits.id
         where health_center_visits.visit_month in (#{month_ids})
       group by health_center_visits.id 
     EQUIP

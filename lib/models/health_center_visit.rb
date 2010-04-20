@@ -219,10 +219,10 @@ class HealthCenterVisit < ActiveRecord::Base
   
   def equipment_status
     if date
-      expected, statuses, counts = entry_counts['equipment'] ||= [
-        EquipmentType.count, equipment_statuses.count, equipment_counts.count 
+      expected, statuses = entry_counts['equipment'] ||= [
+        EquipmentType.count, equipment_statuses.count
       ] 
-      reporting_status_field(statuses + counts, 2 * expected)
+      reporting_status_field(statuses, expected)
     end
   end
 
