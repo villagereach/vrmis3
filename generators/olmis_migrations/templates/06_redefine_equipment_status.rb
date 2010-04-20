@@ -3,7 +3,7 @@ class OlmisRedefineEquipmentStatus < ActiveRecord::Migration
     add_column :health_center_visits, :equipment_notes, :text
 
     add_column :equipment_statuses, :present, :boolean
-    add_column :equipment_statuses, :present, :working
+    add_column :equipment_statuses, :working, :boolean
     remove_column :equipment_statuses, :status_code
     remove_column :equipment_statuses, :notes
 
