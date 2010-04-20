@@ -138,15 +138,21 @@ module ActsAsStatTally
       data_entry_group.reject { |k,v| k.ends_with?('/NR') }.each do |k, v|
         dimensions, value = parse_header(k)
 
-        next if v.blank? && data_entry_group[k + '/NR'].to_s != '1'
-        v = '' if v.to_s.strip.upcase == 'NR'
-
         records[dimensions] ||= new_from_keys_and_dimensions_and_user(keys, dimensions, user)        
 
-        records[dimensions].update_attributes(value => v, :updated_by => user) if v.to_s != records[dimensions][value].to_s
-        records[dimensions].save
-
-        errors[k] = records[dimensions].errors unless records[dimensions].errors.empty?
+        if v.blank? && data_entry_group[k + '/NR'].to_s != '1'
+          if !records[dimensions].new_record?
+            records.delete(dimensions).delete()
+          end
+        else
+          v = nil if v.to_s.strip.upcase == 'NR' || v.blank?
+  
+          records[dimensions].update_attributes(value => v, :updated_by => user) if v.to_s != records[dimensions][value].to_s
+  
+          records[dimensions].save
+  
+          errors[k] = records[dimensions].errors unless records[dimensions].errors.empty?
+        end
       end
       
       return records, errors
