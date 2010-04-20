@@ -19,6 +19,7 @@
 class User < ActiveRecord::Base
   include BasicModelSecurity
 #  attr_accessor :password_hash_confirmation
+  referenced_by :name, :username
 
   has_one :street_address, :as => 'addressed'
   
@@ -33,8 +34,8 @@ class User < ActiveRecord::Base
   validates_format_of :phone, :with => /^\d+$/, :message => 'must be only digits', :allow_nil => true
   
   validates_confirmation_of :password_hash
+
   belongs_to :role
-  referenced_by :name, :username
 
   has_and_belongs_to_many :delivery_zones
   has_and_belongs_to_many :administrative_areas

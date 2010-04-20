@@ -1,12 +1,11 @@
 # == Schema Information
-# Schema version: 20100127014005
+# Schema version: 20100419182754
 #
 # Table name: descriptive_values
 #
 #  id                      :integer(4)      not null, primary key
 #  descriptive_category_id :integer(4)      not null
-#  label                   :string(255)     not null
-#  description             :text
+#  code                    :string(255)     not null
 #  position                :integer(4)      default(0), not null
 #  created_at              :datetime
 #  updated_at              :datetime

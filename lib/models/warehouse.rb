@@ -1,5 +1,5 @@
 # == Schema Information
-# Schema version: 20100127014005
+# Schema version: 20100419182754
 #
 # Table name: warehouses
 #
@@ -8,6 +8,7 @@
 #  stock_room_id          :integer(4)      not null
 #  created_at             :datetime
 #  updated_at             :datetime
+#  code                   :string(255)     default(""), not null
 #
 
 class Warehouse < ActiveRecord::Base

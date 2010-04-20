@@ -1,5 +1,5 @@
 # == Schema Information
-# Schema version: 20100127014005
+# Schema version: 20100419182754
 #
 # Table name: data_submissions
 #
@@ -67,12 +67,15 @@ class DataSubmission < ActiveRecord::Base
         self.content_type = request.headers['CONTENT_TYPE']
       end
     end
-    
-    if request.content_type.to_s == 'application/xml'
+
+    if request.params.has_key?(:xml_submission_file)
+      self.data_source = DataSource['AndroidOdkVisitDataSource']
+      ok_status = 201
+    elsif request.content_type.to_s == 'application/xml'
       self.data_source = DataSource['XformVisitDataSource']
       ok_status = 200
     end
-
+          
     save!
     
     # NOTE: Response data is taken from the ODK Aggregate code.

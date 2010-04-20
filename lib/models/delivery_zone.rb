@@ -1,12 +1,13 @@
 # == Schema Information
-# Schema version: 20100127014005
+# Schema version: 20100419182754
 #
 # Table name: delivery_zones
 #
-#  id                     :integer(4)      not null, primary key
-#  code                   :string(255)     default(""), not null
-#  created_at             :datetime
-#  updated_at             :datetime
+#  id           :integer(4)      not null, primary key
+#  code         :string(255)
+#  created_at   :datetime
+#  updated_at   :datetime
+#  warehouse_id :integer(4)      not null
 #
 
 class DeliveryZone < ActiveRecord::Base

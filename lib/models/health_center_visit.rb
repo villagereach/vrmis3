@@ -1,20 +1,21 @@
 # == Schema Information
-# Schema version: 20100127014005
+# Schema version: 20100419182754
 #
 # Table name: health_center_visits
 #
-#  id               :integer(4)      not null, primary key
-#  user_id          :integer(4)      not null
-#  health_center_id :integer(4)      not null
-#  visit_month      :string(255)     not null
-#  visited_at       :date            not null
-#  vehicle_code     :string(255)     default(""), not null
-#  visit_status     :string(255)     default("Visited"), not null
-#  notes            :text            default(""), not null
-#  data_status      :string(255)     default("pending"), not null
-#  epi_data_ready   :boolean(1)      default(TRUE), not null
-#  created_at       :datetime
-#  updated_at       :datetime
+#  id                     :integer(4)      not null, primary key
+#  user_id                :integer(4)      not null
+#  health_center_id       :integer(4)      not null
+#  visit_month            :string(255)     not null
+#  visited_at             :date            not null
+#  vehicle_code           :string(255)     default(""), not null
+#  visit_status           :string(255)     default("Visited"), not null
+#  notes                  :text            default(""), not null
+#  data_status            :string(255)     default("pending"), not null
+#  epi_data_ready         :boolean(1)      default(TRUE), not null
+#  created_at             :datetime
+#  updated_at             :datetime
+#  other_non_visit_reason :string(255)
 #
 
 class HealthCenterVisit < ActiveRecord::Base

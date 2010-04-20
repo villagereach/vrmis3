@@ -1,10 +1,9 @@
 # == Schema Information
-# Schema version: 20100127014005
+# Schema version: 20100419182754
 #
 # Table name: fridge_models
 #
 #  id           :integer(4)      not null, primary key
-#  name         :string(255)     default(""), not null
 #  capacity     :decimal(10, 2)  default(0.0), not null
 #  code         :string(255)     not null
 #  description  :text            default(""), not null

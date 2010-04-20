@@ -1,10 +1,10 @@
 # == Schema Information
-# Schema version: 20100127014005
+# Schema version: 20100419182754
 #
 # Table name: stock_cards
 #
 #  id         :integer(4)      not null, primary key
-#  name       :string(255)     not null
+#  code       :string(255)     not null
 #  position   :integer(4)      not null
 #  created_at :datetime
 #  updated_at :datetime

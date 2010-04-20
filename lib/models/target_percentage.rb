@@ -1,10 +1,10 @@
 # == Schema Information
-# Schema version: 20100127014005
+# Schema version: 20100419182754
 #
 # Table name: target_percentages
 #
 #  id               :integer(4)      not null, primary key
-#  name             :string(255)     not null
+#  code             :string(255)     not null
 #  percentage       :decimal(4, 2)   default(0.0), not null
 #  stat_tally_klass :string(255)     not null
 #  created_at       :datetime
@@ -12,6 +12,8 @@
 #
 
 class TargetPercentage < ActiveRecord::Base
+  referenced_by :code
+
   has_and_belongs_to_many :descriptive_values
 
   validates_presence_of :stat_tally_klass

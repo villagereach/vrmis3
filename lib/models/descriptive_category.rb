@@ -1,14 +1,12 @@
 # == Schema Information
-# Schema version: 20100127014005
+# Schema version: 20100419182754
 #
 # Table name: descriptive_categories
 #
-#  id          :integer(4)      not null, primary key
-#  code        :string(255)     not null
-#  label       :string(255)     not null
-#  description :text
-#  created_at  :datetime
-#  updated_at  :datetime
+#  id         :integer(4)      not null, primary key
+#  code       :string(255)     not null
+#  created_at :datetime
+#  updated_at :datetime
 #
 
 class DescriptiveCategory < ActiveRecord::Base

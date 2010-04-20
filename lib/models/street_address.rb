@@ -1,5 +1,5 @@
 # == Schema Information
-# Schema version: 20100127014005
+# Schema version: 20100419182754
 #
 # Table name: street_addresses
 #
@@ -15,6 +15,8 @@
 #  addressed_type :string(255)
 #  created_at     :datetime
 #  updated_at     :datetime
+#  name           :string(255)     default(""), not null
+#  phone          :string(255)     default(""), not null
 #
 
 class StreetAddress < ActiveRecord::Base

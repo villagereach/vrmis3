@@ -446,6 +446,10 @@ en:
     health_center:            "Health Center"
     offline_forms:            "Offline Data Entry"
     go_to_offline_data_entry: "Switch to offline data entry"
+    total: Total
+    coverage_rate: Coverage rate
+    total_vaccinations: Total vaccinations
+    target_group: Target group
     index:
       find_visit:    "Find a visit"
       progress_for:  "Progress for"
@@ -469,11 +473,7 @@ en:
       did_not_visit: "Did not visit"
     health_center_monthly_tasks:
       visit:       "Visit"
-      adult_vaccination_tally: "Adult Vaccinations"
-      child_vaccination_tally: "Child Vaccinations"
-      full_vaccination_tally:  "Fully Vaccinated Children"
       epi_usage_tally:         "EPI Stock"
-      rdt_tally:               "RDT Usage"
       inventory:   "Inventory"
       epi_inventory: "EPI Inventory"
       rdt_inventory: "RDT Inventory"

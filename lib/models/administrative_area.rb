@@ -1,3 +1,18 @@
+# == Schema Information
+# Schema version: 20100419182754
+#
+# Table name: administrative_areas
+#
+#  id         :integer(4)      not null, primary key
+#  code       :string(255)     not null
+#  population :integer(4)
+#  parent_id  :integer(4)
+#  type       :string(255)     not null
+#  polygon    :text
+#  created_at :datetime
+#  updated_at :datetime
+#
+
 class AdministrativeArea < ActiveRecord::Base
   include BasicModelSecurity
   referenced_by :code

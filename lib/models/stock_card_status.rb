@@ -1,5 +1,5 @@
 # == Schema Information
-# Schema version: 20100127014005
+# Schema version: 20100419182754
 #
 # Table name: stock_card_statuses
 #
@@ -7,11 +7,11 @@
 #  stock_card_id          :integer(4)      not null
 #  stock_room_id          :integer(4)      not null
 #  health_center_visit_id :integer(4)      not null
-#  have                   :boolean(1)      not null
+#  have                   :boolean(1)
 #  used_correctly         :boolean(1)
+#  reported_at            :date
 #  created_at             :datetime
 #  updated_at             :datetime
-#  reported_at            :date
 #
 
 class StockCardStatus < ActiveRecord::Base
