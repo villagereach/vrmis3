@@ -51,17 +51,11 @@ class XformVisitDataSource < DataSource
     end
 
     xml.xpath('/vrmis3/hcvisit/visit/general/item').each do |equip|
-      params[:equipment_count] ||= {}
       params[:equipment_status] ||= {}
       
-      params[:equipment_count][equip['for'].to_s] = { 
-        'quantity' => equip['qty'].to_s,
-        'quantity/NR' => equip['nr'].to_s == 'true' ? 1 : 0
-      }
-
       params[:equipment_status][equip['for'].to_s] = { 
-        'status_code' => equip['status'].to_s,
-        'notes' => equip['notes'].to_s
+        'present' => equip['present'].to_s,
+        'working' => equip['working'].to_s
       }
     end
 
@@ -69,10 +63,11 @@ class XformVisitDataSource < DataSource
       params[:fridge_status] ||= {}
       code = fridge['code'].to_s
       params[:fridge_status][fridge['code'].to_s] = {
+        "past_problem" => fridge['past_problem'].to_s,
         "temperature" => fridge['temp'].to_s,
-        "temperature/NR" => fridge['nr'].to_s == 'true' ? 1 : 0,
-        "status_code" => fridge['status'].to_s,
-        "notes" => fridge['notes'].to_s
+        "state" => fridge['state'].to_s,
+        "problem" => fridge['problem'].to_s,
+        "other_problem" => fridge['other_problem'].to_s
       }
     end
 
