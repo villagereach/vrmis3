@@ -232,17 +232,23 @@ class DataSubmission < ActiveRecord::Base
     
     @params[:fridge_status].each do |key, values|
       # Skip if no data entered for this fridge
-      next if values["temperature"].blank? && values["temperature/NR"].to_i == 0 &&
-        values["status_code"].blank? && values["notes"].blank?
+      next if values["temperature"].blank? && !values["past_problem"] &&
+        !values["state"] && !values["problem"] && values["other_problem"].blank?
 
       if record = fridge_statuses.detect{|fs| fs.fridge_code == key.to_s }
-        record.update_attributes(process_equipment_nr_params(values))
+        db_values = {
+          :past_problem => values["past_problem"] == "true" || (values["past_problem"] == "false" ? false : nil),
+          :temperature      => values["temperature"].blank? ? nil : values["temperature"].to_i,
+          :status_code      => values["state"] == "OK" ? "OK" : values["state"] == "nr" ? nil : values["problem"].join(' '),
+          :other_problem    => values["state"] == "problem" && values["problem"].include?("OTHER") ? values["other_problem"] : nil
+        }
+        record.update_attributes(db_values)
         unless record.errors.empty?
           @visit_errors[:fridge_status] ||= {}
           @visit_errors[:fridge_status][key] = record.errors
         end
       else
-        
+        # TODO: The fridge code changed; should this be possible in the online form?
       end
     end
   end

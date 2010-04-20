@@ -25,7 +25,7 @@ class FridgeStatus < ActiveRecord::Base
   end
   
   validates_numericality_of :temperature, :only_integer => true, :allow_nil => true
-  validates_inclusion_of    :temperature, :in => (2..8), :if => lambda{|r| r.status_code == 'OK'}, :message => :working_temp_range, :allow_nil => true
+  #validates_inclusion_of    :temperature, :in => (2..8), :if => lambda{|r| r.status_code == 'OK'}, :message => :working_temp_range, :allow_nil => true
 
   def reported_by
     user
@@ -144,13 +144,7 @@ class FridgeStatus < ActiveRecord::Base
   report_column :temperature,          :sql_sort => 'fridge_statuses.temperature', :header => "headers.temperature", :type => :int
   report_column :date,                 :sql_sort => 'fridge_statuses.reported_at', :header => "headers.date", :type => :date, :data_proc => :reported_at
   report_column :time,                 :sql_sort => 'fridge_statuses.reported_at', :header => "headers.time", :type => :datetime, :data_proc => :reported_at
-  report_column :notes,                :sql_sort => 'fridge_statuses.notes', :header => "headers.notes"
+  report_column :notes,                :sql_sort => 'fridge_statuses.other_status', :header => "headers.other_status"
   report_column :reported_by,          :sql_sort => 'users.name', :header => "headers.reported_by", :data_proc => lambda { |s| s.user_name }
-
-  protected
-
-  def before_save
-    self.temperature = nil if [ 'BROKE', 'MISS' ].include?(status_code)
-  end
 
 end

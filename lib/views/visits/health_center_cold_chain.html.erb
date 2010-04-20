@@ -1,60 +1,100 @@
-<%- form_tag do -%>
 <h3><%= h current_link.first %></h3>
-
-<%- if !@errors.empty? -%>
-<div id="error">
-  <ul>
-    <%- @errors.each do |key,hash| -%>
-      <%- hash.each do |part,errors| -%>
-        <%- errors.each_full do |msg| -%>
-          <li><%= h msg %></li>
+<%- form_tag do -%>
+  <%- if !@errors.empty? -%>
+    <div id="error">
+      <ul>
+        <%- @errors.each do |key,hash| -%>
+          <%- hash.each do |part,errors| -%>
+            <%- errors.each_full do |msg| -%>
+              <li><%= h msg %></li>
+            <%- end -%>
+          <%- end -%>
         <%- end -%>
-      <%- end -%>
+      </ul>
+    </div>
+  <%- end -%>
+
+  <%- fields_for :fridge_status do |f| -%>
+    <%- @fridge_statuses.sort_by(&:fridge).each do |fridge_status| -%>
+      <%- index = fridge_status.fridge_code.to_s
+          values = { :past_problem => nil, :temperature => nil, :status_code => nil, :state => nil, :problem => [], :other_problem => nil }
+          unless fridge_status.new_record?
+            status_codes = fridge_status.status_code.split
+            values.keys.each do |column|
+              default_value = default_field_value(params[:fridge_status], index, column.to_s, fridge_status.send(column).to_s) if fridge_status.respond_to?(column)
+              case column
+              when :temperature, :other_problem
+                values[column] = default_value
+              when :past_problem
+                values[column] = default_value.blank? ? "nr" : default_value
+              when :state
+                values[column] = (status_codes.length == 1 && status_codes.first == "OK") ? "OK" : ((status_codes & FridgeStatus.not_ok_status_options.map(&:second)).empty? ? "nr" : "problem")
+              when :problem
+                values[column] = status_codes.reject{|code| code == "OK"}
+              end
+            end
+          end
+       -%>
+      <div class="fridge-data">
+        <div class="fridge-id">
+          <%= f.label :fridge_code, h(t("visits.health_center_cold_chain.fridge_id")), :index => index %>
+          <%= f.text_field :fridge_code, :value => fridge_status.fridge_code, :index => index %>
+        </div>
+        <div class="two-column">
+          <div class="fridge-in">
+            <div class="fridge-past_problem">
+              <div><%= h(t("visits.health_center_cold_chain.past_problem")) %></div>
+              <ul class="radio">
+                <%- [ [ h(t("yes")), "true" ], [ h(t("no")), "false" ], [ h(t("unknown")), "nr" ] ].each do |label,value| -%>
+                  <li>
+                    <%= f.radio_button :past_problem, value, :checked => values[:past_problem] == value, :index => index %>
+                    <%= f.label "past_problem_#{value}", label, :index => index %>
+                  </li>
+                <%- end -%>
+              </ul>
+            </div>
+            <div class="fridge-temp">
+              <div><%= h(t("visits.health_center_cold_chain.arrival_temp")) %></div>
+              <div>
+                <%= f.label :temperature, h(t("visits.health_center_cold_chain.temp_input_prefix")), :index => index %>
+                <%= f.text_field :temperature, :value => values[:temperature], :index => index %>
+                <span><%= h(t("visits.health_center_cold_chain.temp_input_suffix")) %></span>
+              </div>
+            </div>
+          </div>
+          <div class="fridge-out">
+            <div class="fridge-state">
+              <div><%= h(t("visits.health_center_cold_chain.departure_state")) %></div>
+              <ul class="radio">
+                <%- [ [ h(t("yes")), "OK" ], [ h(t("no")), "problem" ], [ h(t("unknown")), "nr" ] ].each do |label,value| -%>
+                  <li>
+                    <%= f.radio_button :state, value, :checked => values[:state] == value, :index => index, :onclick => value == "problem" ? js_show("fridge-problem-#{index}") : js_hide("fridge-problem-#{index}") %>
+                    <%= f.label "state_#{value}", label, :index => index %>
+                  </li>
+                <%- end -%>
+              </ul>
+            </div>
+            <div id="fridge-problem-<%= index %>" class="fridge-problem checkbox-group" <%= 'style="display:none"' unless values[:state] == 'problem' %>>
+              <div><%= h(t("visits.health_center_cold_chain.problem")) %></div>
+              <ul class="check-list">
+                <%- FridgeStatus.not_ok_status_options.each do |label,value| -%>
+                  <label>
+                    <%= check_box_tag "fridge_status[#{index}][problem][]", value, values[:problem].include?(value) ? "checked" : nil, :id => "fridge_status_#{index}_problem_#{value}", :onclick => value == "OTHER" ? js_toggle("fridge-other_problem-#{index}") : nil %>
+                    <%= h label %>
+                  </label>
+                <%- end -%>
+              </ul>
+              <div id="fridge-other_problem-<%= index %>" class="fridge-other_problem" <%= 'style="display:none"' unless values[:problem].include?("OTHER") %>>
+                <%= f.text_area :other_problem, :index => index, :size => "25x4", :value => values[:other_problem] %>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="clear"></div>
+      </div>
     <%- end -%>
-  </ul>
-</div>
-<%- end -%>
-
-<p class="note"><%= h(t(".instructions")) %></p>
-
-<table class="equipment">
-	<thead>
-		<tr>
-			<th><%= h(t(".fridge")) %></th>
-			<th><%= h(t(".status")) %></th>
-			<th><%= h(t(".temperature")) %></th>
-			<th><%= h(t(".notes")) %></th>
-		</tr>
-	</thead>
-	<tbody>
-		<%- fields_for :fridge_status do |f| -%>
-		<%- @fridge_statuses.sort_by(&:fridge).each do |fridge_status| -%>
-		<%- index = fridge_status.fridge_code.to_s -%>
-		<%- status_value = default_field_value(params[:fridge_status], index, 'status_code', fridge_status.status_code) -%>
-		<%- temperature_value = default_field_value(params[:fridge_status], index, 'temperature', fridge_status.temperature) -%>
-		<%- notes_value = default_field_value(params[:fridge_status], index, 'notes', fridge_status.notes) -%>
-		<%- checked = !fridge_status.new_record? && default_field_value(params[:fridge_status], index, 'temperature/NR', temperature_value.to_s.empty? ? '1' : '0') == '1' -%>
-		<tr>
-			<th><%= h fridge_status.fridge_code %></th>
-			<td>
-				<div class="status <%= 'error' if @errors[index].on(:status_code) rescue nil %>">
-					<%= f.select :status_code, FridgeStatus.status_options, { :include_blank => h(t("select_blank")), :selected => status_value }, :index => index %>
-				</div>
-			</td>
-			<td>
-				<%= nr_field(f, :temperature, index, temperature_value, checked, (@errors[index].on(:temperature) rescue nil)) %> 
-			</td>
-			<td>
-				<div class="notes <%= 'error' if @errors[index].on(:name) rescue nil %>">
-					<%= f.text_area :notes, :size => "30x2", :value => notes_value, :index => index %>
-				</div>
-			</td>
-		</tr>
-		<%- end -%>
-		<%- end -%>
-	</tbody>
-</table>
-<%= save_and_continue %>
+  <%- end -%>
+  <%= save_and_continue %>
 <%- end -%>
 
 <script type="text/javascript">

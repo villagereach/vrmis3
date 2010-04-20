@@ -56,4 +56,34 @@ width:69px;
   font-size: larger;
 }
 
-
+#health_center_main div.fridge-data {
+  margin: 1em 0;
+}
+#health_center_main div.fridge-data div.fridge-id {
+  margin: 0 1%;
+  padding: 0;
+}
+#health_center_main div.fridge-data div.fridge-id input[type="text"] {
+  width: 90px;
+}
+#health_center_main div.fridge-data div.two-column > div {
+  float: left;
+  margin: 0 1%;
+  width: 48%;
+}
+#health_center_main div.fridge-data div.fridge-temp input[type="text"] {
+  margin: 0;
+  text-align: right;
+  width: 20px;
+}
+#health_center_main div.fridge-data ul.check-list {
+  padding-left: 0;
+}
+#health_center_main div.fridge-data ul.check-list label {
+  display: block
+}
+#health_center_main div.fridge-data textarea {
+  margin-top: -1.5em;
+  height: 4em;
+  width: 90%;
+}
