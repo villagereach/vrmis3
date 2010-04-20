@@ -274,6 +274,13 @@ input, textarea {
   font-family: sans-serif;
   font-size: 16px;
 }
+span.radio.horizontal span.value {
+  float: left;
+}
+span.radio.horizontal div.xforms-item {
+  float: left;
+  margin-right: 0.5em;
+}
 /* }}} */
 /* user header & HC header {{{ */
 #user_tools {
@@ -615,8 +622,7 @@ table.spreadsheet div.tally input[type="text"] {
   text-align: right;
   width: 50px;
 }
-table.spreadsheet div.tally.month-year input[type="text"],
-table.spreadsheet tbody#fridge-list th input[type="text"] {
+table.spreadsheet div.tally.month-year input[type="text"] {
   width: 80px;
 }
 table.spreadsheet div.tally div.nr {
@@ -641,15 +647,46 @@ table.spreadsheet input.xforms-value[type="text"] {
   border-bottom: 0;
   text-align: center;
 }
-#case-equipment #fridge-list tr th .xforms-value {
-  width : 7em;
+#case-cold_chain div.fridge-id {
+  margin: 0 1%;
+  padding: 0;
 }
-span.radio.horizontal span.value {
+#case-cold_chain div.two-column > div {
   float: left;
+  margin: 0 1%;
+  width: 48%;
 }
-span.radio.horizontal div.xforms-item {
-  float: left;
+#case-cold_chain div.xforms-group-content {
+  clear: both;
+}
+#case-cold_chain div.xforms-repeat-item {
+  margin: 1em 0;
+}
+#case-cold_chain .fridge-id input[type="text"] {
+  width: 80px;
+}
+#case-cold_chain .fridge-temp span.value {
+  display: block;
+}
+#case-cold_chain .fridge-temp input[type="text"] {
+  margin: 0 2px 0 4px;
+  width: 20px;
+}
+#case-cold_chain .xforms-textarea textarea {
+  height: 4em;
+  width: 90%;
+}
+#case-cold_chain label {
   margin-right: 0.5em;
+}
+#case-cold_chain .block-form .xforms-input,
+#case-cold_chain .block-form .xforms-select,
+#case-cold_chain .block-form .xforms-select1,
+#case-cold_chain .block-form .xforms-textarea {
+  margin: 0;
+}
+#case-cold_chain .xforms-group {
+  margin-bottom: 1em;
 }
 /* }}} */
 

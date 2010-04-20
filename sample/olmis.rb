@@ -182,8 +182,7 @@
     }
   ],
 
-  'fridge_statuses' => ['BROKE','MISS','PROB','OK'],
-  'equipment_statuses' => ['BROKE','MISS','PROB','OK','MORE'],
+  'fridge_statuses' => ['OPER','BURN','GAS','FAULT','THERM','OTHER','OK'],
   
   'stock_cards' => ['polio','penta','bcg'],
 

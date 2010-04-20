@@ -73,6 +73,21 @@ function fixup_nr_checkboxes() {
   });
 }
 
+function setup_fridge_form() {
+  var temp_input = jQuery('#case-cold_chain .fridge-temp input');
+  if (temp_input.siblings().length == 0) {
+    jQuery('<span><%= h(t("visits.health_center_cold_chain.temp_input_prefix")) %></span>').insertBefore(temp_input);
+    jQuery('<span><%= h(t("visits.health_center_cold_chain.temp_input_suffix")) %></span>').insertAfter(temp_input);
+
+    // Shift nodes so that the alert icon precedes the input field, except for the other problem text area
+    jQuery('#case-cold_chain span.value').each(function() {
+      if (jQuery(this).children()[0].nodeName.toLowerCase() != 'textarea') {
+        jQuery(this).insertAfter(jQuery(this).next());
+      }
+    });
+  }
+}
+
 function set_equipment_notes_area_size() {
   var ta = jQuery('#case-equipment .xforms-textarea textarea');
   ta.height(ta.parents('td').attr('rowspan') * ta.parents('td').prev().height() * 0.7);
@@ -456,6 +471,7 @@ function select_visit() {
     Dialog.hide("statusPanel");
     show_container(containers['visit']);
     fixup_form_container_size();
+    setup_fridge_form();
   }, 1);
   
   xforms.closeAction();

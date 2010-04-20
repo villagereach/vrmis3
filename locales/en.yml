@@ -146,6 +146,7 @@ en:
       coverage:               "Coverage"
       autoeval:               "Autoevaluation"
   NR: "NR"
+  unknown: "Don't know"
   status_category:
     red:    "Red"
     yellow: "Yellow"
@@ -541,6 +542,13 @@ en:
       status:       "Status"
       temperature:  "Temp (°C)"
       notes:        "Notes"
+      fridge_id:    "ID"
+      past_problem: "Has there been a problem with the refrigerator since the last visit?"
+      arrival_temp: "What was the refrigerator's temperature when you arrived at the health center?"
+      temp_input_prefix: "Temp:"
+      temp_input_suffix: "°C"
+      departure_state: "Was the refrigerator functioning adequately (within 2-8°C) when you left the health center?"
+      problem:      "What is the problem(s)?"
     health_center_stock_cards:
       page_title: "Stock Card Information"
       name: "Stock Card"
@@ -684,7 +692,8 @@ en:
         fridge_code:          "A fridge code must be entered"
         temperature:          "The temperature must be an integer value. A working fridge temperature must be between 2 and 8 °C."
         quantity:             "The quantity must be a non-negative integer value"
-        select_an_option:     'An option must be selected'
+        select_an_option:     "An option must be selected"
+        other_fridge_status:  "Describe the problem"
       # ODK-specific data
       visit_intro:
         label: "Visit Intro"

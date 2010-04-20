@@ -31,16 +31,13 @@ en:
     extinguisher: Extinguisher
     transport:    Transport
   FridgeStatus:
-    BROKE: Broken
-    MISS:  Missing
-    PROB:  Problem
+    OPER:  Operator Error
+    BURN:  Burner Problem
+    GAS:   Gas Leak or Gas Line Problem
+    FAULT: Electrical/Gas/Petrol Fault
+    THERM: Thermostat Setting
+    OTHER: Other Problem (Describe)
     OK:    Working
-  EquipmentStatus:
-    BROKE: Broken
-    MISS:  Missing
-    PROB:  Problem
-    OK:    Working
-    MORE:  Need more
   StockCard:
     polio: Polio
     penta: Penta

@@ -235,11 +235,12 @@
         <xf:bind id="<%= id %>:use"  nodeset="<%= node %>/@use"  required="true()" />
       <%- end -%>
 
-      <xf:bind id="fridge:code"   nodeset="/olmis/hcvisit/visit/cold_chain/fridges/fridge/@code"   required="false()" />
-      <xf:bind id="fridge:status" nodeset="/olmis/hcvisit/visit/cold_chain/fridges/fridge/@status" required="true()" relevant="../@code != ''" />
-      <xf:bind id="fridge:nr"     nodeset="/olmis/hcvisit/visit/cold_chain/fridges/fridge/@nr"     required="false()" type="xf:boolean" relevant="../@code != '' and ../@status != 'BROKE' and ../@status != 'MISS'" />
-      <xf:bind id="fridge:temp"   nodeset="/olmis/hcvisit/visit/cold_chain/fridges/fridge/@temp"   required="../@nr != true()" type="xf:integer" constraint="(. &gt;= 2 and . &lt;= 8 and ../@status = 'OK') or ../@status = 'PROB'" relevant="../@code != '' and ../@status != 'BROKE' and ../@status != 'MISS'" />
-      <xf:bind id="fridge:notes"  nodeset="/olmis/hcvisit/visit/cold_chain/fridges/fridge/@notes"  required="false()" relevant="../@code != ''" />
+      <xf:bind id="fridge:code"          nodeset="/olmis/hcvisit/visit/cold_chain/fridges/fridge/@code"          required="false()" />
+      <xf:bind id="fridge:past_problem"  nodeset="/olmis/hcvisit/visit/cold_chain/fridges/fridge/@past_problem"  required="true()" relevant="../@code != ''" />
+      <xf:bind id="fridge:temp"          nodeset="/olmis/hcvisit/visit/cold_chain/fridges/fridge/@temp"          required="true()" type="xf:integer" relevant="../@code != ''" />
+      <xf:bind id="fridge:state"         nodeset="/olmis/hcvisit/visit/cold_chain/fridges/fridge/@state"         required="true()" relevant="../@code != ''" />
+      <xf:bind id="fridge:problem"       nodeset="/olmis/hcvisit/visit/cold_chain/fridges/fridge/@problem"       required="true()" relevant="../@state = 'problem'" />
+      <xf:bind id="fridge:other_problem" nodeset="/olmis/hcvisit/visit/cold_chain/fridges/fridge/@other_problem" required="true()" relevant="../@state = 'problem' and jr:regex(../@problem, '\\bOTHER\\b')" />
 
       <%- tally_classes.each do |klass| -%>
         <%- klass.expected_params().each do |param, value_type|
@@ -610,65 +611,76 @@
               <div id="div-cold_chain" class="block-form">
                 <xf:group bind="visit_data">
                   <xf:label><%= h(t("visits.health_center_cold_chain.page_title")) %></xf:label>
-                  <p class="note"><%= h(t("visits.health_center_cold_chain.instructions")) %></p>
-                  <table class="equipment cold_chain spreadsheet">
-                    <thead>
-                      <tr>
-                        <th><%= h(t("visits.health_center_cold_chain.fridge")) %></th>
-                        <th><%= h(t("visits.health_center_cold_chain.status")) %></th>
-                        <th><%= h(t("visits.health_center_cold_chain.temperature")) %></th>
-                        <th><%= h(t("visits.health_center_cold_chain.notes")) %></th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <xf:repeat id="fridge-list" nodeset="/olmis/hcvisit/visit/cold_chain/fridges/fridge">
-                        <th>
-                          <xf:input ref="@code">
-                            <xf:alert><%= h(t(".errors.fridge_code")) %></xf:alert>
-                          </xf:input>
-                        </th>
-                        <td>
-                          <xf:select1 ref="@status">
-                            <xf:item>
-                              <xf:label><%= h(t("select_blank")) %></xf:label>
-                              <xf:value></xf:value>
-                            </xf:item>
-                            <%- FridgeStatus.status_options.each do |label,value| -%>
-                              <xf:item>
-                                <xf:label><%= h label %></xf:label>
-                                <xf:value><%= h value %></xf:value>
-                              </xf:item>
-                            <%- end -%>
-                            <xf:alert><%= h(t(".errors.select_status")) %></xf:alert>
-                          </xf:select1>
-                        </td>
-                        <td>
-                          <div class="tally">
+                  <xf:repeat id="fridge-list" nodeset="/olmis/hcvisit/visit/cold_chain/fridges/fridge">
+                    <xf:group class="fridge-data">
+                      <xf:group class="fridge-id">
+                        <xf:input ref="@code">
+                          <xf:label><%= h(t("visits.health_center_cold_chain.fridge_id")) %></xf:label>
+                          <!--xf:alert><%= h(t(".errors.fridge_code")) %></xf:alert-->
+                        </xf:input>
+                      </xf:group><!-- class="fridge-data" -->
+                      <div class="two-column">
+                        <xf:group class="fridge-in">
+                          <xf:group class="fridge-past_problem">
+                            <xf:select1 ref="@past_problem" appearance="full" class="radio">
+                              <xf:label><%= h(t("visits.health_center_cold_chain.past_problem")) %></xf:label>
+                              <%- [ [ h(t("yes")), "true" ], [ h(t("no")), "false" ], [ h(t("unknown")), "nr" ] ].each do |label,value| -%>
+                                <xf:item>
+                                  <xf:label><%= h label %></xf:label>
+                                  <xf:value><%= h value %></xf:value>
+                                </xf:item>
+                              <%- end -%>
+                              <xf:alert><%= h(t(".errors.select_an_option")) %></xf:alert>
+                            </xf:select1>
+                          </xf:group><!-- class="fridge-past_problem" -->
+
+                          <xf:group class="fridge-temp">
                             <xf:input ref="@temp">
-                              <xf:action ev:event="xforms-value-changed">
-                                <xf:setvalue if="string-length(.) &gt; 0" ref="/olmis/hcvisit/visit/cold_chain/fridges/fridge[index('fridge-list')]/@nr" value="'false'" />
-                                <xf:setvalue if=". = '' and /olmis/hcvisit/visit/cold_chain/fridges/fridge[index('fridge-list')]/@nr = 'false'" ref="/olmis/hcvisit/visit/cold_chain/fridges/fridge[index('fridge-list')]/@nr" />
-                              </xf:action>
+                              <xf:label><%= h(t("visits.health_center_cold_chain.arrival_temp")) %></xf:label>
                               <xf:alert><%= h(t(".errors.temperature")) %></xf:alert>
                             </xf:input>
-                            <div class="nr">
-                              <xf:input ref="@nr" incremental="true">
-                                <xf:label><%= h(t("NR")) %></xf:label>
-                                <xf:action ev:event="xforms-value-changed">
-                                  <xf:setvalue if=". = 'true'" ref="/olmis/hcvisit/visit/cold_chain/fridges/fridge[index('fridge-list')]/@temp" value="''" />
-                                </xf:action>
-                              </xf:input>
-                            </div>
-                          </div>
-                        </td>
-                        <td>
-                          <xf:textarea ref="@notes"/>
-                        </td>
-                      </xf:repeat>
-                    </tbody>
-                  </table>
+                          </xf:group><!-- class="fridge-temp" -->
+                        </xf:group><!-- class="fridge-in" -->
+
+                        <xf:group class="fridge-out">
+                          <xf:group class="fridge-state">
+                            <xf:select1 ref="@state" appearance="full" class="radio">
+                              <xf:label><%= h(t("visits.health_center_cold_chain.departure_state")) %></xf:label>
+                              <%- [ [ h(t("yes")), "OK" ], [ h(t("no")), "problem" ], [ h(t("unknown")), "nr" ] ].each do |label,value| -%>
+                                <xf:item>
+                                  <xf:label><%= h label %></xf:label>
+                                  <xf:value><%= h value %></xf:value>
+                                </xf:item>
+                              <%- end -%>
+                              <xf:alert><%= h(t(".errors.select_an_option")) %></xf:alert>
+                            </xf:select1>
+                          </xf:group><!-- class="fridge-state" -->
+
+                          <xf:group class="fridge-problem">
+                            <xf:select ref="@problem" appearance="full">
+                              <xf:label><%= h(t("visits.health_center_cold_chain.problem")) %></xf:label>
+                              <%- FridgeStatus.not_ok_status_options.each do |label,value| -%>
+                                <xf:item>
+                                  <xf:label><%= h label %></xf:label>
+                                  <xf:value><%= h value %></xf:value>
+                                </xf:item>
+                              <%- end -%>
+                              <xf:alert><%= h(t(".errors.select_status")) %></xf:alert>
+                            </xf:select>
+                          </xf:group><!-- class="fridge-problem" -->
+
+                          <xf:group>
+                            <xf:textarea ref="@other_problem">
+                              <xf:alert><%= h(t(".errors.other_fridge_status")) %></xf:alert>
+                            </xf:textarea>
+                          </xf:group>
+                        </xf:group><!-- class="fridge-out" -->
+                      </div><!-- class="multi-column" -->
+                      <div class="clear" />
+                    </xf:group>
+                  </xf:repeat>
                 </xf:group>
-              </div>
+              </div><!-- id="div-cold_chain" -->
             </xf:case><!-- id="case-cold_chain" -->
 
             <%- Inventory.inventory_screens.each do |screen|
