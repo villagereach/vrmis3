@@ -98,15 +98,16 @@ class FridgeStatus < ActiveRecord::Base
                   I18n.l(date, :format => :short) 
                 end)
     
-    if notes.blank?
+    if other_problem.blank?
       "#{ i18n_status_code } #{date_str}"
     else
-      "#{ i18n_status_code } (#{ notes }) #{ date_str }"
+      "#{ i18n_status_code } (#{ other_problem }) #{ date_str }"
     end
   end
 
   def urgent?
-    ['DAM', 'BROKE', 'MISS'].include?(status_code)
+    # TODO: Adjust this list as required
+    (FridgeStatus.status_codes - ['OK']).include?(status_code)
   end
   
   def i18n_status_code
