@@ -1,11 +1,11 @@
 # == Schema Information
-# Schema version: 20100205183625
+# Schema version: 20100419182754
 #
 # Table name: health_center_visit_inventory_groups
 #
 #  id                         :integer(8)      primary key
 #  health_center_visit_id     :integer(4)      default(0), not null
-#  package_id                 :integer(4)
+#  package_id                 :integer(4)      default(0), not null
 #  existing_quantity          :integer(4)
 #  delivered_quantity         :integer(4)
 #  expected_delivery_quantity :integer(4)      default(0)

@@ -1,18 +1,17 @@
 # == Schema Information
-# Schema version: 20100127014005
+# Schema version: 20100419182754
 #
 # Table name: health_centers
 #
 #  id                     :integer(4)      not null, primary key
-#  name                   :string(255)     default(""), not null
 #  code                   :string(255)     default(""), not null
 #  description            :text            default(""), not null
 #  stock_room_id          :integer(4)      not null
-#  user_id                :integer(4)      not null
 #  delivery_zone_id       :integer(4)      not null
 #  administrative_area_id :integer(4)      not null
 #  created_at             :datetime
 #  updated_at             :datetime
+#  catchment_population   :integer(4)
 #
 
 class HealthCenter < ActiveRecord::Base

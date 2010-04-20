@@ -1,14 +1,14 @@
 # == Schema Information
-# Schema version: 20100205183625
+# Schema version: 20100419182754
 #
 # Table name: products
 #
-#  id           :integer(4)      not null, primary key
-#  name         :string(255)     not null
-#  position     :integer(4)      default(0), not null
-#  created_at   :datetime
-#  updated_at   :datetime
-#  product_type :string(255)     default(""), not null
+#  id              :integer(4)      not null, primary key
+#  code            :string(255)     not null
+#  product_type_id :integer(4)      not null
+#  position        :integer(4)      default(0), not null
+#  created_at      :datetime
+#  updated_at      :datetime
 #
 
 class Product < ActiveRecord::Base

@@ -1,19 +1,20 @@
 # == Schema Information
-# Schema version: 20100127014005
+# Schema version: 20100419182754
 #
 # Table name: roles
 #
 #  id           :integer(4)      not null, primary key
-#  name         :string(255)     not null
+#  code         :string(255)     not null
+#  landing_page :string(255)
 #  created_at   :datetime
 #  updated_at   :datetime
-#  landing_page :string(255)
 #
 
 class Role < ActiveRecord::Base
   include BasicModelSecurity
-  has_many :users
   referenced_by :code
+
+  has_many :users
 
   def label
     I18n.t("Role.#{code}")

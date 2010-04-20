@@ -1,14 +1,13 @@
 # == Schema Information
-# Schema version: 20100205183625
+# Schema version: 20100419182754
 #
 # Table name: packages
 #
 #  id         :integer(4)      not null, primary key
-#  name       :string(255)     not null
+#  code       :string(255)     default(""), not null
 #  quantity   :integer(4)      default(0)
 #  product_id :integer(4)      not null
 #  position   :integer(4)      default(0), not null
-#  code        :string(255)     default(""), not null
 #  created_at :datetime
 #  updated_at :datetime
 #

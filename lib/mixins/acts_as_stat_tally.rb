@@ -138,15 +138,21 @@ module ActsAsStatTally
       data_entry_group.reject { |k,v| k.ends_with?('/NR') }.each do |k, v|
         dimensions, value = parse_header(k)
 
-        next if v.blank? && data_entry_group[k + '/NR'].to_s != '1'
-        v = '' if v.to_s.strip.upcase == 'NR'
-
         records[dimensions] ||= new_from_keys_and_dimensions_and_user(keys, dimensions, user)        
 
-        records[dimensions].update_attributes(value => v, :updated_by => user) if v.to_s != records[dimensions][value].to_s
-        records[dimensions].save
-
-        errors[k] = records[dimensions].errors unless records[dimensions].errors.empty?
+        if v.blank? && data_entry_group[k + '/NR'].to_s != '1'
+          if !records[dimensions].new_record?
+            records.delete(dimensions).delete()
+          end
+        else
+          v = nil if v.to_s.strip.upcase == 'NR' || v.blank?
+  
+          records[dimensions].update_attributes(value => v, :updated_by => user) if v.to_s != records[dimensions][value].to_s
+  
+          records[dimensions].save
+  
+          errors[k] = records[dimensions].errors unless records[dimensions].errors.empty?
+        end
       end
       
       return records, errors
@@ -195,7 +201,7 @@ module ActsAsStatTally
       
       _categories << [sym, dc_code]
     end
-    
+
     def date_key_field *args
       if args.empty?
         @date_key_field || 'date_period'
@@ -213,7 +219,7 @@ module ActsAsStatTally
         validates_presence_of @string_key_field
       end
     end
-    
+
     def tally_fields *args
       if args.empty?
         (@tally_fields || [])
@@ -224,7 +230,7 @@ module ActsAsStatTally
         end
       end
     end
-    
+
     def date_fields *args
       if args.empty?
         (@date_fields || []) || []
@@ -232,7 +238,7 @@ module ActsAsStatTally
         @date_fields = args
       end
     end
-    
+
     def dimensions args={}
       if args.empty?
         @dimensions || {}
@@ -243,7 +249,7 @@ module ActsAsStatTally
         end
       end
     end
-    
+
     def fields
       tally_fields.map { |f| [f, :tally] } +
         _categories.map { |c| [c.first, :descriptive_category] } +
@@ -252,32 +258,32 @@ module ActsAsStatTally
         [date_key_field].map { |k| [k, :date_key] } +
         [string_key_field].map { |k| [k, :string_key] }
     end
-    
+
     def fields_hash
       @fields_hash ||= Hash[*fields.flatten]
     end
-    
+
     def fields_position
       @fields_position ||= Hash[*fields.map(&:first).map_with_index { |f, i| [f,i] }.flatten]
     end
-  
+
     def value_fields
       tally_fields + date_fields
     end
-    
+
     def dimension_fields
       dimensions.keys
     end
-    
-    def define_form_table name, rows, cols
+
+    def define_form_table(name, rows, cols)
       @form_tables ||={}
       @form_tables[name] = [rows, cols]
     end
 
-    def form_table name
+    def form_table(name)
       @form_tables[name]
     end
-    
+
     def descriptive_category_code(dim)
       cc = _categories.detect { |c| c.first == dim }
       cc.last if cc.present?
@@ -298,7 +304,7 @@ module ActsAsStatTally
         dimensions[dim].all.sort.map { |v| [dim, v.code] }
       end
     end
-   
+
     def header_for(dim, value)
       code = case fields_hash[dim]
             when :tally, :date
@@ -309,8 +315,7 @@ module ActsAsStatTally
               I18n.t("#{dimensions[dim].class_name}.#{value}")
             end
     end
-    
-    
+
     def tally_name
       self.name.titleize.capitalize.gsub(/\ tally$/, '').pluralize
     end
@@ -318,7 +323,7 @@ module ActsAsStatTally
     def values_and_dimensions(point)
       point.partition { |v| [:tally, :date].include?(fields_hash[v.first]) }
     end
-    
+
     def value_type(point)
       values, dimensions = values_and_dimensions(point)
       if values.length > 0 
@@ -327,7 +332,7 @@ module ActsAsStatTally
         return :tally
       end
     end
-    
+
     def expected_params(name=:standard)
       row_groups, col_groups = form_table(name)
 
@@ -342,31 +347,12 @@ module ActsAsStatTally
         }
       }.flatten_once.compact
     end
-    
+
     def param_name(point)
       values, dimensions = values_and_dimensions(point)
       sorted = dimensions.sort_by { |t, v| fields_position[t] }.map(&:last)
       raise "Multiple value fields" if values && values.length > 1 
       sorted.join(",") + (values.empty? ? '' : ':' + values.first.last.to_s)
-    end
-    
-    def spreadsheet_structure name
-      row_groups, col_groups = form_table(name)
-
-      col_group_combinations = col_groups.map { |cg| Enumerable.multicross(*cg.map { |col| possible_key_values(col) }) }.inject { |a,b| a + b }
-      row_group_combinations = row_groups.map { |cg| Enumerable.multicross(*cg.map { |row| possible_key_values(row) }) }.inject { |a,b| a + b }
-      
-      structure = { :header => tally_name }
-      
-      row_group_combinations.each_with_index do |rg, row|        
-        col_group_combinations.each_with_index do |cg, col|
-          unless category_excluded?(Hash[*(rg + cg).flatten])            
-            structure[ param_name(rg + cg) ] = [row + cg.length + 1, col + rg.length + 1 ]
-          end
-        end
-      end
-
-      structure
     end
   end
 end
