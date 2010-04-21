@@ -13,7 +13,7 @@ module ProgressHelper
   end
 
   def progress_class_for_task(visit, task)
-    progress_class(visit.status_by_table(HealthCenterVisit.tasks_and_tables[task.to_s]))
+    progress_class(visit.status_by_screen(task.to_s))
   end
 
   def progress_class_for_visit(visit)
@@ -71,74 +71,6 @@ module ProgressHelper
       raise "Unknown report status: #{report_status}"
     end
   end
-
-  
-  
-  def progress_bar_per_batch(health_center, options = {})
-    icon_size = options[:size] || "normal"
-
-    # Visit
-    title = I18n.t('visits.health_center_monthly_tasks.visit')
-    contents, status = if visit = HealthCenterVisit.find_by_health_center_id_and_visit_month(health_center.id, visit_month)
-                         [ content_tag(:span, progress_complete(icon_size), :class => :complete, :title => title), visit.status_by_table ]
-                       else
-                         [ content_tag(:span, progress_todo(icon_size), :class => :empty, :title => title), Hash.new(HealthCenterVisit::REPORT_NOT_DONE) ]
-                       end
-
-    # Inventory
-    HealthCenterVisit.inventory_screen_hash.each do |k, v|
-      title = I18n.t("visits.health_center_monthly_tasks.#{k}")
-      contents << progress_bar_field(status[v], title, icon_size)
-    end
-
-    # General Equipment
-    contents << progress_bar_field(status['GeneralEquipment'],
-                                   I18n.t('visits.health_center_monthly_tasks.general'),
-                                   icon_size)
-
-    # Cold Chain
-    contents << progress_bar_field(status['ColdChainEquipment'],
-                                   I18n.t('visits.health_center_monthly_tasks.cold_chain'),
-                                   icon_size)
-
-    # Stock Cards
-    contents << progress_bar_field(status['StockCardEquipment'],
-                                   I18n.t('visits.health_center_monthly_tasks.stock_cards'),
-                                   icon_size)
-
-    # EPI Tallies
-    HealthCenterVisit.tally_hash.each do |tally_klass, v|
-      title = I18n.t("visits.health_center_monthly_tasks.#{tally_klass.underscore}")
-      contents << progress_bar_field(status[tally_klass.to_s], title, icon_size)
-    end
-
-    contents
-  end
-
-  def progress_bar_per_batch_group(health_center, options = {})
-    icon_size = options[:size] || "normal"
-
-    # Visit
-    title = I18n.t('visits.health_center_monthly_tasks.visit')
-    contents, status = if visit = HealthCenterVisit.find_by_health_center_id_and_visit_month(health_center.id, visit_month)
-                         [ content_tag(:span, progress_complete(icon_size), :class => :complete, :title => title), visit.status_by_table_group ]
-                       else
-                         [ content_tag(:span, progress_todo(icon_size), :class => :empty, :title => title), {} ]
-                       end
-
-    # Inventory
-    contents << progress_bar_field(status['Inventory'], I18n.t('visits.health_center_monthly_tasks.inventory'), icon_size)
-
-    # Equipment
-    contents << progress_bar_field(status['Equipment'], I18n.t('visits.health_center_monthly_tasks.equipment'), icon_size)
-
-    # EPI Tallies
-    contents << progress_bar_field(status['EPI'], I18n.t('EPI'), icon_size)
-
-    contents
-  end
-  
- 
 
   def progress_status_for_health_center(health_center, month = nil)
     month ||= visit_month
@@ -236,19 +168,25 @@ module ProgressHelper
     progress_bar_field(progress_status_for_month(month, health_centers), nil, icon_size)
   end
 
-  def named_route_for_step(name, path_params)
+  def named_route_for_screen(name, path_params)
     routes = {
-      'GeneralEquipment'   => health_center_equipment_general_url(path_params),
-      'ColdChainEquipment' => health_center_equipment_coldchain_url(path_params),
-      'StockCardEquipment' => health_center_equipment_stockcards_url(path_params),      
+      'general'   => health_center_equipment_general_url(path_params),
+      'cold_chain' => health_center_equipment_coldchain_url(path_params),
+      'stock_cards' => health_center_equipment_stockcards_url(path_params),      
     }
 
-    HealthCenterVisit.inventory_screen_hash.each do |k,v|
-      routes[v] = health_center_inventory_url(path_params.merge(:screen => v))
+    Inventory.screens.each do |screen|
+      routes[screen] = health_center_inventory_url(path_params.merge(:screen => screen))
     end
     
-    HealthCenterVisit.tally_hash.each do |k,v|
-      routes[k] = health_center_tally_url(path_params.merge(:tally => k))
+    Olmis.tally_klasses.each do |k|
+      routes[k.screens.first] = health_center_tally_url(path_params.merge(:tally => k))
+    end
+
+    Olmis.additional_visit_klasses.each do |k|
+      k.screens.each do |screen|
+        routes[screen] = send("health_center_#{k.table_name.singularize}_path", path_params.merge(:screen => screen))
+      end
     end
     
     routes[name.to_s] || health_center_visit_url(path_params)

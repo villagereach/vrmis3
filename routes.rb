@@ -64,6 +64,14 @@
   map.health_center_equipment_stockcards '/visits/:visit_month/:health_center/equipment/stockcards', :controller => 'visits', :action => 'health_center_stock_cards'
 
   map.health_center_inventory '/visits/:visit_month/:health_center/inv/:screen', :controller => 'visits', :action => 'health_center_inventory'
+  
+  tables = Olmis.additional_visit_klasses
+  if tables.present?
+    tables.each do |table|
+      path = table.table_name.singularize 
+      map.send("health_center_#{path}" "/visits/:visit_month/:health_center/#{path}/:screen", :controller => 'visits', :action => "health_center_#{path}")
+    end
+  end
 
   map.root :controller => 'dashboard', :action => 'homepage'
 
@@ -72,4 +80,3 @@
 
   map.delivery_zone_selector '/dz', :controller => 'olmis', :action => 'delivery_zone_selector'
   map.district_selector      '/dct', :controller => 'olmis', :action => 'district_selector'
-

@@ -16,6 +16,15 @@ class Olmis
         raise "Please create an OLMIS configuration file at #{path}"
       end
     end
+
+    def tally_klasses
+      tallies = configuration['tallies'] || {}
+      tallies.keys.map(&:constantize)
+    end
+    
+    def additional_visit_klasses
+      (configuration['additional_visit_tables'] || []).map(&:constantize)
+    end
     
     def area_hierarchy
       @area_hierarchy ||= configuration['administrative_area_hierarchy']

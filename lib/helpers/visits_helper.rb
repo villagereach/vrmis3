@@ -24,8 +24,8 @@ module VisitsHelper
   end 
 
   def hcv_best_starting_url(visit, options = {})
-    return named_route_for_step(visit, options) if visit.nil?
-    named_route_for_step(visit.first_unvisited_step, :health_center => visit.health_center.code, :visit_month => visit.visit_month)
+    return named_route_for_screen(visit, options) if visit.nil?
+    named_route_for_screen(visit.first_unvisited_screen, :health_center => visit.health_center.code, :visit_month => visit.visit_month)
   end
     
   def categorized_nav
@@ -33,7 +33,7 @@ module VisitsHelper
         [ [:visit, [I18n.t('visits.health_center_monthly_tasks.visit'), health_center_visit_path]]]],
       [ I18n.t('EPI'), 
         HealthCenterVisit.tally_hash.map { |k, v|
-          [k, [I18n.t("visits.health_center_monthly_tasks.#{k.underscore}"), health_center_tally_path(:tally => k)]]
+          [k.underscore, [I18n.t("visits.health_center_monthly_tasks.#{k.underscore}"), health_center_tally_path(:tally => k)]]
         }
       ],
       [ I18n.t('visits.health_center_monthly_tasks.inventory'),
