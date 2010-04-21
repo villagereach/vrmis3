@@ -42,9 +42,15 @@ class Inventory < ActiveRecord::Base
   end
 
   def self.possible_fields()
-    Enumerable.multicross(types, Package.all, screens).
-      select { |type, pkg, screen| pkg.inventoried_by_type?(type, screen) }.
-      uniq
+    returning Set.new do |fields|
+      HealthCenterVisit.screens.each do |screen|
+        types.each do |t|
+          Package.all.each do |package|
+            fields << [t, package, screen] if package.inventoried_by_type?(t, screen)
+          end
+        end
+      end
+    end
   end
 
   def package_count_quantity_by_package
