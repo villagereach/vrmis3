@@ -75,7 +75,7 @@ class HealthCenterVisit < ActiveRecord::Base
   end
   
   def self.inventory_screen_hash
-    @inventory_hash ||= Inventory.inventory_screens.inject({}) { |hash, screen| hash[screen] = screen.camelize ; hash }
+    @inventory_hash ||= Inventory.screens.inject({}) { |hash, screen| hash[screen] = screen.camelize ; hash }
   end
   
   def self.tasks_and_tables
@@ -167,15 +167,15 @@ class HealthCenterVisit < ActiveRecord::Base
   #   (existing inventory, delivered inventory, general equipment, cold chain equipment, stock card equipment,
   #   EPI usage, Adult vaccinations, Child vaccinations, Full vaccinations, and RDTs reports).
 
-  def status_by_table_with_visit
-    reports_status = status_by_table
-    reports_status['Visit'] = new_record? ? REPORT_NOT_DONE : REPORT_COMPLETE
+  def status_by_screen_with_visit
+    reports_status = status_by_screen
+    reports_status['visit'] = new_record? ? REPORT_NOT_DONE : REPORT_COMPLETE
     reports_status
   end
   
   def progress_numbers(return_parts=true)
-    required = status_by_table_with_visit.reject{ |k,v| [REPORT_NOT_VISITED, REPORT_IRRELEVANT].include?(v) }.size
-    done = status_by_table_with_visit.reject{ |k,v| v != REPORT_COMPLETE }.size
+    required = status_by_screen_with_visit.reject{ |k,v| [REPORT_NOT_VISITED, REPORT_IRRELEVANT].include?(v) }.size
+    done = status_by_screen_with_visit.reject{ |k,v| v != REPORT_COMPLETE }.size
     percent = (done * 100) / required
     return_parts ? [done, required, percent] : percent
   end
@@ -184,117 +184,44 @@ class HealthCenterVisit < ActiveRecord::Base
     progress_numbers(false)
   end
 
-  
-  # * <tt>:group => true</tt> - Return a hash of values consisting of the status for each visit batch group
-  #   (inventory, equipment, and EPI reports).
-  def status_by_table_group(status = reports_status)
-    {
-      'Inventory' => status['HealthCenterInventory'],
-      'Equipment' => combined_status(status['GeneralEquipment'],
-                                     status['ColdChainEquipment'],
-                                     status['StockCardEquipment']),
-      'EPI'       => combined_status(*status.values_at(self.class.tally_hash.keys))
-    }
-  end
-
-  def count_inventory(screen)
-    do_inventory = true  # NOTE: All HCs require inventory now, but may not in the future
-    expected, actual = entry_counts[screen] ||= begin
-      packages = Package.all.select { |p| Inventory.directly_collected_types.any? { |t| p.inventoried_by_type?(t, screen) } }
-      types = Inventory.directly_collected_types.select { |t| packages.any? { |p| p.inventoried_by_type?(t, screen) } }
-      if inventories = Inventory.all(:conditions => { :stock_room_id => health_center.stock_room, :inventory_type => types, :date => date })
-        package_codes = packages.map(&:code)
-        package_counts = inventories.map{|inventory| inventory.package_counts_by_package_code.delete_if{|k,v| !package_codes.include?(k)}.values}.flatten
-        entries = package_counts.reject{|pc| pc.id.nil?}.size
-        expected_entries = package_counts.size
-      end
-      [entries || 0, expected_entries || (do_inventory ? 1 : 0)]
-    end
-  end
-
-  def inventory_status(screen)
-    if date
-      reporting_status_field(*count_inventory(screen))
-    end
+  def self.tables
+    Olmis.tally_klasses + [Inventory, EquipmentStatus, FridgeStatus, StockCardStatus] + Olmis.additional_visit_klasses
   end
   
-  def equipment_status
-    if date
-      expected, statuses = entry_counts['equipment'] ||= [
-        EquipmentType.count, equipment_statuses.count
-      ] 
-      reporting_status_field(statuses, expected)
-    end
-  end
-
-  def stock_card_status
-    if date
-      expected_entries, entries = entry_counts['stock_cards'] ||= [
-        StockCard.count                                    + stock_card_statuses.select{ |s| s.have? }.length,
-        stock_card_statuses.reject{|s| s.have.nil?}.length + stock_card_statuses.reject{ |s| s.have? && s.used_correctly.nil?}.length
-      ]
-      reporting_status_field(entries, expected_entries)
-    end
-  end
-
-  def entry_counts
-    @entry_counts ||= {}
-  end
-
-  def entry_counts=(e)
-    @entry_counts = e
-  end
-
-  def cold_chain_entries
-    entry_counts['cold_chain'] ||= 
-      [health_center.stock_room.fridges.length, 
-        FridgeStatus.count(:conditions => { :fridge_id => health_center.stock_room.fridges, :user_id => user_id, :reported_at => date.beginning_of_day..date.end_of_day })] 
+  def self.screens
+    tables.map(&:screens).flatten
   end
   
-  def cold_chain_status
-    if date
-      expected_entries, entries = *cold_chain_entries
-      reporting_status_field(entries, expected_entries)
-    end
+  def entry_counts=(c)
+    @counts = c
   end
-
-  def tally_status(tally_klass)
-    conditions = { :conditions => { :health_center_id => health_center, :date_period => epi_month } }
-    entries = entry_counts[tally_klass.name] ||= tally_klass.count(conditions) 
-    expected_entries = tally_klass.expected_entries.length
-    reporting_status_field(entries, expected_entries)
-  end         
-
-  def status_by_table(table=nil)
+  
+  def status_by_screen(screen=nil)
     @status ||= returning ActiveSupport::OrderedHash.new do |h|
-      self.class.tally_hash.sort.each do |k, v|
-        h[k] = epi_data_ready? ? tally_status(k.constantize) : REPORT_NOT_VISITED
-      end
-
-      self.class.inventory_screen_hash.sort.each do |k, v|
-        h[v] = visited ? inventory_status(k) : REPORT_NOT_VISITED
-      end
+      statuses = @counts || HealthCenterVisitPeriodicProgress.new.counts_by_health_center_visit_for_date_period([visit_month], [id])[id]
       
-      h['GeneralEquipment']   = visited ? equipment_status  : REPORT_NOT_VISITED
-      h['ColdChainEquipment'] = visited ? cold_chain_status : REPORT_NOT_VISITED
-      h['StockCardEquipment'] = visited ? stock_card_status : REPORT_NOT_VISITED
+      self.class.screens.each do |s|
+        expected, entries = *statuses[s]
+        h[s] = reporting_status_field(expected, entries)
+      end
     end
-    table.nil? ? @status : @status[table]    
+
+    screen.nil? ? @status : @status[screen]    
   end
 
   def overall_status
-    st = status_by_table_with_visit.values.reject{|v| v == REPORT_NOT_VISITED || v == REPORT_IRRELEVANT}.uniq
+    st = status_by_screen_with_visit.values.reject{|v| v == REPORT_NOT_VISITED || v == REPORT_IRRELEVANT}.uniq
     return st.first if st.length == 1
     return REPORT_INCOMPLETE
   end
 
-  def first_unvisited_step
-    status_by_table.detect{|k,v| [REPORT_INCOMPLETE, REPORT_NOT_DONE].include?(v)}.maybe.first
+  def first_unvisited_screen
+    status_by_screen.detect{|k,v| [REPORT_INCOMPLETE, REPORT_NOT_DONE].include?(v)}.maybe.first
   end
   
   private
 
-  def reporting_status_field(entries, expected_entries)
+  def reporting_status_field(expected_entries, entries)
     if expected_entries == 0
       REPORT_IRRELEVANT
     elsif entries && entries >= expected_entries
@@ -339,28 +266,6 @@ class HealthCenterVisit < ActiveRecord::Base
                                                             :include => :package, :order => 'packages.position').group_by(&:package) : nil,
       })
   end
-  
-  def equipment_count_and_status_by_type
-    counts, statuses = find_or_initialize_equipment
-    Hash[*counts.zip(statuses).map { |c,s| [c.equipment_type, [c, s]] }.flatten_once]
-  end
-
-  # def find_or_initialize_equipment
-  #   equipment_types = EquipmentType.all.sort
-  #   equipment_counts = equipment_types.collect{|type| 
-  #     EquipmentCount.find_or_initialize_by_equipment_type_id_and_stock_room_id_and_health_center_visit_id(
-  #       type.id,
-  #       self.health_center ? self.health_center.stock_room.id : nil,
-  #       self.id) }
-  #
-  #   equipment_statuses = equipment_types.collect{|type| 
-  #     EquipmentStatus.find_or_initialize_by_equipment_type_id_and_stock_room_id_and_health_center_visit_id(
-  #       type.id,
-  #       self.health_center ? self.health_center.stock_room.id : nil,
-  #       self.id) }
-  #
-  #   return equipment_counts, equipment_statuses
-  # end    
 
   def find_or_initialize_equipment_statuses()
     EquipmentType.all.sort.collect{|type| 

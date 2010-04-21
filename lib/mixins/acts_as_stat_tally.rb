@@ -354,5 +354,31 @@ module ActsAsStatTally
       raise "Multiple value fields" if values && values.length > 1 
       sorted.join(",") + (values.empty? ? '' : ':' + values.first.last.to_s)
     end
+
+    def screens
+      [table_name.singularize]
+    end
+    
+    def progress_query(date_periods)    
+      <<-TALLY
+        select health_center_visits.id as id,
+          health_center_visits.visit_month as date_period,
+          #{expected_entries.length} as expected_entries,
+          '#{table_name.singularize}' as screen,
+          count(distinct #{table_name}.id) as entries
+        from health_center_visits 
+          left join #{table_name} on 
+            #{table_name}.health_center_id = health_center_visits.health_center_id
+            and #{table_name}.date_period = #{previous_date_period_sql('health_center_visits.visit_month')}
+        where health_center_visits.visit_month in (#{date_periods})
+        group by health_center_visits.id 
+      TALLY
+    end
+    
+    private
+
+    def previous_date_period_sql(dp)
+      "date_format((date(concat(#{dp}, '-01')) - interval 1 month), '%Y-%m')"
+    end    
   end
 end

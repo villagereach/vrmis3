@@ -5,6 +5,6 @@
       <%= h(health_center.label) %>
     <%- end -%>
     &ndash; <%= hcv_month(visit_month) %> &ndash;
-    <span class="note"><%= visit ? (visit.visited ? t(".visited_on", :date => I18n.l(visit.date)) : t(".did_not_visit")) : t(".new") %></span>
+    <span class="note"><%= visit ? (visit.date ? t(".visited_on", :date => I18n.l(visit.date)) : t(".did_not_visit")) : t(".new") %></span>
   </li>
 

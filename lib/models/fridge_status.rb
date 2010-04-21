@@ -137,6 +137,30 @@ class FridgeStatus < ActiveRecord::Base
   def date=(d)
     self.reported_at = d.to_date + 12.hours
   end
+
+  def self.screens
+    ['cold_chain']
+  end
+  
+  def self.progress_query(date_periods)
+    <<-CC
+      select health_center_visits.id as id, 
+        'cold_chain' as screen,
+        health_center_visits.visit_month as date_period,
+        count(distinct fridges.id) as expected_entries,
+        count(distinct fridge_statuses.id) as entries
+      from health_center_visits 
+        left join health_centers on health_centers.id = health_center_id
+        left join stock_rooms on stock_rooms.id = health_centers.stock_room_id
+        left join fridges on fridges.stock_room_id = stock_rooms.id
+        left join fridge_statuses 
+          on fridge_statuses.fridge_id = fridges.id
+          and date(fridge_statuses.reported_at) = health_center_visits.visited_at
+          and fridge_statuses.user_id = health_center_visits.user_id
+        where health_center_visits.visit_month in (#{date_periods})
+      group by health_center_visits.id 
+    CC
+  end
   
   report_column :fridge_code,          :sql_sort => 'fridges.code', :header => "headers.fridge_code", :type => :link, :data_proc => lambda { |s| [s.fridge_code, s.fridge ] }
   report_column :fridge_health_center, :sql_sort => 'administrative_areas.name', :header => "headers.health_center", :data_proc => lambda { |s| [s.fridge.stock_room.administrative_area.name] }

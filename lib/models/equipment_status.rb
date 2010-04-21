@@ -50,6 +50,24 @@ class EquipmentStatus < ActiveRecord::Base
   #  end
   #end
 
+  def self.screens
+    ['general']
+  end
+  
+  def self.progress_query(date_periods)
+    types = EquipmentType.count
+    <<-EQUIP
+      select health_center_visits.id as id, 
+        health_center_visits.visit_month as date_period,
+        #{types} as expected_entries,
+        count(distinct equipment_statuses.id) as entries,
+        'general' as screen
+      from health_center_visits 
+        left join equipment_statuses on equipment_statuses.health_center_visit_id = health_center_visits.id
+        where health_center_visits.visit_month in (#{date_periods})
+      group by health_center_visits.id 
+    EQUIP
+  end  
   #def damage_alert_level
   #  case status_code
   #  when 'Working'    then 0

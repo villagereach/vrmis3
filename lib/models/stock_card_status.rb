@@ -35,6 +35,27 @@ class StockCardStatus < ActiveRecord::Base
   def date=(d)
     self.reported_at = d.to_date + 12.hours
   end
+  
+  def self.screens
+    ['stock_cards']
+  end  
+
+  def self.progress_query(date_periods)
+    stock_cards = StockCard.count
+
+    <<-TALLY
+    select health_center_visits.id as id,
+      health_center_visits.visit_month as date_period,
+      'stock_cards' as screen,
+      #{stock_cards}                                                        + sum(case when stock_card_statuses.have = 1 then 1 else 0 end) as expected_entries,
+      sum(case when stock_card_statuses.have IS NOT NULL then 1 else 0 end) + sum(case when stock_card_statuses.have = 1 AND stock_card_statuses.used_correctly IS NOT NULL then 1 else 0 end) as entries
+    from health_center_visits
+    left join stock_card_statuses on 
+      stock_card_statuses.health_center_visit_id = health_center_visits.id
+    where health_center_visits.visit_month in (#{date_periods})
+    group by health_center_visits.id
+    TALLY
+  end
 
 end
 
