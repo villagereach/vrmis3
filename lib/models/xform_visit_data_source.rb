@@ -20,15 +20,13 @@ class XformVisitDataSource < DataSource
   def data_to_params(submission)
     xml = Nokogiri::XML(submission.data)
 
-    submission.created_on = xml.xpath('/vrmis3/meta/date').text
+    submission.created_on = xml.xpath('/olmis/meta/date').text
     
-    visits = xml.xpath('/vrmis3/hcvisit/*').reject { |n| n.name == 'epi' || n.name == 'visit' }
+    visits = xml.xpath('/olmis/hcvisit/*').reject { |n| n.name == 'epi' || n.name == 'visit' }
     
     params = { :health_center_visit => Hash[*visits.map { |n| [n.name, n.text] }.flatten] }
     
-    if vfc = User.find_by_name(params[:health_center_visit].delete('visiting_field_coordinator'))
-      params[:health_center_visit][:user_id] = vfc.id
-    elsif fc = User.find_by_name(xml.xpath('/vrmis3/meta/field_coordinator').text)
+    if fc = User.find_by_name(xml.xpath('/olmis/meta/field_coordinator').text)
       params[:health_center_visit][:user_id] = fc.id
     end
 
@@ -36,21 +34,21 @@ class XformVisitDataSource < DataSource
     params[:health_center_visit][:vehicle_code] = params[:health_center_visit].delete('vehicle_id')
     params[:health_center_visit].delete('epi_month')
     
-    xml.xpath('/vrmis3/hcvisit/epi/*').each do |epi|
+    xml.xpath('/olmis/hcvisit/epi/*').each do |epi|
       params[epi.name.singularize.camelize] = Hash[*epi.xpath('./item').map { |n|
         [n['for'].to_s, n['val'].to_s] +
           (n['nr'].to_s == "true" ? [n['for'].to_s + '/NR', 1] : [])
       }.flatten]
     end
 
-    xml.xpath('/vrmis3/hcvisit/visit/inventory/item').each do |inv|
+    xml.xpath('/olmis/hcvisit/visit/inventory/item').each do |inv|
       params[:inventory_counts] ||= {}
       params[:inventory_counts][inv['for'].to_s] ||= { }
       params[:inventory_counts][inv['for'].to_s][inv['type'].to_s] = inv['qty'].to_s
       params[:inventory_counts][inv['for'].to_s][inv['type'].to_s + '/NR'] = inv['nr'].to_s == 'true' ? 1 : 0
     end
 
-    xml.xpath('/vrmis3/hcvisit/visit/general/item').each do |equip|
+    xml.xpath('/olmis/hcvisit/visit/general/item').each do |equip|
       params[:equipment_status] ||= {}
       
       params[:equipment_status][equip['for'].to_s] = { 
@@ -59,7 +57,7 @@ class XformVisitDataSource < DataSource
       }
     end
 
-    xml.xpath('/vrmis3/hcvisit/visit/cold_chain/fridges/fridge').each do |fridge|
+    xml.xpath('/olmis/hcvisit/visit/cold_chain/fridges/fridge').each do |fridge|
       params[:fridge_status] ||= {}
       code = fridge['code'].to_s
       params[:fridge_status][fridge['code'].to_s] = {
@@ -71,7 +69,7 @@ class XformVisitDataSource < DataSource
       }
     end
 
-    xml.xpath('/vrmis3/hcvisit/visit/stock_cards/item').each do |card|
+    xml.xpath('/olmis/hcvisit/visit/stock_cards/item').each do |card|
       params[:stock_card_status] ||= {}
       params[:stock_card_status][card['for'].to_s] = {
         'have'           => card['have'].to_s,

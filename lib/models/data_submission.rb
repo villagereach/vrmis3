@@ -216,14 +216,17 @@ class DataSubmission < ActiveRecord::Base
     visited = @params[:health_center_visit].delete(:visited)    
 
     reason_for_not_visiting = @params[:health_center_visit].delete(:reason_for_not_visiting)
+    other_non_visit_reason  = @params[:health_center_visit].delete(:other_non_visit_reason)
 
     if ['true','else'].include?(visited)
       @visit.visited = visited
       @visit.reason_for_not_visiting = nil
+      @visit.other_non_visit_reason = nil
       @visit.field_coordinator = User.find_by_id(@params[:health_center_visit].delete(:user_id))
     elsif visited == 'false'
       @visit.visited = 'false'
       @visit.reason_for_not_visiting = reason_for_not_visiting
+      @visit.other_non_visit_reason = other_non_visit_reason #if reason_for_not_visiting == 'other'
       @visit.vehicle_code = nil
     end
 
@@ -235,8 +238,8 @@ class DataSubmission < ActiveRecord::Base
     
     @params[:fridge_status].each do |key, values|
       # Skip if no data entered for this fridge
-      next if values["temperature"].blank? && !values["past_problem"] &&
-        !values["state"] && !values["problem"] && values["other_problem"].blank?
+      next if values["temperature"].blank? && values["past_problem"].blank? &&
+        values["state"].blank? && values["problem"].blank? && values["other_problem"].blank?
 
       if record = fridge_statuses.detect{|fs| fs.fridge_code == key.to_s }
         db_values = {
