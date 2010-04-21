@@ -224,19 +224,6 @@ module OlmisHelper
     )
   end
 
-  def js_datepicker_default_options
-    "{ buttonImage: '/images/icons/silk/calendar_view_month.png',
-       buttonImageOnly: true,
-       gotoCurrent: true,
-       hideIfNoPrevNext: true,
-       showMonthAfterYear: false,
-       showOn: 'both' }".squish
-  end
-
-  def js_datepicker_region(locale)
-    %Q{(typeof jQuery.datepicker.regional['#{locale}'] === 'object' ? '#{locale}' : '')}
-  end
-
   def jquery_link_to_remote(name, options = {}, html_options = nil)
     # NOTE: Simplified version of PrototypeHelpers#link_to_remote to use jQuery instead.
     # This code only supports options we actually use.

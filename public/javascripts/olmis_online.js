@@ -7,21 +7,9 @@ FRIDGE_ENTRY_REGEX = /fridge-entry-(\d+)/;
 FRIDGE_ENTRY_DETAILS_PREFIX = '#fridge-entry-details-';
 FRIDGE_ENTRY_DETAILS_REGEX = /fridge-entry-details-(\d+)/;
 
-jQuery( document ).ready( function() {
-    init_collapser_lists();
-    init_fridge_list();
-    init_switcher_panes();
-    
-    call_anchor_method();
-
-    autofocus();
-})
-
-// only functions below
-function autofocus() {
-  jQuery( '.autofocus' ).focus();
-}
-
+var jqplots={}; 
+var table_options={};
+  
 // {{{ collapser lists
 function init_collapser_lists() {
   jQuery( '.collapser_container .collapser' ).children( 'li' ).children( 'span' ).click(
@@ -142,3 +130,17 @@ function call_anchor_method() {
       })
   }
 }
+
+jQuery( document ).ready( function() {
+  init_collapser_lists();
+  init_fridge_list();
+  init_switcher_panes();
+  
+  call_anchor_method();
+
+  autofocus();
+  
+  setup_error_links();
+  setup_datepicker();
+});
+
