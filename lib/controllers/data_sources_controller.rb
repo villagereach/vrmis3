@@ -57,6 +57,7 @@ class DataSourcesController < OlmisController
 
     files = manifest_data.split("\n").map(&:strip).grep(/^\//).map { |f| File.join(vendor_root, 'public', f) }.select { |f| File.exists?(f) } 
     files += Dir.glob(File.join(views_path, 'data_sources', '*'))
+    files += Dir.glob(File.join(Rails.root, 'app', 'views', 'visits', '*.xforms.erb'))
     files += [ File.join(views_path, 'javascripts', 'hcvisit.js.erb'),
                File.join(views_path, 'javascripts', 'date.js.erb'),
                File.join(views_path, 'javascripts', 'i18n.js.erb'),
