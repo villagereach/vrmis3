@@ -738,7 +738,7 @@ en:
     road_problem:         "Road impassable or bad weather"
     vehicle_problem:      "Transportation not available"
     health_center_closed: "The health center was closed at the time of the visit"
-    other:                "Other (Enter reason below)"
+    other:                "Other"
   UsageTally:
     doses_received:    "Received"
     doses_distributed: "Administered"

@@ -160,7 +160,9 @@ div.xforms-alert-value {
 .xforms-valid   span.xforms-alert { display: inline; }
 .menu-tab.xforms-valid span.xforms-alert, .xforms-optional span.xforms-alert, 
 #context-selector span.xforms-alert, #user_tools span.xforms-alert,
-#have_epi_data span.xforms-alert, #was_hc_visited span.xforms-alert { display: none; }
+#have_epi_data span.xforms-alert,
+#was_hc_visited span.xforms-alert,
+#non_visit_reason_selection span.xforms-alert { display: none; }
 
 .xforms-group-label { 
   border-bottom:1px solid #CCCCCC;
@@ -586,14 +588,6 @@ table.calendar {
 }
 /* }}} */
 /* individual sheets {{{ */
-#case-visit .xforms-textarea textarea {
-  width: 25em;
-  height: 2em;
-}
-#case-confirm .xforms-textarea textarea {
-  height: 8em;
-  width: 90%;
-}
 table.spreadsheet {
   width : auto;
 }
@@ -638,15 +632,40 @@ table.spreadsheet div.tally div.nr > span {
 table.spreadsheet input.xforms-value[type="text"] {
   width : 3em;
 }
+
+#case-visit .xforms-textarea textarea {
+  width: 25em;
+  height: 2em;
+  margin: 0;
+}
+#case-visit label {
+  margin-right: 4px;
+}
+#case-visit .block-form .xforms-input,
+#case-visit .block-form .xforms-select1,
+#case-visit .block-form .xforms-textarea {
+  margin: 0;
+}
+#case-visit .xforms-group {
+  margin-bottom: 1em;
+}
+
+#case-confirm .xforms-textarea textarea {
+  height: 8em;
+  width: 90%;
+}
+
 #case-epi_inventory .inventory thead th:first-child,
 #case-rdt_inventory .inventory thead th:first-child {
   text-align: center;
 }
+
 #case-child_vaccination_tallies tr:first-child th,
 #case-adult_vaccination_tallies tr:first-child th {
   border-bottom: 0;
   text-align: center;
 }
+
 #case-cold_chain div.fridge-id {
   margin: 0 1%;
   padding: 0;
