@@ -975,7 +975,7 @@ function upload_all() {
 function is_logged_in() {
   var evt = document.createEvent('MouseEvents')
   evt.initMouseEvent("click", true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
-  jQuery('#online_indicator a[href="#upload"]')[0].dispatchEvent(evt);  
+  jQuery('#other-actions a[href="#upload"]')[0].dispatchEvent(evt);  
 }
 
 function check_logged_in() {
@@ -1016,12 +1016,12 @@ function finish_upload() {
 
 jQuery(document).ready(function() {
   show_container(containers['login']);
-  jQuery('#online_indicator a[href="#login"]').fancybox( 
+  jQuery('#other-actions a[href="#login"]').fancybox( 
     { 'hideOnContentClick': false,
       'autoScale': false,
       'autoDimension': true,
       'onComplete': check_logged_in });
-  jQuery('#online_indicator a[href="#upload"]').fancybox( 
+  jQuery('#other-actions a[href="#upload"]').fancybox( 
     { 'hideOnContentClick': false,
       'autoScale': false,
       'autoDimension': true,
