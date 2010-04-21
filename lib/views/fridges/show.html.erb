@@ -21,10 +21,10 @@
     <% end %>
 
     <%= link_pair('fridges.fridge.field_coordinator', 
-                    @fridge.stock_room.health_center.delivery_zone.field_coordinator.try(&:name) || t("missing_fc"), 
+                    @fridge.stock_room.health_center.delivery_zone.field_coordinator.try(:name) || t("missing_fc"), 
                     @fridge.stock_room.health_center.delivery_zone.field_coordinator) %>
     <%= show_pair('fridges.fridge.field_coordinator_phone', 
-                    @fridge.stock_room.health_center.delivery_zone.field_coordinator.try(&:phone) || t("missing_fc")) %>
+                    @fridge.stock_room.health_center.delivery_zone.field_coordinator.try(:phone) || t("missing_fc")) %>
 
     <%- if @fridge.stock_room.fridges.count > 1 -%>
       <dt><%= t('fridges.fridge.health_center_related_fridges', :name => @fridge.stock_room.administrative_area.name) %></dt>

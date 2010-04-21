@@ -1,7 +1,7 @@
 <%-
    offset ||= 0
    exclude_columns ||= []
-   columns = [ :code, :health_center, :district, :latest_status, :latest_temp, :date_of_latest_status, :notes, :reported_by, :history_popup, :more_info_popup ] - exclude_columns
+   columns = [ :code, :health_center, :district, :latest_status, :latest_temp, :date_of_latest_status, :other_problem, :reported_by, :history_popup, :more_info_popup ] - exclude_columns
    columns << :update_link if Fridge.new.authorized_for_update?
 %>
 <%= render :partial => '/mini_reports/table', 

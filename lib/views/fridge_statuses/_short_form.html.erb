@@ -3,14 +3,14 @@
   <%= f.hidden_field :user_id %>
 
   <dl class="stacked">
-    <dt><%= f.label :status_code, t('.new_status') %></dt>
-    <dd><%= f.select :status_code, FridgeStatus.status_options %></dd>
-
     <dt><%= f.label :temperature, t('.new_temp') %></dt>
     <dd><%= f.text_field :temperature, :size=>5 %> &#176;C</dd>
 
-    <dt><%= f.label :notes, t('.notes') %></dt>
-    <dd><%= f.text_area :notes, :size=>'20x3' %></dd>
+    <dt><%= f.label :status_code, t('.new_status') %></dt>
+    <dd><%= f.select :status_code, FridgeStatus.status_options %></dd>
+
+    <dt <%= 'style="display:none"' unless fridge_status.status_code == 'OTHER' %>><%= f.label :other_problem, t('.describe') %></dt>
+    <dd <%= 'style="display:none"' unless fridge_status.status_code == 'OTHER' %>><%= f.text_area :other_problem, :size=>'20x3' %></dd>
   </dl>
   <p class="submit">
     <%= submit_tag t('update') %>

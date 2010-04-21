@@ -145,7 +145,7 @@ class FridgeStatus < ActiveRecord::Base
   report_column :temperature,          :sql_sort => 'fridge_statuses.temperature', :header => "headers.temperature", :type => :int
   report_column :date,                 :sql_sort => 'fridge_statuses.reported_at', :header => "headers.date", :type => :date, :data_proc => :reported_at
   report_column :time,                 :sql_sort => 'fridge_statuses.reported_at', :header => "headers.time", :type => :datetime, :data_proc => :reported_at
-  report_column :notes,                :sql_sort => 'fridge_statuses.other_status', :header => "headers.other_status"
+  report_column :other_problem,        :sortable => false, :header => "headers.other_problem"
   report_column :reported_by,          :sql_sort => 'users.name', :header => "headers.reported_by", :data_proc => lambda { |s| s.user_name }
 
 end

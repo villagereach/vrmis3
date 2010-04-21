@@ -87,6 +87,7 @@ en:
     status_date:               "Last updated"
     date:                      "Date"
     notes:                     "Notes"
+    other_problem:             "Other problem"
     reported_by:               "Reported by"
     history_popup:             ""
     more_info_popup:           ""
@@ -236,6 +237,7 @@ en:
       new_status: "New status"
       new_temp:   "New temperature"
       notes:      "Notes"
+      describe:   "Describe problem"
   login:
     please_log_in: "Please log in ..."
     welcome_back:  "Welcome back, {{name}}"

@@ -58,7 +58,7 @@ function init_fridge_list() {
   jQuery( '.fridge_list tr.summary_container td' ).hover(
       function() { jQuery( this ).parent().addClass( 'hover' ); },
       function() { jQuery( this ).parent().removeClass( 'hover' ); }
-  )
+  );
   jQuery( '.fridge_list tr.summary_container' ).click(
     function() {
       var entry = jQuery( this );
@@ -66,7 +66,7 @@ function init_fridge_list() {
       entry.hasClass( 'active' ) ? hide_fridge_details( entry, details ) : show_fridge_details( entry, details );
       return false;
     }
-  )
+  );
   jQuery( '.fridge_list tr.details_container .cancel' ).click(
     function() {
       var details = jQuery( this ).closest( '.details_container' );
@@ -74,7 +74,18 @@ function init_fridge_list() {
       hide_fridge_details( entry, details.find( '.content' ));
       return false;
     }
-  )
+  );
+  jQuery( '.fridge_list tr.details_container select' ).change(
+    function() {
+      // Show or hide the following DT/DD pair
+      if (jQuery(this).val() == 'OTHER') {
+        jQuery(this).closest('dd').next().show().next().show();
+      } else {
+        jQuery(this).closest('dd').next().hide().next().hide();
+      }
+      return false;
+    }
+  );
 }
 
 function get_entry( details ) {
@@ -101,6 +112,14 @@ function hide_fridge_details( entry, details ) {
   details.closest( '.details_container' ).removeClass( 'active' );
   details.slideUp( ANIMATION_SPEED );
   return false;
+}
+
+function show_or_hide_other_fridge_problem(node) {
+  if (node.val() == 'OPER') {
+    node.parent().next().show().next().show();
+  } else {
+    node.parent().next().hide().next().hide();
+  }
 }
 // }}} /fridge list
 // {{{ switcher panes

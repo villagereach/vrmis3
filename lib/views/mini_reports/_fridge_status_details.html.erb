@@ -52,8 +52,8 @@
 <tr class="details_container" id="<%= details_css_id %>">
   <td class="main" colspan="4">
     <div class="content">
-      <% if status.notes %>
-        <p class="status_notes"><em><%= t('.notes') %></em> &#8220;<%= status.notes %>&#8221;</p>
+      <% if status.other_problem %>
+        <p class="status_notes"><em><%= t('.notes') %></em> &#8220;<%= status.other_problem %>&#8221;</p>
       <% end %>
 
       <dl class="personnel inline">

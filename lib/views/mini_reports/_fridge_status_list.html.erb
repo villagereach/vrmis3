@@ -8,7 +8,7 @@
   exclude_columns ||= params[:exclude_columns].blank? ? [] : params[:exclude_columns].map(&:to_sym)
   columns ||= if params[:columns].blank?
                 exclude_columns += [:fridge_health_center, :fridge_district] if params[:suppress_location]
-                [:fridge_code, :fridge_health_center, :fridge_district, :status_code, :temperature, :date, :notes, :reported_by] - exclude_columns
+                [:fridge_code, :fridge_health_center, :fridge_district, :status_code, :temperature, :date, :other_problem, :reported_by] - exclude_columns
               else
                 params[:columns].map(&:to_sym)
               end
