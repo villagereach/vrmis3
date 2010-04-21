@@ -147,7 +147,7 @@ function do_cached() {
 function go_online() {
   online = true;
   jQuery("#online_indicator").addClass("online").removeClass("offline");
-  jQuery("#upload_link").addClass("online").removeClass("offline");
+  show_or_hide_upload_link();
 }
 
 function go_offline() {
@@ -526,7 +526,25 @@ function show_visits() {
 function show_main_page() {
   set_selected_value('health_center', '');
   set_selected_value('visit_period_selected', 'false()');
+  show_or_hide_upload_link();
   show_container(containers['main']);
+}
+
+function show_or_hide_upload_link() {
+  if (has_forms_ready_for_upload()) {
+    jQuery("#upload_link").addClass("online").removeClass("offline");
+  } else {
+    jQuery("#upload_link").removeClass("online").addClass("offline");
+  }
+}
+
+function has_forms_ready_for_upload() {
+  var ready = false;
+  for (var key in valid_forms) {
+    ready = key.match(/^[\d\-]+\/.+$/) && valid_forms[key];
+    if (ready) break;
+  }
+  return ready;
 }
 
 function get_context_path_value(ctx, path) {
