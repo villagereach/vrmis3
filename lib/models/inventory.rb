@@ -74,6 +74,36 @@ class Inventory < ActiveRecord::Base
     pc_hash
   end
 
+  def self.odk_to_params(xml)
+    params = {}
+
+    xml.xpath('/olmis/hcvisit/visit/inventory/*').find_all{|n| n.name.starts_with?('item_')}.each do |inv|
+      product = inv.name[5..-1]
+
+      params[product] = { }
+
+      inv.xpath('*').each do |type|
+        quantity = type.xpath('./qty').text
+
+        params[product][type.name]         = quantity == AndroidOdkVisitDataSource::NR ? nil : quantity
+        params[product][type.name + '/NR'] = quantity == AndroidOdkVisitDataSource::NR ?   1 : 0
+      end
+    end
+
+    params
+  end
+
+  def self.xforms_to_params(xml)
+    params = {}
+
+    xml.xpath('/olmis/hcvisit/visit/inventory/item').each do |inv|
+      params[inv['for'].to_s] ||= { }
+      params[inv['for'].to_s][inv['type'].to_s] = inv['qty'].to_s
+      params[inv['for'].to_s][inv['type'].to_s + '/NR'] = inv['nr'].to_s == 'true' ? 1 : 0
+    end
+    params
+  end
+
   def self.process_data_submission(visit, params)
     errors = {}
     

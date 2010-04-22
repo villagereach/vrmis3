@@ -367,8 +367,19 @@ module ActsAsStatTally
         visit.field_coordinator, params[slice])
       
       errors
-    end      
-    
+    end
+
+    def odk_to_params(xml)
+      nil
+    end
+
+    def xforms_to_params(xml)
+      Hash[*xml.xpath("/olmis/hcvisit/epi/#{table_name}/item").map { |n|
+        [n['for'].to_s, n['val'].to_s] +
+          (n['nr'].to_s == "true" ? [n['for'].to_s + '/NR', 1] : [])
+      }.flatten]
+    end
+
     def progress_query(date_periods)    
       <<-TALLY
         select health_center_visits.id as id,

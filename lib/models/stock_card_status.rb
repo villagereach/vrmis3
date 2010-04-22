@@ -40,6 +40,34 @@ class StockCardStatus < ActiveRecord::Base
     ['stock_cards']
   end  
 
+  def self.xforms_to_params(xml)
+    Hash[
+      *xml.xpath('/olmis/hcvisit/visit/stock_cards/item').map do |card|
+        [
+          card['for'].to_s,
+          {
+            'have'           => card['have'].to_s,
+            'used_correctly' => card['use'].to_s
+          }
+        ]
+      end.flatten_once
+    ]
+  end
+
+  def self.odk_to_params(xml)
+    Hash[
+      *xml.xpath('/olmis/hcvisit/visit/stock_cards/*').find_all{|n| n.name.starts_with?('item_')}.map do |card|
+        [
+          card.name[5..-1],
+          {
+            'have'           => card.xpath('./have').text,
+            'used_correctly' => card.xpath('./use').text
+          }
+        ]
+      end.flatten_once
+    ]
+  end
+
   def self.process_data_submission(visit, params)
     errors = {}
     stock_card_statuses = visit.find_or_initialize_stock_card_statuses

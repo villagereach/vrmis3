@@ -53,7 +53,35 @@ class EquipmentStatus < ActiveRecord::Base
   def self.screens
     ['general']
   end
-  
+
+  def self.xforms_to_params(xml)
+    Hash[
+      *xml.xpath('/olmis/hcvisit/visit/general/item').map do |equip|
+        [
+          equip['for'].to_s,
+          {
+            'present' => equip['present'].to_s,
+            'working' => equip['working'].to_s
+          }
+        ]
+      end.flatten_once
+    ]
+  end
+
+  def self.odk_to_params(xml)
+    Hash[
+      *xml.xpath('/olmis/hcvisit/visit/general/*').find_all{|n| n.name.starts_with?('item_')}.map do |equip|
+        [
+          equip.name[5..-1],
+          {
+            'present' => equip.xpath('./present').text,
+            'working' => equip.xpath('./working').text
+          }
+        ]
+      end.flatten_once
+    ]
+  end
+
   def self.process_data_submission(visit, params)
     errors = {}
     
