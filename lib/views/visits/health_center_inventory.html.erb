@@ -28,7 +28,7 @@
   </thead>
   <%- packages.partition_by{|package| package.product.product_type_code}.each do |type, stocks| -%>
     <tbody>
-      <%- stocks.each do |package| -%>
+      <%- stocks.sort.each do |package| -%>
         <%- index = package.code -%>
         <tr>
           <th><%= h package.label %></th>
