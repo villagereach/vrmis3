@@ -58,7 +58,7 @@ function do_download() {
   manifest_files['downloaded'] = 0;
   manifest_files['count'] = jQuery.
     ajax({ type:     'GET',
-           url:      document.childNodes[1].getAttribute('manifest'),
+           url:      document.childNodes[1].getAttribute('manifest').split('?')[0],
            data:     { locale: I18n.locale },
            dataType: 'text',
            async:    false
