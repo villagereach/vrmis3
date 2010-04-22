@@ -141,16 +141,49 @@ class FridgeStatus < ActiveRecord::Base
   def self.screens
     ['cold_chain']
   end
+  
+  def self.xforms_to_params(xml)
+    Hash[
+      *xml.xpath('/olmis/hcvisit/visit/cold_chain/fridges/fridge').map do |fridge|
+        [
+          fridge['code'].to_s, 
+          {
+            "past_problem" => fridge['past_problem'].to_s,
+            "temperature" => fridge['temp'].to_s,
+            "state" => fridge['state'].to_s,
+            "problem" => fridge['problem'].to_s,
+            "other_problem" => fridge['other_problem'].to_s
+          }
+        ]
+      end.flatten_once
+    ]
+  end
+
+  def self.odk_to_params(xml)
+    Hash[
+      *xml.xpath("/olmis/location/fridges/*/*").map do |fridge|
+        [
+          fridge['code'].to_s,
+          {
+            "past_problem"  =>  fridge.xpath('./past_problem').text,
+            "temperature"   =>          fridge.xpath('./temp').text,
+            "state"         =>         fridge.xpath('./state').text,
+            "problem"       =>       fridge.xpath('./problem').text,
+            "other_problem" => fridge.xpath('./other_problem').text
+          }
+        ]
+      end.flatten_once
+    ]
+  end
 
   def self.process_data_submission(visit, params)
     errors = {}
 
     fridge_statuses = visit.find_or_initialize_fridge_statuses
-    
+
     params[:fridge_status].each do |key, values|
       # Skip if no data entered for this fridge
-      next if values["temperature"].blank? && values["past_problem"].blank? &&
-        values["state"].blank? && values["problem"].blank? && values["other_problem"].blank?
+      next if values.values.all?(&:blank?)
 
       if record = fridge_statuses.detect{|fs| fs.fridge_code == key.to_s }
         db_values = {

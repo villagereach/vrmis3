@@ -21,14 +21,14 @@ class AndroidOdkVisitDataSource < DataSource
   def data_to_params(submission)
     xml = Nokogiri::XML(submission.data)
 
-    submission.created_on = xml.xpath('/vrmis3/meta/date').text
+    submission.created_on = xml.xpath('/olmis/meta/date').text
 
-    visits = xml.xpath('/vrmis3/hcvisit/*').reject { |n| ['epi','visit'].include?(n.name) }
+    visits = xml.xpath('/olmis/hcvisit/*').reject { |n| ['epi','visit'].include?(n.name) }
 
     params = { :health_center_visit => Hash[*visits.map { |n| [n.name, n.text] }.flatten] }
 
-    if fc = User.find_by_name(xml.xpath('/vrmis3/meta/field_coordinator/name').text) ||
-            User.find_by_phone(xml.xpath('/vrmis3/meta/field_coordinator/phone').text)
+    if fc = User.find_by_name(xml.xpath('/olmis/meta/field_coordinator/name').text) ||
+            User.find_by_phone(xml.xpath('/olmis/meta/field_coordinator/phone').text)
       submission.user = fc
     end
 
@@ -44,64 +44,11 @@ class AndroidOdkVisitDataSource < DataSource
     params[:health_center_visit].delete('epi_month')
 
     # HACK: Until JavaRosa supports itemsets (i.e., dynamic selection lists), copy the health center to the correct location in the parameter list
-    health_center = xml.xpath('/vrmis3/location/health_center').text
+    health_center = xml.xpath('/olmis/location/health_center').text
     params[:health_center_visit]['health_center'] = health_center.sub(/-\d+$/,'')  # HACK: strip any ID that was appended, i.e., to avoid problems with duplicate HC names in the ODK form
 
-    # NOTE: EPI data not handled in ODK forms
-
-    xml.xpath('/vrmis3/hcvisit/visit/inventory/*').find_all{|n| n.name.starts_with?('item_')}.each do |inv|
-      product = inv.name[5..-1]
-
-      params[:inventory] ||= {}
-      params[:inventory][product] ||= { }
-
-      inv.xpath('*').each do |type|
-        quantity = type.xpath('./qty').text
-
-        params[:inventory][product][type.name]         = quantity == NR ? nil : quantity
-        params[:inventory][product][type.name + '/NR'] = quantity == NR ?   1 : 0
-      end
-    end
-
-    xml.xpath('/vrmis3/hcvisit/visit/general/*').find_all{|n| n.name.starts_with?('item_')}.each do |equip|
-      params[:equipment_count] ||= {}
-      params[:equipment_status] ||= {}
-
-      equipment = equip.name[5..-1]
-      quantity = equip.xpath('./qty').text
-
-      params[:equipment_count][equipment] = { 
-        'quantity'    => quantity == NR ? nil : quantity,
-        'quantity/NR' => quantity == NR ?   1 : 0
-      }
-
-      params[:equipment_status][equipment] = { 
-        'status_code' => equip.xpath('./status').text,
-        'notes'       => equip.xpath('./notes').text,
-      }
-    end
-
-    xml.xpath("/vrmis3/location/fridges/hc-#{health_center}/*").each do |fridge|
-      params[:fridge_status] ||= {}
-      code = fridge['code'].to_s
-      temp = fridge.xpath('./temp').text
-      params[:fridge_status][fridge['code'].to_s] = {
-        "temperature"    => temp,
-        "temperature/NR" => temp == NR ? 1 : 0,
-        "status_code" => fridge.xpath('./status').text,
-        "notes" => fridge.xpath('./notes').text,
-      }
-    end
-
-    xml.xpath('/vrmis3/hcvisit/visit/stock_cards/*').find_all{|n| n.name.starts_with?('item_')}.each do |card|
-      params[:stock_card_status] ||= {}
-
-      stock_card = card.name[5..-1]
-
-      params[:stock_card_status][stock_card] = {
-        'have'           => card.xpath('./have').text,
-        'used_correctly' => card.xpath('./use').text
-      }
+    HealthCenterVisit.tables.each do |t|
+      params[t.table_name.singularize] = t.odk_to_params(xml)
     end
 
     return normalize_parameters(params)
