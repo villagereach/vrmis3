@@ -15,45 +15,6 @@ var options = {
   autoset_default_visit_date: true
 };
 
-window.addEventListener('load', function() { 
-  $('saved-forms-control').addEventListener('change', select_visit, true);
-  window.setInterval(check_update_status, 3 * 1000);
-  
-  var statuses = ['cached', 'checking', 'downloading', 'error', 'noupdate', 'obsolete', 'progress', 'updateready'];
-
-  applicationCache.addEventListener('error',       go_offline,  true);
-  applicationCache.addEventListener('noupdate',    go_online,   true);
-  applicationCache.addEventListener('downloading', do_download, true);
-  applicationCache.addEventListener('progress',    do_progress, true);
-  applicationCache.addEventListener('updateready', do_update,   true);
-  applicationCache.addEventListener('cached',      do_cached,   true);
-  
-  try {
-    valid_forms = JSON.parse(localStorage['valid forms']) || {};
-  } catch(e) {
-    valid_forms = {};
-  }
-
-  setup_visits();
-  setup_visit_search();
-  fixup_menu_tabs();
-
-  go_offline();
-}, false);
-
-function xf_user_init() {
-  // Run actions that must be performed *after* XSLTForms init() runs
-  fixup_nr_checkboxes();
-
-  jQuery('#case-visit div.datepicker input[type="text"]').
-    datepicker(jQuery.extend(<%= js_datepicker_default_options %>,
-                             { onClose: function(dateText, inst) {
-                                          XMLEvents.dispatch($('olmis'), "xforms-value-changed");
-                                        }
-                             },
-                             jQuery.datepicker.regional[<%= js_datepicker_region(I18n.locale) %>]));
-}
-
 function fixup_menu_tabs() {
   jQuery('#tab-menu a').each(function() {
     jQuery(this).focus(function() {
@@ -76,8 +37,8 @@ function fixup_nr_checkboxes() {
 function setup_fridge_form() {
   var temp_input = jQuery('#case-cold_chain .fridge-temp input');
   if (temp_input.siblings().length == 0) {
-    jQuery('<span><%= h(t("visits.health_center_cold_chain.temp_input_prefix")) %></span>').insertBefore(temp_input);
-    jQuery('<span><%= h(t("visits.health_center_cold_chain.temp_input_suffix")) %></span>').insertAfter(temp_input);
+    jQuery('<span>' + I18n.t("visits.health_center_cold_chain.temp_input_prefix") + '</span>').insertBefore(temp_input);
+    jQuery('<span>' + I18n.t("visits.health_center_cold_chain.temp_input_suffix") + '</span>').insertAfter(temp_input);
 
     // Shift nodes so that the alert icon precedes the input field, except for the other problem text area
     jQuery('#case-cold_chain span.value').each(function() {
@@ -97,7 +58,7 @@ function do_download() {
   manifest_files['downloaded'] = 0;
   manifest_files['count'] = jQuery.
     ajax({ type:     'GET',
-           url:      '<%= manifest_path %>',
+           url:      document.childNodes[1].getAttribute('manifest'),
            data:     { locale: I18n.locale },
            dataType: 'text',
            async:    false
@@ -563,7 +524,7 @@ function get_context_path_value(ctx, path) {
 }
 
 function update_visit_history(obj) {
-  <%# this data is to support the offline autoeval report, please see offline_autoeval.js.erb %> 
+  // this data is to support the offline autoeval report, please see offline_autoeval.js.erb 
   
   var health_center = get_context_path_value($('olmis'), '/hcvisit/health_center')[0].getTextContent();
   var date_period   = get_context_path_value($('olmis'), '/hcvisit/visit_month')[0].getTextContent();
@@ -581,7 +542,7 @@ function update_visit_history(obj) {
 function inventory_quantities(type) {
   return get_context_path_value($('olmis'), '/hcvisit/visit/inventory/entry').
     filter(function(e) { return e.getAttributeNS(null, 'type') == type; }).
-    filter(function(e) { return <%= Package.trackable.all.map(&:code).to_json %>.indexOf(e.getAttributeNS(null, 'for')) >= 0; }).  
+    filter(function(e) { return AutoevalData.trackable_package_codes.indexOf(e.getAttributeNS(null, 'for')) >= 0; }).  
     filter(function(e) { nr = e.getElementsByTagName('nr')[0]; return !nr || nr.getTextContent() == '' || nr.getTextContent() == 'false'; }).
     map(   function(e) { q = e.getElementsByTagName('quantity')[0]; return q ? [e.getAttributeNS(null, 'for'), q.getTextContent()] : null; });
 }
@@ -1033,6 +994,30 @@ function finish_upload() {
 }
 
 jQuery(document).ready(function() {
+  $('saved-forms-control').addEventListener('change', select_visit, true);
+  window.setInterval(check_update_status, 3 * 1000);
+  
+  var statuses = ['cached', 'checking', 'downloading', 'error', 'noupdate', 'obsolete', 'progress', 'updateready'];
+
+  applicationCache.addEventListener('error',       go_offline,  true);
+  applicationCache.addEventListener('noupdate',    go_online,   true);
+  applicationCache.addEventListener('downloading', do_download, true);
+  applicationCache.addEventListener('progress',    do_progress, true);
+  applicationCache.addEventListener('updateready', do_update,   true);
+  applicationCache.addEventListener('cached',      do_cached,   true);
+  
+  try {
+    valid_forms = JSON.parse(localStorage['valid forms']) || {};
+  } catch(e) {
+    valid_forms = {};
+  }
+
+  setup_visits();
+  setup_visit_search();
+  fixup_menu_tabs();
+
+  go_offline();
+
   show_container(containers['login']);
   jQuery('#other-actions a[href="#login"]').fancybox( 
     { 'hideOnContentClick': false,
@@ -1046,3 +1031,10 @@ jQuery(document).ready(function() {
       'onComplete': setup_saved_visits,
       'onClosed': finish_upload });
 });
+
+function xf_user_init() {
+  // Run actions that must be performed *after* XSLTForms init() runs
+  fixup_nr_checkboxes();  
+  setup_datepicker();
+}
+

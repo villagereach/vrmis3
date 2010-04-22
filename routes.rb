@@ -69,7 +69,7 @@
   if tables.present?
     tables.each do |table|
       path = table.table_name.singularize 
-      map.send("health_center_#{path}" "/visits/:visit_month/:health_center/#{path}/:screen", :controller => 'visits', :action => "health_center_#{path}")
+      map.send("health_center_#{path}", "/visits/:visit_month/:health_center/#{path}/:screen", { :controller => 'visits', :action => path })
     end
   end
 

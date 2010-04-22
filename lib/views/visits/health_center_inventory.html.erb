@@ -1,31 +1,21 @@
 <% form_tag do %>
-<h3><%= h current_link.first %></h3>
+<h3><%= h current_link.first if current_link %></h3>
 
-<%- if !@errors.empty? -%>
-<div id="error">
-  <ul>
-    <%- @errors.each do |key, hash| -%>
-      <%- hash.each do |part, errors| -%>
-        <%- errors.each_full do |msg| -%>
-          <li><%= h msg %></li>
-        <%- end -%>
-      <%- end -%>
-    <%- end -%>
-  </ul>
-</div>
-<%- elsif @inventories.any?{|i| !i.errors.empty?} -%>
-<div id="error">
-  <%= @inventories.reject{|i| i.errors.empty?}.each{|i| i.errors.full_message} %>
-</div>
-<%- end -%>
+  <%= render :partial => 'errors', :locals => { :errors => @errors } %>
 
-<p class="note"><%= h(t(".instructions")) %></p>
+  <%- if @inventories.any?{|i| !i.errors.empty?} -%>
+  <div id="error">
+    <%= @inventories.reject{|i| i.errors.empty?}.each{|i| i.errors.full_message} %>
+  </div>
+  <%- end -%>
+
+<p class="note"><%= h(t("visits.nr_instructions")) %></p>
 
 <%- screen = params[:screen].underscore -%>
 <%- packages = Package.all.select { |p| Inventory.directly_collected_types.any? { |t| p.inventoried_by_type?(t, screen) } } -%> 
 <%- types = Inventory.directly_collected_types.select { |t| packages.any? { |p| p.inventoried_by_type?(t, screen) } } -%>
 
-<%- fields_for :inventory_counts do |f| -%>
+<%- fields_for :inventory do |f| -%>
 <table class="inventory">
   <thead>
     <tr>
@@ -46,8 +36,8 @@
           <%- types.each do |t| -%>
             <td>
               <%- if package.inventoried_by_type?(t, screen) -%>
-                <%- stock_value = default_field_value(params[:inventory_counts], index.to_s, t, @stock[t][index].quantity) -%>
-                <%- nr_checked = !@stock[t][index].new_record? && default_field_value(params[:inventory_counts], index.to_s, "#{t}/NR", stock_value.to_s.empty? ? '1' : '0') == '1' -%>
+                <%- stock_value = default_field_value(params[:inventory], index.to_s, t, @stock[t][index].quantity) -%>
+                <%- nr_checked = !@stock[t][index].new_record? && default_field_value(params[:inventory], index.to_s, "#{t}/NR", stock_value.to_s.empty? ? '1' : '0') == '1' -%>
                 <%= nr_field(f, t,  index, stock_value,  nr_checked,  (@errors[index][t].on(:quantity) rescue nil), !Inventory.nullable_types.include?(t)) %>
               <%- end -%>
             </td>

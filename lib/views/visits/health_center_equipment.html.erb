@@ -1,18 +1,6 @@
 <h3><%= h current_link.first %></h3>
 <%- form_tag do -%>
-  <%- if !@errors.empty? -%>
-    <div id="error">
-      <ul>
-        <%- @errors.each do |key,hash| -%>
-          <%- hash.each do |part,errors| -%>
-            <%- errors.each_full do |msg| -%>
-              <li><%= h msg %></li>
-            <%- end -%>
-          <%- end -%>
-        <%- end -%>
-      </ul>
-    </div>
-  <%- end -%>
+  <%= render :partial => 'errors', :locals => { :errors => @errors } %>
 
   <table class="equipment">
     <thead>

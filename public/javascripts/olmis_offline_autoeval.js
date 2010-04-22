@@ -1,32 +1,3 @@
-<% cache('autoeval_data:' + HealthCenterVisit.first(:order => 'updated_at desc', :limit => 1).updated_at.to_s) do %>
-var AutoevalData = {
-  current_date_period:   (new Date()).to_date_period(),
-  previous_date_period:  (new Date()).previous_month().to_date_period(),
-  excessive_months_since_last_visit: 3,
-  excessive_days_between_visits:     34,
-
-  ideal_stock_amounts:  <%= Hash[*HealthCenter.with_ideal_stock.all.map { |hc| [hc.code, hc.ideal_stock_amounts_by_sku] }.flatten].to_json %>,
-  delivered_inventory:  <%= Hash[*HealthCenter.with_recent_delivery(2).all.map { |hc| [hc.code, hc.package_quantities_by_date] }.flatten].to_json %>,
-  existing_inventory:   <%= Hash[*HealthCenter.with_recent_existing(2).all.map { |hc| [hc.code, hc.package_quantities_by_date] }.flatten].to_json %>,
-
-  product_names:        <%= Product.trackable.sort.map(&:name).to_json %>,
-  package_skus:         <%= Package.all.sort.map(&:sku).to_json %>,
-  products_by_package:  <%= Hash[*Package.all.map { |p| [p.sku, p.product.name] }.flatten].to_json %>,
-
-  province_names:       <%= Province.all.sort.map(&:label).to_json %>,
-  provinces:            <%= Hash[*District.all.group_by(&:province).map { |p, ds| [p.name, ds.sort.map(&:label)] }.flatten_once].to_json %>,
-  districts:            <%= Hash[*HealthCenter.all.group_by(&:district).map { |d, hcs| [d.label, hcs.sort.map(&:code)] }.flatten_once].to_json %>,
-  hc_names:             <%= Hash[*HealthCenter.all.map { |hc| [hc.code, hc.label] }.flatten].to_json %>,
-
-  visits:               <%= Hash[*HealthCenter.recent_visits(6).map { |h|
-                              [h.code, Hash[*h.health_center_visits.map { |hcv| [hcv.visit_month, hcv.visited_at] }.flatten]]
-                            }.reject { |k,v| v.empty? }.flatten_once].to_json %>,
-  excusable_non_visits: <%= Hash[*HealthCenter.recent_ok_non_visits(6).map { |h|
-                              [h.code, Hash[*h.health_center_visits.map { |hcv| [hcv.visit_month, true] }.flatten]]
-                            }.reject { |k,v| v.empty? }.flatten_once].to_json %>
-};
-<% end %>
-
 function AutoevalHealthCenter(code) {
   var h = localStorage[code + '/visit-history'];
   this.history = JSON.parse(h || '{}');
@@ -115,7 +86,7 @@ AutoevalHealthCenter.prototype = {
       }
 
       if(packages.length > 0) {
-        packages.sort(function(a,b) { return AutoevalData.package_skus.indexOf(a) - AutoevalData.package_skus.indexOf(b) });
+        packages.sort(function(a,b) { return AutoevalData.package_codes.indexOf(a) - AutoevalData.package_codes.indexOf(b) });
         return [I18n.t('reports.autoeval.insufficient_deliveries', {
             product: packages.map(function(x) { return I18n.t('activerecord.attributes.package.' + x) }).join(", ")
           })];
@@ -184,7 +155,7 @@ AutoevalHealthCenter.prototype = {
       var visit = this.history[dp].visit;
       if (visit.match(/^\d+-\d+-\d+$/))
         this.visits.push([dp, visit]);
-      else if (<%= HealthCenterVisit::ExcusableNonVisitReasons.to_json %>.indexOf(visit) > 0)
+      else if (AutoevalData.excusable_non_visit_reasons.indexOf(visit) > 0)
         this.excusable_non_visits.push(dp);
     }
 

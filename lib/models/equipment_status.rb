@@ -54,6 +54,32 @@ class EquipmentStatus < ActiveRecord::Base
     ['general']
   end
   
+  def self.process_data_submission(visit, params)
+    errors = {}
+    
+    equipment_statuses = visit.find_or_initialize_equipment_statuses
+
+    equipment_notes = params[:equipment_status].delete(:notes)
+    visit.update_attributes(:equipment_notes => equipment_notes) unless equipment_notes.blank?
+
+    params[:equipment_status].each do |key, values|
+      record = equipment_statuses.detect{|es| es.equipment_type_code == key }
+
+      # Skip if no data entered for a new item
+      next if record.new_record? && values["present"].blank? && values["working"].blank?
+
+      db_values = values.inject({}){|hash,(key,value)| hash[key] = value == "true" || (value == "false" ? false : nil) ; hash }
+
+      record.date = visit.date
+      record.update_attributes(db_values)
+      unless record.errors.empty?
+        errors[key] = record.errors
+      end
+    end
+    
+    errors
+  end
+  
   def self.progress_query(date_periods)
     types = EquipmentType.count
     <<-EQUIP

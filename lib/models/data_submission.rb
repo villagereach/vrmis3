@@ -98,7 +98,7 @@ class DataSubmission < ActiveRecord::Base
     
     HealthCenterVisit.transaction do 
       visit, errors = process_visit(nil, nil, current_user)
-      if errors.present?
+      if errors.any? { |k,v| v.present? }
         status = 400
         raise ActiveRecord::Rollback
       else
@@ -106,7 +106,7 @@ class DataSubmission < ActiveRecord::Base
       end
     end
 
-    if errors.present?
+    if errors.any? { |k,v| v.present? }
       update_attributes(:status => 'errors')
     end
     
@@ -131,8 +131,6 @@ class DataSubmission < ActiveRecord::Base
       @params[:health_center_visit].delete(:epi_month)
     end
     
-    raise [self, @params, health_center, visit_month].inspect unless @params && health_center && visit_month
-
     @current_user = user
     @visit_errors ||= { }
     @visit = HealthCenterVisit.find_or_initialize_by_health_center_id_and_visit_month(health_center.id, visit_month)
@@ -147,11 +145,10 @@ class DataSubmission < ActiveRecord::Base
     
     self.health_center_visits << @visit unless health_center_visits.include?(@visit)
 
-    process_fridge_statuses if @params[:fridge_status]
-    process_equipment if @params[:equipment_status]
-    process_stock_cards if @params[:stock_card_status]
-    process_inventory if @params[:inventory_counts]
-    process_tallies
+    HealthCenterVisit.tables.each do |table|
+      slice = table.table_name.singularize
+      @visit_errors[slice] = table.process_data_submission(@visit, @params) if @params[slice]
+    end
     
     if @visit.overall_status == HealthCenterVisit::REPORT_COMPLETE
       self.message = "complete"
@@ -166,49 +163,7 @@ class DataSubmission < ActiveRecord::Base
     I18n.t("DataSubmission.#{message}", :source => data_source.description, :date => I18n.l(created_on || created_at.to_date, :format => :long), :user => (created_by || user).name)
   end
 
-  def process_stock_cards
-    stock_card_statuses = @visit.find_or_initialize_stock_card_statuses
 
-    @params[:stock_card_status].each do |key, values|
-      record = stock_card_statuses.detect{|s| s.stock_card_code == key}
-
-      # Skip if no data entered for a new item
-      next if record.new_record? && values["have"].blank? && values["used_correctly"].blank?
-
-      db_values = values.inject({}){|hash,(key,value)| hash[key] = value == "true" || (value == "false" ? false : nil) ; hash }
-
-      record.date = @visit.date
-      record.update_attributes(db_values)
-      unless record.errors.empty?
-        @visit_errors[:stock_card_status] ||= {}
-        @visit_errors[:stock_card_status][key] = record.errors
-      end
-    end
-  end
-
-  def process_equipment
-    equipment_statuses = @visit.find_or_initialize_equipment_statuses
-
-    equipment_notes = @params[:equipment_status].delete(:notes)
-    @visit.update_attributes(:equipment_notes => equipment_notes) unless equipment_notes.blank?
-
-    @params[:equipment_status].each do |key, values|
-      record = equipment_statuses.detect{|es| es.equipment_type_code == key }
-
-      # Skip if no data entered for a new item
-      next if record.new_record? && values["present"].blank? && values["working"].blank?
-
-      db_values = values.inject({}){|hash,(key,value)| hash[key] = value == "true" || (value == "false" ? false : nil) ; hash }
-
-      record.date = @visit.date
-      record.update_attributes(db_values)
-      unless record.errors.empty?
-        @visit_errors[:equipment_status] ||= {}
-        @visit_errors[:equipment_status][key] = record.errors
-      end
-    end
-  end    
-  
   def process_health_center_visit
     #temporary hiding of epi_data_ready; remove it later if it stays hidden
     @visit.epi_data_ready = true
@@ -232,85 +187,6 @@ class DataSubmission < ActiveRecord::Base
 
     @visit.attributes = (@params[:health_center_visit])
   end
-    
-  def process_fridge_statuses
-    fridge_statuses = @visit.find_or_initialize_fridge_statuses
-    
-    @params[:fridge_status].each do |key, values|
-      # Skip if no data entered for this fridge
-      next if values["temperature"].blank? && values["past_problem"].blank? &&
-        values["state"].blank? && values["problem"].blank? && values["other_problem"].blank?
-
-      if record = fridge_statuses.detect{|fs| fs.fridge_code == key.to_s }
-        db_values = {
-          :past_problem => values["past_problem"] == "true" || (values["past_problem"] == "false" ? false : nil),
-          :temperature      => values["temperature"].blank? ? nil : values["temperature"].to_i,
-          :status_code      => values["state"] == "OK" ? "OK" : values["state"] == "nr" ? nil : values["problem"].join(' '),
-          :other_problem    => values["state"] == "problem" && values["problem"].include?("OTHER") ? values["other_problem"] : nil
-        }
-        record.update_attributes(db_values)
-        unless record.errors.empty?
-          @visit_errors[:fridge_status] ||= {}
-          @visit_errors[:fridge_status][key] = record.errors
-        end
-      else
-        # TODO: The fridge code changed; should this be possible in the online form?
-      end
-    end
-  end
-
-  def process_equipment_nr_params(params)
-    attrs = params.reject{|k,v| k.ends_with?('/NR')}
-    attrs.each do |k,v|
-      v = nil if params.has_key?(k + '/NR') && params[k + '/NR'] == 1
-    end
-    attrs
-  end
-
-  def process_inventory
-    inventories = @visit.find_or_create_inventory_records
-    stock = @visit.ideal_stock
-
-    @params[:inventory_counts].each do |key, value|
-      (stock.keys - [:ideal]).each do |type|
-        if (record = stock[type][key]) && value.has_key?(type)
-          if value[type].blank? && value["#{type}/NR"].to_i == 0
-            # No quantity value is specified and NR is not checked
-            record.delete unless record.new_record?
-          else
-            # A quantity value is specified or NR is checked
-            record.quantity = (value.has_key?("#{type}/NR") && value["#{type}/NR"].to_i == 1) ? nil : value[type]
-            record.save
-            unless record.errors.empty?
-              @visit_errors[key] ||= {}
-              @visit_errors[key][type] = record.errors
-            end
-          end
-        end
-      end
-    end
-
-    # Remove any blank package counts
-    inventories.each { |i|
-      i.package_counts.delete_if{|pc| pc.id.nil?}
-      i.save
-    }
-  end
-  
-  def process_tallies
-    HealthCenterVisit.tally_hash.each do |tally, value|
-      if @params[tally]
-        records, tally_errors = tally.constantize.create_or_replace_records_by_keys_and_user_from_data_entry_group(
-          [@visit.health_center_id, @visit.epi_month], 
-          @visit.field_coordinator,
-          @params[tally])
-        
-        @visit_errors[tally] = tally_errors unless tally_errors.empty?
-      end
-    end
-  end
-
-  
 end
 
 

@@ -453,6 +453,7 @@ en:
     coverage_rate: Coverage rate
     total_vaccinations: Total vaccinations
     target_group: Target group
+    nr_instructions: "Note: Check “not recorded” (NR) if the number is not available; if there are none, record a zero (0)."
     index:
       find_visit:    "Find a visit"
       progress_for:  "Progress for"
@@ -504,7 +505,6 @@ en:
     health_center_monthly_progress_bar:
       did_not_visit: "Did not visit"
     health_center_tally:
-      instructions: "Note: Check “not recorded” (NR) if the number is not available; if there are none, record a zero (0)."
       save:         "Save changes"
       page_title_adult_vaccination_tally: "Adult Vaccinations"
       page_title_child_vaccination_tally: "Child Vaccinations"
@@ -512,7 +512,6 @@ en:
       page_title_epi_usage_tally:         "EPI Stock Information"
       page_title_rdt_tally:               "RDT Usage Information"
     health_center_inventory:
-      instructions: "Note: Check “not recorded” (NR) if the quantity is not available; if there are none, record a zero (0)."
       product:            "Product"
       epi_inventory:
         page_title:     "EPI Inventory: Delivery & Stock Information"
@@ -525,7 +524,6 @@ en:
       DeliveredHealthCenterInventory: "Delivered Quantity"
       SpoiledHealthCenterInventory:   "Spoiled Quantity"
     health_center_equipment:
-      #instructions: "Note: Check “not recorded” (NR) if the quantity is not available; if there are none, record a zero (0)."
       page_title: "Equipment Information"
       #type:     "Equipment"
       #quantity: "Quantity"

@@ -359,6 +359,16 @@ module ActsAsStatTally
       [table_name.singularize]
     end
     
+    def process_data_submission(visit, params)
+      slice = name.underscore
+      
+      records, errors = create_or_replace_records_by_keys_and_user_from_data_entry_group(
+        [visit.health_center_id, visit.epi_month], 
+        visit.field_coordinator, params[slice])
+      
+      errors
+    end      
+    
     def progress_query(date_periods)    
       <<-TALLY
         select health_center_visits.id as id,

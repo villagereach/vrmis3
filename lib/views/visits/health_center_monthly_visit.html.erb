@@ -48,12 +48,3 @@
     <%= save_and_continue %>
 <%- end -%>
 
-<%- javascript_tag do -%>
-  jQuery(document).ready(function() {
-    jQuery('input.datepicker').
-      datepicker(jQuery.extend(<%= js_datepicker_default_options %>,
-                               { minDate: <%= Date.from_date_period(visit_month).beginning_of_month.strftime('new Date(%Y, %m - 1, %d)') %>,
-                                 maxDate: <%= [Date.from_date_period(visit_month).end_of_month, Date.today].min.strftime('new Date(%Y, %m - 1, %d)')  %> },
-                               jQuery.datepicker.regional[<%= js_datepicker_region(I18n.locale) %>]));
-    });
-<%- end -%>

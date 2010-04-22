@@ -7,21 +7,9 @@ FRIDGE_ENTRY_REGEX = /fridge-entry-(\d+)/;
 FRIDGE_ENTRY_DETAILS_PREFIX = '#fridge-entry-details-';
 FRIDGE_ENTRY_DETAILS_REGEX = /fridge-entry-details-(\d+)/;
 
-jQuery( document ).ready( function() {
-    init_collapser_lists();
-    init_fridge_list();
-    init_switcher_panes();
-    
-    call_anchor_method();
-
-    autofocus();
-})
-
-// only functions below
-function autofocus() {
-  jQuery( '.autofocus' ).focus();
-}
-
+var jqplots={}; 
+var table_options={};
+  
 // {{{ collapser lists
 function init_collapser_lists() {
   jQuery( '.collapser_container .collapser' ).children( 'li' ).children( 'span' ).click(
@@ -142,3 +130,61 @@ function call_anchor_method() {
       })
   }
 }
+
+function update_calculated_field_function(field, expression, suffix) {
+  return function() {
+    try {
+      var v = parseInt(eval(expression));
+      jQuery(field).val(isFinite(v) ? (v.toString() + suffix) : ''); 
+      jQuery(field).findInput().change();
+    } catch (e) {
+      alert("Failure: " + expression);
+    }
+  };
+}
+
+function init_expression_fields() {
+  jQuery('input[expression]').each(function(i,field) {
+    // every field starts with an alpha and contains no spaces
+    var tokens = jQuery(field.getAttribute('expression').split(/([A-Za-z][^ \(\)]+)/))
+
+    var suffix = field.getAttribute('suffix').toString();
+    
+    if(tokens.length % 2 == 0)
+      tokens.push('')
+
+    var fields = jQuery(jQuery.grep(tokens.map(function(i, t) { return(i % 2 == 1 ? t : '') }),
+                                    function(t, i) { return t != '' }))
+
+    var expression = jQuery.makeArray(tokens.map(function(i, f) { 
+      if(jQuery.inArray(f, fields) > -1)
+        return 'parseFloat(0 + jQuery("#' + f + '").findInput().val())'
+      else
+        return f
+    })).join("");
+    
+    fn = update_calculated_field_function(field, expression, suffix)
+ 
+    jQuery(document).ready(fn);
+    
+    fields.each(function(i, e) {
+      jQuery('#' + e).findInput().change(fn);
+    });
+  });
+}
+
+jQuery( document ).ready( function() {
+  init_expression_fields();
+  
+  init_collapser_lists();
+  init_fridge_list();
+  init_switcher_panes();
+  
+  call_anchor_method();
+
+  autofocus();
+  
+  setup_error_links();
+  setup_datepicker();
+});
+

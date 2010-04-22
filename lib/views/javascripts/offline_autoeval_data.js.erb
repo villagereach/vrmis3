@@ -1,0 +1,33 @@
+<% cache('autoeval_data:' + HealthCenterVisit.first(:order => 'updated_at desc', :limit => 1).updated_at.to_s) do %>
+var AutoevalData = {};
+jQuery(document).ready(function() {
+AutoevalData = {
+  current_date_period:   (new Date()).to_date_period(),
+  previous_date_period:  (new Date()).previous_month().to_date_period(),
+  excessive_months_since_last_visit: 3,
+  excessive_days_between_visits:     34,
+
+  ideal_stock_amounts:  <%= Hash[*HealthCenter.with_ideal_stock.all.map { |hc| [hc.code, hc.ideal_stock_amounts_by_code] }.flatten].to_json %>,
+  delivered_inventory:  <%= Hash[*HealthCenter.with_recent_delivery(2).all.map { |hc| [hc.code, hc.package_quantities_by_date] }.flatten].to_json %>,
+  existing_inventory:   <%= Hash[*HealthCenter.with_recent_existing(2).all.map { |hc| [hc.code, hc.package_quantities_by_date] }.flatten].to_json %>,
+
+  product_names:        <%= Product.trackable.sort.map(&:name).to_json %>,
+  trackable_package_codes: <%= Package.trackable.sort.map(&:code).to_json %>,
+  package_codes:         <%= Package.all.sort.map(&:code).to_json %>,
+  products_by_package:  <%= Hash[*Package.all.map { |p| [p.code, p.product.name] }.flatten].to_json %>,
+
+  province_names:       <%= Province.all.sort.map(&:label).to_json %>,
+  provinces:            <%= Hash[*District.all.group_by(&:province).map { |p, ds| [p.name, ds.sort.map(&:label)] }.flatten_once].to_json %>,
+  districts:            <%= Hash[*HealthCenter.all.group_by(&:district).map { |d, hcs| [d.label, hcs.sort.map(&:code)] }.flatten_once].to_json %>,
+  hc_names:             <%= Hash[*HealthCenter.all.map { |hc| [hc.code, hc.label] }.flatten].to_json %>,
+
+  visits:               <%= Hash[*HealthCenter.recent_visits(6).map { |h|
+                              [h.code, Hash[*h.health_center_visits.map { |hcv| [hcv.visit_month, hcv.visited_at] }.flatten]]
+                            }.reject { |k,v| v.empty? }.flatten_once].to_json %>,
+  excusable_non_visits: <%= Hash[*HealthCenter.recent_ok_non_visits(6).map { |h|
+                              [h.code, Hash[*h.health_center_visits.map { |hcv| [hcv.visit_month, true] }.flatten]]
+                            }.reject { |k,v| v.empty? }.flatten_once].to_json %>,
+  excusable_non_visit_reasons: <%= HealthCenterVisit::ExcusableNonVisitReasons.to_json %>
+};
+});
+<% end %>
