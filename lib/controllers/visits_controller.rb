@@ -55,7 +55,7 @@ class VisitsController < OlmisController
       @visit, @errors = submission.process_visit(@health_center, helpers.visit_month, @current_user)
     end    
 
-    if @errors.empty?
+    if @errors.none? { |slice, slice_errors| slice_errors.present? }
       submission.status = 'success'
       submission.save
 

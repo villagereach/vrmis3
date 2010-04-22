@@ -168,28 +168,35 @@ module ProgressHelper
     progress_bar_field(progress_status_for_month(month, health_centers), nil, icon_size)
   end
 
-  def named_route_for_screen(name, path_params)
-    routes = {
-      'general'   => health_center_equipment_general_url(path_params),
-      'cold_chain' => health_center_equipment_coldchain_url(path_params),
-      'stock_cards' => health_center_equipment_stockcards_url(path_params),      
-    }
+  def named_routes_by_screen(path_params)
+    @named_routes_by_screen ||= {}
+    @named_routes_by_screen[path_params.inspect] ||= begin
+      routes = {
+        'general'   => health_center_equipment_general_url(path_params),
+        'cold_chain' => health_center_equipment_coldchain_url(path_params),
+        'stock_cards' => health_center_equipment_stockcards_url(path_params),      
+      }
 
-    Inventory.screens.each do |screen|
-      routes[screen] = health_center_inventory_url(path_params.merge(:screen => screen))
-    end
-    
-    Olmis.tally_klasses.each do |k|
-      routes[k.screens.first] = health_center_tally_url(path_params.merge(:tally => k))
-    end
-
-    Olmis.additional_visit_klasses.each do |k|
-      k.screens.each do |screen|
-        routes[screen] = send("health_center_#{k.table_name.singularize}_path", path_params.merge(:screen => screen))
+      Inventory.screens.each do |screen|
+        routes[screen] = health_center_inventory_url(path_params.merge(:screen => screen))
       end
+      
+      Olmis.tally_klasses.each do |k|
+        routes[k.screens.first] = health_center_tally_url(path_params.merge(:tally => k))
+      end
+  
+      Olmis.additional_visit_klasses.each do |k|
+        k.screens.each do |screen|
+          routes[screen] = send("health_center_#{k.table_name.singularize}_path", path_params.merge(:screen => screen))
+        end
+      end
+      
+      routes
     end
-    
-    routes[name.to_s] || health_center_visit_url(path_params)
+  end
+  
+  def named_route_for_screen(name, path_params)
+    named_routes_by_screen(path_params)[name.to_s] || health_center_visit_url(path_params)
   end
 
   def progress_calculator

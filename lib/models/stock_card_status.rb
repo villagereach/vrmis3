@@ -40,6 +40,28 @@ class StockCardStatus < ActiveRecord::Base
     ['stock_cards']
   end  
 
+  def self.process_data_submission(visit, params)
+    errors = {}
+    stock_card_statuses = visit.find_or_initialize_stock_card_statuses
+
+    params[:stock_card_status].each do |key, values|
+      record = stock_card_statuses.detect{|s| s.stock_card_code == key}
+
+      # Skip if no data entered for a new item
+      next if record.new_record? && values["have"].blank? && values["used_correctly"].blank?
+
+      db_values = values.inject({}){|hash,(key,value)| hash[key] = value == "true" || (value == "false" ? false : nil) ; hash }
+
+      record.date = visit.date
+      record.update_attributes(db_values)
+      unless record.errors.empty?
+        errors[key] = record.errors
+      end
+    end
+    
+    errors
+  end
+  
   def self.progress_query(date_periods)
     stock_cards = StockCard.count
 

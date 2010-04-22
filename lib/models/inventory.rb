@@ -74,6 +74,39 @@ class Inventory < ActiveRecord::Base
     pc_hash
   end
 
+  def self.process_data_submission(visit, params)
+    errors = {}
+    
+    inventories = visit.find_or_create_inventory_records
+    stock = visit.ideal_stock
+
+    params[:inventory].each do |key, value|
+      (stock.keys - [:ideal]).each do |type|
+        if (record = stock[type][key]) && value.has_key?(type)
+          if value[type].blank? && value["#{type}/NR"].to_i == 0
+            # No quantity value is specified and NR is not checked
+            record.delete unless record.new_record?
+          else
+            # A quantity value is specified or NR is checked
+            record.quantity = (value.has_key?("#{type}/NR") && value["#{type}/NR"].to_i == 1) ? nil : value[type]
+            record.save
+            unless record.errors.empty?
+              errors[key + '_' + type] = record.errors
+            end
+          end
+        end
+      end
+    end
+
+    # Remove any blank package counts
+    inventories.each { |i|
+      i.package_counts.delete_if{|pc| pc.id.nil?}
+      i.save
+    }
+    
+    errors
+  end    
+  
   def self.progress_query(date_periods)
     inv_fields = possible_fields.select { |type, package, screen| screens.include?(screen) }
 

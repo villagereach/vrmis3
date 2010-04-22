@@ -33,18 +33,25 @@ module VisitsHelper
         [ [:visit, [I18n.t('visits.health_center_monthly_tasks.visit'), health_center_visit_path]]]],
       [ I18n.t('EPI'), 
         HealthCenterVisit.tally_hash.map { |k, v|
-          [k.underscore, [I18n.t("visits.health_center_monthly_tasks.#{k.underscore}"), health_center_tally_path(:tally => k)]]
+          [k.underscore, [I18n.t("visits.health_center_monthly_tasks.#{k.underscore}"), health_center_tally_path(:tally => k.underscore)]]
         }
       ],
       [ I18n.t('visits.health_center_monthly_tasks.inventory'),
-        HealthCenterVisit.inventory_screen_hash.map { |k, v|
-          [k, [I18n.t("visits.health_center_monthly_tasks.#{k}"), health_center_inventory_path(:screen => v)] ]
+        Inventory.screens.map { |k|
+          [k, [I18n.t("visits.health_center_monthly_tasks.#{k}"), health_center_inventory_path(:screen => k)] ]
         } ],
       [ I18n.t('visits.health_center_monthly_tasks.equipment'), 
         [ [:general, [I18n.t('visits.health_center_monthly_tasks.general'), health_center_equipment_general_path ] ],
           [:cold_chain, [I18n.t('visits.health_center_monthly_tasks.cold_chain'), health_center_equipment_coldchain_path ] ],
-          [:stock_cards, [I18n.t('visits.health_center_monthly_tasks.stock_cards'), health_center_equipment_stockcards_path ] ] ] ],
-    ]
+          [:stock_cards, [I18n.t('visits.health_center_monthly_tasks.stock_cards'), health_center_equipment_stockcards_path ] ] ] ] ] +
+    Olmis.additional_visit_klasses.partition_by(&:category).map { |category, klasses|
+      [ I18n.t("visits.health_center_monthly_tasks.#{category}"),
+      klasses.map { |k|
+        k.screens.map { |screen|
+          [screen, [I18n.t("visits.health_center_monthly_tasks.#{screen}"), named_route_for_screen(screen, {}) ] ]
+        }.flatten_once
+      } ]
+    }
   end
   
   def save_and_continue
@@ -181,54 +188,38 @@ module VisitsHelper
     # If the resulting value is NaN, the field will appear blank. Otherwise, the value will be truncated
     # to an integer and the value of the third argument, if any, will be appended.
 
-    tokens = expression.split(/([a-z][^ \(\)]+)/i) # every field starts with an alpha and contains no spaces
-    tokens.push('') if tokens.length % 2 == 0
-
-    fields = tokens.map_with_index { |t, i| i % 2 == 1 ? t : '' }.reject(&:blank?).uniq
-
-    output = '<div style="text-align: center">' + text_field_tag(nil, '', :disabled => 'disabled', :size => 3, :id => name, :class => 'expression') + '</div>'
-
-    fnname = "_calculate_#{name.gsub(/\W+/, '_')}"
-    fn = "function #{fnname}() { \nv = parseInt(" +
-      tokens.map { |f|
-        if fields.include?(f)
-          'parseFloat(0 + jQuery("#' + f + '").findInput().val())'
-        else f
-        end
-      }.join("") +
-        "); \njQuery('##{name}').val(isNaN(v) ? '' : (v + '#{suffix}')); jQuery('##{name}').findInput().change(); }"
-
-      output + javascript_tag(fn + "\njQuery(document).ready(#{fnname}); \n" +
-        "jQuery(document).ready(function() {" + fields.map { |f| "\njQuery('##{f}').findInput().change(#{fnname}); " }.join("") + "\n});")
+    output = '<div style="text-align: center">' + text_field_tag(nil, '', :suffix => suffix, :expression => expression, :disabled => 'disabled', :size => 3, :id => name, :class => 'expression') + '</div>'
   end
 
   def tally_form_field(type, name, options)
     @record_value_hash ||= {}
     
-    @record_value_hash[type] ||= type.records_by_param_names_for_keys(@health_center, epi_month)
+    slice = type.name.underscore
+    
+    @record_value_hash[slice] ||= type.records_by_param_names_for_keys(@health_center, epi_month)
     
     dim, field = name.split(':', 2)
     field ||= 'value'
 
-    value = (params.has_key?(type.name) ? params[type.name][name] : nil) || 
-      @record_value_hash[type][name].maybe.send(field)
+    value = (params.has_key?(slice) ? params[slice][name] : nil) || 
+      @record_value_hash[slice][name].maybe.send(field)
     
-    nr_checked = @record_value_hash[type].has_key?(name) && @record_value_hash[type][name].send(field).nil?
+      nr_checked = @record_value_hash[slice].has_key?(name) && @record_value_hash[slice][name].send(field).nil?
       
     tf = case type.fields_hash[field.to_sym]
          when :date
            o = options.merge({ :value => value, :size => 8, :class => "datepicker" })
-           ActionView::Helpers::InstanceTag.new(type.name, name, self).to_input_field_tag("date", o)
+           ActionView::Helpers::InstanceTag.new(slice, name, self).to_input_field_tag("date", o)
          else
-           o = options.merge({ :value => value.to_s, :size => 4, :min => '0', :step => '1', :id => type.name + '_' + name.gsub(/[,:\]]/,'-') })
-           ActionView::Helpers::InstanceTag.new(type.name, name, self).to_input_field_tag("number", o)
+           o = options.merge({ :value => value.to_s, :size => 4, :min => '0', :step => '1', :id => slice + '_' + name.gsub(/[,:\]]/,'-') })
+           ActionView::Helpers::InstanceTag.new(slice, name, self).to_input_field_tag("number", o)
          end
 
     content_tag(:div,
       tf +
         content_tag(:div,
-          check_box(type, name + '/NR', :checked => nr_checked) +
-            label(type, name + '/NR', t('NR')),
+          check_box(slice, name + '/NR', :checked => nr_checked) +
+            label(slice, name + '/NR', t('NR')),
           :class => 'nr'),
       :class => 'tally', :id => name.gsub(/[,:]/,'-'))
   end

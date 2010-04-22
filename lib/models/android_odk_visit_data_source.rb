@@ -52,14 +52,14 @@ class AndroidOdkVisitDataSource < DataSource
     xml.xpath('/vrmis3/hcvisit/visit/inventory/*').find_all{|n| n.name.starts_with?('item_')}.each do |inv|
       product = inv.name[5..-1]
 
-      params[:inventory_counts] ||= {}
-      params[:inventory_counts][product] ||= { }
+      params[:inventory] ||= {}
+      params[:inventory][product] ||= { }
 
       inv.xpath('*').each do |type|
         quantity = type.xpath('./qty').text
 
-        params[:inventory_counts][product][type.name]         = quantity == NR ? nil : quantity
-        params[:inventory_counts][product][type.name + '/NR'] = quantity == NR ?   1 : 0
+        params[:inventory][product][type.name]         = quantity == NR ? nil : quantity
+        params[:inventory][product][type.name + '/NR'] = quantity == NR ?   1 : 0
       end
     end
 

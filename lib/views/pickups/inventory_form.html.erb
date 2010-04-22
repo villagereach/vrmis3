@@ -23,14 +23,6 @@
   <p class="date_selector">
   <%= f.label :date, t("headers.date") %>
   <%= f.text_field :date, :class => "datepicker", :value => I18n.l(@date) %>
-  <%- javascript_tag do -%>
-    jQuery(document).ready(function() {
-      jQuery('input.datepicker').
-        datepicker(jQuery.extend(<%= js_datepicker_default_options %>,
-                                 { defaultDate: new Date() },
-                                 jQuery.datepicker.regional[<%= js_datepicker_region(I18n.locale) %>]));
-      });
-  <%- end -%>
   </p>
       <%- else -%>
       <h4>Date: <%=l(@inventory.date, :format=>:default)%></h4>

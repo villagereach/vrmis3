@@ -1,0 +1,11 @@
+<%- if errors.any? { |slice, slice_errors| slice_errors.present? } -%>
+  <div id="error">
+    <ul>
+      <%- errors.select { |slice, slice_errors| slice_errors.present? }.each do |slice, slice_errors| -%>
+        <%- slice_errors.each do |k, v| -%>
+          <li><%= link_to(v.full_messages, '#' + slice + '_' + k.gsub(/[:,]/,'-')) %></li>
+        <%- end -%>
+      <%- end -%>
+    </ul>
+  </div>
+<%- end -%>

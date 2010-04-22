@@ -2,24 +2,14 @@
 <h3><%= h(t(".page_title_#{params[:tally].underscore}")) %></h3>
 
 <div class="epi">
-  <%- if !@errors.empty? -%>
-    <div id="error">
-      <ul>
-        <%- @errors.each do |tally, errors| -%>
-          <%- errors.each do |k, v| -%>
-            <li><%= link_to(v.full_messages, '#' + tally + '_' + k) %></li>
-          <%- end -%>
-        <%- end -%>
-      </ul>
-    </div>
-  <%- end -%>
+  <%= render :partial => 'errors', :locals => { :errors => @errors } %>
 
-  <p class="note"><%= h(t(".instructions")) %></p>
+  <p class="note"><%= h(t("visits.nr_instructions")) %></p>
 
   <% begin %>
     <%= render :partial => params[:tally].underscore %>
   <% rescue ActionView::MissingTemplate %>  
-    <%= tally_table(params[:tally].constantize) %>
+    <%= tally_table(params[:tally].camelize.constantize) %>
   <% end %>
 
   <%= save_and_continue %>
@@ -27,26 +17,8 @@
 </div>
 <%- end -%>
 
-<%- if @errors -%>
-  <%- javascript_tag do -%>
-    <%- @errors.each do |type, names| -%>
-      <%- names.each do |name, value| -%>
-        $('#<%= name.gsub(',','-') %>').addClass('error');
-      <%- end -%>
-    <%- end -%>
-  <%- end -%>
-<%- end -%>
-
 <% if @current_user.admin? %>
 <%= link_to("Generate Online ERB", :overwrite_params => { :format => :erb, :type => :html }) %>
 <%= link_to("Generate Xforms ERB", :overwrite_params => { :format => :erb, :type => :xforms }) %>
 <% end %>  
 
-<%- javascript_tag do -%>
-  jQuery(document).ready(function() {
-    jQuery('input.datepicker').
-      datepicker(jQuery.extend(<%= js_datepicker_default_options %>,
-                               { changeMonth: true, changeYear: true, yearRange: '-1:+5' },
-                               jQuery.datepicker.regional[<%= js_datepicker_region(I18n.locale) %>]));
-    });
-<%- end -%>

@@ -19,16 +19,16 @@ class FridgeStatus < ActiveRecord::Base
 
   belongs_to :fridge
   belongs_to :user, :foreign_key => 'user_id', :class_name => 'User'
-
+                           
   def nr
     !new_record? && temperature.nil?
   end
-  
+
   validates_numericality_of :temperature, :only_integer => true, :allow_nil => true
   #validates_inclusion_of    :temperature, :in => (2..8), :if => lambda{|r| r.status_code == 'OK'}, :message => :working_temp_range, :allow_nil => true
 
   def reported_by
-    user
+    user                                                                                     
   end
 
   validates_presence_of :date, :status_code
@@ -103,7 +103,7 @@ class FridgeStatus < ActiveRecord::Base
     else
       "#{ i18n_status_code } (#{ other_problem }) #{ date_str }"
     end
-  end
+  end                                                     
 
   def urgent?
     # TODO: Adjust this list as required
@@ -141,6 +141,35 @@ class FridgeStatus < ActiveRecord::Base
   def self.screens
     ['cold_chain']
   end
+
+  def self.process_data_submission(visit, params)
+    errors = {}
+
+    fridge_statuses = visit.find_or_initialize_fridge_statuses
+    
+    params[:fridge_status].each do |key, values|
+      # Skip if no data entered for this fridge
+      next if values["temperature"].blank? && values["past_problem"].blank? &&
+        values["state"].blank? && values["problem"].blank? && values["other_problem"].blank?
+
+      if record = fridge_statuses.detect{|fs| fs.fridge_code == key.to_s }
+        db_values = {
+          :past_problem  => values["past_problem"] == "true" || (values["past_problem"] == "false" ? false : nil),
+          :temperature   => values["temperature"].blank? ? nil : values["temperature"].to_i,
+          :status_code   => values["state"] == "OK" ? "OK" : values["state"] == "nr" ? nil : values["problem"].join(' '),
+          :other_problem => values["state"] == "problem" && values["problem"].include?("OTHER") ? values["other_problem"] : nil
+        }
+        record.update_attributes(db_values)
+        unless record.errors.empty?
+          errors[key] = record.errors
+        end
+      else
+        # TODO: The fridge code changed; should this be possible in the online form?
+      end
+    end
+    
+    errors
+  end    
   
   def self.progress_query(date_periods)
     <<-CC

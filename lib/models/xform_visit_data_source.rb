@@ -35,17 +35,17 @@ class XformVisitDataSource < DataSource
     params[:health_center_visit].delete('epi_month')
     
     xml.xpath('/olmis/hcvisit/epi/*').each do |epi|
-      params[epi.name.singularize.camelize] = Hash[*epi.xpath('./item').map { |n|
+      params[epi.name.singularize] = Hash[*epi.xpath('./item').map { |n|
         [n['for'].to_s, n['val'].to_s] +
           (n['nr'].to_s == "true" ? [n['for'].to_s + '/NR', 1] : [])
       }.flatten]
     end
 
     xml.xpath('/olmis/hcvisit/visit/inventory/item').each do |inv|
-      params[:inventory_counts] ||= {}
-      params[:inventory_counts][inv['for'].to_s] ||= { }
-      params[:inventory_counts][inv['for'].to_s][inv['type'].to_s] = inv['qty'].to_s
-      params[:inventory_counts][inv['for'].to_s][inv['type'].to_s + '/NR'] = inv['nr'].to_s == 'true' ? 1 : 0
+      params[:inventory] ||= {}
+      params[:inventory][inv['for'].to_s] ||= { }
+      params[:inventory][inv['for'].to_s][inv['type'].to_s] = inv['qty'].to_s
+      params[:inventory][inv['for'].to_s][inv['type'].to_s + '/NR'] = inv['nr'].to_s == 'true' ? 1 : 0
     end
 
     xml.xpath('/olmis/hcvisit/visit/general/item').each do |equip|
