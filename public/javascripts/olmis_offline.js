@@ -1035,6 +1035,10 @@ jQuery(document).ready(function() {
 function xf_user_init() {
   // Run actions that must be performed *after* XSLTForms init() runs
   fixup_nr_checkboxes();  
-  setup_datepicker();
+  setup_datepicker('#case-visit div.datepicker input[type="text"]',
+                   { onClose: function(dateText, inst) {
+                                XMLEvents.dispatch($('olmis'), "xforms-value-changed");
+                              }
+                   });
 }
 

@@ -185,6 +185,6 @@ jQuery( document ).ready( function() {
   autofocus();
   
   setup_error_links();
-  setup_datepicker();
+  setup_datepicker('input.datepicker', { changeMonth: true, changeYear: true, yearRange: '-1:+5' });
 });
 

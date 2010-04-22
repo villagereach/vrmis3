@@ -14,7 +14,8 @@ function setup_error_links() {
   })
 }
 
-function setup_datepicker() { 
+function setup_datepicker(id, options) {
+  options = options || {}
   js_datepicker_default_options = 
      { 'buttonImage': '/images/icons/silk/calendar_view_month.png',
        'buttonImageOnly': true,
@@ -27,9 +28,9 @@ function setup_datepicker() {
 
   region = typeof jQuery.datepicker.regional[locale] === 'object' ? locale : ''
 
-  jQuery('input.datepicker, #case-visit div.datepicker input[type="text"]').
+  jQuery(id).
     datepicker(jQuery.extend(js_datepicker_default_options,
-                             { changeMonth: true, changeYear: true, yearRange: '-1:+5' },
+                             options,
                              jQuery.datepicker.regional[region]));
 };
 
