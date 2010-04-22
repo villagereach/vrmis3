@@ -689,7 +689,7 @@
                 <div id="div-<%= screen %>" class="block-form">
                   <xf:group bind="visit_data">
                     <xf:label><%= h(t("visits.health_center_inventory.#{screen}.page_title")) %></xf:label>
-                    <p class="note"><%= h(t("visits.health_center_inventory.instructions")) %></p>
+                    <p class="note"><%= h(t("visits.nr_instructions")) %></p>
   
                     <table class="inventory spreadsheet">
                       <thead>
@@ -854,7 +854,7 @@
                 <div id="div-<%= klass.name.tableize %>" class="block-form">
                   <xf:group bind="epi_data">
                     <xf:label><%= h(t("visits.health_center_tally.page_title_#{klass.name.underscore}")) %></xf:label>
-                    <p class="note"><%= h(t("visits.health_center_tally.instructions")) %></p>
+                    <p class="note"><%= h(t("visits.nr_instructions")) %></p>
                     
                     <% begin %>
                       <%= render :partial => '/visits/' + klass.name.underscore + '.xforms.erb' %>
