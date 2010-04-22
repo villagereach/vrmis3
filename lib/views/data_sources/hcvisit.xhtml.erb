@@ -32,9 +32,10 @@
     <link rel="stylesheet" href="/stylesheets/blueprint/screen.css" type="text/css" media="screen, projection" />
     <link rel="stylesheet" href="/stylesheets/theme.css" type="text/css" />
     <link rel="stylesheet" href="/stylesheets/hcvisit.css" type="text/css" />
+    <link rel="stylesheet" href="/stylesheets/hcvisit_custom.css" type="text/css" />
     <xf:model id="default-model">
       <xf:instance id="olmis" src="/xforms/olmis.xml" />
-      <xf:instance id="data"   src="/xforms/data.xml"   />
+      <xf:instance id="data"  src="/xforms/data.xml"  />
 
       <% begin %>
         <%= render :partial => '/visits/model.xforms.erb' %>
