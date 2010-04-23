@@ -33,7 +33,7 @@ module VisitsHelper
         [ [:visit, [I18n.t('visits.health_center_monthly_tasks.visit'), health_center_visit_path]]]],
       [ I18n.t('EPI'), 
         Olmis.tally_klasses.map { |k|
-          [k.underscore, [I18n.t("visits.health_center_monthly_tasks.#{k.underscore}"), health_center_tally_path(:tally => k.underscore)]]
+          [k.to_s.underscore, [I18n.t("visits.health_center_monthly_tasks.#{k.to_s.underscore}"), health_center_tally_path(:tally => k.to_s.underscore)]]
         }
       ],
       [ I18n.t('visits.health_center_monthly_tasks.inventory'),
