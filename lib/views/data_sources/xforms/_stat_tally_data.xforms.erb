@@ -1,0 +1,13 @@
+<<%= klass.name.tableize %>>
+  <%- record_value_hash = klass.records_by_param_names_for_keys(visit.health_center, visit.epi_month) -%>
+  <%- klass.expected_params().each do |param, type| -%>
+    <item for="<%= param %>"
+      <%- if r = record_value_hash[param] -%>
+        <%- value = r.send(klass.value_field(param)) -%>
+        nr="<%= value.nil? %>" val="<%= value %>"
+      <%- else -%>
+        nr="" val=""
+      <%- end -%>/>
+  <%- end -%>
+</<%= klass.name.tableize %>>
+

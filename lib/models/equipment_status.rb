@@ -51,12 +51,12 @@ class EquipmentStatus < ActiveRecord::Base
   #end
 
   def self.screens
-    ['general']
+    ['equipment_status']
   end
 
   def self.xforms_to_params(xml)
     Hash[
-      *xml.xpath('/olmis/hcvisit/visit/general/item').map do |equip|
+      *xml.xpath('/olmis/equipment_status/item').map do |equip|
         [
           equip['for'].to_s,
           {
@@ -70,7 +70,7 @@ class EquipmentStatus < ActiveRecord::Base
 
   def self.odk_to_params(xml)
     Hash[
-      *xml.xpath('/olmis/hcvisit/visit/general/*').find_all{|n| n.name.starts_with?('item_')}.map do |equip|
+      *xml.xpath('/olmis/hcvisit/visit/equipment_status/*').find_all{|n| n.name.starts_with?('item_')}.map do |equip|
         [
           equip.name[5..-1],
           {
@@ -80,6 +80,10 @@ class EquipmentStatus < ActiveRecord::Base
         ]
       end.flatten_once
     ]
+  end
+  
+  def self.xforms_group_name
+    'equipment_status'
   end
 
   def self.process_data_submission(visit, params)
@@ -115,7 +119,7 @@ class EquipmentStatus < ActiveRecord::Base
         health_center_visits.visit_month as date_period,
         #{types} as expected_entries,
         count(distinct equipment_statuses.id) as entries,
-        'general' as screen
+        'equipment_status' as screen
       from health_center_visits 
         left join equipment_statuses on equipment_statuses.health_center_visit_id = health_center_visits.id
         where health_center_visits.visit_month in (#{date_periods})

@@ -144,7 +144,7 @@ class FridgeStatus < ActiveRecord::Base
   
   def self.xforms_to_params(xml)
     Hash[
-      *xml.xpath('/olmis/hcvisit/visit/cold_chain/fridges/fridge').map do |fridge|
+      *xml.xpath('/olmis/cold_chain/fridge').map do |fridge|
         [
           fridge['code'].to_s, 
           {
@@ -176,6 +176,10 @@ class FridgeStatus < ActiveRecord::Base
     ]
   end
 
+  def self.xforms_group_name
+    'fridge_status'
+  end
+
   def self.process_data_submission(visit, params)
     errors = {}
 
@@ -202,8 +206,8 @@ class FridgeStatus < ActiveRecord::Base
     end
     
     errors
-  end    
-  
+  end
+
   def self.progress_query(date_periods)
     <<-CC
       select health_center_visits.id as id, 

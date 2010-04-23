@@ -56,8 +56,9 @@ class DataSourcesController < OlmisController
     views_path  = File.join(vendor_root, 'lib', 'views')
 
     files = manifest_data.split("\n").map(&:strip).grep(/^\//).map { |f| File.join(Rails.root, 'public', f) }.select { |f| File.exists?(f) } 
+    files += Dir.glob(File.join(Rails.root, 'app', 'views', 'data_sources', '*'))
     files += Dir.glob(File.join(views_path, 'data_sources', '*'))
-    files += Dir.glob(File.join(Rails.root, 'app', 'views', 'visits', '*.xforms.erb'))
+    files += Dir.glob(File.join(Rails.root, 'app', 'views', 'data_sources', 'xforms', '*.xforms.erb'))
     files += [ File.join(views_path, 'javascripts', 'offline_i18n.js.erb'),
                File.join(views_path, 'javascripts', 'offline_autoeval_data.js.erb'),
                File.join(views_path, 'layouts', '_locale.html.erb') ]
@@ -85,7 +86,10 @@ class DataSourcesController < OlmisController
         cssfile  = File.join(Rails.root, 'public', 'xforms', 'xsltforms', 'xsltforms.css')
         xsltfile = File.join(vendor_root, 'public', 'xforms', 'xsltforms', 'xsltforms.xsl')
 
-        files = Dir.glob(File.join(Rails.root, 'app', 'views', 'visits', '*.xforms.erb')) + [ file, jsfile, cssfile, xsltfile, __FILE__ ]
+        files = Dir.glob(File.join(Rails.root, 'app', 'views', 'data_sources', 'xforms', '*.xforms.erb'))
+        files += Dir.glob(File.join(Rails.root, 'vendor', 'plugins', 'olmis', 'lib', 'views', 'data_sources', 'xforms', '*.xforms.erb'))
+        files += [ file, jsfile, cssfile, xsltfile, __FILE__ ]
+        
         last_mod_time = files.map{ |f| File.mtime(f) }.max
 
         if_modified_since(last_mod_time) do

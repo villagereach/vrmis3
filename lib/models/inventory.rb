@@ -93,10 +93,14 @@ class Inventory < ActiveRecord::Base
     params
   end
 
+  def self.xforms_group_name
+    'inventory'
+  end
+
   def self.xforms_to_params(xml)
     params = {}
 
-    xml.xpath('/olmis/hcvisit/visit/inventory/item').each do |inv|
+    xml.xpath('/olmis/inventory/item').each do |inv|
       params[inv['for'].to_s] ||= { }
       params[inv['for'].to_s][inv['type'].to_s] = inv['qty'].to_s
       params[inv['for'].to_s][inv['type'].to_s + '/NR'] = inv['nr'].to_s == 'true' ? 1 : 0

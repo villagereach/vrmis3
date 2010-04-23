@@ -1,0 +1,7 @@
+<xf:bind id="fridge:code"          nodeset="/olmis/cold_chain/fridge/@code"          required="false()" />
+<xf:bind id="fridge:past_problem"  nodeset="/olmis/cold_chain/fridge/@past_problem"  required="true()" relevant="../@code != ''" />
+<xf:bind id="fridge:temp"          nodeset="/olmis/cold_chain/fridge/@temp"          required="true()" type="xf:integer" relevant="../@code != ''" />
+<xf:bind id="fridge:state"         nodeset="/olmis/cold_chain/fridge/@state"         required="true()" relevant="../@code != ''" />
+<xf:bind id="fridge:problem"       nodeset="/olmis/cold_chain/fridge/@problem"       required="true()" relevant="../@state = 'problem'" />
+<xf:bind id="fridge:other_problem" nodeset="/olmis/cold_chain/fridge/@other_problem" required="true()" relevant="../@state = 'problem' and jr:regex(../@problem, '\\bOTHER\\b')" />
+

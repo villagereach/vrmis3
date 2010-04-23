@@ -1,0 +1,8 @@
+<%- EquipmentType.active.each do |type|
+      id = "equipment_status_#{type.code}"
+      node = "/olmis/equipment_status/item[@for='#{ type.code }']"  -%>
+  <xf:bind id="<%= id %>:present" nodeset="<%= node %>/@present" required="true()" />
+  <xf:bind id="<%= id %>:working" nodeset="<%= node %>/@working" required="true()" />
+<%- end -%>
+<xf:bind id="equipment:notes" nodeset="/olmis/equipment_status/notes" required="false()" />
+

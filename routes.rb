@@ -59,9 +59,9 @@
 
   map.nuke_caches             '/nuke_caches', :controller => 'olmis', :action => 'nuke_caches'
 
-  map.health_center_equipment_general   '/visits/:visit_month/:health_center/equipment/general',   :controller => 'visits', :action => 'health_center_equipment'
-  map.health_center_equipment_coldchain '/visits/:visit_month/:health_center/equipment/coldchain', :controller => 'visits', :action => 'health_center_cold_chain'
-  map.health_center_equipment_stockcards '/visits/:visit_month/:health_center/equipment/stockcards', :controller => 'visits', :action => 'health_center_stock_cards'
+  map.health_center_equipment_status   '/visits/:visit_month/:health_center/equipment_status',   :controller => 'visits', :action => 'health_center_equipment'
+  map.health_center_cold_chain '/visits/:visit_month/:health_center/cold_chain', :controller => 'visits', :action => 'health_center_cold_chain'
+  map.health_center_stockcards '/visits/:visit_month/:health_center/stockcards', :controller => 'visits', :action => 'health_center_stock_cards'
 
   map.health_center_inventory '/visits/:visit_month/:health_center/inv/:screen', :controller => 'visits', :action => 'health_center_inventory'
   

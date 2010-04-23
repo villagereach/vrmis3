@@ -1,18 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <%-
   locale = I18n.locale
-  inventory_packages = Package.active.sort
-  equipment_types = EquipmentType.active.sort
-  stock_cards = StockCard.active.sort
-  if params[:dz] and delivery_zone = DeliveryZone.find_by_code(params[:dz])
-    districts = delivery_zone.districts.sort
-    health_centers = districts.map(&:health_centers).flatten
-  else
-    provinces = Province.all.sort
-    delivery_zones = DeliveryZone.all
-    districts = District.all
-    health_centers = HealthCenter.all
-  end
+
+  provinces = Province.all.sort
+  districts = District.all
+  health_centers = HealthCenter.all
 
   def health_center_code(hc)
     "#{hc.code}-#{hc.id}"  # code+ID prevents duplicate HC names from causing grief
@@ -39,93 +31,18 @@
           <hcvisit>
             <health_center/>
             <visited>true</visited>
-            <epi_data_ready>true</epi_data_ready>
             <visited_at/>
             <vehicle_id/>
             <notes/>
-            <epi>
-              <%- [EpiUsageTally,AdultVaccinationTally,ChildVaccinationTally,FullVaccinationTally,RdtTally].each do |klass| -%>
-                <<%= klass.name.tableize %>>
-                  <!-- TODO: Not implemented -->
-                </<%= klass.name.tableize %>>
-              <%- end -%>
-            </epi>
             <visit>
-              <inventory>
-                <intro/>
-                <%- inventory_packages.each do |package|
-                      item_name = package.code -%>
-                  <item_<%= item_name %>>
-                    <%- %w(existing delivered).each do |type| -%>
-                      <<%= type %>>
-                        <qty/>
-                      </<%= type %>>
-                    <%- end -%>
-                  </item_<%= item_name %>>
-                <%- end -%>
-              </inventory>
-              <general>
-                <intro/>
-                <%- equipment_types.each do |type|
-                      item_name = type.code -%>
-                  <item_<%= item_name %>>
-                    <qty/>
-                    <status/>
-                    <notes/>
-                  </item_<%= item_name %>>
-                <%- end -%>
-              </general>
-              <cold_chain>
-                <intro/>
-              </cold_chain>
-              <stock_cards>
-                <intro/>
-                <%- stock_cards.each do |type|
-                    item_name = type.code -%>
-                  <item_<%= item_name %>>
-                    <have/>
-                    <use/>
-                  </item_<%= item_name %>>
-                <%- end -%>
-              </stock_cards>
+            <% HealthCenterVisit.tables.each do |t| 
+                 begin %><%=
+                   render(:partial => 'odk/' + t.table_name.singularize + '_data.odk') %><% 
+                 rescue ActionView::MissingTemplate           
+                 end 
+               end %> 
             </visit>
           </hcvisit>
-          <!-- Hackaround for lack of itemset support -->
-          <location>
-            <%- if delivery_zone -%>
-              <province><%= delivery_zone.province.code %></province>
-              <delivery_zone><%= delivery_zone.code %></delivery_zone>
-              <district/>
-            <%- else -%>
-              <province/>
-              <delivery_zone>
-                <%- provinces.each do |p| -%>
-                  <p-<%= p.code %> />
-                <%- end -%>
-              </delivery_zone>
-              <district>
-                <%- delivery_zones.each do |dz| -%>
-                  <dz-<%= dz.code %> />
-                <%- end -%>
-              </district>
-            <%- end -%>
-            <health_center>
-              <%- districts.each do |d| -%>
-                <d-<%= d.code %> />
-              <%- end -%>
-            </health_center>
-            <fridges>
-              <%- health_centers.each do |hc|
-                    next if hc.fridges.empty?
-                    hc_code = health_center_code(hc) -%>
-                <hc-<%= hc_code %>>
-                  <%- hc.fridges.each do |fridge| -%>
-                    <f-<%= fridge.id %> code="<%= h fridge.code %>"><status/><temp/><notes/></f-<%= fridge.id %>>
-                  <%- end -%>
-                </hc-<%= hc_code %>>
-              <%- end -%>
-            </fridges>
-          </location>
         </vrmis3>
       </instance>
 
@@ -140,84 +57,13 @@
       <bind nodeset="/vrmis3/hcvisit/notes"            id="notes" />
 
       <bind nodeset="/vrmis3/hcvisit/visit" id="visit_data" relevant="../visited != 'false'" />
-      <bind nodeset="/vrmis3/hcvisit/epi"   id="epi_data"   relevant="../epi_data_ready = true()" />
 
-      <bind nodeset="/vrmis3/hcvisit/visit/inventory/intro" id="inventory_intro" readonly="true()" relevant="../../../visited != 'false'" />
-      <%- inventory_packages.each do |package| -%>
-        <%- %w(existing delivered).each do |type|
-              id = "inventory_#{package.code}_#{type}"
-              node = "/vrmis3/hcvisit/visit/inventory/item_#{package.code}/#{type}" -%>
-          <bind id="<%= id %>:qty" nodeset="<%= node %>/qty" required="true()" constraint="regex(., '^(?:-|\d+)$')" jr:constraintMsg="<%= t('.quantity_error') %>" />
-        <%- end -%>
-      <%- end -%>
-
-      <bind nodeset="/vrmis3/hcvisit/visit/general/intro" id="general_intro" readonly="true()" relevant="../../../visited != 'false'" />
-      <%- equipment_types.each do |type|
-            type_name = type.code
-            id = "general_#{type_name}"
-            node = "/vrmis3/hcvisit/visit/general/item_#{type_name}" -%>
-        <bind id="<%= id %>:qty"    nodeset="<%= node %>/qty"    required="true()" constraint="regex(., '^(?:-|\d+)$')" jr:constraintMsg="<%= t('.quantity_error') %>" />
-        <bind id="<%= id %>:status" nodeset="<%= node %>/status" required="true()" />
-        <bind id="<%= id %>:notes"  nodeset="<%= node %>/notes"  required="false()" />
-      <%- end -%>
-
-      <bind nodeset="/vrmis3/hcvisit/visit/cold_chain/intro" id="cold_chain_intro" readonly="true()" relevant="../../../visited != 'false'" />
-
-      <bind nodeset="/vrmis3/hcvisit/visit/stock_cards/intro" id="stock_cards_intro" readonly="true()" relevant="../../../visited != 'false'" />
-      <%- stock_cards.each do |type|
-            type_name = type.code
-            id = "stock_card_#{type_name}"
-            node = "/vrmis3/hcvisit/visit/stock_cards/item_#{type_name}" -%>
-        <bind id="<%= id %>:have" nodeset="<%= node %>/have" required="true()" />
-        <bind id="<%= id %>:use"  nodeset="<%= node %>/use"  required="true()" relevant="../have = 'true'" />
-      <%- end -%>
-
-      <!-- HACK: JavaRosa doesn't yet support itemsets, so the following is necessary for cascading location selection -->
-      <%- if delivery_zone -%>
-        <bind nodeset="/vrmis3/location/district" id="district" required="true()" />
-        <%- districts.each do |d|
-              d_code = d.code -%>
-          <bind id="d-<%= d_code %>" nodeset="/vrmis3/location/health_center/d-<%= d_code %>" required="true()" relevant="../../district = '<%= d_code %>'" />
-          <%- d.health_centers.each do |hc|
-                next if hc.fridges.empty?
-                hc_code = health_center_code(hc) -%>
-            <bind id="hc-<%= hc_code %>" nodeset="/vrmis3/location/fridges/hc-<%= hc_code %>" required="true()" relevant="../../district = '<%= d_code %>' and ../../health_center/d-<%= d_code %> = '<%= hc_code %>'" />
-            <%- hc.fridges.each do |fridge|
-                  id = "f-#{fridge.id}"
-                  node = "/vrmis3/location/fridges/hc-#{hc_code}/#{id}" -%>
-              <bind id="<%= id %>:status" nodeset="<%= node %>/status" required="true()" />
-              <bind id="<%= id %>:temp"   nodeset="<%= node %>/temp"   required="true()" relevant="../status != 'BROKE' and ../status != 'MISS'" constraint="(regex(., '^(?:-|[2-8])$') and ../status = 'OK') or (regex(., '^-|-?\d+$') and ../status = 'PROB')" jr:constraintMsg="<%= t('.temperature_error') %>" />
-              <bind id="<%= id %>:notes"  nodeset="<%= node %>/notes"  required="false()" />
-            <%- end -%>
-          <%- end -%>
-        <%- end -%>
-      <%- else -%>
-        <bind nodeset="/vrmis3/location/province" id="province" required="true()" />
-        <%- provinces.each do |p|
-              p_code = p.code -%>
-          <bind id="p-<%= p_code %>" nodeset="/vrmis3/location/delivery_zone/p-<%= p_code %>" required="true()" relevant="../../province = '<%= p_code %>'" />
-          <%- p.delivery_zones.each do |dz|
-                dz_code = dz.code -%>
-            <bind id="dz-<%= dz_code %>" nodeset="/vrmis3/location/district/dz-<%= dz_code %>" required="true()" relevant="../../province = '<%= p_code %>' and ../../delivery_zone/p-<%= p_code %> = '<%= dz_code %>'" />
-            <%- dz.districts.each do |d|
-                  d_code = d.code -%>
-              <bind id="d-<%= d_code %>" nodeset="/vrmis3/location/health_center/d-<%= d_code %>" required="true()" relevant="../../province = '<%= p_code %>' and ../../delivery_zone/p-<%= p_code %> = '<%= dz_code %>' and ../../district/dz-<%= dz_code %> = '<%= d_code %>'" />
-              <%- d.health_centers.each do |hc|
-                    next if hc.fridges.empty?
-                    hc_code = health_center_code(hc) -%>
-                <bind id="hc-<%= hc_code %>" nodeset="/vrmis3/location/fridges/hc-<%= hc_code %>" required="true()" relevant="../../province = '<%= p_code %>' and ../../delivery_zone/p-<%= p_code %> = '<%= dz_code %>' and ../../district/dz-<%= dz_code %> = '<%= d_code %>' and ../../health_center/d-<%= d_code %> = '<%= hc_code %>'" />
-                <%- hc.fridges.each do |fridge|
-                      id = "f-#{fridge.id}"
-                      node = "/vrmis3/location/fridges/hc-#{hc_code}/#{id}" -%>
-                  <bind id="<%= id %>:status" nodeset="<%= node %>/status" required="true()" />
-                  <bind id="<%= id %>:temp"   nodeset="<%= node %>/temp"   required="true()" relevant="../status != 'BROKE' and ../status != 'MISS'" constraint="(regex(., '^(?:-|[2-8])$') and ../status = 'OK') or (regex(., '^-|-?\d+$') and ../status = 'PROB')" jr:constraintMsg="<%= t('.temperature_error') %>" />
-                  <bind id="<%= id %>:notes"  nodeset="<%= node %>/notes"  required="false()" />
-                <%- end -%>
-              <%- end -%>
-            <%- end -%>
-          <%- end -%>
-        <%- end -%>
-      <%- end -%>
+      <% HealthCenterVisit.tables.each do |t| 
+           begin %><%= 
+             render(:partial => 'odk/' + t.table_name.singularize + '_bind.odk') %><% 
+           rescue ActionView::MissingTemplate           
+           end 
+         end %> 
     </model>
   </h:head>
   <h:body>
@@ -232,60 +78,32 @@
         <%- end -%>
       </select1>
     </group>
-    <%- if delivery_zone -%>
-      <group>
-        <select1 bind="district">
-          <label><%= t("district") %></label>
-          <%- districts.each do |d| -%>
+    <!-- HACK: Cascading province -> delivery zone -> district -> health center selection -->
+    <group>
+      <select1 bind="province">
+        <label><%= t("province") %></label>
+        <%- provinces.each do |p| -%>
+          <item>
+            <label><%= h p.name %></label>
+            <value><%= h p.code %></value>
+          </item>
+        <%- end -%>
+      </select1>
+    </group>
+    <group>
+      <%- provinces.each do |p|
+            p_code = p.code  -%>
+        <select1 bind="p-<%= p_code %>">
+          <label><%= t("delivery_zone") %></label>
+          <%- p.districts.sort.each do |dz| -%>
             <item>
-              <label><%= h d.name %></label>
-              <value><%= h d.code %></value>
+              <label><%= h dz.name %></label>
+              <value><%= h dz.code %></value>
             </item>
           <%- end -%>
         </select1>
-      </group>
-    <%- else -%>
-      <!-- HACK: Cascading province -> delivery zone -> district -> health center selection -->
-      <group>
-        <select1 bind="province">
-          <label><%= t("province") %></label>
-          <%- provinces.each do |p| -%>
-            <item>
-              <label><%= h p.name %></label>
-              <value><%= h p.code %></value>
-            </item>
-          <%- end -%>
-        </select1>
-      </group>
-      <group>
-        <%- provinces.each do |p|
-              p_code = p.code  -%>
-          <select1 bind="p-<%= p_code %>">
-            <label><%= t("delivery_zone") %></label>
-            <%- p.delivery_zones.sort.each do |dz| -%>
-              <item>
-                <label><%= h dz.name %></label>
-                <value><%= h dz.code %></value>
-              </item>
-            <%- end -%>
-          </select1>
-        <%- end -%>
-      </group>
-      <group>
-        <%- delivery_zones.each do |dz|
-              dz_code = dz.code -%>
-          <select1 bind="dz-<%= dz_code %>">
-            <label><%= t("district") %></label>
-            <%- dz.districts.sort.each do |d| -%>
-              <item>
-                <label><%= h d.name %></label>
-                <value><%= h d.code %></value>
-              </item>
-            <%- end -%>
-          </select1>
-        <%- end -%>
-      </group>
-    <%- end -%>
+      <%- end -%>
+    </group>      
     <group>
       <%- districts.each do |d|
             d_code = d.code -%>
@@ -315,119 +133,13 @@
         <label><%= t("visits.health_center_monthly_visit.notes") %></label>
       </input>
     </group>
-    <group bind="visit_data">
-      <group>
-        <label><%= t("visits.health_center_monthly_tasks.inventory") %></label>
-        <input bind="inventory_intro">
-          <label><%= t(".inventory_intro.label") %></label>
-          <hint><%= t(".inventory_intro.hint") %></hint>
-        </input>
-
-        <%- inventory_packages.each do |package| -%>
-          <%- %w(existing delivered).each do |type|
-                id = "inventory_#{package.code}_#{type}" -%>
-            <group>
-              <input bind="<%= id %>:qty">
-                <label><%= package.label %>, <%= t("visits.health_center_inventory.#{type}_quantity") %></label>
-                <hint><%= t(".quantity_hint") %></hint>
-              </input>
-            </group>
-          <%- end -%>
-        <%- end -%>
-      </group>
-      <group>
-        <label><%= t("visits.health_center_monthly_tasks.equipment") %></label>
-        <input bind="general_intro">
-          <label><%= t(".general_intro.label") %></label>
-          <hint><%= t(".general_intro.hint") %></hint>
-        </input>
-
-        <%- equipment_types.each do |type|
-            id = "general_#{type.code}" -%>
-          <group>
-            <select1 bind="<%= id %>:status">
-              <label><%= type.label %>, <%= t("visits.health_center_equipment.status") %></label>
-              <%- EquipmentStatus.status_options.each do |label,value| -%>
-                <item>
-                  <label><%= label %></label>
-                  <value><%= value %></value>
-                </item>
-              <%- end -%>
-            </select1>
-            <input bind="<%= id %>:qty">
-              <label><%= type.label %>, <%= t("visits.health_center_equipment.quantity") %></label>
-              <hint><%= t(".quantity_hint") %></hint>
-            </input>
-            <input bind="<%= id %>:notes">
-              <label><%= type.label %>, <%= t("visits.health_center_equipment.notes") %></label>
-            </input>
-          </group>
-        <%- end -%>
-      </group>
-      <group>
-        <label><%= t("visits.health_center_monthly_tasks.cold_chain") %></label>
-        <input bind="cold_chain_intro">
-          <label><%= t(".cold_chain_intro.label") %></label>
-          <hint><%= t(".cold_chain_intro.hint") %></hint>
-        </input>
-
-        <%- health_centers.each do |hc|
-              next if hc.fridges.empty? -%>
-          <group bind="hc-<%= health_center_code(hc) %>">
-            <%- hc.fridges.sort.each do |fridge|
-                  id = "f-#{fridge.id}"
-                  desc = "#{t('visits.health_center_cold_chain.fridge')} #{h fridge.code}"-%>
-              <select1 bind="<%= id %>:status">
-                <label><%= desc %>, <%= t("visits.health_center_cold_chain.status") %></label>
-                <%- FridgeStatus.status_options.each do |label,value| -%>
-                  <item>
-                    <label><%= label %></label>
-                    <value><%= value %></value>
-                  </item>
-                <%- end -%>
-              </select1>
-              <input bind="<%= id %>:temp">
-                <label><%= desc %>, <%= t("visits.health_center_cold_chain.temperature") %></label>
-                <hint><%= t(".temperature_hint") %></hint>
-              </input>
-              <input bind="<%= id %>:notes">
-                <label><%= desc %>, <%= t("visits.health_center_cold_chain.notes") %></label>
-              </input>
-            <%- end -%>
-          </group>
-        <%- end -%>
-      </group>
-      <group>
-        <label><%= t("visits.health_center_monthly_tasks.stock_cards") %></label>
-        <input bind="stock_cards_intro">
-          <label><%= t(".stock_cards_intro.label") %></label>
-          <hint><%= t(".stock_cards_intro.hint") %></hint>
-        </input>
-
-        <%- stock_cards.each do |card|
-              id = "stock_card_#{card.code}" -%>
-          <group>
-            <select1 bind="<%= id %>:have" appearance="full" class="radio">
-              <label><%= card.label %>, <%= t("visits.health_center_stock_cards.have") %></label>
-              <%- [ [ t("yes"), "true" ], [ t("no"), "false" ] ].each do |label,value| -%>
-                <item>
-                  <label><%= label %></label>
-                  <value><%= value %></value>
-                </item>
-              <%- end -%>
-            </select1>
-            <select1 bind="<%= id %>:use" appearance="full" class="radio">
-              <label><%= card.label %>, <%= t("visits.health_center_stock_cards.use") %></label>
-              <%- [ [ t("yes"), "true" ], [ t("no"), "false" ] ].each do |label,value| -%>
-                <item>
-                  <label><%= label %></label>
-                  <value><%= value %></value>
-                </item>
-              <%- end -%>
-            </select1>
-          </group>
-        <%- end -%>
-      </group>
+    <group bind="visit_data">    
+      <% HealthCenterVisit.tables.each do |t| 
+           begin %><%= 
+             render(:partial => 'odk/' + t.table_name.singularize + '_group.odk') %><% 
+           rescue ActionView::MissingTemplate           
+           end 
+         end %> 
     </group>
   </h:body>
 </h:html>

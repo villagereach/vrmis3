@@ -1,0 +1,11 @@
+<%- klass.expected_params().each do |param, value_type|
+  node = "/olmis/#{ klass.name.tableize }/item[@for='#{ param }']"
+  type, constraint = (case value_type
+                      when :date then [ 'xf:string', "jr:regex(., '^\\\\d{2}/\\\\d{4}$')" ]
+  
+                      else            [ 'xf:nonNegativeInteger', nil ]
+                      end) -%>
+  <xf:bind id="<%= param %>:nr"    nodeset="<%= node %>/@nr"  required="false()"          type="xf:boolean" />
+  <xf:bind id="<%= param %>:value" nodeset="<%= node %>/@val" required="../@nr != true()" type="<%= type %>" <%= %Q{constraint="#{constraint}"} if constraint %> />
+<%- end -%>
+

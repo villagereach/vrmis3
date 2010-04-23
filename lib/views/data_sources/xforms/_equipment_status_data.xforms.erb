@@ -1,0 +1,7 @@
+<equipment_status>
+  <%- EquipmentType.active.each do |type| -%>
+    <item for="<%= type.code %>" present="" working="" />
+  <%- end -%>
+  <notes/>
+</equipment_status>
+

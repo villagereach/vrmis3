@@ -1,0 +1,20 @@
+<xf:action ev:event="xforms-select">
+  <xf:load resource="javascript:jQuery('#div-<%= klass.name.tableize %> .xforms-value:input').change();" />
+</xf:action>
+<div id="div-<%= klass.name.tableize %>" class="block-form">
+  <xf:group>
+    <xf:label><%= h(t("visits.health_center_tally.page_title_#{klass.name.underscore}")) %></xf:label>
+    <p class="note"><%= h(t("visits.health_center_tally.instructions")) %></p>
+    <% begin %>
+      <%= render :partial => '/data_sources/xforms/' + klass.name.underscore + '.xforms.erb' %>
+    <% rescue ActionView::MissingTemplate %>  
+      <%= tally_table(klass, lambda { |point|
+            node = klass.param_name(point)
+            msg_key, input_type = klass.expected_params.assoc(node).last == :date ? [ 'date', 'month-year' ] : [ 'quantity', 'integer' ]
+            %Q{<div class="tally #{input_type}"><xf:input bind="#{node}:value"><xf:label /><xf:action ev:event="xforms-value-changed"><xf:setvalue if="string-length(.) &gt; 0" bind="#{node}:nr" value="'false'" /><xf:setvalue if=". = '' and ../@nr = 'false'" bind="#{node}:nr" /></xf:action><xf:alert>#{h(t(".errors.#{msg_key}"))}</xf:alert></xf:input>} +
+              %Q{<div class="nr"><xf:input bind="#{node}:nr" incremental="true"><xf:label>#{h(t("NR"))}</xf:label><xf:action ev:event="xforms-value-changed"><xf:setvalue if=". = 'true'" bind="#{node}:value" value="''" /></xf:action></xf:input></div></div>}
+          }) %>
+    <% end %>
+  </xf:group>
+</div>
+

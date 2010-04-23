@@ -1,0 +1,18 @@
+<group>
+  <label><%= t("visits.health_center_monthly_tasks.inventory") %></label>
+  <input bind="inventory_intro">
+    <label><%= t(".inventory_intro.label") %></label>
+    <hint><%= t(".inventory_intro.hint") %></hint>
+  </input>
+
+  <%- Inventory.possible_fields.sort_by(&:second).each do |type, package, screen| -%>
+    <%- id = "inventory_#{package.code}_#{type}" -%>
+    <group>
+      <input bind="<%= id %>:qty">
+        <label><%= package.label %>, <%= t("visits.health_center_inventory.#{type}_quantity") %></label>
+        <hint><%= t(".quantity_hint") %></hint>
+      </input>
+    </group>
+  <%- end -%>
+</group>
+

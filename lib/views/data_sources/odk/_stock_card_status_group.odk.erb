@@ -1,0 +1,32 @@
+<group>
+  <label><%= t("visits.health_center_monthly_tasks.stock_cards") %></label>
+  <input bind="stock_cards_intro">
+    <label><%= t(".stock_cards_intro.label") %></label>
+    <hint><%= t(".stock_cards_intro.hint") %></hint>
+  </input>
+
+  <%- StockCard.active.sort.each do |card|
+        id = "stock_card_#{card.code}" -%>
+    <group>
+      <select1 bind="<%= id %>:have" appearance="full" class="radio">
+        <label><%= card.label %>, <%= t("visits.health_center_stock_cards.have") %></label>
+        <%- [ [ t("yes"), "true" ], [ t("no"), "false" ] ].each do |label,value| -%>
+          <item>
+            <label><%= label %></label>
+            <value><%= value %></value>
+          </item>
+        <%- end -%>
+      </select1>
+      <select1 bind="<%= id %>:use" appearance="full" class="radio">
+        <label><%= card.label %>, <%= t("visits.health_center_stock_cards.use") %></label>
+        <%- [ [ t("yes"), "true" ], [ t("no"), "false" ] ].each do |label,value| -%>
+          <item>
+            <label><%= label %></label>
+            <value><%= value %></value>
+          </item>
+        <%- end -%>
+      </select1>
+    </group>
+  <%- end -%>
+</group>
+

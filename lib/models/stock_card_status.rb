@@ -56,7 +56,7 @@ class StockCardStatus < ActiveRecord::Base
 
   def self.odk_to_params(xml)
     Hash[
-      *xml.xpath('/olmis/hcvisit/visit/stock_cards/*').find_all{|n| n.name.starts_with?('item_')}.map do |card|
+      *xml.xpath('/olmis/stock_cards/*').find_all{|n| n.name.starts_with?('item_')}.map do |card|
         [
           card.name[5..-1],
           {
@@ -66,6 +66,10 @@ class StockCardStatus < ActiveRecord::Base
         ]
       end.flatten_once
     ]
+  end
+
+  def self.xforms_group_name
+    'stock_card_status'
   end
 
   def self.process_data_submission(visit, params)

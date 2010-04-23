@@ -172,9 +172,9 @@ module ProgressHelper
     @named_routes_by_screen ||= {}
     @named_routes_by_screen[path_params.inspect] ||= begin
       routes = {
-        'general'   => health_center_equipment_general_url(path_params),
-        'cold_chain' => health_center_equipment_coldchain_url(path_params),
-        'stock_cards' => health_center_equipment_stockcards_url(path_params),      
+        'equipment_status' => health_center_equipment_status_url(path_params),
+        'cold_chain'       => health_center_cold_chain_url(path_params),
+        'stock_cards'      => health_center_stockcards_url(path_params),      
       }
 
       Inventory.screens.each do |screen|

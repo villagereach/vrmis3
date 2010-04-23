@@ -1,0 +1,45 @@
+<div id="div-stock_cards" class="block-form">
+  <xf:group>
+    <xf:label><%= h(t("visits.health_center_stock_cards.page_title")) %></xf:label>
+    <table class="equipment spreadsheet">
+      <thead>
+        <tr>
+          <th></th>
+          <th><%= h(t("visits.health_center_stock_cards.have")) %></th>
+          <th><%= h(t("visits.health_center_stock_cards.use")) %></th>
+        </tr>
+      </thead>
+      <tbody>
+        <%- StockCard.active.sort.each do |type|
+              id = "stock_cards_#{type.code}" -%>
+          <tr>
+            <th><%= h type.label %></th>
+            <td>
+              <xf:select1 bind="<%= id %>:have" appearance="full" class="radio horizontal">
+                <%- [ [ h(t("yes")), "true" ], [ h(t("no")), "false" ], [ h(t("NR")), "nr" ] ].each do |label,value| -%>
+                  <xf:item>
+                    <xf:label><%= h label %></xf:label>
+                    <xf:value><%= h value %></xf:value>
+                  </xf:item>
+                <%- end -%>
+                <xf:alert><%= h(t(".errors.select_an_option")) %></xf:alert>
+              </xf:select1>
+            </td>
+            <td>
+              <xf:select1 bind="<%= id %>:use" appearance="full" class="radio horizontal">
+                <%- [ [ h(t("yes")), "true" ], [ h(t("no")), "false" ], [ h(t("NR")), "nr" ] ].each do |label,value| -%>
+                  <xf:item>
+                    <xf:label><%= h label %></xf:label>
+                    <xf:value><%= h value %></xf:value>
+                  </xf:item>
+                <%- end -%>
+                <xf:alert><%= h(t(".errors.select_an_option")) %></xf:alert>
+              </xf:select1>
+            </td>
+          </tr>
+        <%- end -%>
+      </tbody>
+    </table>
+  </xf:group>
+</div>
+

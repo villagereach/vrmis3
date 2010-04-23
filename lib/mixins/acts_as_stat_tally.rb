@@ -369,6 +369,10 @@ module ActsAsStatTally
       errors
     end
 
+    def xforms_group_name
+      'stat_tally'
+    end
+
     def odk_to_params(xml)
       nil
     end

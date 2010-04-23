@@ -1,0 +1,58 @@
+<% packages = Package.all.select { |p| Inventory.directly_collected_types.any? { |t| p.inventoried_by_type?(t, screen) } }
+   types = Inventory.directly_collected_types.select { |t| packages.any? { |p| p.inventoried_by_type?(t, screen) } } -%>
+<div id="div-<%= screen %>" class="block-form">
+  <xf:group>
+    <xf:label><%= h(t("visits.health_center_inventory.#{screen}.page_title")) %></xf:label>
+    <p class="note"><%= h(t("visits.health_center_inventory.instructions")) %></p>
+
+    <table class="inventory spreadsheet">
+      <thead>
+        <tr>
+          <th><%= h(t("visits.health_center_inventory.#{screen}.product_header")) %></th>
+          <%- types.each do |t| -%>
+            <th><%= h(t("visits.health_center_inventory.#{t}")) %></th>
+          <%- end -%>
+        </tr>
+      </thead>
+      <tbody>
+        <%- packages.sort.each do |package| -%>
+          <tr>
+            <th><%= h package.label %></th>
+            <%- types.each do |type|
+                  id = "inventory_#{package.code}_#{type}" -%>
+              <td>
+                <%- if package.inventoried_by_type?(type, screen) -%>
+                  <div class="tally">
+                    <xf:input bind="<%= id %>:qty">
+                      <%- if Inventory.nullable_types.include?(type) -%>
+                        <xf:action ev:event="xforms-value-changed">
+                          <xf:setvalue if="string-length(.) &gt; 0"     bind="<%= id %>:nr" value="'false'" />
+                          <xf:setvalue if=". = '' and ../@nr = 'false'" bind="<%= id %>:nr" />
+                        </xf:action>
+                      <%- end -%>
+                      <xf:alert><%= h(t(".errors.quantity")) %></xf:alert>
+                    </xf:input>
+                    <%- if Inventory.nullable_types.include?(type) -%>
+                      <div class="nr">
+                        <xf:input bind="<%= id %>:nr" incremental="true">
+                          <xf:label><%= h(t("NR")) %></xf:label>
+                          <xf:action ev:event="xforms-value-changed">
+                            <xf:setvalue if=". = 'true'" bind="<%= id %>:qty" value="''" />
+                          </xf:action>
+                        </xf:input>
+                      </div>
+                    <%- end -%>
+                  </div>
+                <%- end -%>
+              </td>
+            <%- end -%>
+          </tr>
+        <%- end -%>
+      </tbody>
+    </table>
+    <xf:action ev:event="xforms-value-changed">
+      <xf:load resource="javascript:update_stockouts()" />
+    </xf:action>
+  </xf:group>
+</div>
+
