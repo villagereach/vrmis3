@@ -1,4 +1,4 @@
-<% packages = Package.all.select { |p| Inventory.directly_collected_types.any? { |t| p.inventoried_by_type?(t, screen) } }
+<% packages = Package.active.select { |p| Inventory.directly_collected_types.any? { |t| p.inventoried_by_type?(t, screen) } }
    types = Inventory.directly_collected_types.select { |t| packages.any? { |p| p.inventoried_by_type?(t, screen) } } -%>
 <div id="div-<%= screen %>" class="block-form">
   <xf:group>

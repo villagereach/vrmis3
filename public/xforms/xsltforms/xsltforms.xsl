@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <!--
 
-Copyright (C) 2008-2009 agenceXML - Alain COUTHURES
+Copyright (C) 2008-2010 agenceXML - Alain COUTHURES
 Contact at : info@agencexml.com
 
 Copyright (C) 2006 AJAXForms S.L.
@@ -98,7 +98,8 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 				<head>
 					<xsl:copy-of select="xhtml:head/@* | head/@*"/>
 					<link type="text/css" href="{$resourcesdir}xsltforms.css" rel="stylesheet"/>
-					<xsl:copy-of select="xhtml:head/xhtml:*[local-name() != 'script'] | xhtml:head/comment() | head/title | head/meta | head/style | head/link | head/comment()"/>
+					<xsl:copy-of select="xhtml:head/xhtml:*[local-name() != 'script' and local-name() != 'style' and local-name() != 'link'] | xhtml:head/comment() | head/title | head/meta | head/comment()"/>
+					<xsl:apply-templates select="xhtml:head/xhtml:style | xhtml:head/xhtml:link | head/style | head/link"/>
 					<script src="{$resourcesdir}xsltforms.js" type="text/javascript">/* */</script>
 					<xsl:if test="not($config/extensions/beforeInit) and not($config/extensions/onBeginInit) and not($config/extensions/onEndInit) and not($config/extensions/afterInit)">
 						<xsl:copy-of select="$config/extensions/*"/>
@@ -284,10 +285,21 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 					</xsl:if>
 					<xsl:if test="$displaydebug = 'true'">
 						<div id="xformControl">
-							<span>
-								<input type="checkbox" onclick="$('console').style.display = this.checked? 'block' : 'none';" checked="checked"/> Debug
-							</span>
-							&#xA0;&#xA0;&#xA0;<img style="vertical-align:middle" src="{$resourcesdir}valid-xforms11.png"/>&#xA0;&#xA0;&#xA0;<img style="vertical-align:middle" src="{$resourcesdir}poweredbyXSLTForms.png"/>
+							<table>
+								<tr>
+									<td>
+										<span>
+											<input type="checkbox" onclick="$('console').style.display = this.checked? 'block' : 'none';" checked="checked"/> Debug
+										</span>
+									</td>
+									<td>
+										<img style="vertical-align:middle" src="{$resourcesdir}valid-xforms11.png"/>
+									</td>
+									<td>
+										<img style="vertical-align:middle" src="{$resourcesdir}poweredbyXSLTForms.png"/>
+									</td>
+								</tr>
+							</table>
 						</div>
 					</xsl:if>
 					<xsl:apply-templates select="xhtml:body/node() | body/node()"/>
@@ -340,6 +352,7 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 -->
 
 		<xsl:template xmlns:xsl="http://www.w3.org/1999/XSL/Transform" match="processing-instruction()"/>
+		<xsl:template xmlns:xsl="http://www.w3.org/1999/XSL/Transform" match="comment()"/>
 		<xsl:template xmlns:xsl="http://www.w3.org/1999/XSL/Transform" match="xforms:setvalue|xforms:insert|xforms:delete|xforms:action|xforms:toggle|xforms:send|xforms:setfocus"/>
 		<xsl:template xmlns:xsl="http://www.w3.org/1999/XSL/Transform" match="xforms:reset|xforms:refresh|xforms:rebuild|xforms:recalculate|xforms:revalidate"/>
 		<xsl:template xmlns:xsl="http://www.w3.org/1999/XSL/Transform" match="xforms:show|xforms:hide"/>
@@ -3302,7 +3315,12 @@ Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 				</xsl:choose>
 				<xsl:text>"),</xsl:text>
 				<xsl:call-template name="toScriptParam"><xsl:with-param name="p" select="@ev:event"/></xsl:call-template>
-				<xsl:text>,null,function(evt) {run(xf_</xsl:text>
+				<xsl:text>,</xsl:text>
+				<xsl:choose>
+					<xsl:when test="@ev:phase">"<xsl:value-of select="@ev:phase"/>"</xsl:when>
+					<xsl:otherwise>null</xsl:otherwise>
+				</xsl:choose>
+				<xsl:text>,function(evt) {run(xf_</xsl:text>
 				<xsl:variable name="lname2" select="local-name()"/>
 				<xsl:variable name="nsuri" select="namespace-uri()"/>
 				<xsl:value-of select="$lname2"/>
