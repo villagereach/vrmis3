@@ -1,9 +1,11 @@
 <%- Inventory.possible_fields.each do |type, package, screen|
       id = "inventory_#{package.code}_#{type}"
       node = "/olmis/inventory/item[@for='#{ package.code }' and @type='#{ type }']" -%>
-  <xf:bind id="<%= id %>:qty" nodeset="<%= node %>/@qty" required="../@nr != true()" type="xf:nonNegativeInteger" />
   <%- if Inventory.nullable_types.include?(type) -%>
+    <xf:bind id="<%= id %>:qty" nodeset="<%= node %>/@qty" required="../@nr != true()" type="xf:nonNegativeInteger" />
     <xf:bind id="<%= id %>:nr" nodeset="<%= node %>/@nr" required="false()" type="xf:boolean" />
+  <%- else -%>
+    <xf:bind id="<%= id %>:qty" nodeset="<%= node %>/@qty" required="true()" type="xf:nonNegativeInteger" />
   <%- end -%>
 <%- end -%>
 

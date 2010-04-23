@@ -73,10 +73,11 @@ class DataSourcesController < OlmisController
     respond_to do |format|
       format.xml {
         text = render_to_string(:action => params[:name], :layout => false)
-        render(:text => text.gsub(/<!--.*?--\s*>/m,'').squish, :layout => false)
+        send_data(text.gsub(/<!--.*?--\s*>/m,'').squish, :type => 'text/xml', :disposition => 'inline')
       }
       format.xhtml {
-        render params[:name], :layout => false
+        text = render_to_string(:action => params[:name], :layout => false)
+        send_data(text, :type => 'text/xml', :disposition => 'inline')
       }
       format.html {
         vendor_root = File.expand_path(File.join(File.dirname(__FILE__), '..', '..'))

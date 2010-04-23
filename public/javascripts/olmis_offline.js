@@ -519,8 +519,8 @@ function inventory_quantities(type) {
   return get_context_path_value($('olmis'), '/inventory/item').
     filter(function(e) { return e.getAttributeNS(null, 'type') == type; }).
     filter(function(e) { return AutoevalData.trackable_package_codes.indexOf(e.getAttributeNS(null, 'for')) >= 0; }).  
-    filter(function(e) { nr = e.getAttributeNS(null, 'nr'); return !nr || nr.getTextContent() == '' || nr.getTextContent() == 'false'; }).
-    map(   function(e) { q = e.getAttributeNS(null, 'qty'); return q ? [e.getAttributeNS(null, 'for'), q.getTextContent()] : null; });
+    filter(function(e) { nr = e.getAttributeNS(null, 'nr'); return !nr || nr == '' || nr == 'false'; }).
+    map(   function(e) { q = e.getAttributeNS(null, 'qty'); return q ? [e.getAttributeNS(null, 'for'), q] : null; });
 }
 
 function update_stockouts() {
