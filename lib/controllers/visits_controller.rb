@@ -124,9 +124,10 @@ class VisitsController < OlmisController
       if @current_user.admin? 
         format.erb  {
           tally_klass = params[:tally].constantize
-          expected_params = tally_klass.expected_params 
+          expected_params = tally_klass.expected_params
+          view_directory = params[:type] == 'xforms' ? 'data_sources/xforms' : 'visits'
           render :text =>
-            "<!-- Save this as #{Rails.root.join("app/views/visits/_#{params[:tally].underscore}.#{params[:type]}.erb")} -->\n" +
+            "<!-- Save this as #{Rails.root.join("app/views/#{view_directory}/_#{params[:tally].underscore}.#{params[:type]}.erb")} -->\n" +
             "<!-- Modifications made there will appear in the appropriate form. -->\n" +
                 if params[:type] == 'html'
                   helpers.tally_table(tally_klass, 
