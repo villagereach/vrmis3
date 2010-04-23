@@ -259,6 +259,10 @@ span.xforms-hint-icon {
 	background-image	: url(icon_hint.gif); 
 	background-repeat : no-repeat;
 }
+
+span.focus {
+	display:none;
+}
 	
 		
 span.xforms-message {
