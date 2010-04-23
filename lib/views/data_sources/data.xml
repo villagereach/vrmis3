@@ -36,6 +36,9 @@
               <%- hc.fridges.sort.each do |fridge| -%>
                 <fridge code="<%= h fridge.code %>" nr="" temp="" status="" notes="" />
               <%- end -%>
+              <%- hc.ideal_stock_amounts.each do |isa| -%>
+                <ideal_stock for="<%= isa.package.code %>" qty="<%= isa.quantity %>" />
+              <%- end -%>
             </health_center>
           <%- end -%>
         </district>

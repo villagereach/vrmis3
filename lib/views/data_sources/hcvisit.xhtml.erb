@@ -695,6 +695,7 @@
                       <thead>
                         <tr>
                           <th><%= h(t("visits.health_center_inventory.#{screen}.product_header")) %></th>
+                          <th><%= h(t("visits.health_center_inventory.ideal_quantity")) %></th>
                           <%- types.each do |t| -%>
                             <th><%= h(t("visits.health_center_inventory.#{t}")) %></th>
                           <%- end -%>
@@ -704,6 +705,9 @@
                         <%- packages.sort.each do |package| -%>
                           <tr>
                             <th><%= h package.label %></th>
+                            <td class="numeric">
+                              <xf:output value="instance('data')/province[@name=instance('data')/selected-values/province]/district[@name=instance('data')/selected-values/district]/health_center[@code=instance('data')/selected-values/health_center]/ideal_stock[@for='<%= package.code %>']/@qty" />
+                            </td>
                             <%- types.each do |type|
                                   id = "inventory_#{package.code}_#{type}" -%>
                               <td>

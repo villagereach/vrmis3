@@ -636,7 +636,10 @@ table.spreadsheet div.tally div.nr > span {
 table.spreadsheet input.xforms-value[type="text"] {
   width : 3em;
 }
-
+table.spreadsheet td.numeric {
+  padding: 0 1em;
+  text-align: right;
+}
 #case-visit .xforms-textarea textarea {
   width: 25em;
   height: 2em;
