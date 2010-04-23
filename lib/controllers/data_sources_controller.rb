@@ -55,7 +55,7 @@ class DataSourcesController < OlmisController
     vendor_root = File.expand_path(File.join(File.dirname(__FILE__), '..', '..'))
     views_path  = File.join(vendor_root, 'lib', 'views')
 
-    files = manifest_data.split("\n").map(&:strip).grep(/^\//).map { |f| File.join(vendor_root, 'public', f) }.select { |f| File.exists?(f) } 
+    files = manifest_data.split("\n").map(&:strip).grep(/^\//).map { |f| File.join(Rails.root, 'public', f) }.select { |f| File.exists?(f) } 
     files += Dir.glob(File.join(views_path, 'data_sources', '*'))
     files += Dir.glob(File.join(Rails.root, 'app', 'views', 'visits', '*.xforms.erb'))
     files += [ File.join(views_path, 'javascripts', 'offline_i18n.js.erb'),
@@ -81,8 +81,8 @@ class DataSourcesController < OlmisController
         vendor_root = File.expand_path(File.join(File.dirname(__FILE__), '..', '..'))
 
         file     = File.join(vendor_root, 'lib', 'views', 'data_sources', "#{params[:name]}.xhtml.erb")
-        jsfile   = File.join(vendor_root, 'public', 'xforms', 'xsltforms', 'xsltforms.js')
-        cssfile  = File.join(vendor_root, 'public', 'xforms', 'xsltforms', 'xsltforms.css')
+        jsfile   = File.join(Rails.root, 'public', 'xforms', 'xsltforms', 'xsltforms.js')
+        cssfile  = File.join(Rails.root, 'public', 'xforms', 'xsltforms', 'xsltforms.css')
         xsltfile = File.join(vendor_root, 'public', 'xforms', 'xsltforms', 'xsltforms.xsl')
 
         files = Dir.glob(File.join(Rails.root, 'app', 'views', 'visits', '*.xforms.erb')) + [ file, jsfile, cssfile, xsltfile, __FILE__ ]
