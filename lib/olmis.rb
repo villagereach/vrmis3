@@ -52,32 +52,39 @@ class Olmis
             :language => definition['languages'].first, 
             :timezone => definition['time_zone'])
         end
-        
+
         definition['product_types'].each_with_index do |p, i|
           pt_by_code[p['code']] = ProductType.find_or_initialize_by_code(p['code'])
-          pt_by_code[p['code']].update_attributes!( :position => i )
+          pt_by_code[p['code']].update_attributes!( :active => true, :position => i )
         end
-  
+
         definition['products'].each_with_index do |p,i|
           pd_by_code[p['code']] = Product.find_or_initialize_by_code(p['code'])
-          pd_by_code[p['code']].update_attributes!(:product_type_id => pt_by_code[p['type']].id, :code => p['code'], :position => i)
+          pd_by_code[p['code']].update_attributes!( :active => true, :product_type_id => pt_by_code[p['type']].id, :position => i)
         end
-  
+
         definition['packages'].each_with_index do |p,i|
-          Package.find_or_initialize_by_code(p['code']).update_attributes!(:product_id => pd_by_code[p['product']].id, :quantity => p['quantity'], :position => i)
+          Package.find_or_initialize_by_code(p['code']).update_attributes!( :active => true, :product_id => pd_by_code[p['product']].id, :quantity => p['quantity'], :position => i)
         end
-  
+
         definition['equipment'].each_with_index do |e,i|
-          EquipmentType.find_or_initialize_by_code(e).update_attributes!(:position => i )
+          EquipmentType.find_or_initialize_by_code(e).update_attributes!( :active => true, :position => i )
         end
-  
-        definition['cold_chain'].each do |f|
-          FridgeModel.find_or_initialize_by_code(f['code']).update_attributes!(f)
+
+        definition['cold_chain'].each_with_index do |f, i|
+          FridgeModel.find_or_initialize_by_code(f['code']).update_attributes!( f.merge({:active => true, :position => i}) )
         end
   
         definition['stock_cards'].each_with_index do |f, i|
           StockCard.find_or_initialize_by_code(f).update_attributes!(:position => i)
         end
+
+        invalidate_old(ProductType,   definition['product_types'])
+        invalidate_old(Product,       definition['products'])
+        invalidate_old(Package,       definition['packages'])
+        invalidate_old(EquipmentType, definition['equipment'])
+        invalidate_old(FridgeModel,   definition['cold_chain'])
+        invalidate_old(StockCard,     definition['stock_cards'])
 
         hierarchy = definition['administrative_area_hierarchy']
         create_hierarchy(nil, hierarchy, definition['administrative_areas'])
@@ -105,6 +112,15 @@ class Olmis
           end
           File.rename(fn + '~', fn)
         end
+      end
+    end
+
+    def invalidate_old(model, definition)
+      model.find(:all,
+          :conditions => ['code not in (?)', definition.map { |d| d['code'] }],
+          :order => 'position asc').
+        each_with_index do |p, i|
+        p.update_attributes( :active => false, :position => definition.length + i)
       end
     end
 
