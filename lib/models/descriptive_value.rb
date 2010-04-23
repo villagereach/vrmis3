@@ -17,6 +17,8 @@ class DescriptiveValue < ActiveRecord::Base
   belongs_to :descriptive_category
   referenced_by :code
 
+  named_scope :active, { :conditions => { 'active' => true } }
+
   include Comparable
   def <=>(other)
     position <=> other.position

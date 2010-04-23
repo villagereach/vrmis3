@@ -23,6 +23,7 @@ class Package < ActiveRecord::Base
   validates_numericality_of :quantity, :only_integer => true, :greater_than => 0, :allow_nil => true
 
   named_scope :trackable, { :include => { :product => :product_type }, :conditions => { 'product_types.trackable' => true } }
+  named_scope :active, { :conditions => { 'active' => true } }
   
   include Comparable
   def <=>(other)

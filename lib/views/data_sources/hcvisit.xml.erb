@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <%-
   locale = I18n.locale
-  inventory_packages = Package.all.sort
-  equipment_types = EquipmentType.all.sort
-  stock_cards = StockCard.all.sort
+  inventory_packages = Package.active.sort
+  equipment_types = EquipmentType.active.sort
+  stock_cards = StockCard.active.sort
   if params[:dz] and delivery_zone = DeliveryZone.find_by_code(params[:dz])
     districts = delivery_zone.districts.sort
     health_centers = districts.map(&:health_centers).flatten

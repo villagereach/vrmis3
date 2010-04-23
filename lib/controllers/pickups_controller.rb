@@ -102,7 +102,7 @@ class PickupsController < OlmisController
       @amounts = amounts_from_params 
     else
       #default amounts are zero.  
-      Package.all.each{|p| @amounts[p] = 0}
+      Package.active.each{|p| @amounts[p] = 0}
     end
     save_if_post_and_redirect_or_render_form('DeliveryReturn', :unload)
   end
@@ -159,7 +159,7 @@ class PickupsController < OlmisController
   end
   
   def amounts_from_params
-    amounts = Hash[*Package.all.map{ |p| [p, params[:inventory][:packages][p.code]] }.flatten]
+    amounts = Hash[*Package.active.map{ |p| [p, params[:inventory][:packages][p.code]] }.flatten]
   end
 
 

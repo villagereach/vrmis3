@@ -11,10 +11,10 @@ AutoevalData = {
   delivered_inventory:  <%= Hash[*HealthCenter.with_recent_delivery(2).all.map { |hc| [hc.code, hc.package_quantities_by_date] }.flatten].to_json %>,
   existing_inventory:   <%= Hash[*HealthCenter.with_recent_existing(2).all.map { |hc| [hc.code, hc.package_quantities_by_date] }.flatten].to_json %>,
 
-  product_names:        <%= Product.trackable.sort.map(&:name).to_json %>,
-  trackable_package_codes: <%= Package.trackable.sort.map(&:code).to_json %>,
-  package_codes:         <%= Package.all.sort.map(&:code).to_json %>,
-  products_by_package:  <%= Hash[*Package.all.map { |p| [p.code, p.product.name] }.flatten].to_json %>,
+  product_names:        <%= Product.active.trackable.sort.map(&:name).to_json %>,
+  trackable_package_codes: <%= Package.active.trackable.sort.map(&:code).to_json %>,
+  package_codes:         <%= Package.active.sort.map(&:code).to_json %>,
+  products_by_package:  <%= Hash[*Package.active.map { |p| [p.code, p.product.name] }.flatten].to_json %>,
 
   province_names:       <%= Province.all.sort.map(&:label).to_json %>,
   provinces:            <%= Hash[*District.all.group_by(&:province).map { |p, ds| [p.name, ds.sort.map(&:label)] }.flatten_once].to_json %>,

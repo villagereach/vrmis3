@@ -46,7 +46,7 @@
         <%- end -%>
       </inventory>
       <general>
-        <%- EquipmentType.all.each do |type| -%>
+        <%- EquipmentType.active.each do |type| -%>
           <item for="<%= type.code %>" present="" working="" />
         <%- end -%>
         <notes/>
@@ -59,7 +59,7 @@
         </fridges>
       </cold_chain>
       <stock_cards>
-        <%- StockCard.all.each do |type| -%>
+        <%- StockCard.active.each do |type| -%>
           <item for="<%= type.code %>" have="" use="" />
         <%- end -%>
       </stock_cards>

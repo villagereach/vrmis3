@@ -225,7 +225,7 @@
         <%- end -%>
       <%- end -%>
 
-      <%- EquipmentType.all.each do |type|
+      <%- EquipmentType.active.each do |type|
             id = "general_#{type.code}"
             node = "/olmis/hcvisit/visit/general/item[@for='#{ type.code }']"  -%>
         <xf:bind id="<%= id %>:present" nodeset="<%= node %>/@present" required="true()" />
@@ -233,7 +233,7 @@
       <%- end -%>
       <xf:bind id="equipment:notes" nodeset="/olmis/hcvisit/visit/general/notes" required="false()" />
 
-      <%- StockCard.all.each do |type|
+      <%- StockCard.active.each do |type|
             id = "stock_cards_#{type.code}"
             node = "/olmis/hcvisit/visit/stock_cards/item[@for='#{ type.code }']" -%>
         <xf:bind id="<%= id %>:have" nodeset="<%= node %>/@have" required="true()" />
@@ -683,7 +683,7 @@
             </xf:case><!-- id="case-cold_chain" -->
 
             <%- Inventory.screens.each do |screen|
-                  packages = Package.all.select { |p| Inventory.directly_collected_types.any? { |t| p.inventoried_by_type?(t, screen) } }
+                  packages = Package.active.select { |p| Inventory.directly_collected_types.any? { |t| p.inventoried_by_type?(t, screen) } }
                   types = Inventory.directly_collected_types.select { |t| packages.any? { |p| p.inventoried_by_type?(t, screen) } } -%>
               <xf:case id="case-<%= screen %>">
                 <div id="div-<%= screen %>" class="block-form">
@@ -759,7 +759,7 @@
                       </tr>
                     </thead>
                     <tbody>
-                      <%- EquipmentType.all.sort.each_with_index do |type, idx|
+                      <%- EquipmentType.active.sort.each_with_index do |type, idx|
                             id = "general_#{type.code}" -%>
                         <tr>
                           <th><%= h type.label %></th>
@@ -811,7 +811,7 @@
                       </tr>
                     </thead>
                     <tbody>
-                      <%- StockCard.all.sort.each do |type|
+                      <%- StockCard.active.sort.each do |type|
                             id = "stock_cards_#{type.code}" -%>
                         <tr>
                           <th><%= h type.label %></th>

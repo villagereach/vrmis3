@@ -49,7 +49,7 @@ class StockRoom < ActiveRecord::Base
 
   def package_counts_by_package
     package_hash = {}
-    Package.all.each do |p|
+    Package.active.each do |p|
       package_hash[p] = IdealStockAmount.find_by_package_id_and_stock_room_id(p.id, id).maybe.quantity
     end    
     package_hash 

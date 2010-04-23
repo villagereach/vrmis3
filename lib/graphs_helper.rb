@@ -259,7 +259,7 @@ module GraphsHelper
     options[:products]          = Product.trackable.find_all_by_id(params[:product_id]).sort
     options[:regions]           = options[:area].regions.sort
     options[:targets]           = TargetPercentage.find_all_by_id(params[:target_percentage_id]).sort
-    options[:all_product_types] = ProductType.all(:conditions => { :trackable => true }).map(&:code)
+    options[:all_product_types] = ProductType.active.trackable.map(&:code)
     options[:product_type]      = params[:type]
     options
   end

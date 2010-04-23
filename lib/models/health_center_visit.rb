@@ -264,7 +264,7 @@ class HealthCenterVisit < ActiveRecord::Base
   end
 
   def find_or_initialize_equipment_statuses()
-    EquipmentType.all.sort.collect{|type| 
+    EquipmentType.active.sort.collect{|type| 
       EquipmentStatus.find_or_initialize_by_equipment_type_id_and_stock_room_id_and_health_center_visit_id(
         type.id,
         self.health_center ? self.health_center.stock_room.id : nil,
@@ -283,7 +283,7 @@ class HealthCenterVisit < ActiveRecord::Base
   end    
   
   def find_or_initialize_stock_card_statuses
-    stock_cards = StockCard.all.sort
+    stock_cards = StockCard.active.sort
     stock_card_statuses = stock_cards.collect{|stock_card|
       StockCardStatus.find_or_initialize_by_stock_card_id_and_stock_room_id_and_health_center_visit_id(
         stock_card.id,

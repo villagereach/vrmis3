@@ -14,6 +14,7 @@ class ProductType < ActiveRecord::Base
   referenced_by :code
 
   named_scope :trackable, { :conditions => { :trackable => true } }
+  named_scope :active, { :conditions => { 'active' => true } }
   
   include Comparable
   def <=>(other)

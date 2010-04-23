@@ -27,7 +27,7 @@ class Product < ActiveRecord::Base
   alias_method :name, :label
 
   begin
-    ProductType.all.each do |type|
+    ProductType.active.each do |type|
       named_scope type.code, { :include => :product_type, :conditions => { 'product_types.code' => type.code } }
     end
   rescue ActiveRecord::StatementInvalid => e
@@ -35,6 +35,7 @@ class Product < ActiveRecord::Base
   end
   
   named_scope :trackable, { :include => :product_type, :conditions => { 'product_types.trackable' => true } }
+  named_scope :active, { :conditions => { 'active' => true } }
 
   include Comparable
   def <=>(other)
