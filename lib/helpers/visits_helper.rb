@@ -32,7 +32,7 @@ module VisitsHelper
     [ [ I18n.t('visits.health_center_monthly_tasks.visit'), 
         [ [:visit, [I18n.t('visits.health_center_monthly_tasks.visit'), health_center_visit_path]]]],
       [ I18n.t('EPI'), 
-        HealthCenterVisit.tally_hash.map { |k, v|
+        Olmis.tally_klasses.map { |k|
           [k.underscore, [I18n.t("visits.health_center_monthly_tasks.#{k.underscore}"), health_center_tally_path(:tally => k.underscore)]]
         }
       ],
@@ -41,9 +41,9 @@ module VisitsHelper
           [k, [I18n.t("visits.health_center_monthly_tasks.#{k}"), health_center_inventory_path(:screen => k)] ]
         } ],
       [ I18n.t('visits.health_center_monthly_tasks.equipment'), 
-        [ [:general, [I18n.t('visits.health_center_monthly_tasks.general'), health_center_equipment_general_path ] ],
-          [:cold_chain, [I18n.t('visits.health_center_monthly_tasks.cold_chain'), health_center_equipment_coldchain_path ] ],
-          [:stock_cards, [I18n.t('visits.health_center_monthly_tasks.stock_cards'), health_center_equipment_stockcards_path ] ] ] ] ] +
+        [ [:equipment_status, [I18n.t('visits.health_center_monthly_tasks.equipment_status'), health_center_equipment_status_path ] ],
+          [:cold_chain, [I18n.t('visits.health_center_monthly_tasks.cold_chain'), health_center_cold_chain_path ] ],
+          [:stock_cards, [I18n.t('visits.health_center_monthly_tasks.stock_cards'), health_center_stockcards_path ] ] ] ] ] +
     Olmis.additional_visit_klasses.partition_by(&:category).map { |category, klasses|
       [ I18n.t("visits.health_center_monthly_tasks.#{category}"),
       klasses.map { |k|

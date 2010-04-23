@@ -20,15 +20,15 @@ class XformVisitDataSource < DataSource
   def data_to_params(submission)
     xml = Nokogiri::XML(submission.data)
 
-    submission.created_on = xml.xpath('/olmis/meta/date').text
+    visit = Hash[*xml.xpath('/olmis/health_center_visit/*').map { |n| [n.name, n.text] }.flatten]
     
-    visits = xml.xpath('/olmis/hcvisit/*').reject { |n| n.name == 'epi' || n.name == 'visit' }
-    
-    params = { :health_center_visit => Hash[*visits.map { |n| [n.name, n.text] }.flatten] }
-    
-    if fc = User.find_by_name(xml.xpath('/olmis/meta/field_coordinator').text)
-      params[:health_center_visit][:user_id] = fc.id
+    submission.created_on = visit.delete['last_edited']
+
+    if fc = User.find_by_name(visit.delete['field_coordinator'])
+      visit['user_id'] = fc.id
     end
+
+    params = { :health_center_visit => visit }
 
     params[:health_center_visit][:reason_for_not_visiting] = params[:health_center_visit].delete('non_visit_reason')
     params[:health_center_visit][:vehicle_code] = params[:health_center_visit].delete('vehicle_id')

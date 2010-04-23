@@ -70,23 +70,14 @@ class HealthCenterVisit < ActiveRecord::Base
     []
   end
   
-  def self.tally_hash
-    @tally_hash ||= Hash[*Olmis.configuration['tallies'].map { |k, v| [k, k] }.flatten]
-  end
-  
-  def self.tasks_and_tables
-    tally_hash.merge(inventory_screen_hash).merge({
-      "visit"       => "Visit",
-      "general"     => "GeneralEquipment",
-      "cold_chain"  => "ColdChainEquipment",
-      "stock_cards" => "StockCardEquipment"
-    })
+  def self.klass_by_screen
+    @klass_by_screen ||= Hash[*self.tables.map { |t| t.screens.map { |screen| [screen, t] } }.flatten]
   end
   
   def availability_class(task)
     if new_record?
       "preavailable"
-    elsif !epi_data_ready && self.class.tally_hash.has_key?(task)
+    elsif !epi_data_ready && self.klass_by_screen[task] < ActsAsStatTally
       "unavailable"
     elsif !visited && [:inventory, :delivery, :general, :cold_chain, :stock_cards].include?(task)
       "unavailable"
@@ -185,7 +176,7 @@ class HealthCenterVisit < ActiveRecord::Base
   end
   
   def self.screens
-    tables.map(&:screens).flatten
+    Olmis.configuration['visit_screens']
   end
   
   def entry_counts=(c)

@@ -198,6 +198,8 @@
     'polio3'  => { 'tally' => 'ChildVaccinationTally', 'percentage' => 3.9, 'values' => ['child_regimen:polio3'] },
     'full'    => { 'tally' => 'FullVaccinationTally',  'percentage' => 4.0, 'values' => ['sex:m', 'sex:f', 'strategy:hc', 'strategy:mb'] },
   },
+ 
+  'visit_screens' => %w(cold_chain epi_inventory equipment_status stock_cards usage_tallies full_vaccination_tallies child_vaccination_tallies),
   
   'tallies' => {
     'ChildVaccinationTally' => {

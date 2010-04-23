@@ -1,0 +1,3 @@
+<equipment_status><intro/><%- EquipmentType.active.sort.map(&:code).each do |code| -%>
+<item_<%= code %>><present/><working/></item_<%= code %>>
+<%- end -%></equipment_status>

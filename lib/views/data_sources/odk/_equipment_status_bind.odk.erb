@@ -1,0 +1,9 @@
+<bind nodeset="/olmis/hcvisit/visit/equipment_status/intro" id="equipment_status_intro" readonly="true()" relevant="../../../visited != 'false'" />
+<%- EquipmentType.active.sort.each do |type|
+      type_name = type.code
+      id = "equipment_status_#{type_name}"
+      node = "/olmis/hcvisit/visit/equipment_status/item_#{type_name}" -%>
+  <bind id="<%= id %>:present" nodeset="<%= node %>/present" required="true()" constraint="regex(., '^(?:-|\d+)$')" jr:constraintMsg="<%= t('.quantity_error') %>" />
+  <bind id="<%= id %>:working" nodeset="<%= node %>/status"  required="true()" />
+<%- end -%>
+

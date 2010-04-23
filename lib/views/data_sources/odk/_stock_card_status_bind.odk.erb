@@ -1,0 +1,9 @@
+<bind nodeset="/olmis/hcvisit/visit/cold_chain/intro" id="cold_chain_intro" readonly="true()" relevant="../../../visited != 'false'" />
+<%- StockCard.active.sort.each do |type|
+      type_name = type.code
+      id = "stock_card_#{type_name}"
+      node = "/olmis/hcvisit/visit/stock_cards/item_#{type_name}" -%>
+  <bind id="<%= id %>:have" nodeset="<%= node %>/have" required="true()" />
+  <bind id="<%= id %>:use"  nodeset="<%= node %>/use"  required="true()" relevant="../have = 'true'" />
+<%- end -%>
+

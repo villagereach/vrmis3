@@ -1,7 +1,5 @@
 <root>
   <selected-values>
-    <province/>
-    <district/>
     <health_center/>
     <visit_year />
     <visit_month />

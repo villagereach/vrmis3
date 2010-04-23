@@ -310,17 +310,14 @@ function populate_fridge_form() {
       var xf_action = new XFAction(null, null);
 
       for (var i = 0, l = fridge_codes.length; i < l; i++) {
-        var path = "instance('olmis')/hcvisit/visit/cold_chain/fridges/fridge["+(i+1)+"]/@code"
+        var path = "instance('olmis')/cold_chain/fridge["+(i+1)+"]/@code"
 
         // Create an XPath (required by setvalue) for the fridge code node if it doesn't already exist
         var xp = XPath.get(path) || new XPath(path,
                                       new PathExpr(
                                         new FunctionCallExpr('http://www.w3.org/2002/xforms instance', new CteExpr('olmis')),
                                         new LocationExpr(false,
-                                          new StepExpr('child', new NodeTestName('', 'hcvisit')),
-                                          new StepExpr('child', new NodeTestName('', 'visit')),
                                           new StepExpr('child', new NodeTestName('', 'cold_chain')),
-                                          new StepExpr('child', new NodeTestName('', 'fridges')),
                                           new StepExpr('child', new NodeTestName('', 'fridge'),
                                             new PredicateExpr(new CteExpr(i+1))),
                                           new StepExpr('attribute', new NodeTestName('', 'code')))), []);
@@ -335,35 +332,15 @@ function populate_fridge_form() {
 }
 
 function get_fridge_codes_for_health_center() {
-  var path = "instance('data')/province[@name=instance('data')/selected-values/province]/district[@name=instance('data')/selected-values/district]/health_center[@code=instance('data')/selected-values/health_center]/fridge";
+  var path = "instance('data')/province/district/health_center[@code=instance('data')/selected-values/health_center]/fridge";
   var xp = XPath.get(path) || new XPath(path,
                                 new PathExpr(
                                   new FunctionCallExpr('http://www.w3.org/2002/xforms instance', new CteExpr('data')),
                                     new LocationExpr(false,
-                                      new StepExpr('child',
-                                        new NodeTestName('', 'province'),
-                                        new PredicateExpr(
-                                          new BinaryExpr(
-                                            new LocationExpr(false, new StepExpr('attribute', new NodeTestName(null, 'name'))),
-                                            '=',
-                                            new PathExpr(
-                                              new FunctionCallExpr('http://www.w3.org/2002/xforms instance', new CteExpr('data')),
-                                                new LocationExpr(false,
-                                                  new StepExpr('child', new NodeTestName('', 'selected-values')),
-                                                  new StepExpr('child', new NodeTestName('', 'province'))))))),
-                                      new StepExpr('child',
-                                        new NodeTestName('', 'district'),
-                                        new PredicateExpr(
-                                          new BinaryExpr(
-                                            new LocationExpr(false, new StepExpr('attribute', new NodeTestName(null, 'name'))),
-                                            '=',
-                                            new PathExpr(
-                                              new FunctionCallExpr('http://www.w3.org/2002/xforms instance', new CteExpr('data')),
-                                                new LocationExpr(false,
-                                                  new StepExpr('child', new NodeTestName('', 'selected-values')),
-                                                  new StepExpr('child', new NodeTestName('', 'district'))))))),
-                                      new StepExpr('child',
-                                        new NodeTestName('', 'health_center'),
+                                       new StepExpr('child', new NodeTestName('', 'province')),
+                                       new StepExpr('child', new NodeTestName('', 'district')),
+                                       new StepExpr('child',
+                                         new NodeTestName('', 'health_center'),
                                           new PredicateExpr(
                                             new BinaryExpr(
                                               new LocationExpr(false, new StepExpr('attribute', new NodeTestName(null, 'code'))),
@@ -422,12 +399,11 @@ function select_visit() {
       var district = pdh[1];
       var dz       = pdh[3];
       var fc       = pdh[4];
-       $('province-selector').xfElement.selectValue(province);
-       $('district-selector').xfElement.selectValue(district);
   $('health-center-selector').xfElement.selectValue(hc);
     $('visit-month-selector').xfElement.selectValue(ym);
-             $('dz-selector').xfElement.selectValue(dz);
-             $('fc-selector').xfElement.selectValue(fc);
+//      set_selected_value('health_center', hc);
+//      set_selected_value('visit_date_period', ym);
+
     }
     Dialog.hide("statusPanel");
     show_container(containers['visit']);
@@ -526,8 +502,8 @@ function get_context_path_value(ctx, path) {
 function update_visit_history(obj) {
   // this data is to support the offline autoeval report, please see offline_autoeval.js.erb 
   
-  var health_center = get_context_path_value($('olmis'), '/hcvisit/health_center')[0].getTextContent();
-  var date_period   = get_context_path_value($('olmis'), '/hcvisit/visit_month')[0].getTextContent();
+  var health_center = get_context_path_value($('olmis'), '/health_center_visit/health_center')[0].getTextContent();
+  var date_period   = get_context_path_value($('olmis'), '/health_center_visit/visit_month')[0].getTextContent();
   var history = JSON.parse(localStorage[health_center + '/visit-history'] || '{}');
   
   if (!history[date_period])
@@ -540,11 +516,11 @@ function update_visit_history(obj) {
 }
 
 function inventory_quantities(type) {
-  return get_context_path_value($('olmis'), '/hcvisit/visit/inventory/entry').
+  return get_context_path_value($('olmis'), '/inventory/item').
     filter(function(e) { return e.getAttributeNS(null, 'type') == type; }).
     filter(function(e) { return AutoevalData.trackable_package_codes.indexOf(e.getAttributeNS(null, 'for')) >= 0; }).  
-    filter(function(e) { nr = e.getElementsByTagName('nr')[0]; return !nr || nr.getTextContent() == '' || nr.getTextContent() == 'false'; }).
-    map(   function(e) { q = e.getElementsByTagName('quantity')[0]; return q ? [e.getAttributeNS(null, 'for'), q.getTextContent()] : null; });
+    filter(function(e) { nr = e.getAttributeNS(null, 'nr'); return !nr || nr.getTextContent() == '' || nr.getTextContent() == 'false'; }).
+    map(   function(e) { q = e.getAttributeNS(null, 'qty'); return q ? [e.getAttributeNS(null, 'for'), q.getTextContent()] : null; });
 }
 
 function update_stockouts() {
@@ -555,12 +531,12 @@ function update_stockouts() {
 }
 
 function visit_date_changed() {
-  var date = get_context_path_value($('olmis'), '/hcvisit/visited_at')[0].getTextContent();
+  var date = get_context_path_value($('olmis'), '/health_center_visit/visited_at')[0].getTextContent();
   update_visit_history({ 'visit': date });
 }
 
 function non_visit_reason_changed() {
-  var reason = get_context_path_value($('olmis'), '/hcvisit/non_visit_reason')[0].getTextContent();
+  var reason = get_context_path_value($('olmis'), '/health_center_visit/non_visit_reason')[0].getTextContent();
   update_visit_history({ 'visit': reason });
 }
 

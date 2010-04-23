@@ -1,0 +1,10 @@
+<inventory>
+  <%- stock = visit.ideal_stock -%>    
+  <%- Inventory.possible_fields.each do |type, package, screen| -%>
+    <%- index = package.code -%>
+    <%- if stock[type][index] -%>
+      <item for="<%= package.code %>" type="<%= type %>" nr="<%= !stock[type][index].new_record? && stock[type][index].quantity.nil? %>" qty="<%= stock[type][index].quantity %>" />
+    <%- end -%>
+  <%- end -%>
+</inventory>
+

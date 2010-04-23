@@ -1,0 +1,54 @@
+<xf:action ev:event="xforms-select">
+  <xf:load resource="javascript:set_equipment_notes_area_size()" />
+</xf:action>
+<div id="div-equipment" class="block-form">
+  <xf:group>
+    <xf:label><%= h(t("visits.health_center_equipment.page_title")) %></xf:label>
+    <table class="equipment spreadsheet">
+      <thead>
+        <tr>
+          <th></th>
+          <th><%= h(t("visits.health_center_equipment.present")) %></th>
+          <th><%= h(t("visits.health_center_equipment.working")) %></th>
+          <th><%= h(t("visits.health_center_equipment.notes")) %></th>
+        </tr>
+      </thead>
+      <tbody>
+      <%- EquipmentType.active.sort.each_with_index do |type, idx|
+              id = "equipment_status_#{type.code}" -%>
+          <tr>
+            <th><%= h type.label %></th>
+            <td>
+              <xf:select1 bind="<%= id %>:present" appearance="full" class="radio horizontal">
+                <%- [ [ h(t("yes")), "true" ], [ h(t("no")), "false" ], [ h(t("NR")), "nr" ] ].each do |label,value| -%>
+                  <xf:item>
+                    <xf:label><%= h label %></xf:label>
+                    <xf:value><%= h value %></xf:value>
+                  </xf:item>
+                <%- end -%>
+                <xf:alert><%= h(t(".errors.select_an_option")) %></xf:alert>
+              </xf:select1>
+            </td>
+            <td>
+              <xf:select1 bind="<%= id %>:working" appearance="full" class="radio horizontal">
+                <%- [ [ h(t("yes")), "true" ], [ h(t("no")), "false" ], [ h(t("NR")), "nr" ] ].each do |label,value| -%>
+                  <xf:item>
+                    <xf:label><%= h label %></xf:label>
+                    <xf:value><%= h value %></xf:value>
+                  </xf:item>
+                <%- end -%>
+                <xf:alert><%= h(t(".errors.select_an_option")) %></xf:alert>
+              </xf:select1>
+            </td>
+            <%- if idx == 0 -%>
+              <td rowspan="<%= EquipmentType.count %>">
+                <xf:textarea bind="equipment:notes"/>
+              </td>
+            <%- end -%>
+          </tr>
+        <%- end -%>
+      </tbody>
+    </table>
+  </xf:group>
+</div>
+

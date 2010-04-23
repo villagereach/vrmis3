@@ -1,0 +1,6 @@
+<stock_cards>
+  <%- StockCard.active.each do |type| -%>
+    <item for="<%= type.code %>" have="" use="" />
+  <%- end -%>
+</stock_cards>
+

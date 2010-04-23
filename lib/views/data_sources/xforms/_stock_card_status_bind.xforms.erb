@@ -1,0 +1,7 @@
+<%- StockCard.active.each do |type|
+      id = "stock_cards_#{type.code}"
+      node = "/olmis/stock_cards/item[@for='#{ type.code }']" -%>
+  <xf:bind id="<%= id %>:have" nodeset="<%= node %>/@have" required="true()" />
+  <xf:bind id="<%= id %>:use"  nodeset="<%= node %>/@use"  required="true()" />
+<%- end -%>
+

@@ -1,0 +1,74 @@
+<div id="div-cold_chain" class="block-form">
+  <xf:group>
+    <xf:label><%= h(t("visits.health_center_cold_chain.page_title")) %></xf:label>
+    <xf:repeat id="fridge-list" nodeset="/olmis/cold_chain/fridge">
+      <xf:group class="fridge-data">
+        <xf:group class="fridge-id">
+          <xf:input ref="@code">
+            <xf:label><%= h(t("visits.health_center_cold_chain.fridge_id")) %></xf:label>
+            <!--xf:alert><%= h(t(".errors.fridge_code")) %></xf:alert-->
+          </xf:input>
+        </xf:group><!-- class="fridge-data" -->
+        <div class="two-column">
+          <xf:group class="fridge-in">
+            <xf:group class="fridge-past_problem">
+              <xf:select1 ref="@past_problem" appearance="full" class="radio">
+                <xf:label><%= h(t("visits.health_center_cold_chain.past_problem")) %></xf:label>
+                <%- [ [ h(t("yes")), "true" ], [ h(t("no")), "false" ], [ h(t("unknown")), "nr" ] ].each do |label,value| -%>
+                  <xf:item>
+                    <xf:label><%= h label %></xf:label>
+                    <xf:value><%= h value %></xf:value>
+                  </xf:item>
+                <%- end -%>
+                <xf:alert><%= h(t(".errors.select_an_option")) %></xf:alert>
+              </xf:select1>
+            </xf:group><!-- class="fridge-past_problem" -->
+
+            <xf:group class="fridge-temp">
+              <xf:input ref="@temp">
+                <xf:label><%= h(t("visits.health_center_cold_chain.arrival_temp")) %></xf:label>
+                <xf:alert><%= h(t(".errors.temperature")) %></xf:alert>
+              </xf:input>
+            </xf:group><!-- class="fridge-temp" -->
+          </xf:group><!-- class="fridge-in" -->
+
+          <xf:group class="fridge-out">
+            <xf:group class="fridge-state">
+              <xf:select1 ref="@state" appearance="full" class="radio">
+                <xf:label><%= h(t("visits.health_center_cold_chain.departure_state")) %></xf:label>
+                <%- [ [ h(t("yes")), "OK" ], [ h(t("no")), "problem" ], [ h(t("unknown")), "nr" ] ].each do |label,value| -%>
+                  <xf:item>
+                    <xf:label><%= h label %></xf:label>
+                    <xf:value><%= h value %></xf:value>
+                  </xf:item>
+                <%- end -%>
+                <xf:alert><%= h(t(".errors.select_an_option")) %></xf:alert>
+              </xf:select1>
+            </xf:group><!-- class="fridge-state" -->
+
+            <xf:group class="fridge-problem">
+              <xf:select ref="@problem" appearance="full">
+                <xf:label><%= h(t("visits.health_center_cold_chain.problem")) %></xf:label>
+                <%- FridgeStatus.not_ok_status_options.each do |label,value| -%>
+                  <xf:item>
+                    <xf:label><%= h label %></xf:label>
+                    <xf:value><%= h value %></xf:value>
+                  </xf:item>
+                <%- end -%>
+                <xf:alert><%= h(t(".errors.select_status")) %></xf:alert>
+              </xf:select>
+            </xf:group><!-- class="fridge-problem" -->
+
+            <xf:group>
+              <xf:textarea ref="@other_problem">
+                <xf:alert><%= h(t(".errors.other_fridge_status")) %></xf:alert>
+              </xf:textarea>
+            </xf:group>
+          </xf:group><!-- class="fridge-out" -->
+        </div><!-- class="multi-column" -->
+        <div class="clear" />
+      </xf:group>
+    </xf:repeat>
+  </xf:group>
+</div><!-- id="div-cold_chain" -->
+

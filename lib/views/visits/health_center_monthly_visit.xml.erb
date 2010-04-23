@@ -1,13 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <olmis>
-  <meta>
-    <date><%= [Date.today, @visit.updated_at, @visit.created_at].compact.max.to_date.to_s %></date>
-    <province><%= @visit.health_center && @visit.health_center.province.name %></province>
-    <district><%= @visit.health_center && @visit.health_center.district.name %></district>
-    <delivery_zone><%= @visit.health_center && @visit.health_center.delivery_zone.name %></delivery_zone>
+  <health_center_visit>
     <field_coordinator><%= @visit.field_coordinator_name %></field_coordinator>
-  </meta>
-  <hcvisit>
+    <last_edited><%= [Date.today, @visit.updated_at, @visit.created_at].compact.max.to_date.to_s %></last_edited>
     <health_center><%= @visit.health_center && @visit.health_center.name %></health_center>
     <epi_month><%= @visit.epi_month %></epi_month>
     <visited><%= @visit.visited? %></visited>
@@ -18,51 +13,16 @@
     <non_visit_reason><%= @visit.visit_status %></non_visit_reason>
     <other_non_visit_reason><%= @visit.other_non_visit_reason %></other_non_visit_reason>
     <notes><%= @visit.notes %></notes>
-    <epi>
-    <%- HealthCenterVisit.tally_hash.map{|k,v| k.constantize}.each do |klass| -%>
-      <<%= klass.name.tableize %>>
-        <%- record_value_hash = klass.records_by_param_names_for_keys(@visit.health_center, @visit.epi_month) -%>
-        <%- klass.expected_params().each do |param, type| -%>
-          <item for="<%= param %>"
-            <%- if r = record_value_hash[param] -%>
-              <%- value = r.send(klass.value_field(param)) -%>
-              nr="<%= value.nil? %>" val="<%= value %>"
-            <%- else -%>
-              nr="" val=""
-            <%- end -%>
-           />
-        <%- end -%>
-      </<%= klass.name.tableize %>>
-    <%- end -%>
-    </epi>
-    <visit>
-      <inventory>
-        <%- stock = @visit.ideal_stock -%>    
-        <%- Inventory.possible_fields.each do |type, package, screen| -%>
-          <%- index = package.code -%>
-          <%- if stock[type][index] -%>
-            <item for="<%= package.code %>" type="<%= type %>" nr="<%= !stock[type][index].new_record? && stock[type][index].quantity.nil? %>" qty="<%= stock[type][index].quantity %>" />
-          <%- end -%>
-        <%- end -%>
-      </inventory>
-      <general>
-        <%- EquipmentType.active.each do |type| -%>
-          <item for="<%= type.code %>" present="" working="" />
-        <%- end -%>
-        <notes/>
-      </general>
-      <cold_chain>
-        <fridges>
-          <%- @visit.find_or_initialize_fridge_statuses(:min_count => 2).each do |fs| -%>
-            <fridge code="" past_problem="" temp="" state="" problem="" other_problem="" />
-          <%- end -%>
-        </fridges>
-      </cold_chain>
-      <stock_cards>
-        <%- StockCard.active.each do |type| -%>
-          <item for="<%= type.code %>" have="" use="" />
-        <%- end -%>
-      </stock_cards>
-    </visit>
-  </hcvisit>
+  </health_center_visit>
+
+  <% HealthCenterVisit.tables.each do |t| %>
+     <% begin %>
+       <%= render(:partial => '/data_sources/xforms/' + t.table_name.singularize + '_data.xforms', :locals => { :visit => @visit }) %> 
+     <% rescue ActionView::MissingTemplate
+       begin 
+         %><%= render(:partial => '/data_sources/xforms/' + t.xforms_group_name + '_data.xforms', :locals => { :klass => t, :visit => @visit } ) %><%
+       rescue ActionView::MissingTemplate
+       end
+     end %>
+  <% end %>
 </olmis>
