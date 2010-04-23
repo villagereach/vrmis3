@@ -4,7 +4,7 @@
 <div id="div-<%= klass.name.tableize %>" class="block-form">
   <xf:group>
     <xf:label><%= h(t("visits.health_center_tally.page_title_#{klass.name.underscore}")) %></xf:label>
-    <p class="note"><%= h(t("visits.health_center_tally.instructions")) %></p>
+    <p class="note"><%= h(t("visits.nr_instructions")) %></p>
     <% begin %>
       <%= render :partial => '/data_sources/xforms/' + klass.name.underscore + '.xforms.erb' %>
     <% rescue ActionView::MissingTemplate %>  
