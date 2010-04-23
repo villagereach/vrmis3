@@ -1,5 +1,5 @@
 <% latest_visit = HealthCenterVisit.first(:order => 'updated_at desc', :limit => 1) %>
-<% cache('autoeval_data:' + latest_visit ? latest_visit.updated_at.to_s : 'never') do %>
+<% cache('autoeval_data:' + (latest_visit ? latest_visit.updated_at.to_s : 'never')) do %>
 var AutoevalData = {};
 jQuery(document).ready(function() {
 AutoevalData = {
