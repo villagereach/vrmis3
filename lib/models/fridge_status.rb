@@ -17,6 +17,8 @@
 class FridgeStatus < ActiveRecord::Base
   include BasicModelSecurity
 
+  acts_as_visit_model
+
   belongs_to :fridge
   belongs_to :user, :foreign_key => 'user_id', :class_name => 'User'
                            
@@ -138,10 +140,6 @@ class FridgeStatus < ActiveRecord::Base
     self.reported_at = d.to_date + 12.hours
   end
 
-  def self.screens
-    ['cold_chain']
-  end
-  
   def self.xforms_to_params(xml)
     Hash[
       *xml.xpath('/olmis/cold_chain/fridge').map do |fridge|
@@ -177,7 +175,7 @@ class FridgeStatus < ActiveRecord::Base
   end
 
   def self.xforms_group_name
-    'fridge_status'
+    'cold_chain'
   end
 
   def self.process_data_submission(visit, params)

@@ -70,8 +70,12 @@ class HealthCenterVisit < ActiveRecord::Base
     []
   end
   
+  def self.depends_on_visit?
+    false
+  end
+  
   def self.klass_by_screen
-    @klass_by_screen ||= Hash[*self.tables.map { |t| t.screens.map { |screen| [screen, t] } }.flatten]
+    @klass_by_screen ||= Hash[*(self.tables.map { |t| t.screens.map { |screen| [screen, t] } } + ['visit', self]).flatten]
   end
   
   def availability_class(task)

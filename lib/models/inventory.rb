@@ -15,7 +15,9 @@
 class Inventory < ActiveRecord::Base
   belongs_to :stock_room
   belongs_to :user
-  
+
+  acts_as_visit_model
+
   has_many :package_counts
 
   validates_presence_of :stock_room_id
@@ -33,19 +35,15 @@ class Inventory < ActiveRecord::Base
     %w(ExistingHealthCenterInventory DeliveredHealthCenterInventory SpoiledHealthCenterInventory)
   end
   
-  def self.screens
-    %w(epi_inventory)
-  end
-  
   def self.nullable_types
     types - ['DeliveredHealthCenterInventory']
   end
 
   def self.possible_fields()
-    returning Set.new do |fields|
-      HealthCenterVisit.screens.each do |screen|
-        types.each do |t|
-          Package.active.each do |package|
+    returning [] do |fields|
+      Package.active.sort.each do |package|
+        types.sort.each do |t|
+          HealthCenterVisit.screens.each do |screen|
             fields << [t, package, screen] if package.inventoried_by_type?(t, screen)
           end
         end

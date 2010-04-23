@@ -21,7 +21,7 @@
       <xf:label>
         <!-- HACK: Evil, ugly hack to get at the raw translation. -->
         <%= (I18n.backend.send(:lookup, I18n.locale, "visits.health_center_monthly_visit.was_this_visited") || '').
-                         sub("{{name}}",%Q{<xf:output value="instance('data')/province[@name=instance('data')/selected-values/province]/district[@name=instance('data')/selected-values/district]/health_center[@code=instance('data')/selected-values/health_center]/@name"/>}).
+                         sub("{{name}}",%Q{<xf:output value="instance('data')/province/district/health_center[@code=instance('data')/selected-values/health_center]/@name"/>}).
                          sub("{{month}}",%Q{<xf:output value="olmis:month_of_year(instance('data')/selected-values/visit_date_period)"/>}) %>
       </xf:label>
       <xf:item>

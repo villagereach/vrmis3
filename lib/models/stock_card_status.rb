@@ -16,7 +16,9 @@
 
 class StockCardStatus < ActiveRecord::Base
   include BasicModelSecurity
-
+  
+  acts_as_visit_model
+  
   belongs_to :stock_card
   belongs_to :stock_room
   belongs_to :health_center_visit
@@ -35,10 +37,6 @@ class StockCardStatus < ActiveRecord::Base
   def date=(d)
     self.reported_at = d.to_date + 12.hours
   end
-  
-  def self.screens
-    ['stock_cards']
-  end  
 
   def self.xforms_to_params(xml)
     Hash[
@@ -69,7 +67,7 @@ class StockCardStatus < ActiveRecord::Base
   end
 
   def self.xforms_group_name
-    'stock_card_status'
+    'stock_cards'
   end
 
   def self.process_data_submission(visit, params)
