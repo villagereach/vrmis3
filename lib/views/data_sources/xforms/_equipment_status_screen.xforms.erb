@@ -1,7 +1,7 @@
 <xf:action ev:event="xforms-select">
   <xf:load resource="javascript:set_equipment_notes_area_size()" />
 </xf:action>
-<div id="div-equipment" class="block-form">
+<div id="div-<%= screen %>" class="block-form">
   <xf:group>
     <xf:label><%= h(t("visits.health_center_equipment.page_title")) %></xf:label>
     <table class="equipment spreadsheet">

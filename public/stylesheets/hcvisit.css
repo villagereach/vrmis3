@@ -657,11 +657,6 @@ table.spreadsheet td.numeric {
   margin-bottom: 1em;
 }
 
-#case-confirm .xforms-textarea textarea {
-  height: 8em;
-  width: 90%;
-}
-
 #case-epi_inventory .inventory thead th:first-child,
 #case-rdt_inventory .inventory thead th:first-child {
   text-align: center;

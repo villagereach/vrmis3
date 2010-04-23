@@ -50,7 +50,7 @@ function setup_fridge_form() {
 }
 
 function set_equipment_notes_area_size() {
-  var ta = jQuery('#case-equipment .xforms-textarea textarea');
+  var ta = jQuery('#div-equipment_status .xforms-textarea textarea');
   ta.height(ta.parents('td').attr('rowspan') * ta.parents('td').prev().height() * 0.7);
 }
 
