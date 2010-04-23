@@ -15,7 +15,9 @@
 class Inventory < ActiveRecord::Base
   belongs_to :stock_room
   belongs_to :user
-  
+
+  acts_as_visit_model
+
   has_many :package_counts
 
   validates_presence_of :stock_room_id
@@ -31,10 +33,6 @@ class Inventory < ActiveRecord::Base
 
   def self.directly_collected_types
     %w(ExistingHealthCenterInventory DeliveredHealthCenterInventory SpoiledHealthCenterInventory)
-  end
-  
-  def self.screens
-    %w(epi_inventory)
   end
   
   def self.nullable_types

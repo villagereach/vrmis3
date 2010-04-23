@@ -27,6 +27,7 @@
 
 module ActsAsStatTally
   def self.included(base)
+    base.send(:acts_as_visit_model)
     base.send :extend, ClassMethods
     base.send :include, InstanceMethods
     
@@ -373,6 +374,10 @@ module ActsAsStatTally
       'stat_tally'
     end
 
+    def depends_on_visit?
+      false
+    end
+    
     def odk_to_params(xml)
       nil
     end
@@ -399,7 +404,7 @@ module ActsAsStatTally
         group by health_center_visits.id 
       TALLY
     end
-    
+
     private
 
     def previous_date_period_sql(dp)

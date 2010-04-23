@@ -17,41 +17,19 @@
 class EquipmentStatus < ActiveRecord::Base 
   include BasicModelSecurity
 
+  acts_as_visit_model
+
   belongs_to :equipment_type
   belongs_to :stock_room
   belongs_to :health_center_visit
   belongs_to :user
-  
-  #def self.status_codes
-  #  Olmis.configuration['equipment_statuses']
-  #end
 
-  #def self.status_options
-  #  status_codes.collect{|code| [ I18n.t("EquipmentStatus.#{code}"), code ]}
-  #end
-  
-  #def i18n_status_code
-  #  I18n.t("EquipmentStatus.#{status_code}")
-  #end
-  
   def date
     reported_at.to_date
   end
   
   def date=(d)
     self.reported_at = d.to_date + 12.hours
-  end
-  
-  #def to_label
-  #  if value.blank?
-  #    "#{ i18n_status_code } #{ I18n.l(reported_at.to_date, :format => :short) }"
-  #  else
-  #    "#{ i18n_status_code } (#{ value }) #{ I18n.l(reported_at.to_date, :format => :short) }"
-  #  end
-  #end
-
-  def self.screens
-    ['equipment_status']
   end
 
   def self.xforms_to_params(xml)
@@ -82,10 +60,6 @@ class EquipmentStatus < ActiveRecord::Base
     ]
   end
   
-  def self.xforms_group_name
-    'equipment_status'
-  end
-
   def self.process_data_submission(visit, params)
     errors = {}
     
@@ -126,23 +100,6 @@ class EquipmentStatus < ActiveRecord::Base
       group by health_center_visits.id 
     EQUIP
   end  
-  #def damage_alert_level
-  #  case status_code
-  #  when 'Working'    then 0
-  #  when 'Inoperable' then 2
-  #  when 'Damaged'    then 1
-  #  else 0
-  #  end
-  #end
-
-  #def operating_status?
-  #  status.operating_status?
-  #end
-
-  #def urgent?
-  #  status.urgent?
-  #end
-
 end
 
 

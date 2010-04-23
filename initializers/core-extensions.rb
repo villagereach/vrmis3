@@ -86,8 +86,12 @@ module ActiveRecord
     def self.acts_as_stat_tally
       include ActsAsStatTally
     end
+
+    def self.acts_as_visit_model
+      include ActsAsVisitModel
+    end
   end
-  
+
   module ConnectionAdapters
     class PostgreSQLAdapter
       def disable_referential_integrity(&block)
