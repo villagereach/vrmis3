@@ -139,6 +139,10 @@ class Inventory < ActiveRecord::Base
     errors
   end    
   
+  def self.visit_navigation_category
+    'inventory'
+  end
+
   def self.progress_query(date_periods)
     inv_fields = possible_fields.select { |type, package, screen| screens.include?(screen) }
 

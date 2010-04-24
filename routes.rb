@@ -68,8 +68,8 @@
   tables = Olmis.additional_visit_klasses
   if tables.present?
     tables.each do |table|
-      path = table.table_name.singularize 
-      map.send("health_center_#{path}", "/visits/:visit_month/:health_center/#{path}/:screen", { :controller => 'visits', :action => path })
+      map.send("health_center_#{table.xforms_group_name}", "/visits/:visit_month/:health_center/#{table.visit_navigation_category}/:screen", 
+        { :controller => 'visits', :action => table.xforms_group_name })
     end
   end
 

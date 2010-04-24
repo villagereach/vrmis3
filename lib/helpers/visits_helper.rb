@@ -29,28 +29,12 @@ module VisitsHelper
   end
     
   def categorized_nav
-    [ [ I18n.t('visits.health_center_monthly_tasks.visit'), 
-        [ [:visit, [I18n.t('visits.health_center_monthly_tasks.visit'), health_center_visit_path]]]],
-      [ I18n.t('EPI'), 
-        Olmis.tally_klasses.map { |k|
-          [k.to_s.underscore, [I18n.t("visits.health_center_monthly_tasks.#{k.to_s.underscore}"), health_center_tally_path(:tally => k.to_s.underscore)]]
-        }
-      ],
-      [ I18n.t('visits.health_center_monthly_tasks.inventory'),
-        Inventory.screens.map { |k|
-          [k, [I18n.t("visits.health_center_monthly_tasks.#{k}"), health_center_inventory_path(:screen => k)] ]
-        } ],
-      [ I18n.t('visits.health_center_monthly_tasks.equipment'), 
-        [ [:equipment_status, [I18n.t('visits.health_center_monthly_tasks.equipment_status'), health_center_equipment_status_path ] ],
-          [:cold_chain, [I18n.t('visits.health_center_monthly_tasks.cold_chain'), health_center_cold_chain_path ] ],
-          [:stock_cards, [I18n.t('visits.health_center_monthly_tasks.stock_cards'), health_center_stockcards_path ] ] ] ] ] +
-    Olmis.additional_visit_klasses.partition_by(&:category).map { |category, klasses|
-      [ I18n.t("visits.health_center_monthly_tasks.#{category}"),
-      klasses.map { |k|
-        k.screens.map { |screen|
-          [screen, [I18n.t("visits.health_center_monthly_tasks.#{screen}"), named_route_for_screen(screen, {}) ] ]
-        }.flatten_once
-      } ]
+    screens_by_category = [['visit', ['visit']]] + 
+      HealthCenterVisit.screens.partition_by { |screen| HealthCenterVisit.klass_by_screen[screen].visit_navigation_category }
+
+    screens_by_category.map { |category, screens|
+      [ I18n.t("visits.health_center_monthly_tasks.#{category}"), 
+        screens.map { |s| [s, [I18n.t("visits.health_center_monthly_tasks.#{s}"), named_route_for_screen(s, {}) ]] } ]
     }
   end
   
@@ -75,7 +59,10 @@ module VisitsHelper
   end
   
   def current_link
-    @current ||= links_sequence.detect { |l| normalize_link(*l.last.last) == normalize_link(controller.request.path) }.maybe.last
+    @current ||= begin
+      maybe = links_sequence.detect { |l| normalize_link(*l.last.last) == normalize_link(controller.request.path) }
+      maybe ? maybe.last : nil
+    end
   end
   
   def current_visit_link?(link)
@@ -268,7 +255,7 @@ module VisitsHelper
     id="#{node}:#{tally}".gsub(/[,:]/,'-')
     
     xf = <<-XFORMS
-    <xf:input id="#{id}" bind="#{node}:#{tally}" #{incr}>
+      <xf:input id="#{id}" bind="#{node}:#{tally}" #{incr}>
         <xf:label />
         <xf:action ev:event="xforms-value-changed">
           <xf:setvalue if="string-length(.) &gt; 0" bind="#{node}:nr" value="'false'" />

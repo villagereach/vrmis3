@@ -172,22 +172,22 @@ module ProgressHelper
     @named_routes_by_screen ||= {}
     @named_routes_by_screen[path_params.inspect] ||= begin
       routes = {
-        'equipment_status' => health_center_equipment_status_url(path_params),
-        'cold_chain'       => health_center_cold_chain_url(path_params),
-        'stock_cards'      => health_center_stockcards_url(path_params),      
+        'equipment_status' => health_center_equipment_status_path(path_params),
+        'cold_chain'       => health_center_cold_chain_path(path_params),
+        'stock_cards'      => health_center_stockcards_path(path_params),      
       }
 
       Inventory.screens.each do |screen|
-        routes[screen] = health_center_inventory_url(path_params.merge(:screen => screen))
+        routes[screen] = health_center_inventory_path(path_params.merge(:screen => screen))
       end
       
       Olmis.tally_klasses.each do |k|
-        routes[k.screens.first] = health_center_tally_url(path_params.merge(:tally => k))
+        routes[k.screens.first] = health_center_tally_path(path_params.merge(:tally => k))
       end
   
       Olmis.additional_visit_klasses.each do |k|
         k.screens.each do |screen|
-          routes[screen] = send("health_center_#{k.table_name.singularize}_path", path_params.merge(:screen => screen))
+          routes[screen] = send("health_center_#{k.xforms_group_name}_path", path_params.merge(:screen => screen))
         end
       end
       
@@ -196,7 +196,7 @@ module ProgressHelper
   end
   
   def named_route_for_screen(name, path_params)
-    named_routes_by_screen(path_params)[name.to_s] || health_center_visit_url(path_params)
+    named_routes_by_screen(path_params)[name.to_s] || health_center_visit_path(path_params)
   end
 
   def progress_calculator

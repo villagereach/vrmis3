@@ -35,5 +35,9 @@ module ActsAsVisitModel
     def depends_on_visit?
       true
     end
+    
+    def visit_navigation_category
+      'misc'
+    end
   end
 end

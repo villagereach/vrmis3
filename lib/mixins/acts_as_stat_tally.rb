@@ -374,6 +374,10 @@ module ActsAsStatTally
       'stat_tally'
     end
 
+    def visit_navigation_category
+      'epi'
+    end
+
     def depends_on_visit?
       false
     end

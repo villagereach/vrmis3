@@ -46,6 +46,10 @@ class EquipmentStatus < ActiveRecord::Base
     ]
   end
 
+  def self.visit_navigation_category
+    'equipment'
+  end
+
   def self.odk_to_params(xml)
     Hash[
       *xml.xpath('/olmis/hcvisit/visit/equipment_status/*').find_all{|n| n.name.starts_with?('item_')}.map do |equip|

@@ -191,7 +191,7 @@ class FridgeStatus < ActiveRecord::Base
         db_values = {
           :past_problem  => values["past_problem"] == "true" || (values["past_problem"] == "false" ? false : nil),
           :temperature   => values["temperature"].blank? ? nil : values["temperature"].to_i,
-          :status_code   => values["state"] == "OK" ? "OK" : values["state"] == "nr" ? nil : values["problem"].join(' '),
+          :status_code   => values["state"] == "OK" ? "OK" : values["state"] == "nr" ? nil : [values["problem"]].flatten.compact.join(' '),
           :other_problem => values["state"] == "problem" && values["problem"].include?("OTHER") ? values["other_problem"] : nil
         }
         record.update_attributes(db_values)
@@ -204,6 +204,10 @@ class FridgeStatus < ActiveRecord::Base
     end
     
     errors
+  end
+
+  def self.visit_navigation_category
+    'cold_chain'
   end
 
   def self.progress_query(date_periods)

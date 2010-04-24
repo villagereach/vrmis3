@@ -70,6 +70,10 @@ class StockCardStatus < ActiveRecord::Base
     'stock_cards'
   end
 
+  def self.visit_navigation_category
+    'equipment'
+  end
+
   def self.process_data_submission(visit, params)
     errors = {}
     stock_card_statuses = visit.find_or_initialize_stock_card_statuses
