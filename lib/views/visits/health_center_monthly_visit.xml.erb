@@ -16,13 +16,6 @@
   </health_center_visit>
 
   <% HealthCenterVisit.tables.each do |t| %>
-     <% begin %>
-       <%= render(:partial => '/data_sources/xforms/' + t.table_name.singularize + '_data.xforms', :locals => { :visit => @visit }) %> 
-     <% rescue ActionView::MissingTemplate
-       begin 
-         %><%= render(:partial => '/data_sources/xforms/' + t.xforms_group_name + '_data.xforms', :locals => { :klass => t, :visit => @visit } ) %><%
-       rescue ActionView::MissingTemplate
-       end
-     end %>
+    <%= render(:partial => '/data_sources/xforms/' + t.xforms_group_name + '_data.xforms', :locals => { :klass => t, :visit => @visit } ) %>
   <% end %>
 </olmis>

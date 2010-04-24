@@ -193,14 +193,7 @@
       <xf:bind nodeset="instance('olmis')/health_center_visit/vehicle_id" id="vehicle_id" required="true()" relevant="../visited != 'false'"/>
 
       <% HealthCenterVisit.tables.each do |t| %>
-         <% begin %>
-           <%= render(:partial => '/data_sources/xforms/' + t.table_name.singularize + '_bind.xforms', :locals => { }) %> 
-         <% rescue ActionView::MissingTemplate
-           begin 
-             %><%= render(:partial => '/data_sources/xforms/' + t.xforms_group_name + '_bind.xforms', :locals => { :klass => t } ) %><%
-           rescue ActionView::MissingTemplate
-           end
-         end %>
+        <%= render(:partial => '/data_sources/xforms/' + t.xforms_group_name + '_bind.xforms', :locals => { :klass => t } ) %>
        <% end %>
 
       <xf:action ev:event="xforms-ready">
