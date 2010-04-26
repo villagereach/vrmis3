@@ -58,6 +58,7 @@ class DataSourcesController < OlmisController
     files = manifest_data.split("\n").map(&:strip).grep(/^\//).map { |f| File.join(Rails.root, 'public', f) }.select { |f| File.exists?(f) } 
     files += Dir.glob(File.join(views_path, 'data_sources', '*.xml'))
     files += Dir.glob(File.join(views_path, 'data_sources', '*.erb'))
+    files += Dir.glob(File.join(views_path, 'data_sources', 'xforms', '*.xforms.erb'))
     files += Dir.glob(File.join(Rails.root, 'app', 'views', 'data_sources', 'xforms', '*.xforms.erb'))
     files += [ File.join(views_path, 'javascripts', 'offline_i18n.js.erb'),
                File.join(views_path, 'javascripts', 'offline_autoeval_data.js.erb'),
