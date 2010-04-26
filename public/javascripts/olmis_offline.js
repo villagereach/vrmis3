@@ -1029,9 +1029,18 @@ jQuery(document).ready(function() {
       'onClosed': finish_upload });
 });
 
+function add_screen_sequence_tags() {
+  jQuery(".xforms-case .xforms-group:first-child .xforms-group-label").
+    each(function(index) {
+           var text = '<div class="seqno-container"><span class="seqno">' + (index+1) + '</span></div>'
+           jQuery(this).before(text);
+         });
+}
+
 function xf_user_init() {
   // Run actions that must be performed *after* XSLTForms init() runs
-  fixup_nr_checkboxes();  
+  fixup_nr_checkboxes();
+  add_screen_sequence_tags();
   setup_datepicker('#div-visit div.datepicker input[type="text"]',
                    { onClose: function(dateText, inst) {
                                 XMLEvents.dispatch($('olmis'), "xforms-value-changed");

@@ -48,11 +48,6 @@ p {
 }
 */
 
-.xforms-group-label {
-  font-size: 150%;
-  padding: 1ex 0;
-}
-                                      
 .block-form {
   /*margin: 2px;*/
 }
@@ -169,10 +164,30 @@ div.xforms-alert-value {
 #non_visit_reason_selection span.xforms-alert { display: none; }
 
 .xforms-group-label { 
-  border-bottom:1px solid #CCCCCC;
-  font-size:130%;
+  border-bottom: 1px solid #CCCCCC;
+  font-size: 130%;
   padding: 0.25ex 0;
   margin-bottom: 1em;
+}
+.xforms-group .seqno-container {
+  background: white;
+  border: 1px solid #222;
+  border-radius: 24px;
+  -moz-border-radius: 24px;
+  -webkit-border-radius: 24px;
+  color: #222;
+  float: left;
+  height: 20px;
+  margin-right: 0.5em;
+  padding: 2px;
+  position: relative;
+  text-align: center;
+  top: 4px;
+  width: 20px;
+}
+.xforms-group .seqno-container .seqno {
+  font-size: 13px;
+  font-weight: bold;
 }
 
 p.note { font-weight: medium; font-style: italic; }
