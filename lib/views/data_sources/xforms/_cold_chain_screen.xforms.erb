@@ -6,7 +6,7 @@
         <xf:group class="fridge-id">
           <xf:input ref="@code">
             <xf:label><%= h(t("visits.health_center_cold_chain.fridge_id")) %></xf:label>
-            <!--xf:alert><%= h(t(".errors.fridge_code")) %></xf:alert-->
+            <!--xf:alert><%= h(t("data_sources.hcvisit.errors.fridge_code")) %></xf:alert-->
           </xf:input>
         </xf:group><!-- class="fridge-data" -->
         <div class="two-column">
@@ -20,14 +20,14 @@
                     <xf:value><%= h value %></xf:value>
                   </xf:item>
                 <%- end -%>
-                <xf:alert><%= h(t(".errors.select_an_option")) %></xf:alert>
+                <xf:alert><%= h(t("data_sources.hcvisit.errors.select_an_option")) %></xf:alert>
               </xf:select1>
             </xf:group><!-- class="fridge-past_problem" -->
 
             <xf:group class="fridge-temp">
               <xf:input ref="@temp">
                 <xf:label><%= h(t("visits.health_center_cold_chain.arrival_temp")) %></xf:label>
-                <xf:alert><%= h(t(".errors.temperature")) %></xf:alert>
+                <xf:alert><%= h(t("data_sources.hcvisit.errors.temperature")) %></xf:alert>
               </xf:input>
             </xf:group><!-- class="fridge-temp" -->
           </xf:group><!-- class="fridge-in" -->
@@ -42,7 +42,7 @@
                     <xf:value><%= h value %></xf:value>
                   </xf:item>
                 <%- end -%>
-                <xf:alert><%= h(t(".errors.select_an_option")) %></xf:alert>
+                <xf:alert><%= h(t("data_sources.hcvisit.errors.select_an_option")) %></xf:alert>
               </xf:select1>
             </xf:group><!-- class="fridge-state" -->
 
@@ -55,13 +55,13 @@
                     <xf:value><%= h value %></xf:value>
                   </xf:item>
                 <%- end -%>
-                <xf:alert><%= h(t(".errors.select_status")) %></xf:alert>
+                <xf:alert><%= h(t("data_sources.hcvisit.errors.select_status")) %></xf:alert>
               </xf:select>
             </xf:group><!-- class="fridge-problem" -->
 
             <xf:group>
               <xf:textarea ref="@other_problem">
-                <xf:alert><%= h(t(".errors.other_fridge_status")) %></xf:alert>
+                <xf:alert><%= h(t("data_sources.hcvisit.errors.other_fridge_status")) %></xf:alert>
               </xf:textarea>
             </xf:group>
           </xf:group><!-- class="fridge-out" -->

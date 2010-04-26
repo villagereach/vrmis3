@@ -41,7 +41,7 @@
     <div class="datepicker">
       <xf:input bind="l10n-visited_at">
         <xf:label><%= h(t("visits.health_center_monthly_visit.date")) %></xf:label>
-        <xf:alert><%= h(t(".errors.date_for_visit_month")) %></xf:alert>
+        <xf:alert><%= h(t("data_sources.hcvisit.errors.date_for_visit_month")) %></xf:alert>
         <xf:action ev:event="xforms-value-changed">
           <xf:setvalue bind="visited_at" value="olmis:date_from_local(instance('data')/selected-values/visit_date)" />
         </xf:action>
@@ -58,7 +58,7 @@
   <xf:group>
     <xf:input bind="vehicle_id">
       <xf:label><%= h(t("visits.health_center_monthly_visit.vehicle_code")) %></xf:label>
-      <xf:alert><%= h(t(".errors.vehicle_id")) %></xf:alert>
+      <xf:alert><%= h(t("data_sources.hcvisit.errors.vehicle_id")) %></xf:alert>
     </xf:input>
   </xf:group>
   <xf:group id="non_visit_reason_selection">
@@ -70,7 +70,7 @@
           <xf:value><%= h reason %></xf:value>
         </xf:item>
       <%- end -%>
-      <xf:alert><%= h(t(".errors.select_non_visit")) %></xf:alert>
+      <xf:alert><%= h(t("data_sources.hcvisit.errors.select_non_visit")) %></xf:alert>
       <xf:action ev:event="xforms-value-changed">
         <xf:load resource="javascript:non_visit_reason_changed()" />
       </xf:action>
@@ -78,7 +78,7 @@
   </xf:group>
   <xf:group>
     <xf:textarea bind="other_non_visit_reason">
-      <xf:alert><%= h(t(".errors.non_visit_reason")) %></xf:alert>
+      <xf:alert><%= h(t("data_sources.hcvisit.errors.non_visit_reason")) %></xf:alert>
     </xf:textarea>
   </xf:group>
 </div>

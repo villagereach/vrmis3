@@ -34,7 +34,7 @@
                           <xf:setvalue if=". = '' and ../@nr = 'false'" bind="<%= id %>:nr" />
                         </xf:action>
                       <%- end -%>
-                      <xf:alert><%= h(t(".errors.quantity")) %></xf:alert>
+                      <xf:alert><%= h(t("data_sources.hcvisit.errors.quantity")) %></xf:alert>
                     </xf:input>
                     <%- if Inventory.nullable_types.include?(type) -%>
                       <div class="nr">
