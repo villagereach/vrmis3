@@ -478,7 +478,7 @@ en:
       visit:       "Visit"
       inventory:   "Inventory"
       equipment:   "Equipment"
-      equipment_status:     "General"
+      equipment_status:     "Equipment status"
       cold_chain:  "Refrigerators"
       stock_cards: "Stock Cards"
       delivery:    "Delivery"
