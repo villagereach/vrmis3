@@ -390,7 +390,7 @@
               <xf:trigger 
                 <%- if HealthCenterVisit.klass_by_screen[screen].depends_on_visit? %>bind="visited_at"<% end -%> 
                 id="tab-<%= screen %>" class="menu-tab selected-tab" appearance="minimal">
-                <xf:label><%= h(t(".tasks.#{ screen }")) %></xf:label>              
+                <xf:label><%= h(t("visits.health_center_monthly_tasks.#{ screen }")) %></xf:label>              
                 <xf:action ev:event="DOMActivate">
                   <xf:toggle case="case-<%= screen %>"/>
                   <xf:load resource="javascript:set_active_tab('<%= screen %>')" />

@@ -116,32 +116,32 @@ class DataSubmission < ActiveRecord::Base
   def process_visit(health_center=nil, visit_month=nil, user=nil)
     @params, @visit_errors = data_source.data_to_params(self)
 
-    if @params[:health_center_visit]
-      health_center ||= HealthCenter.find_by_code(@params[:health_center_visit][:health_center])
-      visit_month ||= @params[:health_center_visit][:visit_month]
+    if @params['health_center_visit']
+      health_center ||= HealthCenter.find_by_code(@params['health_center_visit'][:health_center])
+      visit_month ||= @params['health_center_visit']['visit_month']
       
-      if (!visit_month && @params[:health_center_visit][:epi_month])
-        visit_month = (Date.parse(@params[:health_center_visit][:epi_month] + '-01') + 1.month).strftime("%Y-%m")
-        @params[:health_center_visit][:visited_at] ||= visit_month + '-01'
+      if (!visit_month && @params['health_center_visit']['epi_month'])
+        visit_month = (Date.parse(@params['health_center_visit']['epi_month'] + '-01') + 1.month).strftime("%Y-%m")
+        @params['health_center_visit']['visited_at'] ||= visit_month + '-01'
       end
       
-      @params[:health_center_visit][:vehicle_code] ||= ''    
-      @params[:health_center_visit].delete(:health_center)
-      @params[:health_center_visit].delete(:visit_month)
-      @params[:health_center_visit].delete(:epi_month)
+      @params['health_center_visit']['vehicle_code'] ||= ''    
+      @params['health_center_visit'].delete('health_center')
+      @params['health_center_visit'].delete('visit_month')
+      @params['health_center_visit'].delete('epi_month')
     end
     
     @current_user = user
     @visit_errors ||= { }
     @visit = HealthCenterVisit.find_or_initialize_by_health_center_id_and_visit_month(health_center.id, visit_month)
     
-    process_health_center_visit if @params[:health_center_visit] 
+    process_health_center_visit if @params['health_center_visit'] 
 
     @visit.field_coordinator ||= @current_user
     @visit.updated_at = Time.now
     @visit.save!
     
-    @visit_errors[:health_center_visit] = @visit.errors unless @visit.errors.empty?
+    @visit_errors['health_center_visit'] = @visit.errors unless @visit.errors.empty?
     
     self.health_center_visits << @visit unless health_center_visits.include?(@visit)
 
@@ -168,16 +168,16 @@ class DataSubmission < ActiveRecord::Base
     #temporary hiding of epi_data_ready; remove it later if it stays hidden
     @visit.epi_data_ready = true
 
-    visited = @params[:health_center_visit].delete(:visited)    
+    visited = @params['health_center_visit'].delete('visited')
 
-    reason_for_not_visiting = @params[:health_center_visit].delete(:reason_for_not_visiting)
-    other_non_visit_reason  = @params[:health_center_visit].delete(:other_non_visit_reason)
+    reason_for_not_visiting = @params['health_center_visit'].delete('reason_for_not_visiting')
+    other_non_visit_reason  = @params['health_center_visit'].delete('other_non_visit_reason')
 
     if ['true','else'].include?(visited)
       @visit.visited = visited
       @visit.reason_for_not_visiting = nil
       @visit.other_non_visit_reason = nil
-      @visit.field_coordinator = User.find_by_id(@params[:health_center_visit].delete(:user_id))
+      @visit.field_coordinator = User.find_by_id(@params['health_center_visit'].delete('user_id'))
     elsif visited == 'false'
       @visit.visited = 'false'
       @visit.reason_for_not_visiting = reason_for_not_visiting
@@ -185,7 +185,7 @@ class DataSubmission < ActiveRecord::Base
       @visit.vehicle_code = nil
     end
 
-    @visit.attributes = (@params[:health_center_visit])
+    @visit.attributes = (@params['health_center_visit'])
   end
 end
 

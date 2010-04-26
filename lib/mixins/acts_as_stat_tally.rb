@@ -387,7 +387,7 @@ module ActsAsStatTally
     end
 
     def xforms_to_params(xml)
-      Hash[*xml.xpath("/olmis/hcvisit/epi/#{table_name}/item").map { |n|
+      Hash[*xml.xpath("/olmis/#{table_name}/item").map { |n|
         [n['for'].to_s, n['val'].to_s] +
           (n['nr'].to_s == "true" ? [n['for'].to_s + '/NR', 1] : [])
       }.flatten]

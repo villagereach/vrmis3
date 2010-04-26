@@ -780,16 +780,19 @@ XPathCoreFunctions['http://openrosa.org/javarosa regex'] =  new XPathFunction(fa
 XPathCoreFunctions['http://openrosa.org/javarosa date'] =  new XPathFunction(false, XPathFunction.DEFAULT_NODESET, false,
     function(node) {
       var str = stringValue(node);
-      var d, m, dp = jQuery('#case-visit div.datepicker input[type="text"]');
+      var d, m;
+      
       if (m = /^\s*([0-9][0-9][0-9][0-9])-([0-9][0-9])\s*-([0-9][0-9])\s*$/.exec(str)) {
         d = new Date(parseInt(m[1],10), parseInt(m[2],10) - 1, parseInt(m[3],10));
-      } else if (dp.length > 0) {
-        d = jQuery.datepicker.parseDate(dp.datepicker('option', 'dateFormat'), str);
-      } else {
+      } else if (m = /^\s*(\d+)\s*$/.exec(str)) {
         var millis = Date.parse(str);
         if (isNaN(millis)) return false;
         d = new Date(millis);
+      } else {
+        region = jQuery.datepicker.regional[I18n.locale] || jQuery.datepicker.regional[''] 
+        d = jQuery.datepicker.parseDate(region['dateFormat'], str);
       }
+      
       return d.format("%Y-%m-%d");
     } );
 
@@ -1039,14 +1042,23 @@ function add_screen_sequence_tags() {
 
 function xf_user_init() {
   // Run actions that must be performed *after* XSLTForms init() runs
-  fixup_nr_checkboxes();
+  fixup_nr_checkboxes();  
   add_screen_sequence_tags();
-  setup_datepicker('#div-visit div.datepicker input[type="text"]',
-                   { onClose: function(dateText, inst) {
-                                XMLEvents.dispatch($('olmis'), "xforms-value-changed");
-                              },
-                     altField: "#div-visit #iso_visit_date input",
-                     altFormat: jQuery.datepicker.ISO_8601
-                   });
+  jQuery('div.datepicker').each(function(i, e) {
+      var alt = jQuery('.alt_date', jQuery(e.parentNode))[0]
+      var altid;
+      if (alt)
+        altid = alt.getAttribute('id')
+      
+      setup_datepicker(jQuery('input[type="text"]', jQuery(e))[0],
+        { 
+          onClose: function(dateText, inst) {
+            XMLEvents.dispatch($('olmis'), "xforms-value-changed");
+          },
+          altField: '#' + altid + ' input',
+          altFormat: jQuery.datepicker.ISO_8601
+        }
+      );
+  });
 }
 

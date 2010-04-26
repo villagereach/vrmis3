@@ -76,15 +76,15 @@ class Olmis
         end
   
         definition['stock_cards'].each_with_index do |f, i|
-          StockCard.find_or_initialize_by_code(f).update_attributes!(:position => i)
+          StockCard.find_or_initialize_by_code(f).update_attributes!(:active => true, :position => i)
         end
 
         invalidate_old(ProductType,   definition['product_types'])
         invalidate_old(Product,       definition['products'])
         invalidate_old(Package,       definition['packages'])
-        invalidate_old(EquipmentType, definition['equipment'])
+        invalidate_old(EquipmentType, definition['equipment'].map { |e| { 'code' => e } } )
         invalidate_old(FridgeModel,   definition['cold_chain'])
-        invalidate_old(StockCard,     definition['stock_cards'])
+        invalidate_old(StockCard,     definition['stock_cards'].map { |e| { 'code' => e } })
 
         hierarchy = definition['administrative_area_hierarchy']
         create_hierarchy(nil, hierarchy, definition['administrative_areas'])
@@ -117,10 +117,10 @@ class Olmis
 
     def invalidate_old(model, definition)
       model.find(:all,
-          :conditions => ['code not in (?)', definition.map { |d| d['code'] }],
+        :conditions => ['code not in (?)', definition.map { |d| d['code'] }],
           :order => 'position asc').
         each_with_index do |p, i|
-        p.update_attributes( :active => false, :position => definition.length + i)
+        p.update_attributes!( :active => false, :position => definition.length + i)
       end
     end
 

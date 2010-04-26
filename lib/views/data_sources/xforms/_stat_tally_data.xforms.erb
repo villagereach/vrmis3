@@ -1,4 +1,4 @@
-<<%= klass.name.tableize %>>
+<<%= klass.table_name %>>
   <%- record_value_hash = klass.records_by_param_names_for_keys(visit.health_center, visit.epi_month) -%>
   <%- klass.expected_params().each do |param, type| -%>
     <item for="<%= param %>"
@@ -9,5 +9,5 @@
         nr="" val=""
       <%- end -%>/>
   <%- end -%>
-</<%= klass.name.tableize %>>
+</<%= klass.table_name %>>
 

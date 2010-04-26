@@ -17,8 +17,9 @@ class <%= class_name %> < ActiveRecord::Base
 
     <% if dimensions.present? 
     dims = dimensions.map { |f|  
-      if f =~ /\.(.*)/
-        method = $1
+      data = f.split('.')
+      if data.length > 1
+        method = data.last
       else
         method = f
       end

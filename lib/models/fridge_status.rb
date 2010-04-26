@@ -183,7 +183,7 @@ class FridgeStatus < ActiveRecord::Base
 
     fridge_statuses = visit.find_or_initialize_fridge_statuses
 
-    params[:fridge_status].each do |key, values|
+    params['fridge_status'].each do |key, values|
       # Skip if no data entered for this fridge
       next if values.values.all?(&:blank?)
 

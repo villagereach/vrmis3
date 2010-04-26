@@ -1,5 +1,5 @@
 <%- klass.expected_params().each do |param, value_type|
-  node = "/olmis/#{ klass.name.tableize }/item[@for='#{ param }']"
+  node = "/olmis/#{ klass.table_name }/item[@for='#{ param }']"
   type, constraint = (case value_type
                       when :date then [ 'xf:string', "jr:regex(., '^\\\\d{2}/\\\\d{4}$')" ]
   

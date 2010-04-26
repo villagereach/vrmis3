@@ -40,7 +40,7 @@ class StockCardStatus < ActiveRecord::Base
 
   def self.xforms_to_params(xml)
     Hash[
-      *xml.xpath('/olmis/hcvisit/visit/stock_cards/item').map do |card|
+      *xml.xpath('/olmis/stock_cards/item').map do |card|
         [
           card['for'].to_s,
           {
@@ -54,7 +54,7 @@ class StockCardStatus < ActiveRecord::Base
 
   def self.odk_to_params(xml)
     Hash[
-      *xml.xpath('/olmis/stock_cards/*').find_all{|n| n.name.starts_with?('item_')}.map do |card|
+      *xml.xpath('/olmis/hcvisit/visit/stock_cards/*').find_all{|n| n.name.starts_with?('item_')}.map do |card|
         [
           card.name[5..-1],
           {
@@ -78,9 +78,15 @@ class StockCardStatus < ActiveRecord::Base
     errors = {}
     stock_card_statuses = visit.find_or_initialize_stock_card_statuses
 
-    params[:stock_card_status].each do |key, values|
+    params['stock_card_status'].each do |key, values|
       record = stock_card_statuses.detect{|s| s.stock_card_code == key}
-
+      if record.nil? && sc = StockCard.find_by_code(key)
+        record = StockCardStatus.new(
+          :stock_room_id => visit.health_center.stock_room_id, 
+          :health_center_visit_id => visit.id,
+          :stock_card_id => sc.id)
+      end
+        
       # Skip if no data entered for a new item
       next if record.new_record? && values["have"].blank? && values["used_correctly"].blank?
 
@@ -97,7 +103,7 @@ class StockCardStatus < ActiveRecord::Base
   end
   
   def self.progress_query(date_periods)
-    stock_cards = StockCard.count
+    stock_cards = StockCard.active.count
 
     <<-TALLY
     select health_center_visits.id as id,
@@ -106,7 +112,7 @@ class StockCardStatus < ActiveRecord::Base
       #{stock_cards}                                                        + sum(case when stock_card_statuses.have = 1 then 1 else 0 end) as expected_entries,
       sum(case when stock_card_statuses.have IS NOT NULL then 1 else 0 end) + sum(case when stock_card_statuses.have = 1 AND stock_card_statuses.used_correctly IS NOT NULL then 1 else 0 end) as entries
     from health_center_visits
-    left join stock_card_statuses on 
+    left join (select health_center_visit_id, coalesce(have,0) as have, coalesce(used_correctly,0) as used_correctly from stock_card_statuses) stock_card_statuses on 
       stock_card_statuses.health_center_visit_id = health_center_visits.id
     where health_center_visits.visit_month in (#{date_periods})
     group by health_center_visits.id

@@ -112,7 +112,7 @@ class Inventory < ActiveRecord::Base
     inventories = visit.find_or_create_inventory_records
     stock = visit.ideal_stock
 
-    params[:inventory].each do |key, value|
+    params['inventory'].each do |key, value|
       (stock.keys - [:ideal]).each do |type|
         if (record = stock[type][key]) && value.has_key?(type)
           if value[type].blank? && value["#{type}/NR"].to_i == 0

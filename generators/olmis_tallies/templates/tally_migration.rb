@@ -19,13 +19,14 @@ class <%= migration_filename.camelize %> < ActiveRecord::Migration
       <% end %>
 
       <% dimensions.each do |f| %>
-        <% 
-        if f =~ /([^\.]+)\.(.*)/
-          method = $2
-          relation = $1.tableize
+      <%-
+        data = f.split('.')
+        if data.length > 1
+          method = data.last
+          relation = data.first.tableize
         else
-          method = f
-          relation = f.tableize
+          method = data[0]
+          relation = data[0].tableize
         end
         %>
         t.integer '<%= method.singularize %>_id', :null => false, :references => :<%= relation %>
