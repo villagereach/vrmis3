@@ -106,6 +106,11 @@
           <xf:setvalue bind="visit_month"       value="instance('data')/selected-values/visit_date_period"/>
           <xf:setvalue ref="/olmis/health_center_visit/last_edited"   value="jr:today()"/>
 
+          <!-- Set the localized visit date from the stored, ISO-formatted, date -->
+          <xf:setvalue bind="l10n-visited_at"   value="olmis:date_to_local(instance('olmis')/health_center_visit/visited_at)"/>
+          <!-- Force a revalidation of the form so the localized date is shown as valid -->
+          <xf:dispatch name="xforms-revalidate" target="default-model" />
+
           <xf:toggle case="case-visit"/>
           <xf:load resource="javascript:set_active_tab('visit')" />
         </xf:action>
@@ -124,6 +129,7 @@
         </xf:action>
         <xf:action ev:event="xforms-submit-done">
           <xf:setvalue bind="visited_at"        value="instance('data')/selected-values/default_visit_date" />
+          <xf:setvalue bind="l10n-visited_at"   value="olmis:date_to_local(instance('data')/selected-values/default_visit_date)"/>
           <xf:setvalue bind="health_center"     value="instance('data')/selected-values/health_center"/>
           <xf:setvalue bind="field_coordinator" value="instance('data')/selected-values/field_coordinator"/>
           <xf:setvalue bind="visit_month"       value="instance('data')/selected-values/visit_date_period"/>
@@ -189,7 +195,8 @@
       <xf:bind nodeset="instance('olmis')/health_center_visit/other_non_visit_reason" id="other_non_visit_reason"  required="true()" relevant="../visited = 'false' and ../non_visit_reason = 'other'" constraint="string-length(.) &gt; 0"/>
       <xf:bind nodeset="instance('olmis')/health_center_visit/visit_month" id="visit_month" />
       <xf:bind nodeset="instance('olmis')/health_center_visit/visited" id="visited" required="true()" relevant="true()"/>
-      <xf:bind nodeset="instance('olmis')/health_center_visit/visited_at" id="visited_at" required="true()" relevant="../visited != 'false'" type="xf:string" constraint="jr:date(.) &lt;= jr:today() and jr:date(.) &gt;= jr:date(concat(../visit_month,'-01')) and jr:date(.) &lt;= jr:date(concat(../visit_month,'-31'))" />
+      <xf:bind nodeset="instance('olmis')/health_center_visit/visited_at" id="visited_at" required="true()" relevant="../visited != 'false'" readonly="true()" />
+      <xf:bind nodeset="instance('data')/selected-values/visit_date" id="l10n-visited_at" required="true()" relevant="instance('olmis')/health_center_visit/visited != 'false'" constraint="jr:date(.) &lt;= jr:today() and jr:date(.) &gt;= jr:date(concat(../visit_date_period,'-01')) and jr:date(.) &lt;= jr:date(concat(../visit_date_period,'-31'))" />
       <xf:bind nodeset="instance('olmis')/health_center_visit/vehicle_id" id="vehicle_id" required="true()" relevant="../visited != 'false'"/>
 
       <% HealthCenterVisit.tables.each do |t| %>

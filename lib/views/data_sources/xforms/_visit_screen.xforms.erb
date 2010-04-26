@@ -39,9 +39,16 @@
   </xf:group>
   <xf:group>
     <div class="datepicker">
-      <xf:input bind="visited_at">
+      <xf:input bind="l10n-visited_at">
         <xf:label><%= h(t("visits.health_center_monthly_visit.date")) %></xf:label>
         <xf:alert><%= h(t(".errors.date_for_visit_month")) %></xf:alert>
+        <xf:action ev:event="xforms-value-changed">
+          <xf:setvalue bind="visited_at" value="olmis:date_from_local(instance('data')/selected-values/visit_date)" />
+        </xf:action>
+      </xf:input>
+    </div>
+    <div id="iso_visit_date" class="hidden">
+      <xf:input bind="visited_at">
         <xf:action ev:event="xforms-value-changed">
           <xf:load resource="javascript:visit_date_changed()" />
         </xf:action>

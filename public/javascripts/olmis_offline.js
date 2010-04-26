@@ -437,7 +437,7 @@ function select_location() {
   dp.datepicker('option', 'maxDate', new Date(Math.min(date.end_of_month(), today)));
   if (options['autoset_default_visit_date']) {
     var default_visit_date = date.getMonth() == today.getMonth() ? today : date.beginning_of_month();
-    set_selected_value('default_visit_date', jQuery.datepicker.formatDate(dp.datepicker('option', 'dateFormat'), default_visit_date));
+    set_selected_value('default_visit_date', default_visit_date.format('%Y-%m-%d'));
   }
 
   set_selected_value('visit_period_selected', 'true()');
@@ -819,6 +819,34 @@ XPathCoreFunctions['http://openlmis.org/xpath-functions previous_yearmonth'] =  
     });
 
 
+XPathCoreFunctions['http://openlmis.org/xpath-functions date_to_local'] =  new XPathFunction(false, XPathFunction.DEFAULT_NODESET, false,
+    function(date, datepicker_id) {
+      var d = stringValue(date);
+      var result = '';
+
+      if (d.match(/^\d{4}-\d{2}-\d{2}$/)) {
+        try {
+          var dp = jQuery(datepicker_id || '#case-visit div.datepicker input[type="text"]');
+          result = jQuery.datepicker.formatDate(dp.datepicker('option', 'dateFormat'), jQuery.datepicker.parseDate(jQuery.datepicker.ISO_8601, d));
+        } catch(e) {}
+      }
+      return result;
+    });
+
+XPathCoreFunctions['http://openlmis.org/xpath-functions date_from_local'] =  new XPathFunction(false, XPathFunction.DEFAULT_NODESET, false,
+    function(date, datepicker_id) {
+      var d = stringValue(date);
+      var result = '';
+
+      if (d.match(/\d/)) {
+        try {
+          var dp = jQuery(datepicker_id || '#case-visit div.datepicker input[type="text"]');
+          result = jQuery.datepicker.formatDate(jQuery.datepicker.ISO_8601, jQuery.datepicker.parseDate(dp.datepicker('option', 'dateFormat'), d));
+        } catch(e) {}
+      }
+      return result;
+    });
+
 XPathCoreFunctions['http://openlmis.org/xpath-functions month_of_year'] =  new XPathFunction(false, XPathFunction.DEFAULT_NODESET, false,
     function(yearmonth) {
       ym = stringValue(yearmonth);
@@ -1004,10 +1032,12 @@ jQuery(document).ready(function() {
 function xf_user_init() {
   // Run actions that must be performed *after* XSLTForms init() runs
   fixup_nr_checkboxes();  
-  setup_datepicker('#case-visit div.datepicker input[type="text"]',
+  setup_datepicker('#div-visit div.datepicker input[type="text"]',
                    { onClose: function(dateText, inst) {
                                 XMLEvents.dispatch($('olmis'), "xforms-value-changed");
-                              }
+                              },
+                     altField: "#div-visit #iso_visit_date input",
+                     altFormat: jQuery.datepicker.ISO_8601
                    });
 }
 

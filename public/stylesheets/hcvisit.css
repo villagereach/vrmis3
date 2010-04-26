@@ -279,6 +279,7 @@ h1 a {
 input, textarea {
   font-family: sans-serif;
   font-size: 16px;
+  padding: 0.2em;
 }
 span.radio.horizontal span.value {
   float: left;
@@ -546,14 +547,6 @@ h4 {
   width : auto;
 }
 /* }}} */
-/* calendar popup {{{ */
-table.calendar {
-  width: inherit;
-}
-#case-visit div.datepicker input[type="text"] {
-  width: 8em;
-}
-/* }}} */
 /* navigation {{{ */
 #tab-menu {
   float: left;
@@ -622,6 +615,7 @@ table.spreadsheet div.tally input[type="text"] {
 }
 table.spreadsheet div.tally.month-year input[type="text"] {
   width: 80px;
+  text-align: left;
 }
 table.spreadsheet div.tally div.nr {
   position: absolute;
@@ -655,6 +649,10 @@ table.spreadsheet td.numeric {
 }
 #case-visit .xforms-group {
   margin-bottom: 1em;
+}
+#case-visit div.datepicker input[type="text"] {
+  width: 8em;
+  letter-spacing: 2px;
 }
 
 #case-epi_inventory .inventory thead th:first-child,
