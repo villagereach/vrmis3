@@ -1,85 +1,90 @@
 <div id="div-visit" class="block-form">
-<%- if Rails.env == "development" -%>
-  <xf:group id="have_epi_data">
-    <xf:select1 bind="epi_data_ready" appearance="full">
-      <xf:label>
-        <%= h(t("visits.health_center_monthly_visit.do_you_have_epi_data")) %>
-        (<xf:output value="olmis:month_of_year(/olmis/health_center_visit/epi_month)">
-          <xf:label><%= h(t("epi_month")) %>: </xf:label>
-        </xf:output>)
-      </xf:label>
-      <xf:item><xf:label><%= h(t("yes")) %></xf:label><xf:value>true</xf:value></xf:item>
-      <xf:item><xf:label><%= h(t("no")) %></xf:label><xf:value>false</xf:value></xf:item>
-    </xf:select1>
-    <xf:action ev:event="xforms-value-changed">
-      <xf:load resource="javascript:fixup_form_container_size()" />
-    </xf:action>
-  </xf:group>
-<%- end -%>
-  <xf:group id="was_hc_visited">
-    <xf:select1 bind="visited" appearance="full">
-      <xf:label>
-        <!-- HACK: Evil, ugly hack to get at the raw translation. -->
-        <%= (I18n.backend.send(:lookup, I18n.locale, "visits.health_center_monthly_visit.was_this_visited") || '').
-                         sub("{{name}}",%Q{<xf:output value="instance('data')/province/district/health_center[@code=instance('data')/selected-values/health_center]/@name"/>}).
-                         sub("{{month}}",%Q{<xf:output value="olmis:month_of_year(instance('data')/selected-values/visit_date_period)"/>}) %>
-      </xf:label>
-      <xf:item>
-        <xf:label><%= h(t("visits.health_center_monthly_visit.yes_i_visited")) %></xf:label>
-        <xf:value>true</xf:value>
-      </xf:item>
-      <xf:item>
-        <xf:label><%= h(t("visits.health_center_monthly_visit.no_noone_visited")) %></xf:label>
-        <xf:value>false</xf:value>
-      </xf:item>
-    </xf:select1>
-    <xf:action ev:event="xforms-value-changed">
-      <xf:load resource="javascript:fixup_form_container_size()" />
-    </xf:action>
-  </xf:group>
   <xf:group>
-    <div class="datepicker">
-      <xf:input bind="l10n-visited_at">
-        <xf:label><%= h(t("visits.health_center_monthly_visit.date")) %></xf:label>
-        <xf:alert><%= h(t("data_sources.hcvisit.errors.date_for_visit_month")) %></xf:alert>
+    <xf:label><%= h(t("visits.health_center_visit.page_title")) %></xf:label>
+
+    <%- if Rails.env == "development" -%>
+      <xf:group id="have_epi_data">
+        <xf:select1 bind="epi_data_ready" appearance="full">
+          <xf:label>
+            <%= h(t("visits.health_center_monthly_visit.do_you_have_epi_data")) %>
+            (<xf:output value="olmis:month_of_year(/olmis/health_center_visit/epi_month)">
+              <xf:label><%= h(t("epi_month")) %>: </xf:label>
+            </xf:output>)
+          </xf:label>
+          <xf:item><xf:label><%= h(t("yes")) %></xf:label><xf:value>true</xf:value></xf:item>
+          <xf:item><xf:label><%= h(t("no")) %></xf:label><xf:value>false</xf:value></xf:item>
+        </xf:select1>
         <xf:action ev:event="xforms-value-changed">
-          <xf:setvalue bind="visited_at" value="olmis:date_from_local(instance('data')/selected-values/visit_date)" />
+          <xf:load resource="javascript:fixup_form_container_size()" />
         </xf:action>
-      </xf:input>
-    </div>
-    <div id="iso_visit_date" class="hidden">
-      <xf:input bind="visited_at">
-        <xf:action ev:event="xforms-value-changed">
-          <xf:load resource="javascript:visit_date_changed()" />
-        </xf:action>
-      </xf:input>
-    </div>
-  </xf:group>
-  <xf:group>
-    <xf:input bind="vehicle_id">
-      <xf:label><%= h(t("visits.health_center_monthly_visit.vehicle_code")) %></xf:label>
-      <xf:alert><%= h(t("data_sources.hcvisit.errors.vehicle_id")) %></xf:alert>
-    </xf:input>
-  </xf:group>
-  <xf:group id="non_visit_reason_selection">
-    <xf:select1 bind="non_visit_reason" appearance="full">
-      <xf:label><%= h(t("visits.health_center_monthly_visit.reason_for_not_visiting")) %></xf:label>
-      <%- %w(road_problem vehicle_problem health_center_closed other).each do |reason| -%>
+      </xf:group>
+    <%- end -%>
+
+    <xf:group id="was_hc_visited">
+      <xf:select1 bind="visited" appearance="full">
+        <xf:label>
+          <!-- HACK: Evil, ugly hack to get at the raw translation. -->
+          <%= (I18n.backend.send(:lookup, I18n.locale, "visits.health_center_monthly_visit.was_this_visited") || '').
+                           sub("{{name}}",%Q{<xf:output value="instance('data')/province/district/health_center[@code=instance('data')/selected-values/health_center]/@name"/>}).
+                           sub("{{month}}",%Q{<xf:output value="olmis:month_of_year(instance('data')/selected-values/visit_date_period)"/>}) %>
+        </xf:label>
         <xf:item>
-          <xf:label><%= h(t("HealthCenterVisit.#{reason}")) %></xf:label>
-          <xf:value><%= h reason %></xf:value>
+          <xf:label><%= h(t("visits.health_center_monthly_visit.yes_i_visited")) %></xf:label>
+          <xf:value>true</xf:value>
         </xf:item>
-      <%- end -%>
-      <xf:alert><%= h(t("data_sources.hcvisit.errors.select_non_visit")) %></xf:alert>
+        <xf:item>
+          <xf:label><%= h(t("visits.health_center_monthly_visit.no_noone_visited")) %></xf:label>
+          <xf:value>false</xf:value>
+        </xf:item>
+      </xf:select1>
       <xf:action ev:event="xforms-value-changed">
-        <xf:load resource="javascript:non_visit_reason_changed()" />
+        <xf:load resource="javascript:fixup_form_container_size()" />
       </xf:action>
-    </xf:select1>
-  </xf:group>
-  <xf:group>
-    <xf:textarea bind="other_non_visit_reason">
-      <xf:alert><%= h(t("data_sources.hcvisit.errors.non_visit_reason")) %></xf:alert>
-    </xf:textarea>
+    </xf:group>
+    <xf:group>
+      <div class="datepicker">
+        <xf:input bind="l10n-visited_at">
+          <xf:label><%= h(t("visits.health_center_monthly_visit.date")) %></xf:label>
+          <xf:alert><%= h(t("data_sources.hcvisit.errors.date_for_visit_month")) %></xf:alert>
+          <xf:action ev:event="xforms-value-changed">
+            <xf:setvalue bind="visited_at" value="olmis:date_from_local(instance('data')/selected-values/visit_date)" />
+          </xf:action>
+        </xf:input>
+      </div>
+      <div id="iso_visit_date" class="hidden">
+        <xf:input bind="visited_at">
+          <xf:action ev:event="xforms-value-changed">
+            <xf:load resource="javascript:visit_date_changed()" />
+          </xf:action>
+        </xf:input>
+      </div>
+    </xf:group>
+    <xf:group>
+      <xf:input bind="vehicle_id">
+        <xf:label><%= h(t("visits.health_center_monthly_visit.vehicle_code")) %></xf:label>
+        <xf:alert><%= h(t("data_sources.hcvisit.errors.vehicle_id")) %></xf:alert>
+      </xf:input>
+    </xf:group>
+    <xf:group id="non_visit_reason_selection">
+      <xf:select1 bind="non_visit_reason" appearance="full">
+        <xf:label><%= h(t("visits.health_center_monthly_visit.reason_for_not_visiting")) %></xf:label>
+        <%- %w(road_problem vehicle_problem health_center_closed other).each do |reason| -%>
+          <xf:item>
+            <xf:label><%= h(t("HealthCenterVisit.#{reason}")) %></xf:label>
+            <xf:value><%= h reason %></xf:value>
+          </xf:item>
+        <%- end -%>
+        <xf:alert><%= h(t("data_sources.hcvisit.errors.select_non_visit")) %></xf:alert>
+        <xf:action ev:event="xforms-value-changed">
+          <xf:load resource="javascript:non_visit_reason_changed()" />
+        </xf:action>
+      </xf:select1>
+    </xf:group>
+    <xf:group>
+      <xf:textarea bind="other_non_visit_reason">
+        <xf:alert><%= h(t("data_sources.hcvisit.errors.non_visit_reason")) %></xf:alert>
+      </xf:textarea>
+    </xf:group>
   </xf:group>
 </div>
 

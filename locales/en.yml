@@ -505,6 +505,8 @@ en:
       upload_spreadsheet:         "Do you have a spreadsheet to upload?"
     health_center_monthly_progress_bar:
       did_not_visit: "Did not visit"
+    health_center_visit:
+      page_title: "Visit Information"
     health_center_tally:
       save:         "Save changes"
       page_title_adult_vaccination_tally: "Adult Vaccinations"
