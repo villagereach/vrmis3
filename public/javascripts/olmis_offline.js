@@ -395,15 +395,8 @@ function select_visit() {
     var pdh = find_province_district_health_center(hc);
 
     if (!!pdh) {
-      var province = pdh[0];
-      var district = pdh[1];
-      var dz       = pdh[3];
-      var fc       = pdh[4];
-  $('health-center-selector').xfElement.selectValue(hc);
-    $('visit-month-selector').xfElement.selectValue(ym);
-//      set_selected_value('health_center', hc);
-//      set_selected_value('visit_date_period', ym);
-
+      $('health-center-selector').xfElement.selectValue(hc);
+      $('visit-month-selector').xfElement.selectValue(ym);
     }
     Dialog.hide("statusPanel");
     show_container(containers['visit']);
