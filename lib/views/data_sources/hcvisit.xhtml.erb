@@ -408,23 +408,19 @@
             <xf:send ev:event="xforms-submit" submission="save" if="instance('data')/selected-values/context-selected = true()" />
           </xf:action>
           <xf:switch>
-            <% (['visit'] + HealthCenterVisit.screens).each do |screen| %>
-              <xf:case id="case-<%= screen %>">
-                <div id="div-<%= screen %>" class="block-form"><xf:group>
-                  <xf:label><%= h(t("visits.health_center_monthly_tasks.page_titles.#{screen}")) %></xf:label>                
-                <% begin %>
-                  <%= render(:partial => '/data_sources/xforms/' + screen + '_screen.xforms', :locals => { :screen => screen }) %> 
-                <% rescue ActionView::MissingTemplate
-                     klass = HealthCenterVisit.klass_by_screen[screen]
-                     begin 
-                   %><%= render(:partial => '/data_sources/xforms/' + klass.xforms_group_name + '_screen.xforms', :locals => { :klass => klass, :screen => screen } ) %><%
-                     rescue ActionView::MissingTemplate
-                       raise "Can't find #{klass.xforms_group_name}_screen.xforms"
-                     end
-                   end %>
-                 </xf:group></div>
-              </xf:case>               
-            <% end %>
+            <% (['visit'] + HealthCenterVisit.screens).each do |screen|
+                 layout = "/data_sources/xforms/screen.xforms"
+                 begin %>
+               <%= render(:partial => "/data_sources/xforms/#{screen}_screen.xforms", :layout => layout, :locals => { :screen => screen }) %><%
+                 rescue ActionView::MissingTemplate
+                   klass = HealthCenterVisit.klass_by_screen[screen]
+                   begin %>
+                 <%= render(:partial => "/data_sources/xforms/#{klass.xforms_group_name}_screen.xforms", :layout => layout, :locals => { :klass => klass, :screen => screen } ) %><%
+                   rescue ActionView::MissingTemplate
+                     raise "Can't find _#{klass.xforms_group_name}_screen.xforms.erb"
+                   end
+                 end
+               end %>
           </xf:switch>
         </xf:group><!-- id="form-contents" -->
       </xf:group><!-- bind="context-selected" -->

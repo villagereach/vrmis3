@@ -1,6 +1,9 @@
-<xf:action ev:event="xforms-select">
-  <xf:load resource="javascript:set_equipment_notes_area_size()" />
-</xf:action>
+<% content_for :actions do %>
+  <xf:action ev:event="xforms-select">
+    <xf:load resource="javascript:set_equipment_notes_area_size()" />
+  </xf:action>
+<% end %>
+
     <table class="equipment spreadsheet">
       <thead>
         <tr>

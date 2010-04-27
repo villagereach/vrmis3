@@ -1,0 +1,10 @@
+<xf:case id="case-<%= screen %>">
+  <%= yield :actions %>
+  <div id="div-<%= screen %>" class="block-form">
+    <xf:group>
+      <xf:label><%= h(t("visits.health_center_monthly_tasks.page_titles.#{screen}")) %></xf:label>
+      <%= yield %>
+      <div class="clear" />
+    </xf:group>
+  </div>
+</xf:case>
