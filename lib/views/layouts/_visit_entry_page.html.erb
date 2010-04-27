@@ -4,6 +4,8 @@
   <%= render :partial => "visit_entry_nav" %>
   <div id="health_center_main" class="switcher_pane_content span-19 last">
     <div class="content">
+      <div class="seqno-container"><span class="seqno"><%= (HealthCenterVisit.screens.index(@screen) || -1)+2 %></span></div>
+      <h3><%= h(t("visits.health_center_monthly_tasks.page_titles.#{@screen}")) %></h3>
       <%= yield %>	
     </div>
   </div>

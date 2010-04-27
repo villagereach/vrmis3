@@ -410,6 +410,8 @@
           <xf:switch>
             <% (['visit'] + HealthCenterVisit.screens).each do |screen| %>
               <xf:case id="case-<%= screen %>">
+                <div id="div-<%= screen %>" class="block-form"><xf:group>
+                  <xf:label><%= h(t("visits.health_center_monthly_tasks.page_titles.#{screen}")) %></xf:label>                
                 <% begin %>
                   <%= render(:partial => '/data_sources/xforms/' + screen + '_screen.xforms', :locals => { :screen => screen }) %> 
                 <% rescue ActionView::MissingTemplate
@@ -420,6 +422,7 @@
                        raise "Can't find #{klass.xforms_group_name}_screen.xforms"
                      end
                    end %>
+                 </xf:group></div>
               </xf:case>               
             <% end %>
           </xf:switch>

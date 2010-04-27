@@ -1033,7 +1033,7 @@ jQuery(document).ready(function() {
 });
 
 function add_screen_sequence_tags() {
-  jQuery(".xforms-case .xforms-group:first-child .xforms-group-label").
+  jQuery(".xforms-case > div > .xforms-group > .xforms-group-label:first-child").
     each(function(index) {
            var text = '<div class="seqno-container"><span class="seqno">' + (index+1) + '</span></div>'
            jQuery(this).before(text);

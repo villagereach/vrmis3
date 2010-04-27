@@ -50,18 +50,24 @@
   map.visits                  '/visits', :controller => 'visits', :action => 'index', :method => :get
   map.visits_search           '/visits/search', :controller => 'visits', :action => 'search', :method => :get
   map.visits_by_month         '/visits/:visit_month', :controller => 'visits', :action => 'by_month', :method => :get
-  map.health_center_visit     '/visits/:visit_month/:health_center', :controller => 'visits', :action => 'health_center_monthly_visit'
   map.health_center_visit_title '/visits/:visit_month/:health_center/title', :controller => 'visits', :action => 'health_center_monthly_visit_title'
-  map.health_center_visit_format '/visits/:visit_month/:health_center.:format', :controller => 'visits', :action => 'health_center_monthly_visit'
 
-  map.health_center_tally     '/visits/:visit_month/:health_center/epi/:tally', :controller => 'visits', :action => 'health_center_tally'
-  map.health_center_tally_fmt '/visits/:visit_month/:health_center/epi/:tally.:type.:format', :controller => 'visits', :action => 'health_center_tally'
+  map.health_center_visit     '/visits/:visit_month/:health_center', :screen => 'visit', :controller => 'visits', :action => 'health_center_monthly_visit'
+  map.health_center_visit_format '/visits/:visit_month/:health_center.:format', :screen => 'visit', :controller => 'visits', :action => 'health_center_monthly_visit'
+
+  map.health_center_tally     '/visits/:visit_month/:health_center/epi/:screen',               :controller => 'visits', :action => 'health_center_tally'
+  map.health_center_tally_fmt '/visits/:visit_month/:health_center/epi/:screen.:type.:format', :controller => 'visits', :action => 'health_center_tally'
 
   map.nuke_caches             '/nuke_caches', :controller => 'olmis', :action => 'nuke_caches'
 
-  map.health_center_equipment_status   '/visits/:visit_month/:health_center/equipment_status',   :controller => 'visits', :action => 'health_center_equipment'
-  map.health_center_cold_chain '/visits/:visit_month/:health_center/cold_chain', :controller => 'visits', :action => 'health_center_cold_chain'
-  map.health_center_stockcards '/visits/:visit_month/:health_center/stockcards', :controller => 'visits', :action => 'health_center_stock_cards'
+  map.health_center_equipment_status   '/visits/:visit_month/:health_center/equipment_status', 
+    :screen => 'equipment_status', :controller => 'visits', :action => 'health_center_equipment'
+  
+  map.health_center_cold_chain '/visits/:visit_month/:health_center/cold_chain', 
+    :screen => 'cold_chain', :controller => 'visits', :action => 'health_center_cold_chain'
+    
+  map.health_center_stockcards '/visits/:visit_month/:health_center/stockcards', 
+    :screen => 'stock_cards', :controller => 'visits', :action => 'health_center_stock_cards'
 
   map.health_center_inventory '/visits/:visit_month/:health_center/inv/:screen', :controller => 'visits', :action => 'health_center_inventory'
   

@@ -1,9 +1,6 @@
 <xf:action ev:event="xforms-select">
   <xf:load resource="javascript:jQuery('#div-<%= screen %> .xforms-value:input').change();" />
 </xf:action>
-<div id="div-<%= screen %>" class="block-form">
-  <xf:group>
-    <xf:label><%= h(t("visits.health_center_tally.page_title_#{screen}")) %></xf:label>
     <p class="note"><%= h(t("visits.nr_instructions")) %></p>
     <% begin %>
       <%= render :partial => '/data_sources/xforms/' + screen + '.xforms.erb' %>
@@ -15,6 +12,4 @@
               %Q{<div class="nr"><xf:input bind="#{node}:nr" incremental="true"><xf:label>#{h(t("NR"))}</xf:label><xf:action ev:event="xforms-value-changed"><xf:setvalue if=". = 'true'" bind="#{node}:value" value="''" /></xf:action></xf:input></div></div>}
           }) %>
     <% end %>
-  </xf:group>
-</div>
 

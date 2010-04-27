@@ -327,6 +327,27 @@ table.jqplot-table-legend td {
 .tab_graphs > ul.ui-tabs-nav { width: 100px; float: left; margin-top: 2em; background: inherit; padding: 0; border: none;}
 .tab_graphs > ul.ui-tabs-nav > li { display: block; float: none; margin: 5px 0; padding: 0; background: inherit; border: none!important;  }
 .tab_graphs > ul.ui-tabs-nav > li.ui-tabs-selected { background-color: #f6f6f6; -moz-border-radius: 0; -webkit-border-radius: 0; border-radius: 0; }
-.tab_graphs > ul.ui-tabs-nav > li.ui-tabs-selected a { border-width: thin; border-style: solid; border-color: green #f6f6f6 green green; color: black;} ; 
+.tab_graphs > ul.ui-tabs-nav > li.ui-tabs-selected a { border-width: thin; border-style: solid; border-color: green #f6f6f6 green green; color: black;} 
 
+.seqno-container {
+  background: white;
+  border: 1px solid #222;
+  border-radius: 24px;
+  -moz-border-radius: 24px;
+  -webkit-border-radius: 24px;
+  color: #222;
+  float: left;
+  height: 20px;
+  margin-right: 0.5em;
+  padding: 2px;
+  position: relative;
+  text-align: center;
+  top: 4px;
+  width: 20px;
+}
+
+.seqno-container .seqno {
+  font-size: 13px;
+  font-weight: bold;
+}
 

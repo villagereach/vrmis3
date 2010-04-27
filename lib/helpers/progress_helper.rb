@@ -182,7 +182,7 @@ module ProgressHelper
       end
       
       Olmis.tally_klasses.each do |k|
-        routes[k.screens.first] = health_center_tally_path(path_params.merge(:tally => k))
+        routes[k.screens.first] = health_center_tally_path(path_params.merge(:screen => k.screens.first))
       end
   
       Olmis.additional_visit_klasses.each do |k|

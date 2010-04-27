@@ -104,7 +104,6 @@ class VisitsController < OlmisController
 
   def health_center_stock_cards
     @stock_card_statuses = @visit.find_or_initialize_stock_card_statuses
-
     handle_submit if request.post?
   end
 
@@ -123,11 +122,11 @@ class VisitsController < OlmisController
       }
       if @current_user.admin? 
         format.erb  {
-          tally_klass = params[:tally].constantize
+          tally_klass = tally_table(HealthCenterVisit.klass_by_screen[@screen])
           expected_params = tally_klass.expected_params
           view_directory = params[:type] == 'xforms' ? 'data_sources/xforms' : 'visits'
           render :text =>
-            "<!-- Save this as #{Rails.root.join("app/views/#{view_directory}/_#{params[:tally].underscore}.#{params[:type]}.erb")} -->\n" +
+            "<!-- Save this as #{Rails.root.join("app/views/#{view_directory}/_#{@screen}.#{params[:type]}.erb")} -->\n" +
             "<!-- Modifications made there will appear in the appropriate form. -->\n" +
                 if params[:type] == 'html'
                   helpers.tally_table(tally_klass, 
@@ -161,6 +160,7 @@ class VisitsController < OlmisController
     @health_center = HealthCenter.find_by_code(params[:health_center])
     @visit = HealthCenterVisit.find_by_health_center_id_and_visit_month(@health_center, month)
     @is_visit_entry_page = true  #determines sub-layout
+    @screen = params[:screen]
     @errors = {}
     helpers.expire_caches_for_hc_month(@health_center, month)
     redirect_to :health_center_visit if !request.xhr? && !@visit && params[:action] != 'health_center_monthly_visit' 

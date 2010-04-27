@@ -1,5 +1,4 @@
 <%- form_tag( { } ) do -%>
-<h3><%= h(t(".page_title_#{params[:tally].underscore}")) %></h3>
 
 <div class="epi">
   <%= render :partial => 'errors', :locals => { :errors => @errors } %>
@@ -7,9 +6,9 @@
   <p class="note"><%= h(t("visits.nr_instructions")) %></p>
 
   <% begin %>
-    <%= render :partial => params[:tally].underscore %>
+    <%= render :partial => @screen %>
   <% rescue ActionView::MissingTemplate %>  
-    <%= tally_table(params[:tally].camelize.constantize) %>
+    <%= tally_table(HealthCenterVisit.klass_by_screen[@screen]) %>
   <% end %>
 
   <%= save_and_continue %>

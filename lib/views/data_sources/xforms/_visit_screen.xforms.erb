@@ -1,7 +1,3 @@
-<div id="div-visit" class="block-form">
-  <xf:group>
-    <xf:label><%= h(t("visits.health_center_visit.page_title")) %></xf:label>
-
     <%- if Rails.env == "development" -%>
       <xf:group id="have_epi_data">
         <xf:select1 bind="epi_data_ready" appearance="full">
@@ -85,6 +81,4 @@
         <xf:alert><%= h(t("data_sources.hcvisit.errors.non_visit_reason")) %></xf:alert>
       </xf:textarea>
     </xf:group>
-  </xf:group>
-</div>
 

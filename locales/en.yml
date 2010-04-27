@@ -475,6 +475,7 @@ en:
       visited_on:    "Visited on {{date}}"
       did_not_visit: "Did not visit"
     health_center_monthly_tasks:
+      epi:         "EPI"
       visit:       "Visit"
       inventory:   "Inventory"
       equipment:   "Equipment"
@@ -483,6 +484,12 @@ en:
       stock_cards: "Stock Cards"
       delivery:    "Delivery"
       save_and_go_to: "Save and continue to {{next_page}}"
+      page_titles:
+        visit:                    "Visit Information"
+        inventory:               "Inventory"
+        equipment_status:        "Equipment Information"
+        cold_chain:              "Refrigerator Information"
+        stock_cards:             "Stock Card Information"
     health_center_monthly_visit:
       date:                       "Visit date"
       time:                       "Time"
@@ -501,32 +508,21 @@ en:
     health_center_monthly_progress_bar:
       did_not_visit: "Did not visit"
     health_center_visit:
-      page_title: "Visit Information"
     health_center_tally:
       save:         "Save changes"
-      page_title_adult_vaccination_tally: "Adult Vaccinations"
-      page_title_child_vaccination_tally: "Child Vaccinations"
-      page_title_full_vaccination_tally:  "Fully Vaccinated Children"
-      page_title_epi_usage_tally:         "EPI Stock Information"
     health_center_inventory:
       product:            "Product"
       epi_inventory:
-        page_title:     "EPI Inventory: Delivery & Stock Information"
         product_header: "(vials/units)"
       ideal_quantity:     "Ideal Quantity"
       ExistingHealthCenterInventory:  "Existing Quantity"
       DeliveredHealthCenterInventory: "Delivered Quantity"
       SpoiledHealthCenterInventory:   "Spoiled Quantity"
     health_center_equipment:
-      page_title: "Equipment Information"
-      #type:     "Equipment"
-      #quantity: "Quantity"
-      #status:   "Status"
       notes:    "Equipment Notes"
       present:  "Present?"
       working:  "Working?"
     health_center_cold_chain:
-      page_title:   "Refrigerator Information"
       #instructions: "Note: Check “not recorded” (NR) if the temperature is not available."
       fridge:       "Refrigerator"
       #status:       "Status"
@@ -540,7 +536,6 @@ en:
       departure_state: "Was the refrigerator functioning adequately (within 2-8°C) when you left the health center?"
       problem:      "What is the problem(s)?"
     health_center_stock_cards:
-      page_title: "Stock Card Information"
       #name: "Stock Card"
       have: "Present?"
       use:  "Used correctly?"
