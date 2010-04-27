@@ -665,8 +665,8 @@ table.spreadsheet td.numeric {
 #case-visit .xforms-group {
   margin-bottom: 1em;
 }
-#case-visit div.datepicker input[type="text"] {
-  width: 8em;
+div.datepicker input[type="text"] {
+  width: 8em !important;
   letter-spacing: 2px;
 }
 
