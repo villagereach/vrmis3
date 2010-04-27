@@ -146,17 +146,21 @@ class Inventory < ActiveRecord::Base
   def self.progress_query(date_periods)
     inv_fields = possible_fields.select { |type, package, screen| screens.include?(screen) }
 
-    screen_statement = inv_fields.group_by { |type, package, screen| [type, screen] }.map { |locator, fields|
-      type, screen = *locator
-      "when inventory_type = '#{sanitize_sql(type)}' " +
-      "and packages.code in (" +
-        fields.map(&:second).map { |p| "'" + sanitize_sql(p.code) + "'" }.join(", ") +
-      ") then '#{sanitize_sql(screen)}'"
-    }.join("\n      ")
-
-    expectation_statement = inv_fields.group_by { |type, package, screen| screen }.map { |screen, fields|
-      "when screen = '#{sanitize_sql(screen)}' then #{fields.length}"
-    }.join("\n      ")
+    if inv_fields.length > 0
+      screen_statement = inv_fields.group_by { |type, package, screen| [type, screen] }.map { |locator, fields|
+        type, screen = *locator
+        "when inventory_type = '#{sanitize_sql(type)}' " +
+        "and packages.code in (" +
+          fields.map(&:second).map { |p| "'" + sanitize_sql(p.code) + "'" }.join(", ") +
+        ") then '#{sanitize_sql(screen)}'"
+      }.join("\n      ")
+  
+      expectation_statement = inv_fields.group_by { |type, package, screen| screen }.map { |screen, fields|
+        "when screen = '#{sanitize_sql(screen)}' then #{fields.length}"
+      }.join("\n      ")
+    else
+      screen_statement = expectation_statement = 'when false then NULL'
+    end
     
     <<-INV
     select 
