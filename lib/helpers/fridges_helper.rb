@@ -18,7 +18,7 @@ module FridgesHelper
   
   def scoped_fridges(scope_string)
     #need to sanitize?
-    !scope_string.blank? ? Fridge.send(*scope_string.split(',')) : Fridge
+    scope_string.blank? ? Fridge.scoped(:include => {:stock_room => :health_center}) : Fridge.send(*scope_string.split(',')) 
   end
   
   def param_scoped_fridges

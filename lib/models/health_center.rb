@@ -116,11 +116,6 @@ class HealthCenter < ActiveRecord::Base
     health_center_visits.first
   end
   
-  def most_recent_visit_with_equipment_counts
-    health_center_visits.
-      find(:first, :include => :equipment_counts, :conditions => 'equipment_counts.id IS NOT NULL')
-  end    
-
   def most_recent_visit_with_any_inventory
     health_center_visits.find(:first, :conditions => <<-SQL)
       exists (select 1 from health_center_visit_inventory_groups 

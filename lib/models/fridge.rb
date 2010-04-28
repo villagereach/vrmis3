@@ -52,16 +52,19 @@ class Fridge < ActiveRecord::Base
   }
 
   # Return fridges in the given province
-  named_scope :in_area_health_centers, lambda{|p|
-    {
+  def self.in_area_health_centers(locality_key, local_id)
+    {      
       :include => { :stock_room => :health_center },
-      :joins => [ AdministrativeArea.sql_area_join ],
-      :conditions => [ (<<-SQL).squish, province_id ]
-        health_centers.administrative_area_id IN (#{AdministrativeArea.sql_area_ids})
+      :conditions => [ (<<-SQL).squish, local_id ]
+        exists (select 1 from #{AdministrativeArea.sql_area_join(false)} where #{locality_key}=? and health_centers.administrative_area_id in (#{AdministrativeArea.sql_area_ids}))
       SQL
     }
-  }
+  end
 
+  Olmis.area_hierarchy.each do |area|
+    named_scope 'in_' + area.tableize.singularize, lambda { |p| Fridge.in_area_health_centers('`' + area.tableize + '`.`id`', p) }
+  end
+  
   # Return fridges with a current status that is not OK.
   named_scope :not_ok,
   {

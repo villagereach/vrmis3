@@ -1,13 +1,5 @@
 <div class="mini_report" id="equipment_list">
-<% if visit = HealthCenter.find_by_id(params[:id]).maybe.most_recent_visit_with_equipment_counts %>
+<% if visit = HealthCenter.find_by_id(params[:id]).maybe.most_recent_visit %>
 <h3><%= t('.equipment_header', :date => I18n.l(visit.date), :user => visit.field_coordinator_name) %></h3>
-<%= render :partial => '/mini_reports/table', :locals => {
-        :columns => [:position, :type, :quantity, :status], 
-        :data => visit.equipment_counts,
-        :identifier => 'equipment_list',
-        :i18n => true,
-        :limit => 10,
-        :offset => 0,
-        :model => EquipmentCount } %>
 <% end %>
 </div>

@@ -22,7 +22,6 @@ class HealthCenterVisit < ActiveRecord::Base
   belongs_to :field_coordinator, :foreign_key => 'user_id', :class_name => 'User'
   belongs_to :health_center
 
-  has_many :equipment_counts
   has_many :equipment_statuses
   has_many :stock_card_statuses
   
