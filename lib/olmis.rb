@@ -124,12 +124,14 @@ class Olmis
       end
     end
 
-    def name_to_code(name, klass=nil)
-      code = name.to_url
+    def name_to_code(name, klass=nil, code=nil)
+      code ||= name.to_url
 
       if klass
+        @codes_by_key ||= {}
+        return @codes_by_key["#{klass}.#{name}"] if @codes_by_key.has_key?("#{klass}.#{name}")
+        @codes_by_key["#{klass}.#{name}"] = code
         @translations.each do |lc, hash|
-          key = "#{klass}.#{code}"
           hash[lc] ||= {}
           hash[lc][klass] ||= {}
           hash[lc][klass][code] ||= name
@@ -151,7 +153,8 @@ class Olmis
         
         k = hash.keys.first
         aa = k.constantize
-        wh.administrative_area = aa.find_by_code(name_to_code(hash[k]))
+        wh.administrative_area = aa.find_by_code(name_to_code(hash[k], k))
+
         wh.code = wh_code
 
         wh.save!
@@ -216,7 +219,7 @@ class Olmis
 
       if areas
         areas.each do |name, subhierarchy|
-          code = name_to_code(name, class_name)
+          code = name_to_code(name, class_name, subhierarchy['code'])
           area = klass.find_or_initialize_by_code(code)
           area.update_attributes!(:parent => parent, :code => code, :population => subhierarchy['population'])
 
