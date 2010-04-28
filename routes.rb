@@ -17,7 +17,9 @@
   map.isa '/pickups/:delivery_zone/isa/:health_center', :controller => 'pickups', :action => 'isa_edit'
   map.isa_redirect '/pickups/:delivery_zone/isa_redirect', :controller=>'pickups', :action => 'isa_redirect'
 
-  map.pickup_new '/pickups/:delivery_zone/new', :controller => 'pickups', :action => 'pickup_new'
+  map.pickup_request '/pickups/:delivery_zone/request.:format', :controller => 'pickups', :action => 'pickup_request', :conditions => { :method => :get }
+
+  map.pickup_new '/pickups/:delivery_zone/new.:format', :controller => 'pickups', :action => 'pickup_new'
   map.pickup_edit '/pickups/:delivery_zone/:date/edit', :controller => 'pickups', :action => 'pickup_edit'
   map.pickup '/pickups/:delivery_zone/:date', :controller => 'pickups', :action => 'pickup'
   map.pickups '/pickups/:delivery_zone', :controller => 'pickups', :action => 'pickups'

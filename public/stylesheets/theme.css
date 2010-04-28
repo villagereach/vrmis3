@@ -791,12 +791,39 @@ li.status.complete {
 }
 /* }}} */
 /* pickups {{{ */
-.pickups table {
-  width : auto;
+.pickups h4 {
+  font-size: 1.5em;
+  font-weight: bold;
+  text-align: center;
 }
-.pickups table th,
-.pickups table td {
-  text-align : right;
+.pickups .header {
+  font-weight: bold;
+  padding: 2px 4px;
+}
+.pickups .header label {
+  font-weight: bold;
+}
+.pickups table {
+  width: auto;
+}
+.pickups .header span {
+  margin-right: 1em;
+}
+.pickups input.datepicker {
+  width: 8em;
+}
+.pickups table.inventory th,
+.pickups table.inventory td {
+  padding: 2px 6px;
+  text-align: left;
+}
+.pickups table.inventory th {
+  vertical-align: middle;
+}
+.pickups table.inventory th.amount,
+.pickups table.inventory td.amount {
+  text-align: right;
+  width: 6em;
 }
 .pickups .submit {
   padding-top : 1em;

@@ -1,0 +1,29 @@
+<h2><%= h(t("pickups.inventory.page_title", :delivery_zone => @zone.name, :visit_month => I18n.l(Date.from_date_period(@current_date_period), :format => :short_month_of_year))) %></h2>
+
+<h4><%= h(t("pickups.inventory.before_visit")) %></h4>
+
+<div class="prepend-7 span-16 last">
+  <div class="header">
+    <span><%= h(t("pickups.inventory.province", :name => @zone.warehouse.administrative_area.name)) %></span>
+  </div>
+
+  <table class="inventory inventory-form">
+    <thead>
+      <tr>
+        <th><%= h(t("pickups.inventory.package")) %></th>
+        <th class="amount"><%= h(t("pickups.inventory.requested")) %></th>
+      </tr>
+    </thead>
+    <tbody>
+      <%- @amounts.keys.map.sort_by{|i| [ i.product, i ]}.each do |package| -%>
+        <tr class="inventory_row">
+          <td><%= package.label %></td>
+          <td class="amount"><%= @amounts[package] %></td>
+        </tr>
+      <%- end -%>
+    </tbody>
+  </table>
+
+</div>
+
+<%= javascript_tag "jQuery('.pickups table tr:even').addClass('even')" %>

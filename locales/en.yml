@@ -540,6 +540,14 @@ en:
       have: "Present?"
       use:  "Used correctly?"
   pickups:
+    inventory:
+      page_title:   "Delivery Quantities for {{delivery_zone}}, {{visit_month}}"
+      province:     "Province: {{name}}"
+      before_visit: "Before Warehouse Visit: View amounts to request"
+      after_visit:  "After Warehouse Visit: Enter amounts"
+      package:      "Description (units)"
+      requested:    "Quantity Requested"
+      furnished:    "Quantity Furnished"
     no_pickup:
       no_pickup: "No pickup for {{name}} found for {{date}}"
     no_unload:
@@ -646,6 +654,7 @@ en:
       hc:
         page_title:                      "Data for {{delivery_zone}}, {{visit_month}}"
         choose:                          "Choose Health Center"
+        delivery_forms_title:            "Delivery Quantities for {{delivery_zone}}, {{visit_month}}"
         before_warehouse_visit:          "Before Warehouse Visit: View amounts to request"
         after_warehouse_visit:           "After Warehouse Visit: Enter amounts"
       status:
