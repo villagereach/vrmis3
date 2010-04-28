@@ -55,9 +55,6 @@
   map.health_center_visit     '/visits/:visit_month/:health_center', :screen => 'visit', :controller => 'visits', :action => 'health_center_monthly_visit'
   map.health_center_visit_format '/visits/:visit_month/:health_center.:format', :screen => 'visit', :controller => 'visits', :action => 'health_center_monthly_visit'
 
-  map.health_center_tally     '/visits/:visit_month/:health_center/epi/:screen',               :controller => 'visits', :action => 'health_center_tally'
-  map.health_center_tally_fmt '/visits/:visit_month/:health_center/epi/:screen.:type.:format', :controller => 'visits', :action => 'health_center_tally'
-
   map.nuke_caches             '/nuke_caches', :controller => 'olmis', :action => 'nuke_caches'
 
   map.health_center_equipment_status   '/visits/:visit_month/:health_center/equipment_status', 
@@ -78,6 +75,8 @@
         { :controller => 'visits', :action => table.xforms_group_name })
     end
   end
+  map.health_center_tally     '/visits/:visit_month/:health_center/:screen',               :controller => 'visits', :action => 'health_center_tally'
+  map.health_center_tally_fmt '/visits/:visit_month/:health_center/:screen.:type.:format', :controller => 'visits', :action => 'health_center_tally'
 
   map.root :controller => 'dashboard', :action => 'homepage'
 

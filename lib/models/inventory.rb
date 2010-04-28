@@ -63,8 +63,8 @@ class Inventory < ActiveRecord::Base
 
   def package_counts_by_package(package_options={})
     pc_hash = Hash[*package_counts.map { |pc| [pc.package, pc] }.flatten]
-    
-    Package.active(package_options).select { |p| Inventory.screens.any? { |s| p.inventoried_by_type?(self, s) } }.each do |p|
+
+    Package.active(package_options).select { |p| HealthCenterVisit.screens.any? { |s| p.inventoried_by_type?(self.inventory_type, s) } }.each do |p|
       pc_hash[p] ||= package_counts.build(:package => p, :quantity => nil)
       pc_hash[p].inventory = self
     end
@@ -72,6 +72,8 @@ class Inventory < ActiveRecord::Base
     pc_hash
   end
 
+  public
+  
   def self.odk_to_params(xml)
     params = {}
 

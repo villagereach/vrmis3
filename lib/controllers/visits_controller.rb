@@ -122,7 +122,7 @@ class VisitsController < OlmisController
       }
       if @current_user.admin? 
         format.erb  {
-          tally_klass = tally_table(HealthCenterVisit.klass_by_screen[@screen])
+          tally_klass = HealthCenterVisit.klass_by_screen[@screen]
           expected_params = tally_klass.expected_params
           view_directory = params[:type] == 'xforms' ? 'data_sources/xforms' : 'visits'
           render :text =>

@@ -162,7 +162,8 @@ module VisitsHelper
   def inventory_field(f, inventory_type, package_code)
     inv = @visit.ideal_stock[inventory_type][package_code]
     nr_field(f, inventory_type, package_code, inv.quantity, inv.new_record? ? false : inv.quantity.nil?,
-      (@errors[package_code][inventory_type].on(:quantity) rescue nil))
+      (@errors[package_code][inventory_type].on(:quantity) rescue nil),
+      !Inventory.nullable_types.include?(inventory_type))
   end
 
   def expression_field(name, expression, suffix='')
