@@ -41,7 +41,9 @@
         <%= render :partial => '/data_sources/xforms/model.xforms.erb' %>
       <% rescue ActionView::MissingTemplate %>
       <% end %>
-      
+
+      <%= render :partial => '/data_sources/xforms/warehouse_pickups.xforms.erb' %>
+
       <xf:bind id="selector"
         nodeset="instance('data')/selected-values/selector"
         relevant="instance('data')/selected-values/context-selected = true()"
@@ -88,8 +90,9 @@
         />
 
       <xf:bind id="selected-month-exists"
-        nodeset="instance('data')/selected-values/selected-month-exists"
+        type="xsd:boolean"
         relevant=". = true()"
+        nodeset="instance('data')/selected-values/selected-month-exists"
         calculate="exists(instance('data')/selected-values/selector)" />
 
       <xf:submission id="load"
@@ -336,8 +339,22 @@
 
       <div id="warehouse-actions">
         <ul>
-          <li><a href="#todo"><%= h(t(".hc.before_warehouse_visit")) %></a></li>
-          <li><a href="#todo"><%= h(t(".hc.after_warehouse_visit")) %></a></li>
+          <li>
+            <xf:trigger appearance="minimal">
+              <xf:label><%= h(t(".hc.before_warehouse_visit")) %></xf:label>
+              <xf:action ev:event="DOMActivate" mode="synchronous">
+                <xf:load resource="javascript:show_warehouse('before')" />
+              </xf:action>
+            </xf:trigger>
+          </li>
+          <li>
+            <xf:trigger appearance="minimal">
+              <xf:label><%= h(t(".hc.after_warehouse_visit")) %></xf:label>
+              <xf:action ev:event="DOMActivate" mode="synchronous">
+                <xf:load resource="javascript:show_warehouse('after')" />
+              </xf:action>
+            </xf:trigger>
+          </li>
         </ul>
       </div>
 
@@ -371,6 +388,12 @@
         </div>
       </div>
     </div><!-- id="location-selector" -->
+
+    <%- %w(before after).each do |screen| -%>
+      <div id="warehouse-<%= screen %>" class="container">
+        <%= render :partial => "/data_sources/xforms/warehouse_pickup_#{screen}.xforms" %>
+      </div>
+    <%- end -%>
 
     <div id="form" class="container">
       <h3 id="current_hc">

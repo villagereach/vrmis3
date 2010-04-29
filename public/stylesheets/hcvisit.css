@@ -359,7 +359,11 @@ span.radio.horizontal div.xforms-item {
 #user_tools .xforms-trigger a,
 #user_tools .xforms-trigger a:visited,
 #current_hc .xforms-trigger a,
-#current_hc .xforms-trigger a:visited {
+#current_hc .xforms-trigger a:visited,
+#warehouse-actions .xforms-trigger a,
+#warehouse-actions .xforms-trigger a:visited,
+.pickups .xforms-trigger a,
+.pickups .xforms-trigger a:visited {
   color: #09c;
   font-weight: normal;
   text-decoration: underline;
@@ -466,6 +470,8 @@ h4 {
 #login-form,
 #location-selector,
 #context-selector,
+#warehouse-before,
+#warehouse-after,
 #offline-reports {
   margin : 2em auto 0;
 }
@@ -475,15 +481,13 @@ h4 {
 #login-form input {
   width: 8em;
 }
-#context-selector {
+#context-selector,
+#warehouse-before,
+#warehouse-after {
   width: 750px;
 }
 #location-selector {
   width: 600px;
-}
-.xforms-control span.focus {
-  /* Not sure what purpose this span serves, but it messes up the form layout if it's shown */
-  display: none;
 }
 #login-form .xforms-control,
 #context-selector .xforms-control,
@@ -534,6 +538,18 @@ h4 {
   list-style: none;
   margin: 0;
   padding: 0;
+}
+
+.pickups div.nav {
+  float: right;
+}
+.pickups div.wrapper {
+  clear: both;
+  margin: 0 auto;
+  width: 50%;
+}
+.pickups table.inventory input[type="text"] {
+  width: 50px;
 }
 
 .inline label {

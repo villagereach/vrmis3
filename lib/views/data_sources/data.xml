@@ -4,6 +4,7 @@
     <visit_year />
     <visit_month />
     <visit_date />
+    <pickup_date />
     <default_visit_date />
     <visit_date_period />
     <field_coordinator />
@@ -23,7 +24,11 @@
   <%- Province.all.sort.each do |p| -%>
     <province name="<%= h(p.name) %>">
       <%- p.delivery_zones.sort.each do |dz| -%>
-        <delivery_zone name="<%= h(dz.name) %>" code="<%= h(dz.code) %>" />
+        <delivery_zone name="<%= h(dz.name) %>" code="<%= h(dz.code) %>">
+          <%- dz.total_ideal_stock_by_package.each do |package,amount| -%>
+            <ideal_stock for="<%= h(package.code) %>" qty="<%= amount %>" />
+          <%- end -%>
+        </delivery_zone>
       <%- end -%>
       <%- p.delivery_zones.map(&:field_coordinator).compact.sort.each do |fc| -%>
         <fc name="<%= h(fc.name) %>" dz="<%= h(fc.delivery_zone.code) %>" />

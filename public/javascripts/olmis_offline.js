@@ -5,10 +5,12 @@ var manifest_files = {
   downloaded: 0
 };
 var containers = {
-  login: 'login-form',
-  main:  'context-selector',
-  hc:    'location-selector',
-  visit: 'form'
+  login:     'login-form',
+  main:      'context-selector',
+  hc:        'location-selector',
+  visit:     'form',
+  wh_before: 'warehouse-before',
+  wh_after:  'warehouse-after'
 };
 var options = {
   months_to_show: 6,
@@ -302,6 +304,62 @@ function find_health_centers_by_attr(attr, value) {
   return xp.evaluate($('data'));
 }
 
+function populate_warehouse_pickups() {
+  try {
+    var pickup_amounts = get_warehouse_stock_amounts_for_delivery_zone();
+
+    var xf_action = new XFAction(null, null);
+    for (var key in pickup_amounts) {
+      var path = "instance('pickups')/item[@for='"+key+"']/@DeliveryRequest";
+
+      // Create an XPath (required by setvalue) for the item node if it doesn't already exist
+      var xp = XPath.get(path) || new XPath(path,
+                                    new PathExpr(
+                                      new FunctionCallExpr('http://www.w3.org/2002/xforms instance', new CteExpr('pickups')),
+                                      new LocationExpr(false,
+                                        new StepExpr('child', new NodeTestName('', 'item'),
+                                          new PredicateExpr(
+                                            new BinaryExpr(
+                                              new LocationExpr(false, new StepExpr('attribute', new NodeTestName(null, 'for'))),
+                                              '=',
+                                              new CteExpr(key)))),
+                                        new StepExpr('attribute', new NodeTestName('', 'DeliveryRequest')))), []);
+
+      xf_action.add(new XFSetvalue(new Binding(false, path), null, pickup_amounts[key], null, null));
+    }
+    run(xf_action, "statusPanel", "DOMActivate", false, true);
+  } catch(e) {
+    DebugConsole.write("Error populating warehouse pickup amounts: " + e.message + "\n" + e.stack.split("\n"));
+  }
+}
+
+function get_warehouse_stock_amounts_for_delivery_zone() {
+  var path = "instance('data')/province/delivery_zone[@code=instance('data')/selected-values/delivery_zone]/ideal_stock";
+  var xp = XPath.get(path) || new XPath(path,  
+                                new PathExpr(
+                                  new FunctionCallExpr('http://www.w3.org/2002/xforms instance', new CteExpr('data')),
+                                    new LocationExpr(false,
+                                       new StepExpr('child', new NodeTestName('', 'province')),
+                                       new StepExpr('child',
+                                         new NodeTestName('', 'delivery_zone'),
+                                          new PredicateExpr(
+                                            new BinaryExpr(
+                                              new LocationExpr(false, new StepExpr('attribute', new NodeTestName(null, 'code'))),
+                                              '=',
+                                              new PathExpr(
+                                                new FunctionCallExpr('http://www.w3.org/2002/xforms instance', new CteExpr('data')),
+                                                  new LocationExpr(false,
+                                                    new StepExpr('child', new NodeTestName('', 'selected-values')),
+                                                    new StepExpr('child', new NodeTestName('', 'delivery_zone'))))))),
+                                      new StepExpr('child', new NodeTestName('', 'ideal_stock')))), []);
+  var nodeset = xp.evaluate($('data'));
+  var stock_amounts = {};
+  for (var i = 0, l = nodeset.length; i < l; i++) {
+    stock_amounts[nodeset[i].getAttributeNS(null, 'for')] = nodeset[i].getAttributeNS(null, 'qty');
+  }
+  return stock_amounts;
+}
+
 function populate_fridge_form() {
   try {
     var fridge_codes = get_fridge_codes_for_health_center();
@@ -441,7 +499,12 @@ function select_location() {
   }
 
   set_selected_value('visit_period_selected', 'true()');
+  populate_warehouse_pickups();
   show_visits();
+}
+
+function show_warehouse(type) {
+  show_container(containers['wh_'+type]);
 }
 
 function show_visits() {
@@ -1030,6 +1093,7 @@ jQuery(document).ready(function() {
       'autoDimension': true,
       'onComplete': setup_saved_visits,
       'onClosed': finish_upload });
+  jQuery('.pickups table.inventory tr:even').addClass('even')
 });
 
 function add_screen_sequence_tags() {

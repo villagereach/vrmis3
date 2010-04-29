@@ -1,0 +1,53 @@
+<h2><%= (I18n.backend.send(:lookup, I18n.locale, "pickups.inventory.page_title") || '').
+                      sub("{{delivery_zone}}", %Q{<xf:output value="instance('data')/province/delivery_zone[@code=instance('data')/selected-values/delivery_zone]/@name"/>}).
+                      sub("{{visit_month}}", %Q{<xf:output value="olmis:month_of_year(instance('data')/selected-values/visit_date_period)"/>}) %></h2>
+
+<h3><%= h(t("pickups.inventory.after_visit")) %></h3>
+
+<div class="pickups">
+  <div class="nav">
+    <xf:trigger appearance="minimal">
+      <xf:label><%= h(t("data_sources.hcvisit.go_to_hc_selection")) %></xf:label>
+      <xf:action ev:event="DOMActivate">
+        <xf:load resource="javascript:show_visits()" />
+      </xf:action>
+    </xf:trigger>
+  </div>
+
+  <div class="wrapper">
+    <div class="header">
+      <span><%= (I18n.backend.send(:lookup, I18n.locale, "pickups.inventory.province") || '').
+                              sub("{{name}}", %Q{<xf:output value="instance('data')/province/delivery_zone[@code=instance('data')/selected-values/delivery_zone]/../@name"/>}) %></span>
+      <span class="datepicker">
+        <xf:input bind="l10n-pickup_on">
+          <xf:label><%= h(t("headers.date")) %></xf:label>
+          <xf:action ev:event="xforms-value-changed">
+            <xf:setvalue bind="pickup_on" value="olmis:date_from_local(instance('data')/selected-values/pickup_date)" />
+          </xf:action>
+        </xf:input>
+      </span>
+      <span id="warehouse_pickup_date" class="alt_date hidden">
+        <xf:input bind="pickup_on" />
+      </span>
+    </div>
+
+    <table class="inventory inventory-form">
+      <thead>
+        <tr>
+          <th><%= h(t("pickups.inventory.package")) %></th>
+          <th class="amount"><%= h(t("pickups.inventory.requested")) %></th>
+          <th class="amount"><%= h(t("pickups.inventory.furnished")) %></th>
+        </tr>
+      </thead>
+      <tbody>
+        <%- Package.active.sort.each do |package| -%>
+          <tr class="inventory_row">
+            <td><%= package.label %></td>
+            <td class="amount"><xf:input bind="warehouse_pickup_<%= package.code %>:DeliveryRequest" /></td>
+            <td class="amount"><xf:input bind="warehouse_pickup_<%= package.code %>:DeliveryPickup" /></td>
+          </tr>
+        <%- end -%>
+      </tbody>
+    </table>
+  </div>
+</div>

@@ -1,0 +1,21 @@
+<xf:instance id="pickups">
+  <pickups>
+    <date />
+    <%- Package.active.each do |package| -%>
+      <item for="<%= package.code %>" DeliveryRequest="" DeliveryPickup="" />
+    <%- end -%>
+  </pickups>
+</xf:instance>
+
+  <xf:bind nodeset="instance('pickups')/date" id="pickup_on" required="true()" readonly="true()" />
+  <xf:bind nodeset="instance('data')/pickup_date" id="l10n-pickup_on" required="true()" />
+
+<%- Package.active.each do |package|
+      %w(DeliveryRequest DeliveryPickup).each do |type|
+        id = "warehouse_pickup_#{package.code}:#{type}"
+        node = "instance('pickups')/item[@for='#{package.code}']/@#{type}" -%>
+
+  <xf:bind id="<%= id %>" nodeset="<%= node %>" type="xf:nonNegativeInteger" />
+
+  <%- end
+    end -%>
