@@ -4,7 +4,6 @@
     <visit_year />
     <visit_month />
     <visit_date />
-    <pickup_date />
     <default_visit_date />
     <visit_date_period />
     <field_coordinator />

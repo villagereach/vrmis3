@@ -325,13 +325,14 @@ function populate_warehouse_pickups() {
 
     var xf_action = new XFAction(null, null);
     for (var key in pickup_amounts) {
-      var path = "instance('pickups')/item[@for='"+key+"']/@DeliveryRequest";
+      var path = "instance('pickups')/pickup/item[@for='"+key+"']/@DeliveryRequest";
 
       // Create an XPath (required by setvalue) for the item node if it doesn't already exist
       var xp = XPath.get(path) || new XPath(path,
                                     new PathExpr(
                                       new FunctionCallExpr('http://www.w3.org/2002/xforms instance', new CteExpr('pickups')),
                                       new LocationExpr(false,
+                                        new StepExpr('child', new NodeTestName('', 'pickup')),
                                         new StepExpr('child', new NodeTestName('', 'item'),
                                           new PredicateExpr(
                                             new BinaryExpr(
