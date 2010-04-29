@@ -5,6 +5,21 @@
       <xf:label><%= h(t("visits.health_center_monthly_tasks.page_titles.#{screen}")) %></xf:label>
       <%= yield %>
       <div class="clear" />
+      <xf:group class="nav-links">
+        <xf:trigger>
+          <xf:label><%= h(t("data_sources.hcvisit.navigation.prev_screen")) %></xf:label>
+          <xf:action ev:event="DOMActivate">
+            <xf:load resource="javascript:go_to_previous_screen('<%= screen %>')" />
+          </xf:action>
+        </xf:trigger>
+        <xf:trigger>
+          <xf:label><%= h(t("data_sources.hcvisit.navigation.next_screen")) %></xf:label>
+          <xf:action ev:event="DOMActivate">
+            <xf:load resource="javascript:go_to_next_screen('<%= screen %>')" />
+          </xf:action>
+        </xf:trigger>
+      </xf:group>
+      <div class="clear" />
     </xf:group>
   </div>
 </xf:case>

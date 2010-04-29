@@ -25,9 +25,24 @@ function fixup_menu_tabs() {
   });
 }
 
-function fixup_form_container_size() {
+function update_visit_navigation() {
   // Adjust form container size to be at least as tall as the menu
-  jQuery('.xforms-switch .xforms-case div.block-form').css('min-height', jQuery('#tab-menu').css('height'));
+  jQuery("#form-contents .xforms-switch .xforms-case div.block-form").css("min-height", jQuery("#tab-menu").css("height"));
+
+  // Hide the previous link on the first screen and the next link on the last screen
+  var visible_tabs = jQuery("#tab-menu .menu-tab:visible");
+  var first_screen = visible_tabs.slice(0,1)[0].id.replace('tab-', 'case-');
+  var last_screen  = visible_tabs.slice(-1)[0].id.replace('tab-', 'case-');
+  jQuery("#" + first_screen + " .nav-links .xforms-trigger:first").hide();
+  jQuery("#" + last_screen + " .nav-links .xforms-trigger:last").hide();
+}
+
+function go_to_next_screen(this_screen) {
+  jQuery("#tab-" + this_screen).nextAll(":visible").slice(0,1).find("a")[0].dispatchEvent(mouse_click);
+}
+
+function go_to_previous_screen(this_screen) {
+  jQuery("#tab-" + this_screen).prevAll(":visible").slice(0,1).find("a")[0].dispatchEvent(mouse_click);
 }
 
 function fixup_nr_checkboxes() {
@@ -458,7 +473,7 @@ function select_visit() {
     }
     Dialog.hide("statusPanel");
     show_container(containers['visit']);
-    fixup_form_container_size();
+    update_visit_navigation();
     setup_fridge_form();
   }, 1);
   
@@ -1015,9 +1030,7 @@ function upload_all() {
 }
 
 function is_logged_in() {
-  var evt = document.createEvent('MouseEvents')
-  evt.initMouseEvent("click", true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
-  jQuery('#other-actions a[href="#upload"]')[0].dispatchEvent(evt);  
+  jQuery('#other-actions a[href="#upload"]')[0].dispatchEvent(mouse_click);
 }
 
 function check_logged_in() {
@@ -1056,7 +1069,12 @@ function finish_upload() {
   jQuery('#upload-uploaded ul').empty();
 }
 
+var mouse_click;
+
 jQuery(document).ready(function() {
+  mouse_click = document.createEvent("MouseEvents");
+  mouse_click.initMouseEvent("click", true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+
   $('saved-forms-control').addEventListener('change', select_visit, true);
   window.setInterval(check_update_status, 3 * 1000);
   

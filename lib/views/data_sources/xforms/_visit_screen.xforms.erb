@@ -11,7 +11,7 @@
           <xf:item><xf:label><%= h(t("no")) %></xf:label><xf:value>false</xf:value></xf:item>
         </xf:select1>
         <xf:action ev:event="xforms-value-changed">
-          <xf:load resource="javascript:fixup_form_container_size()" />
+          <xf:load resource="javascript:update_visit_navigation()" />
         </xf:action>
       </xf:group>
     <%- end -%>
@@ -34,7 +34,7 @@
         </xf:item>
       </xf:select1>
       <xf:action ev:event="xforms-value-changed">
-        <xf:load resource="javascript:fixup_form_container_size()" />
+        <xf:load resource="javascript:update_visit_navigation()" />
       </xf:action>
     </xf:group>
     <xf:group>
