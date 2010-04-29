@@ -15,7 +15,7 @@
   history_count ||= 4
 
   status = fridge.current_status
-  new_status = FridgeStatus.new(:fridge=>fridge, :reported_at=>Time.now, :user_id => @current_user.id, :status_code => status.status_code)
+  new_status = FridgeStatus.new(:fridge=>fridge, :stock_room_id => status.stock_room_id, :reported_at=>Time.now, :user_id => @current_user.id, :status_code => status.status_code)
 
   is_manager = @current_user.manager? # reduced view for managers
 

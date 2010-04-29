@@ -1,6 +1,7 @@
 <% form_for fridge_status, :url => new_fridge_status_path, :index => fridge_status.fridge.id, :html => { :id => "new_fridge_status-#{fridge_status.fridge.id}" } do |f| %>
   <%= f.hidden_field :reported_at %>
   <%= f.hidden_field :user_id %>
+  <%= f.hidden_field :stock_room_id, :value => fridge_status.stock_room_id %>
 
   <dl class="stacked">
     <dt><%= f.label :temperature, t('.new_temp') %></dt>

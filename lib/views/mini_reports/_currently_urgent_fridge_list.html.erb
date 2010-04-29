@@ -1,7 +1,7 @@
 <%- format ||=  report_format_for_current_user_role
   	params.merge!(@params) if @params 
 		days ||= 14
- 		fridges = param_scoped_fridges.urgent(days).find(:all, :order => 'reported_at desc', :limit=>10)
+ 		fridges = param_scoped_fridges.urgent(days).find(:all, :order => 'fridge_statuses.reported_at desc', :limit=>10)
 -%>
 
 <div class="fridge_list fixed" id="urgent_fridges">

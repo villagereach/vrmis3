@@ -1,5 +1,5 @@
 <cold_chain>
-  <%- visit.find_or_initialize_fridge_statuses(:min_count => 2).each do |fs| -%>
+  <%- visit.find_or_initialize_fridge_statuses(:min_count => 2).sort.each do |fs| -%>
     <fridge code="" past_problem="" temp="" state="" problem="" other_problem="" />
   <%- end -%>
 </cold_chain>

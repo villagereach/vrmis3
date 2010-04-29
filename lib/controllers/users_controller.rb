@@ -26,7 +26,7 @@ class UsersController < OlmisController
         @user.save!
         redirect_to users_url
       rescue ActiveRecord::ActiveRecordError
-        render :action => :new
+        render :action => :edit
       end
     end
   end

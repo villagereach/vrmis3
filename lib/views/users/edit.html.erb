@@ -16,7 +16,7 @@
         </li>
         <li>
           <%= f.label :language %>
-          <%= f.select :language, I18n.available_locales.map{|l| [ Languages.native_languages[l] || l, l ]}, :include_blank => t(:select_blank) %>
+          <%= f.select :language, I18n.available_locales.map{|l| [ Languages.native_languages[l] || l, l.to_s ]}, :include_blank => t(:select_blank) %>
         </li>
         <li>
           <%= f.label :timezone %>
@@ -38,11 +38,11 @@
         </li>
         <li>
           <%= f.label :password, t("users.password") %>
-          <%= f.password_field :password, :size => 20 %>
+          <%= f.password_field :password, :size => 20, :autocomplete => 'off' %>
         </li>
         <li>
           <%= f.label :password_confirmation, t("users.confirm_password") %>
-          <%= f.password_field :password_confirmation, :size => 20 %>
+          <%= f.password_field :password_confirmation, :size => 20, :autocomplete => 'off' %>
         </li>
       </ol>
     </fieldset>

@@ -24,7 +24,6 @@ class HealthCenter < ActiveRecord::Base
   belongs_to :delivery_zone
 
   belongs_to :stock_room
-  has_many :fridges, :through => :stock_room
 
   has_many :health_center_visits, :order => 'visited_at desc'
 
@@ -32,7 +31,11 @@ class HealthCenter < ActiveRecord::Base
   has_many :inventories, :foreign_key => 'stock_room_id', :primary_key => 'stock_room_id'
 
   has_and_belongs_to_many :users
-  
+
+  def fridges
+    stock_room.fridges
+  end
+
   def label
     I18n.t("HealthCenter.#{code}")
   end
@@ -151,11 +154,11 @@ class HealthCenter < ActiveRecord::Base
   
   report_column :update_link,   :sortable => false,                 :header => "headers.update_link",   :type => :link do |r| [I18n.t("edit"), [:edit, r] ] end
   report_column :name,          :sql_sort => 'health_centers.code', :header => "headers.health_center", :type => :link do |f| [f.name, f ] end
-  report_column :health_center, :sql_sort => 'administrative_areas.code', :header => "headers.health_center" do |r| r.administrative_area.maybe.name end  
-  report_column :delivery_zone, :sql_sort => 'delivery_zones.code',       :header => "headers.delivery_zone" do |r| r.delivery_zone.maybe.name end
+  report_column :health_center, :sql_sort => 'administrative_areas.code', :header => "headers.health_center" do |r| r.administrative_area && r.administrative_area.name end  
+  report_column :delivery_zone, :sql_sort => 'delivery_zones.code',       :header => "headers.delivery_zone" do |r| r.delivery_zone && r.delivery_zone.name end
   report_column :primary_contact_name,  :sortable => false, :header => "headers.primary_contact_name"  do |r| r.street_address.name end
   report_column :primary_contact_phone, :sortable => false, :header => "headers.primary_contact_phone" do |r| r.street_address.phone end
-  report_column :district,      :sortable => false, :header => "headers.district" do |r| r.administrative_area.district.maybe.name end
+  report_column :district,      :sortable => false, :header => "headers.district" do |r| r.administrative_area && r.administrative_area.district.name end
   report_column :fridges,       :sortable => false, :header => "headers.fridges", :type => :links  do |hc| hc.stock_room.fridges.map { |f| [f.code, f] } end
   report_column :address,       :sortable => false, :header => "headers.address"                    do |hc| hc.street_address.to_s end  
 

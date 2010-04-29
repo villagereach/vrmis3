@@ -32,7 +32,7 @@
         <district name="<%= h(d.name) %>">
           <%- d.health_centers.sort.each do |hc| -%>
             <health_center population="<%= hc.catchment_population %>" code="<%= h hc.code %>" name="<%= h hc.name %>" dz="<%= h hc.delivery_zone.code %>">
-              <%- hc.fridges.sort.each do |fridge| -%>
+              <%- hc.stock_room.fridges.sort.each do |fridge| -%>
                 <fridge code="<%= h fridge.code %>" nr="" temp="" status="" notes="" />
               <%- end -%>
               <%- hc.ideal_stock_amounts.each do |isa| -%>

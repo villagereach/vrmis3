@@ -1,6 +1,6 @@
 <%- format ||= report_format_for_current_user_role
   	params.merge!(@params) if @params 
- 		fridges = param_scoped_fridges.recently_fixed(7).find(:all, :order => 'reported_at desc', :limit=>5)
+ 		fridges = param_scoped_fridges.recently_fixed(7).find(:all, :order => 'current_statuses_fridges.reported_at desc', :limit=>5)
 -%>
 
 <div class="fridge_list fixed" id="recently_fixed_fridges">

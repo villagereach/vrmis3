@@ -2,8 +2,8 @@
   <%= render :partial => 'errors', :locals => { :errors => @errors } %>
 
   <%- fields_for :fridge_status do |f| -%>
-    <%- @fridge_statuses.sort_by(&:fridge).each do |fridge_status| -%>
-      <%- index = fridge_status.fridge_code.to_s
+    <%- @fridge_statuses.sort.each_with_index do |fridge_status, idx| -%>
+      <%- index = idx.to_s
           values = { :past_problem => nil, :temperature => nil, :status_code => nil, :state => nil, :problem => [], :other_problem => nil }
           unless fridge_status.new_record?
             status_codes = fridge_status.status_code.split

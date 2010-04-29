@@ -71,7 +71,7 @@ class Olmis
           EquipmentType.find_or_initialize_by_code(e).update_attributes!( :active => true, :position => i )
         end
 
-        definition['cold_chain'].each_with_index do |f, i|
+        (definition['cold_chain'] + [{'code' => 'unknown', 'capacity' => 0.0}]).each_with_index do |f, i|
           FridgeModel.find_or_initialize_by_code(f['code']).update_attributes!( f.merge({:active => true, :position => i}) )
         end
   
@@ -91,7 +91,10 @@ class Olmis
   
         create_zones_and_warehouses(definition['warehouses'])
   
-        create_health_centers(definition['health_centers'], hierarchy, definition['fridge_code_pattern'])
+        create_health_centers(
+          definition['health_centers'], 
+          hierarchy, 
+          definition['fridge_code_pattern'])
   
         definition['descriptive_categories'].each do |cat, vals|
           dc = DescriptiveCategory.find_or_create_by_code(cat)
@@ -168,7 +171,7 @@ class Olmis
       end
     end
 
-    def create_health_centers(health_centers, hierarchy, fridge_code_pattern='HCR-%HCID-01')
+    def create_health_centers(health_centers, hierarchy, fridge_code_pattern)
       health_centers.each do |name, data|
         dz_code = name_to_code(data['DeliveryZone'], 'DeliveryZone')
         dz = DeliveryZone.find_or_initialize_by_code(dz_code)
@@ -195,14 +198,6 @@ class Olmis
 
         h.update_attributes!(:code => hc_code, :delivery_zone => dz, :administrative_area => a, :catchment_population => data['population'])
         
-        unless h.stock_room.fridges.present?
-          code = fridge_code_pattern.
-            gsub('%PC', area.province.code).
-            gsub('%HCID', "%03d" % h.id)
-          
-          Fridge.find_or_initialize_by_code(code).update_attributes!(:stock_room => h.stock_room, :fridge_model => FridgeModel.first)
-        end
-          
         unless h.street_address
           StreetAddress.create!(:addressed => h)
         end

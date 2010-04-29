@@ -93,7 +93,7 @@ class VisitsController < OlmisController
   end
   
   def health_center_cold_chain
-    @fridge_statuses = @visit.find_or_initialize_fridge_statuses
+    @fridge_statuses = @visit.find_or_initialize_fridge_statuses(:min_count => 2)
     handle_submit if request.post?
   end
 

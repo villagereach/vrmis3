@@ -80,7 +80,7 @@ class HealthCenterVisit < ActiveRecord::Base
   def availability_class(task)
     if new_record?
       "preavailable"
-    elsif !epi_data_ready && self.klass_by_screen[task] < ActsAsStatTally
+    elsif !epi_data_ready && self.class.klass_by_screen[task] < ActsAsStatTally
       "unavailable"
     elsif !visited && [:inventory, :delivery, :general, :cold_chain, :stock_cards].include?(task)
       "unavailable"
@@ -266,14 +266,24 @@ class HealthCenterVisit < ActiveRecord::Base
   end
   
   def find_or_initialize_fridge_statuses(options = {})
-    fridges = health_center ? health_center.stock_room.fridges : [nil]
-    if options[:min_count]
-      fridges.length.upto(options[:min_count] - 1) { |i| fridges << nil }
+    stock_room = health_center ? health_center.stock_room : nil 
+    reported_at = visited_at
+    
+    statuses = reported_at ? 
+      FridgeStatus.find_all_by_stock_room_id_and_reported_at(stock_room, visited_at.beginning_of_day..visited_at.end_of_day) :
+      []
+    status_fridges = statuses.map(&:fridge)
+    hc_fridges = health_center ? health_center.stock_room.fridges.all : []
+    
+    statuses += (hc_fridges - status_fridges).map do |fridge|
+      FridgeStatus.new(:reported_at => reported_at, :fridge => fridge, :stock_room => stock_room, :user_id => user_id)
     end
-    fridges.collect{|fridge| 
-        FridgeStatus.find_by_reported_at_and_fridge_id_and_user_id(visited_at && (visited_at.beginning_of_day..visited_at.end_of_day), fridge, user_id) ||
-          FridgeStatus.new(:reported_at => visited_at, :fridge => fridge, :user => field_coordinator)
-      }
+
+    while options[:min_count] && statuses.length < options[:min_count] 
+      statuses << FridgeStatus.new(:reported_at => reported_at, :stock_room => stock_room, :user_id => user_id)
+    end
+
+    statuses.sort
   end    
   
   def find_or_initialize_stock_card_statuses
