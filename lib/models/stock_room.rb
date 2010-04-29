@@ -15,7 +15,6 @@ class StockRoom < ActiveRecord::Base
 
   has_many :equipment_counts
   has_many :equipment_statuses
-  has_many :fridges
   has_many :fridge_statuses
   has_many :stock_card_statuses
   
@@ -23,13 +22,18 @@ class StockRoom < ActiveRecord::Base
   has_one :warehouse
 
   has_many :ideal_stock_amounts
+
+  def fridges
+    Fridge.stock_room(self)
+  end
   
   def self.find_by_health_center_code(name)
-    HealthCenter.find_by_code(name).maybe.stock_room
+    hc = HealthCenter.find_by_code(name)
+    hc && hc.stock_room
   end
 
   def health_center_code
-    health_center.code
+    health_center && health_center.code
   end
   
   def name

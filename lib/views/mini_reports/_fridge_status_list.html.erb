@@ -12,16 +12,17 @@
               else
                 params[:columns].map(&:to_sym)
               end
+
   fridge_statuses = params[:report_scope].blank? ? scope : scope.send(*params[:report_scope].split(','))
 -%> 
 <%= render :partial => '/mini_reports/table', 
-  :locals => { 
-    :data => fridge_statuses, 
-    :sql_options => { :include => [ :user, { :fridge => {:stock_room => { :health_center => :administrative_area } } } ] },
+  :locals => {
+    :data => fridge_statuses,
+    :sql_options => { :include => [ :user, :fridge, { :stock_room => { :health_center => :administrative_area } } ] },
     :sort_by => :date,
-    :columns => columns, 
-    :identifier => 'fridge_status_list', 
-    :model => FridgeStatus, 
+    :columns => columns,
+    :identifier => 'fridge_status_list',
+    :model => FridgeStatus,
     :limit => limit,
     :offset => offset } %>
 </div>

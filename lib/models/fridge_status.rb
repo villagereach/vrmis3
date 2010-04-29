@@ -20,8 +20,18 @@ class FridgeStatus < ActiveRecord::Base
   acts_as_visit_model
 
   belongs_to :fridge
+  belongs_to :stock_room
   belongs_to :user, :foreign_key => 'user_id', :class_name => 'User'
-                           
+
+  include Comparable
+  def <=>(other)
+    if new_record?
+      other.new_record? ? 0 : 1
+    else
+      other.new_record? ? -1 : (2 * (reported_at <=> other.reported_at) + (other.fridge_code <=> fridge_code)) <=> 0
+    end
+  end  
+  
   def nr
     !new_record? && temperature.nil?
   end
@@ -44,7 +54,7 @@ class FridgeStatus < ActiveRecord::Base
 
   named_scope :fridge, lambda{|f|
     {
-      :include => { :fridge => { :stock_room => :health_center } },
+      :include => :fridge,
       :conditions => { 'fridges.id' => f }
     }
   }
@@ -139,39 +149,37 @@ class FridgeStatus < ActiveRecord::Base
   def date=(d)
     self.reported_at = d.to_date + 12.hours
   end
+  
+  def self.web_to_params(params)
+    params['fridge_status'] && params['fridge_status'].map { |idx, data| 
+      data
+    }
+  end    
 
   def self.xforms_to_params(xml)
-    Hash[
-      *xml.xpath('/olmis/cold_chain/fridge').map do |fridge|
-        [
-          fridge['code'].to_s, 
-          {
-            "past_problem" => fridge['past_problem'].to_s,
-            "temperature" => fridge['temp'].to_s,
-            "state" => fridge['state'].to_s,
-            "problem" => fridge['problem'].to_s,
-            "other_problem" => fridge['other_problem'].to_s
-          }
-        ]
-      end.flatten_once
-    ]
+    xml.xpath('/olmis/cold_chain/fridge').map do |fridge|
+      {
+        "fridge_code"   => fridge['code'].to_s,
+        "past_problem" => fridge['past_problem'].to_s,
+        "temperature" => fridge['temp'].to_s,
+        "state" => fridge['state'].to_s,
+        "problem" => fridge['problem'].to_s,
+        "other_problem" => fridge['other_problem'].to_s
+      }
+    end
   end
 
   def self.odk_to_params(xml)
-    Hash[
-      *xml.xpath("/olmis/location/fridges/*/*").map do |fridge|
-        [
-          fridge['code'].to_s,
-          {
-            "past_problem"  =>  fridge.xpath('./past_problem').text,
-            "temperature"   =>          fridge.xpath('./temp').text,
-            "state"         =>         fridge.xpath('./state').text,
-            "problem"       =>       fridge.xpath('./problem').text,
-            "other_problem" => fridge.xpath('./other_problem').text
-          }
-        ]
-      end.flatten_once
-    ]
+    xml.xpath("/olmis/location/fridges/*/*").map do |fridge|
+      {
+        "fridge_code"   => fridge['code'].to_s,
+        "past_problem"  =>  fridge.xpath('./past_problem').text,
+        "temperature"   =>          fridge.xpath('./temp').text,
+        "state"         =>         fridge.xpath('./state').text,
+        "problem"       =>       fridge.xpath('./problem').text,
+        "other_problem" => fridge.xpath('./other_problem').text
+      }
+    end
   end
 
   def self.xforms_group_name
@@ -183,23 +191,30 @@ class FridgeStatus < ActiveRecord::Base
 
     fridge_statuses = visit.find_or_initialize_fridge_statuses
 
-    params['fridge_status'].each do |key, values|
+    params['fridge_status'].each do |values|
+      key = values.delete('fridge_code')
       # Skip if no data entered for this fridge
-      next if values.values.all?(&:blank?)
+      next if key.blank? || values.values.all?(&:blank?)
 
-      if record = fridge_statuses.detect{|fs| fs.fridge_code == key.to_s }
-        db_values = {
-          :past_problem  => values["past_problem"] == "true" || (values["past_problem"] == "false" ? false : nil),
-          :temperature   => values["temperature"].blank? ? nil : values["temperature"].to_i,
-          :status_code   => values["state"] == "OK" ? "OK" : values["state"] == "nr" ? nil : [values["problem"]].flatten.compact.join(' '),
-          :other_problem => values["state"] == "problem" && values["problem"].include?("OTHER") ? values["other_problem"] : nil
-        }
-        record.update_attributes(db_values)
-        unless record.errors.empty?
-          errors[key] = record.errors
+      if !(record = fridge_statuses.detect{|fs| fs.fridge_code == key.to_s })
+        if !(f = Fridge.find_by_code(key))
+          f = Fridge.create(:code => key, :fridge_model_code => 'unknown')
         end
-      else
-        # TODO: The fridge code changed; should this be possible in the online form?
+        record = FridgeStatus.new(:fridge => f, :stock_room => visit.health_center.stock_room)
+      end
+      
+      db_values = {
+        :reported_at   => visit.visited_at,
+        :user_id       => visit.user_id,
+        :past_problem  => values["past_problem"] == "true" || (values["past_problem"] == "false" ? false : nil),
+        :temperature   => values["temperature"].blank? ? nil : values["temperature"].to_i,
+        :status_code   => values["state"] == "OK" ? "OK" : values["state"] == "nr" ? nil : [values["problem"]].flatten.compact.join(' '),
+        :other_problem => values["state"] == "problem" && values["problem"].include?("OTHER") ? values["other_problem"] : nil
+      }
+
+      record.update_attributes(db_values)
+      unless record.errors.empty?
+        errors[key] = record.errors
       end
     end
     
@@ -215,24 +230,25 @@ class FridgeStatus < ActiveRecord::Base
       select health_center_visits.id as id, 
         'cold_chain' as screen,
         health_center_visits.visit_month as date_period,
-        count(distinct fridges.id) as expected_entries,
+        1 as expected_entries,
         count(distinct fridge_statuses.id) as entries
       from health_center_visits 
         left join health_centers on health_centers.id = health_center_id
         left join stock_rooms on stock_rooms.id = health_centers.stock_room_id
-        left join fridges on fridges.stock_room_id = stock_rooms.id
         left join fridge_statuses 
-          on fridge_statuses.fridge_id = fridges.id
+          on fridge_statuses.stock_room_id = stock_rooms.id
           and date(fridge_statuses.reported_at) = health_center_visits.visited_at
           and fridge_statuses.user_id = health_center_visits.user_id
+        left join fridges
+          on fridge_statuses.fridge_id = fridges.id
         where health_center_visits.visit_month in (#{date_periods})
       group by health_center_visits.id 
     CC
   end
   
   report_column :fridge_code,          :sql_sort => 'fridges.code', :header => "headers.fridge_code", :type => :link, :data_proc => lambda { |s| [s.fridge_code, s.fridge ] }
-  report_column :fridge_health_center, :sql_sort => 'administrative_areas.name', :header => "headers.health_center", :data_proc => lambda { |s| [s.fridge.stock_room.administrative_area.name] }
-  report_column :fridge_district,      :sortable => false, :header => "headers.district",      :data_proc => lambda { |s| [s.fridge.stock_room.administrative_area.district.name] }
+  report_column :fridge_health_center, :sql_sort => 'administrative_areas.name', :header => "headers.health_center", :data_proc => lambda { |s| [s.stock_room.administrative_area.name] }
+  report_column :fridge_district,      :sortable => false, :header => "headers.district",                            :data_proc => lambda { |s| [s.stock_room.administrative_area.district.name] }
   report_column :status_code,          :sql_sort => 'fridge_statuses.status_code', :header => "headers.status", :data_proc => :i18n_status_code
   report_column :temperature,          :sql_sort => 'fridge_statuses.temperature', :header => "headers.temperature", :type => :int
   report_column :date,                 :sql_sort => 'fridge_statuses.reported_at', :header => "headers.date", :type => :date, :data_proc => :reported_at

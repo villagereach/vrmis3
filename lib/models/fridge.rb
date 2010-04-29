@@ -7,7 +7,6 @@
 #  code            :string(255)
 #  description     :text
 #  fridge_model_id :integer(4)      not null
-#  stock_room_id   :integer(4)      not null
 #  created_at      :datetime
 #  updated_at      :datetime
 #
@@ -19,49 +18,55 @@ class Fridge < ActiveRecord::Base
   referenced_by :code
 
   belongs_to :fridge_model
-  belongs_to :stock_room
-  has_many :fridge_statuses, :order => 'reported_at desc, created_at desc'
+  has_many :fridge_statuses, :order => 'fridge_statuses.reported_at desc, fridge_statuses.created_at desc'
     
   validates_presence_of :code
   validates_uniqueness_of :code
 
   include Comparable
   def <=>(other)
-    code <=> other.code
+    self.code <=> other.code
   end  
   
   has_one(:current_status,
           :class_name => 'FridgeStatus',
-          :conditions => 'fridge_statuses.id = (SELECT fs2.id FROM fridge_statuses fs2 WHERE fs2.fridge_id = fridge_statuses.fridge_id ORDER BY reported_at DESC, created_at DESC LIMIT 1)'
+          :conditions => 'fridge_statuses.id = (SELECT fs2.id FROM fridge_statuses fs2 WHERE fs2.fridge_id = fridge_statuses.fridge_id ORDER BY fs2.reported_at DESC, fs2.created_at DESC LIMIT 1)'
           )
 
-  named_scope :health_center, lambda { |hc| 
+  def self.health_center(hc) 
+    stock_room(hc.stock_room)
+  end
+
+  named_scope :stock_room, lambda { |sc| 
     { 
-      :include => { :stock_room => :health_center },
-      :conditions => { 'health_centers.id' => hc }
+      :include => :current_status,
+      :conditions => { 'fridge_statuses.stock_room_id' => sc }
     }
   }
-          
+
   # Return fridges in the given delivery zone
   named_scope :in_delivery_zone, lambda{|dz|
     delivery_zone_id = dz.is_a?(DeliveryZone) ? dz.id : dz.to_i
     {
-      :include => { :stock_room => :health_center },
+      :include => { :current_status => { :stock_room => :health_center } },
       :conditions => [ 'health_centers.delivery_zone_id = ?', delivery_zone_id ]
     }
   }
 
   # Return fridges in the given province
-  named_scope :in_area_health_centers, lambda{|p|
-    {
-      :include => { :stock_room => :health_center },
-      :joins => [ AdministrativeArea.sql_area_join ],
-      :conditions => [ (<<-SQL).squish, province_id ]
-        health_centers.administrative_area_id IN (#{AdministrativeArea.sql_area_ids})
+  def self.in_area_health_centers(locality_key, local_id)
+    {      
+      :include => { :current_status => { :stock_room => :health_center } },
+      :conditions => [ (<<-SQL).squish, local_id ]
+        exists (select 1 from #{AdministrativeArea.sql_area_join(false)} where #{locality_key}=? and health_centers.administrative_area_id in (#{AdministrativeArea.sql_area_ids}))
       SQL
     }
-  }
+  end
 
+  Olmis.area_hierarchy.each do |area|
+    named_scope 'in_' + area.tableize.singularize, lambda { |p| Fridge.in_area_health_centers('`' + area.tableize + '`.`id`', p) }
+  end
+  
   # Return fridges with a current status that is not OK.
   named_scope :not_ok,
   {
@@ -92,8 +97,8 @@ class Fridge < ActiveRecord::Base
              AND fs.id = (SELECT id
                             FROM fridge_statuses
                            WHERE fridge_id = fs.fridge_id
-                             AND status_code <> ?
-                             AND reported_at >= ?
+                             AND fridge_statuses.status_code <> ?
+                             AND fridge_statuses.reported_at >= ?
                         GROUP BY id
                           HAVING COUNT(1) >= ?
                            LIMIT 1)
@@ -130,7 +135,7 @@ class Fridge < ActiveRecord::Base
       :include => :current_status,
       :conditions => [ (<<-SQL).squish, { :ok => 'OK', :recent => Date.today - days.to_i.days } ]
         fridge_statuses.status_code = :ok
-        AND EXISTS (SELECT 1 FROM (select fridge_id, max(reported_at) as reported_at
+        AND EXISTS (SELECT 1 FROM (select fridge_id, max(fs.reported_at) as reported_at
                                       FROM fridge_statuses fs
                                       WHERE fs.status_code <> 'OK'
                                       GROUP BY fridge_id) prob
@@ -138,7 +143,7 @@ class Fridge < ActiveRecord::Base
                     AND NOT EXISTS (select 1 from fridge_statuses fixed 
                                               WHERE fixed.fridge_id = fridges.id 
                                               AND fixed.status_code = :ok
-                                                    AND reported_at BETWEEN prob.reported_at AND :recent))
+                                                AND fixed.reported_at BETWEEN prob.reported_at AND :recent))
       SQL
     }
   }
@@ -166,20 +171,24 @@ class Fridge < ActiveRecord::Base
     fridge_statuses.all(:limit => n, :offset => o)
   end
   
+  def stock_room
+    current_status ? current_status.stock_room : nil
+  end
+  
   def health_center
-    stock_room.health_center
+    stock_room ? stock_room.health_center : nil
   end
 
   def field_coordinator
-    stock_room.health_center.delivery_zone.field_coordinator
+    stock_room ? stock_room.health_center.delivery_zone.field_coordinator : nil
   end
 
   def ok?
-    current_status.maybe.status_code == 'OK'
+    current_status ? current_status.status_code == 'OK' : nil
   end
   
   def location
-    stock_room.place
+    stock_room ? stock_room.place : nil
   end
   
   def latest_status
@@ -189,11 +198,11 @@ class Fridge < ActiveRecord::Base
   alias_method :last_operating_status, :latest_status
   
   def urgent?
-    fridge_statuses.first.maybe.urgent?
+    current_status ? current_status.urgent? : nil
   end
 
   def status_category
-    current_status.maybe.status_category || 'yellow'
+    current_status ? current_status.status_category : 'yellow'
   end
   
   def age_category
@@ -214,10 +223,9 @@ class Fridge < ActiveRecord::Base
   report_column :code,                  :sql_sort => 'fridges.code', :header => "headers.fridge_code", :type => :link, :data_proc => lambda { |f| [f.code, f ] }
   report_column :health_center,         :sql_sort => 'administrative_areas.code', :header => "headers.health_center", :data_proc => lambda { |r| r.location.label }
   report_column :district,              :sortable => false, :header => "headers.district",      :data_proc => lambda { |r| r.location.administrative_area.parent.label if r.location && r.location.administrative_area.parent }
-  report_column :latest_status,         :sql_sort => 'fridge_statuses.status_code', :header => "headers.status",        :data_proc => lambda { |r| r.current_status.maybe.i18n_status_code }
-  report_column :latest_temp,           :sql_sort => 'fridge_statuses.temperature', :header => "headers.temperature",   :type => :int, :data_proc => lambda { |r| r.current_status.maybe.temperature }
-  report_column :date_of_latest_status, :sql_sort => 'fridge_statuses.reported_at', :header => "headers.status_date",   :type => :date,    :data_proc => lambda { |r| r.current_status.maybe.reported_at }
-  report_column :notes,                 :sql_sort => 'fridge_statuses.notes', :header => "headers.notes",         :data_proc => lambda { |r| r.current_status.maybe.notes }
+  report_column :latest_status,         :sql_sort => 'fridge_statuses.status_code', :header => "headers.status",        :data_proc => lambda { |r| r.current_status && r.current_status.i18n_status_code }
+  report_column :latest_temp,           :sql_sort => 'fridge_statuses.temperature', :header => "headers.temperature",   :type => :int, :data_proc => lambda { |r| r.current_status && r.current_status.temperature }
+  report_column :date_of_latest_status, :sql_sort => 'fridge_statuses.reported_at', :header => "headers.status_date",   :type => :date,    :data_proc => lambda { |r| r.current_status && r.current_status.reported_at }
   report_column :reported_by,           :sql_sort => 'users.name', :header => "headers.reported_by",   :data_proc => lambda { |r| r.current_status && r.current_status.user_name }
   report_column :history_popup,         :header => "headers.history_popup", :data_proc => lambda { |r| "" }, :sortable => false
   report_column :more_info_popup,       :header => "headers.more_info_popup", :data_proc => lambda { |r| "" }, :sortable => false

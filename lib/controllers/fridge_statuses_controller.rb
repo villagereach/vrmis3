@@ -9,7 +9,7 @@ class FridgeStatusesController < OlmisController
         fs = FridgeStatus.new(params[:fridge_status].values.first.merge(:fridge_id => params[:fridge_status].keys.first))
         flash[:new_fridge_status] = fs
         fs.save!
-        flash[:notice] = I18n.t("fridge_statuses.create.ok", :status => fs.i18n_status_code, :fridge => fs.fridge.code, :hc => fs.fridge.health_center.name)
+        flash[:notice] = I18n.t("fridge_statuses.create.ok", :status => fs.i18n_status_code, :fridge => fs.fridge.code, :hc => fs.stock_room.name)
       rescue ActiveRecord::ActiveRecordError
         #handle bad temp for now;  client-side js will solve this
         fs.temperature = nil

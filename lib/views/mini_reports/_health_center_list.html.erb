@@ -9,7 +9,7 @@
 <%= render :partial => '/mini_reports/table', 
   :locals => { 
     :data => scope,
-    :sql_options => { :include => [:delivery_zone, :administrative_area, :street_address, { :stock_room => :fridges }] }, 
+    :sql_options => { :include => [:delivery_zone, :administrative_area, :street_address, :stock_room ] }, 
     :columns => columns, 
     :identifier => 'health_center_list',        
     :model => HealthCenter, 

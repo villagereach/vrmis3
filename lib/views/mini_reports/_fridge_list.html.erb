@@ -7,7 +7,7 @@
 <%= render :partial => '/mini_reports/table', 
   :locals => { 
     :data => data,
-    :sql_options => { :include => [{:stock_room => { :health_center => :administrative_area }}, {:fridge_statuses => :user}] }, 
+    :sql_options => { :include => [{:current_status => { :stock_room => { :health_center => :administrative_area }}, {:fridge_statuses => :user}}] }, 
     :columns => columns, 
     :identifier => identifier, 
     :model => Fridge, 

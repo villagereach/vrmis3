@@ -20,6 +20,10 @@ module ActsAsVisitModel
       nil
     end
 
+    def web_to_params(params)
+      params[table_name.singularize]
+    end
+    
     def xforms_group_name
       table_name.singularize
     end

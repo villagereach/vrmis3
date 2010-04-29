@@ -71,7 +71,7 @@ class Olmis
           EquipmentType.find_or_initialize_by_code(e).update_attributes!( :active => true, :position => i )
         end
 
-        definition['cold_chain'].each_with_index do |f, i|
+        (definition['cold_chain'] + [{'code' => 'unknown', 'capacity' => 0.0}]).each_with_index do |f, i|
           FridgeModel.find_or_initialize_by_code(f['code']).update_attributes!( f.merge({:active => true, :position => i}) )
         end
   
@@ -91,7 +91,10 @@ class Olmis
   
         create_zones_and_warehouses(definition['warehouses'])
   
-        create_health_centers(definition['health_centers'], hierarchy)
+        create_health_centers(
+          definition['health_centers'], 
+          hierarchy, 
+          definition['fridge_code_pattern'])
   
         definition['descriptive_categories'].each do |cat, vals|
           dc = DescriptiveCategory.find_or_create_by_code(cat)
@@ -124,12 +127,14 @@ class Olmis
       end
     end
 
-    def name_to_code(name, klass=nil)
-      code = name.to_url
+    def name_to_code(name, klass=nil, code=nil)
+      code ||= name.to_url
 
       if klass
+        @codes_by_key ||= {}
+        return @codes_by_key["#{klass}.#{name}"] if @codes_by_key.has_key?("#{klass}.#{name}")
+        @codes_by_key["#{klass}.#{name}"] = code
         @translations.each do |lc, hash|
-          key = "#{klass}.#{code}"
           hash[lc] ||= {}
           hash[lc][klass] ||= {}
           hash[lc][klass][code] ||= name
@@ -151,7 +156,8 @@ class Olmis
         
         k = hash.keys.first
         aa = k.constantize
-        wh.administrative_area = aa.find_by_code(name_to_code(hash[k]))
+        wh.administrative_area = aa.find_by_code(name_to_code(hash[k], k))
+
         wh.code = wh_code
 
         wh.save!
@@ -165,7 +171,7 @@ class Olmis
       end
     end
 
-    def create_health_centers(health_centers, hierarchy)
+    def create_health_centers(health_centers, hierarchy, fridge_code_pattern)
       health_centers.each do |name, data|
         dz_code = name_to_code(data['DeliveryZone'], 'DeliveryZone')
         dz = DeliveryZone.find_or_initialize_by_code(dz_code)
@@ -191,8 +197,7 @@ class Olmis
         end
 
         h.update_attributes!(:code => hc_code, :delivery_zone => dz, :administrative_area => a, :catchment_population => data['population'])
-        Fridge.find_or_initialize_by_code("HCR-%03d01" % h.id).update_attributes!(:stock_room => h.stock_room, :fridge_model => FridgeModel.first)
-
+        
         unless h.street_address
           StreetAddress.create!(:addressed => h)
         end
@@ -216,7 +221,7 @@ class Olmis
 
       if areas
         areas.each do |name, subhierarchy|
-          code = name_to_code(name, class_name)
+          code = name_to_code(name, class_name, subhierarchy['code'])
           area = klass.find_or_initialize_by_code(code)
           area.update_attributes!(:parent => parent, :code => code, :population => subhierarchy['population'])
 

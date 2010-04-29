@@ -41,10 +41,7 @@ class DeliveryZone < ActiveRecord::Base
   end
   
   def refrigerators
-    Fridge.find(:all, 
-      :conditions => { :stock_room_id => health_centers.map(&:stock_room_id) },
-      :include => :fridge_statuses)
-    #stock_rooms.map(&:equipment).flatten.select(&:refrigerator?)
+    Fridge.stock_room(health_centers.map(&:stock_room))
   end
 
   def regions

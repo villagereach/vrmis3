@@ -83,10 +83,17 @@ class AdministrativeArea < ActiveRecord::Base
       sanitize_sql_for_conditions(["? in (#{sql_area_ids})", id])
     end
   
-    def sql_area_join
+    def sql_area_join(include_aa=true)
       hierarchy = Olmis.area_hierarchy
-      pairs = (hierarchy.reverse + [nil]).zip([['HealthCenter', 'administrative_area_id']] + hierarchy.reverse.map { |h| [h, 'parent_id'] })[0..-2]
-      pairs.map { |p, cp| c, cid = *cp; "administrative_areas #{p.tableize} on #{p.tableize}.id = #{c.tableize}.#{cid}" }.join("\n    inner join ")
+      pairs = (hierarchy.reverse + [nil]).zip((include_aa ? [['HealthCenter', 'administrative_area_id']] : [nil]) + hierarchy.reverse.map { |h| [h, 'parent_id'] })[0..-2]
+      pairs.map { |p, cp|
+        if cp
+          c, cid = *cp; 
+          "administrative_areas #{p.tableize} on #{p.tableize}.id = #{c.tableize}.#{cid}"
+        else
+          "administrative_areas #{p.tableize}"
+        end
+      }.join("\n    inner join ")
     end
 
     if Olmis.configured?

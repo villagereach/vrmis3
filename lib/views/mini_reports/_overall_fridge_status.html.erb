@@ -1,6 +1,6 @@
 <%-
- fridge_scope = param_scoped_fridges 
- all_fridges = fridge_scope.all(:include => 'current_status') 
+ fridge_scope = param_scoped_fridges
+ all_fridges = fridge_scope.all 
  count = all_fridges.count 
  fridges_by_category = all_fridges.group_by(&:status_category) 
  fridges_by_age = all_fridges.group_by(&:age_category) 

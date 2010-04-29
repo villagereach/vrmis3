@@ -16,15 +16,22 @@ class WebVisitDataSource < DataSource
   
   def data_to_params(submission)
     if submission.content_type == 'application/x-www-form-urlencoded' 
-      normalize_parameters(Rack::Utils::parse_nested_query(submission.data))
+      params = Rack::Utils::parse_nested_query(submission.data)
     else
       env = { 
         'CONTENT_TYPE' => submission.content_type, 
         'CONTENT_LENGTH' => submission.data.length, 
         'rack.input' => StringIO.new(submission.data) 
       }
-      normalize_parameters(Rack::Utils::Multipart::parse_multipart(env))
+
+      params = Rack::Utils::Multipart::parse_multipart(env)
     end
+
+    HealthCenterVisit.tables.each do |t|
+      params[t.table_name.singularize] = t.web_to_params(params)
+    end
+    
+    normalize_parameters(params)
   end
 end
 
