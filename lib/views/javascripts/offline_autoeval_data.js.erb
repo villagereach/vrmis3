@@ -1,5 +1,23 @@
 <% latest_visit = HealthCenterVisit.first(:order => 'updated_at desc', :limit => 1) %>
-<% cache('autoeval_data:' + (latest_visit ? latest_visit.updated_at.to_s : 'never')) do %>
+<%# cache('autoeval_data:' + (latest_visit ? latest_visit.updated_at.to_s : 'never')) do %>
+var data_instance = <%=
+{
+  :selected_values => { 
+    :access_code        => '',
+    :delivery_zone      => '',
+    :field_coordinator  => '',
+    :visit_month        => '',
+    :logged_in          => false,
+  },
+  :delivery_zones     => DeliveryZone.all.sort.map { |dz| { :code => dz.code, :name => dz.name } },
+  :administrative_areas => AdministrativeArea.all.sort.map { |aa| { :code => aa.code, :name => aa.name } },
+  :health_centers     => HealthCenter.all.map { |hc| { :code => hc.code, :name => hc.name, :area_code => hc.administrative_area_code, :delivery_zone => hc.delivery_zone.code } },
+  :field_coordinators => DeliveryZone.all.map(&:field_coordinator).compact.uniq.map { |fc| { :code => fc.username, :name => fc.name } },
+}.to_json %>;
+
+data_instance.aas_by_code = {};
+$(data_instance.administrative_areas).each(function(i,e) { data_instance.aas_by_code[e.code] = e.name; });
+
 var AutoevalData = {};
 jQuery(document).ready(function() {
 AutoevalData = {
@@ -19,7 +37,7 @@ AutoevalData = {
 
   province_names:       <%= Province.all.sort.map(&:label).to_json %>,
   provinces:            <%= Hash[*District.all.group_by(&:province).map { |p, ds| [p.name, ds.sort.map(&:label)] }.flatten_once].to_json %>,
-  districts:            <%= Hash[*HealthCenter.all.group_by(&:district).map { |d, hcs| [d.label, hcs.sort.map(&:code)] }.flatten_once].to_json %>,
+  districts:            <%= Hash[*HealthCenter.all.group_by(&:district).map { |d, hcs| [d.name, hcs.sort.map(&:code)] }.flatten_once].to_json %>,
   hc_names:             <%= Hash[*HealthCenter.all.map { |hc| [hc.code, hc.label] }.flatten].to_json %>,
 
   visits:               <%= Hash[*HealthCenter.recent_visits(6).map { |h|
@@ -31,4 +49,4 @@ AutoevalData = {
   excusable_non_visit_reasons: <%= HealthCenterVisit::ExcusableNonVisitReasons.to_json %>
 };
 });
-<% end %>
+<%# end %>

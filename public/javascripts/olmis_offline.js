@@ -230,39 +230,11 @@ function setup_visit_months() {
 }
 
 function set_selected_value(name, value) {
-  var ctx = $('data');
-  if (!ctx) {
-    DebugConsole.write('No data instance found');
-    return;
-  }
-
-  var literal_value = !value.match(/\([^)]*\)/);  // Does value look like a function call?
-  var xf_setvalue = new XFSetvalue(new Binding(false, "instance('data')/selected-values/"+name),
-                                   literal_value ? null : value,
-                                   literal_value ? value : null,
-                                   null, null);
-  var xf_action = new XFAction(null, null).add(xf_setvalue);
-
-  run(xf_action, "statusPanel", "DOMActivate", false, true);
+  $(data_instance.selected_values).attr(name, value);
 }
 
 function get_selected_value(name) {
-  var ctx = $('data');
-  if (!ctx) {
-    DebugConsole.write('No data instance found');
-    return null;
-  }
-  
-  var xp = new XPath("instance('data')/selected-values/"+name,
-             new PathExpr(
-               new FunctionCallExpr('http://www.w3.org/2002/xforms instance', new CteExpr('data')),
-               new LocationExpr(false,
-                 new StepExpr('child', new NodeTestName('', 'selected-values')),
-                 new StepExpr('child', new NodeTestName('', name)))), []);
-
-  var nodeset = xp.evaluate(ctx);
-
-  return nodeset.length > 0 ? nodeset[0].getTextContent() : null;
+  return data_instance.selected_values[name]
 }
 
 function find_province_district_health_center(hc) {
@@ -293,7 +265,7 @@ function find_province_district_health_center(hc) {
 }
 
 function find_health_centers_in_delivery_zone(dz) {
-  return find_health_centers_by_attr('dz', dz);
+  return find_health_centers_by_attr('delivery_zone', dz);
 }
 
 function find_health_center_by_code(dz) {
@@ -301,22 +273,7 @@ function find_health_center_by_code(dz) {
 }
 
 function find_health_centers_by_attr(attr, value) {
-  if (!value || !attr) return null;
-
-  var xp = new XPath("instance('data')/province/district/health_center[@"+attr+"='"+value+"']",
-             new PathExpr(
-               new FunctionCallExpr('http://www.w3.org/2002/xforms instance', new CteExpr('data')),
-               new LocationExpr(false,
-                 new StepExpr('child', new NodeTestName('', 'province')),
-                 new StepExpr('child', new NodeTestName('', 'district')),
-                 new StepExpr('child',
-                   new NodeTestName('', 'health_center'),
-                   new PredicateExpr(
-                     new BinaryExpr(
-                       new LocationExpr(false, new StepExpr('attribute', new NodeTestName(null, attr))),
-                       '=',
-                       new CteExpr(value)))))), []);
-  return xp.evaluate($('data'));
+  return $(data_instance.health_centers).filter(function(i) { return this[attr] == value })
 }
 
 function populate_warehouse_pickups() {
@@ -350,7 +307,7 @@ function populate_warehouse_pickups() {
 
 function get_warehouse_stock_amounts_for_delivery_zone() {
   var path = "instance('data')/province/delivery_zone[@code=instance('data')/selected-values/delivery_zone]/ideal_stock";
-  var xp = XPath.get(path) || new XPath(path,  
+  var xp = XPath.get(path) || new XPath(path,
                                 new PathExpr(
                                   new FunctionCallExpr('http://www.w3.org/2002/xforms instance', new CteExpr('data')),
                                     new LocationExpr(false,
@@ -433,6 +390,7 @@ function get_fridge_codes_for_health_center() {
   return fridge_codes;
 }
 
+/*
 XFSelect.prototype.selectValue = function(value) {
   var selectElement = this.element.getElementsByTagName('select')[0];
   for (var x = 0, l = selectElement.options.length; x < l; x++) {
@@ -445,7 +403,7 @@ XFSelect.prototype.selectValue = function(value) {
     }
   }
 }
-
+*/
 function select_visit() {
   var savedVisits = $('saved-forms-control');
   if (savedVisits.selectedIndex == -1) {
@@ -480,6 +438,10 @@ function select_visit() {
   xforms.closeAction();
 }
 
+function show_warehouse(type) {
+  show_container(containers['wh_'+type]);
+}
+
 function show_container( container ) {
   jQuery('.container').hide();
   jQuery('body #'+container).show();
@@ -488,16 +450,15 @@ function show_container( container ) {
 function login() {
   // FIXME: Implement something more than a trivial check
   if (get_selected_value('access_code').length > 0) {
-    set_selected_value('logged_in', 'true()');
+    set_selected_value('logged_in', true)
     show_main_page();
   }
 }
 
 function logout() {
   set_selected_value('access_code', '');
-  set_selected_value('logged_in', 'false()');
+  set_selected_value('logged_in',   false);
   show_container(containers['login']);
-  jQuery('#login-form input').each(function() { jQuery(this).val(''); }).slice(0,1).focus();
 }
 
 function select_location() {
@@ -505,21 +466,19 @@ function select_location() {
 
   var today = Date.today();
   var date = Date.from_date_period(get_selected_value('visit_date_period'));
-  var dp = jQuery('#case-visit div.datepicker input[type="text"]');
-  dp.datepicker('option', 'minDate', date.beginning_of_month());
-  dp.datepicker('option', 'maxDate', new Date(Math.min(date.end_of_month(), today)));
+
+  //var dp = jQuery('#case-visit div.datepicker input[type="text"]');
+  //dp.datepicker('option', 'minDate', date.beginning_of_month());
+  //dp.datepicker('option', 'maxDate', new Date(Math.min(date.end_of_month(), today)));
+
   if (options['autoset_default_visit_date']) {
     var default_visit_date = date.getMonth() == today.getMonth() ? today : date.beginning_of_month();
     set_selected_value('default_visit_date', default_visit_date.format('%Y-%m-%d'));
   }
 
   set_selected_value('visit_period_selected', 'true()');
-  populate_warehouse_pickups();
+  //populate_warehouse_pickups();
   show_visits();
-}
-
-function show_warehouse(type) {
-  show_container(containers['wh_'+type]);
 }
 
 function show_visits() {
@@ -533,7 +492,7 @@ function show_visits() {
 
 function show_main_page() {
   set_selected_value('health_center', '');
-  set_selected_value('visit_period_selected', 'false()');
+  set_selected_value('visit_period_selected',false);
   show_or_hide_upload_link();
   show_container(containers['main']);
 }
@@ -630,8 +589,6 @@ function set_hc_form_status(key, status) {
 }
 
 function setup_form_options(local_forms, only_set_monthly_status) {
-  xforms.openAction();
-
   var savedVisits = jQuery('#saved-forms-control');
   if (!only_set_monthly_status) savedVisits.empty();
     
@@ -650,7 +607,7 @@ function setup_form_options(local_forms, only_set_monthly_status) {
     var optgroup;
     if (!only_set_monthly_status) {
       optgroup = jQuery(document.createElement('optgroup'));
-      optgroup.attr('label', district);
+      optgroup.attr('label', data_instance.aas_by_code[district]);
     }
 
     var keys = local_forms[district].sort();
@@ -674,23 +631,6 @@ function setup_form_options(local_forms, only_set_monthly_status) {
     }
     savedVisits.append(optgroup);
   }
-
-  //if (month && statuses.length > 0) {
-  //  var selected_month = jQuery('#month_'+month).removeClass();
-  //  var overall_status = uniq(statuses);
-  //  if (overall_status.length == 1) {
-  //    var status = overall_status[0];
-  //    selected_month.addClass(status);
-  //    if (status === 'accept') {
-  //      selected_month.find('span').removeClass('selected').addClass('disabled');
-  //    }
-  //  } else {
-  //    // Multiple statuses were found so overall status is incomplete
-  //    selected_month.addClass('incomplete');
-  //  }
-  //}
-
-  xforms.closeAction();
 }
 
 function uniq(arr) {
@@ -705,32 +645,30 @@ function uniq(arr) {
 }
 
 function setup_visits() {
-  xforms.openAction();
-
   var hcs = find_health_centers_in_delivery_zone(get_selected_value('delivery_zone'));
   var months = get_available_visit_months();
   var month_period = get_selected_value('visit_date_period');
 
   localStorage['valid forms'] = JSON.stringify(valid_forms); 
 
+  
   for (var i = 0, l = months.length; i < l; i++) {
     var month = months[i][0];
-    var local_forms = [];
-    for (var idx in hcs) {
-      var name = hcs[idx].getAttributeNS(null, 'name');
-      var code = hcs[idx].getAttributeNS(null, 'code');
-      var district = hcs[idx].parentNode.getAttributeNS(null, 'name');
-      var key = [month, code, name]
-      if (!local_forms[district]) {
-        local_forms[district] = [];
-      }
-      local_forms[district].push(key);
+    var local_forms = {};
+    for (var idx=0; idx < hcs.length; idx++) {
+      var name = hcs[idx].name;
+      var code = hcs[idx].code;
+      
+      var key = [month, code, name];
+      
+      if (local_forms[hcs[idx].area_code] === undefined)
+        local_forms[hcs[idx].area_code] = []
+      
+      local_forms[hcs[idx].area_code].push(key);
     }
 
     setup_form_options(local_forms, month_period != month);
   }
-
-  xforms.closeAction();
 }
 
 function reset_saved_forms_search() {
@@ -784,6 +722,7 @@ function possiblyEvaluatableValue(val, def) {
   return def;
 }
 
+/*
 XFSubmission.prototype.submitWithoutLocalStore = XFSubmission.prototype.submit
 XFSubmission.prototype.submit = function() {
   this.validate = (typeof this.validate == 'boolean') ? this.validate : !(this.validate == 'false');
@@ -949,6 +888,7 @@ XPathCoreFunctions['http://openlmis.org/xpath-functions sort'] =  new XPathFunct
                 return (s1 == s2 ? 0 : (s1 > s2 ? 1 : -1));
             });
     });
+*/
 
 function setup_saved_visits() {
   var local_forms = [];
@@ -1069,13 +1009,12 @@ function finish_upload() {
   jQuery('#upload-uploaded ul').empty();
 }
 
-var mouse_click;
-
 jQuery(document).ready(function() {
-  mouse_click = document.createEvent("MouseEvents");
-  mouse_click.initMouseEvent("click", true, true, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
-
-  $('saved-forms-control').addEventListener('change', select_visit, true);
+  show_container(containers['login']);
+  $('saved-forms-control').change(select_visit);
+  setup_visits();
+  setup_visit_search();
+  /*
   window.setInterval(check_update_status, 3 * 1000);
   
   var statuses = ['cached', 'checking', 'downloading', 'error', 'noupdate', 'obsolete', 'progress', 'updateready'];
@@ -1093,13 +1032,10 @@ jQuery(document).ready(function() {
     valid_forms = {};
   }
 
-  setup_visits();
-  setup_visit_search();
   fixup_menu_tabs();
 
   go_offline();
 
-  show_container(containers['login']);
   jQuery('#other-actions a[href="#login"]').fancybox( 
     { 'hideOnContentClick': false,
       'autoScale': false,
@@ -1111,7 +1047,7 @@ jQuery(document).ready(function() {
       'autoDimension': true,
       'onComplete': setup_saved_visits,
       'onClosed': finish_upload });
-  jQuery('.pickups table.inventory tr:even').addClass('even')
+  */
 });
 
 function add_screen_sequence_tags() {
@@ -1124,7 +1060,8 @@ function add_screen_sequence_tags() {
 
 function xf_user_init() {
   // Run actions that must be performed *after* XSLTForms init() runs
-  fixup_nr_checkboxes();  
+/*
+fixup_nr_checkboxes();  
   add_screen_sequence_tags();
   jQuery('div.datepicker').each(function(i, e) {
       var alt = jQuery('.alt_date', jQuery(e.parentNode))[0]
@@ -1142,5 +1079,6 @@ function xf_user_init() {
         }
       );
   });
+  */
 }
 
