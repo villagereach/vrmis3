@@ -12,7 +12,7 @@ var data_instance = <%=
   :delivery_zones     => DeliveryZone.all.sort.map { |dz| { :code => dz.code, :name => dz.name } },
   :administrative_areas => AdministrativeArea.all.sort.map { |aa| { :code => aa.code, :name => aa.name, :parent_code => aa.parent_code } },
   :health_centers     => HealthCenter.all.map { |hc| { :code => hc.code, :name => hc.name, :area_code => hc.administrative_area_code, :delivery_zone => hc.delivery_zone.code } },
-  :field_coordinators => DeliveryZone.all.map(&:field_coordinator).compact.uniq.map { |fc| { :code => fc.username, :name => fc.name } },
+  :field_coordinators => DeliveryZone.all.map(&:field_coordinator).compact.sort.uniq.map { |fc| { :code => fc.username, :name => fc.name } },
 }.to_json %>;
 
 data_instance.areas_by_area_code = {};
