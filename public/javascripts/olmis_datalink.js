@@ -50,5 +50,7 @@ $(document).ready(function() {
   
   months = get_available_visit_months().map(function(e) { return { name: e[1], code: e[0] }; });
   $("#vdp_selector", this).html($.tmpl($("#selector_tmpl").html(), {data: months}));
+
+  autofocus();
 });
 
