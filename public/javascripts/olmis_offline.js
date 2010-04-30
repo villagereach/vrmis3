@@ -484,6 +484,7 @@ function select_visit() {
 function show_container( container ) {
   jQuery('.container').hide();
   jQuery('body #'+container).show();
+  set_selected_value('active_form', container);
 }
 
 function login() {
@@ -1128,7 +1129,8 @@ function xf_user_init() {
   fixup_nr_checkboxes();  
   add_screen_sequence_tags();
   jQuery('div.datepicker').each(function(i, e) {
-      var alt = jQuery('.alt_date', jQuery(e.parentNode))[0]
+      var alt = jQuery('.alt_date', jQuery(e.parentNode))[0];
+      var instance = e.getAttribute('instance') || 'olmis';
       var altid;
       if (alt)
         altid = alt.getAttribute('id')
@@ -1136,7 +1138,7 @@ function xf_user_init() {
       setup_datepicker(jQuery('input[type="text"]', jQuery(e))[0],
         { 
           onClose: function(dateText, inst) {
-            XMLEvents.dispatch($('olmis'), "xforms-value-changed");
+            XMLEvents.dispatch($(instance), "xforms-value-changed");
           },
           altField: '#' + altid + ' input',
           altFormat: jQuery.datepicker.ISO_8601

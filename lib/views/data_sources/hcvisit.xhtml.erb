@@ -36,6 +36,7 @@
     <xf:model id="default-model">
       <xf:instance id="olmis" src="/xforms/olmis.xml" />
       <xf:instance id="data"  src="/xforms/data.xml"  />
+      <xf:instance id="pickups" src="/xforms/pickups.xml" />
 
       <% begin %>
         <%= render :partial => '/data_sources/xforms/model.xforms.erb' %>
@@ -104,9 +105,11 @@
         includenamespaceprefixes="">
         <xf:resource value="instance('data')/selected-values/selector" />
         <xf:action ev:event="xforms-submit-done">
+          <!-- TODO: Verify that the following 3 fields do not need to be set here
           <xf:setvalue bind="health_center"     value="instance('data')/selected-values/health_center"/>
           <xf:setvalue bind="field_coordinator" value="instance('data')/selected-values/field_coordinator"/>
           <xf:setvalue bind="visit_month"       value="instance('data')/selected-values/visit_date_period"/>
+          -->
           <xf:setvalue ref="/olmis/health_center_visit/last_edited"   value="jr:today()"/>
 
           <!-- Set the localized visit date from the stored, ISO-formatted, date -->
@@ -153,24 +156,6 @@
         <xf:resource value="instance('data')/selected-values/selector" />
       </xf:submission>
 
-      <xf:submission id="accept"
-        replace="instance"
-        instance="olmis"
-        ref="/olmis"
-        method="put"
-        includenamespaceprefixes="">
-        <xf:resource value="instance('data')/selected-values/selector" />
-      </xf:submission>
-
-      <xf:submission id="reject"
-        replace="instance"
-        instance="olmis"
-        ref="/olmis"
-        method="put"
-        includenamespaceprefixes="">
-        <xf:resource value="instance('data')/selected-values/selector" />
-      </xf:submission>
-
       <xf:bind id="i-health-center" nodeset="instance('data')/selected-values/health_center" required="true()" relevant="false()"/>
       <xf:bind id="i-visit-month" nodeset="instance('data')/selected-values/visit_date_period" required="true()"/>
       <xf:bind id="i-delivery-zone" nodeset="instance('data')/selected-values/delivery_zone" required="true()"/>
@@ -201,6 +186,7 @@
       <xf:bind nodeset="instance('olmis')/health_center_visit/visited_at" id="visited_at" required="true()" relevant="../visited != 'false'" readonly="true()" />
       <xf:bind nodeset="instance('data')/selected-values/visit_date" id="l10n-visited_at" required="true()" relevant="instance('olmis')/health_center_visit/visited != 'false'" constraint="jr:date(.) &lt;= jr:today() and jr:date(.) &gt;= jr:date(concat(../visit_date_period,'-01')) and jr:date(.) &lt;= jr:date(concat(../visit_date_period,'-31'))" />
       <xf:bind nodeset="instance('olmis')/health_center_visit/vehicle_id" id="vehicle_id" required="true()" relevant="../visited != 'false'"/>
+      <xf:bind nodeset="instance('data')/selected-values/active_form" id="active_form" />
 
       <% HealthCenterVisit.tables.each do |t| %>
         <%= render(:partial => '/data_sources/xforms/' + t.xforms_group_name + '_bind.xforms', :locals => { :klass => t } ) %>
@@ -352,6 +338,8 @@
               <xf:label><%= h(t(".hc.after_warehouse_visit")) %></xf:label>
               <xf:action ev:event="DOMActivate" mode="synchronous">
                 <xf:load resource="javascript:show_warehouse('after')" />
+                <xf:send ev:event="xforms-submit" submission="pickup-load" if="instance('data')/selected-values/login-selected = true() and instance('pickups')/selected-values/selected-month-exists = true()" />
+                <xf:send ev:event="xforms-submit" submission="pickup-new"  if="instance('data')/selected-values/login-selected = true() and instance('pickups')/selected-values/selected-month-exists = false()" />
               </xf:action>
             </xf:trigger>
           </li>

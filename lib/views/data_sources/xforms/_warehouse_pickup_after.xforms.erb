@@ -14,40 +14,56 @@
     </xf:trigger>
   </div>
 
-  <div class="wrapper">
-    <div class="header">
-      <span><%= (I18n.backend.send(:lookup, I18n.locale, "pickups.inventory.province") || '').
-                              sub("{{name}}", %Q{<xf:output value="instance('data')/province/delivery_zone[@code=instance('data')/selected-values/delivery_zone]/../@name"/>}) %></span>
-      <span class="datepicker">
-        <xf:input bind="l10n-pickup_on">
-          <xf:label><%= h(t("headers.date")) %></xf:label>
-          <xf:action ev:event="xforms-value-changed">
-            <xf:setvalue bind="pickup_on" value="olmis:date_from_local(instance('data')/selected-values/pickup_date)" />
-          </xf:action>
-        </xf:input>
-      </span>
-      <span id="warehouse_pickup_date" class="alt_date hidden">
-        <xf:input bind="pickup_on" />
-      </span>
-    </div>
+  <xf:group ref="instance('pickups')/pickup">
+    <!--xf:action ev:event="xforms-value-changed">
+      <xf:send ev:event="xforms-submit" submission="pickup-save" if="instance('pickups')/selected-values/pickup-form-selected = true()" />
+    </xf:action>
+    <xf:action ev:event="DOMFocusOut">
+      <xf:send ev:event="xforms-submit" submission="pickup-save" if="instance('pickups')/selected-values/pickup-form-selected = true()" />
+    </xf:action-->
 
-    <table class="inventory inventory-form">
-      <thead>
-        <tr>
-          <th><%= h(t("pickups.inventory.package")) %></th>
-          <th class="amount"><%= h(t("pickups.inventory.requested")) %></th>
-          <th class="amount"><%= h(t("pickups.inventory.furnished")) %></th>
-        </tr>
-      </thead>
-      <tbody>
-        <%- Package.active.sort.each do |package| -%>
-          <tr class="inventory_row">
-            <td><%= package.label %></td>
-            <td class="amount"><xf:input bind="warehouse_pickup_<%= package.code %>:DeliveryRequest" /></td>
-            <td class="amount"><xf:input bind="warehouse_pickup_<%= package.code %>:DeliveryPickup" /></td>
+    <div class="wrapper">
+      <div class="header">
+        <span><%= (I18n.backend.send(:lookup, I18n.locale, "pickups.inventory.province") || '').
+                                sub("{{name}}", %Q{<xf:output value="instance('data')/province/delivery_zone[@code=instance('data')/selected-values/delivery_zone]/../@name"/>}) %></span>
+        <span>
+          <div class="datepicker" instance="pickups">
+            <xf:input bind="l10n-pickup_on">
+              <xf:label><%= h(t("headers.date")) %></xf:label>
+              <xf:action ev:event="xforms-value-changed">
+                <xf:setvalue bind="pickup_on" value="olmis:date_from_local(instance('data')/selected-values/pickup_date)" />
+              </xf:action>
+            </xf:input>
+          </div>
+          <div id="warehouse_pickup_date" class="alt_date hidden">
+            <xf:input bind="pickup_on" />
+          </div>
+        </span>
+      </div>
+
+      <table class="inventory inventory-form">
+        <thead>
+          <tr>
+            <th><%= h(t("pickups.inventory.package")) %></th>
+            <th class="amount"><%= h(t("pickups.inventory.requested")) %></th>
+            <th class="amount"><%= h(t("pickups.inventory.furnished")) %></th>
           </tr>
-        <%- end -%>
-      </tbody>
-    </table>
-  </div>
+        </thead>
+        <tbody>
+          <%- Package.active.sort.each do |package| -%>
+            <tr class="inventory_row">
+              <td><%= package.label %></td>
+              <%- %w(DeliveryRequest DeliveryPickup).each do |type| -%>
+                <td class="amount">
+                  <xf:input bind="warehouse_pickup_<%= package.code %>:<%= type %>" incremental="true">
+                     <xf:alert><%= h(t("data_sources.hcvisit.errors.quantity")) %></xf:alert>
+                  </xf:input>
+                </td>
+              <%- end -%>
+            </tr>
+          <%- end -%>
+        </tbody>
+      </table>
+    </div>
+  </xf:group>
 </div>

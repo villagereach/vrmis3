@@ -1,28 +1,76 @@
-<xf:instance id="pickups">
-  <pickups>
-    <pickup>
-      <date />
-      <delivery_zone />
-      <field_coordinator />
-      <%- Package.active.each do |package| -%>
-        <item for="<%= package.code %>" DeliveryRequest="" DeliveryPickup="" />
-      <%- end -%>
-    </pickup>
-    <local>
-      <date />
-    </local>
-  </pickups>
-</xf:instance>
-
-  <xf:bind nodeset="instance('pickups')/pickup/date" id="pickup_on" required="true()" readonly="true()" />
-  <xf:bind nodeset="instance('pickups')/local/date" id="l10n-pickup_on" required="true()" />
-
 <%- Package.active.each do |package|
       %w(DeliveryRequest DeliveryPickup).each do |type|
         id = "warehouse_pickup_#{package.code}:#{type}"
         node = "instance('pickups')/pickup/item[@for='#{package.code}']/@#{type}" -%>
 
-  <xf:bind id="<%= id %>" nodeset="<%= node %>" type="xf:nonNegativeInteger" />
+  <xf:bind id="<%= id %>" nodeset="<%= node %>" type="xf:nonNegativeInteger" required="instance('pickups')/selected-values/pickup-form-selected = true()" />
 
   <%- end
     end -%>
+
+<xf:bind id="pickup_on"      nodeset="instance('pickups')/pickup/date"              required="true()" readonly="true()" />
+<xf:bind id="l10n-pickup_on" nodeset="instance('pickups')/selected-values/date"     required="true()" />
+<xf:bind id="pickup_dz"      nodeset="instance('pickups')/pickup/delivery_zone"     required="true()" />
+<xf:bind id="pickup_fc"      nodeset="instance('pickups')/pickup/field_coordinator" required="true()" />
+<xf:bind id="pickup_month"   nodeset="instance('pickups')/pickup/visit_month"       required="true()" />
+
+<xf:bind id="pickup-selector"
+         nodeset="instance('pickups')/selected-values/selector"
+         relevant="instance('data')/selected-values/login-selected = true()"
+         constraint="jr:regex(., '^local://[^/]+/\d{4}-\d{2}$')"
+         calculate="concat('local://', instance('data')/selected-values/visit_date_period, '/pickup/', instance('data')/selected-values/delivery_zone)" />
+
+<xf:bind id="selected-pickup-month-exists"
+         type="xsd:boolean"
+         relevant=". = true()"
+         nodeset="instance('pickups')/selected-values/selected-month-exists"
+         calculate="exists(instance('pickups')/selected-values/selector)" />
+
+<xf:bind id="pickup-after-form-selected"
+         type="xsd:boolean"
+         relevant=". = true()"
+         nodeset="instance('pickups')/selected-values/pickup-form-selected"
+         calculate="instance('data')/selected-values/active_form = 'warehouse-after'" />
+
+<xf:submission id="pickup-save"
+               replace="instance"
+               instance="pickups"
+               ref="/pickups/pickup"
+               method="put"
+               validate="false"
+               includenamespaceprefixes="">
+  <xf:resource value="instance('pickups')/selected-values/selector" />
+</xf:submission>
+
+<xf:submission id="pickup-new"
+               replace="none"
+               instance="pickups"
+               ref="/pickups/pickup"
+               method="get"
+               validate="false"
+               action="pickups.xml"
+               includenamespaceprefixes="">
+  <xf:action ev:event="xforms-submit-done">
+    <xf:setvalue bind="pickup_on"      value="instance('data')/selected-values/default_visit_date" />
+    <xf:setvalue bind="l10n-pickup_on" value="olmis:date_to_local(instance('data')/selected-values/default_visit_date)" />
+    <xf:setvalue bind="pickup_dz"      value="instance('data')/selected-values/delivery_zone" />
+    <xf:setvalue bind="pickup_fc"      value="instance('data')/selected-values/field_coordinator" />
+    <xf:setvalue bind="pickup_month"   value="instance('data')/selected-values/visit_date_period" />
+  </xf:action>
+</xf:submission>
+
+<xf:submission id="pickup-load"
+               replace="instance"
+               instance="pickups"
+               ref="/pickups/pickup"
+               method="get"
+               validate="false"
+               includenamespaceprefixes="">
+  <xf:resource value="instance('pickups')/selected-values/selector" />
+  <xf:action ev:event="xforms-submit-done">
+    <!-- Set the localized visit date from the stored, ISO-formatted, date -->
+    <xf:setvalue bind="l10n-pickup_on"    value="olmis:date_to_local(instance('pickups')/pickup/date)"/>
+    <!-- Force a revalidation of the form so the localized date is shown as valid -->
+    <xf:dispatch name="xforms-revalidate" target="default-model" />
+  </xf:action>
+</xf:submission>

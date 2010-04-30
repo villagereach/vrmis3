@@ -1,0 +1,17 @@
+<pickups>
+  <pickup>
+    <date/>
+    <delivery_zone/>
+    <field_coordinator/>
+    <visit_month/>
+    <%- Package.active.each do |package| -%>
+      <item for="<%= package.code %>" DeliveryRequest="" DeliveryPickup=""/>
+    <%- end -%>
+  </pickup>
+  <selected-values>
+    <date/>
+    <selector/>
+    <selected-month-exists/>
+    <pickup-form-selected/>
+  </selected-values>
+</pickups>

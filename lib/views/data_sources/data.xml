@@ -16,6 +16,7 @@
     <access_code/>
     <login-selected />
     <context-selected />
+    <active_form/>
     <logged_in />
     <visit_period_selected />
   </selected-values>

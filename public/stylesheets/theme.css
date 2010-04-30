@@ -806,7 +806,7 @@ li.status.complete {
 .pickups table {
   width: auto;
 }
-.pickups .header span {
+.pickups .header > span {
   margin-right: 1em;
 }
 .pickups input.datepicker {

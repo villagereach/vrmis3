@@ -548,6 +548,9 @@ h4 {
   margin: 0 auto;
   width: 50%;
 }
+.pickups table.inventory {
+  clear: both;
+}
 .pickups table.inventory input[type="text"] {
   width: 50px;
 }
@@ -628,7 +631,7 @@ h4 {
 }
 /* }}} */
 /* individual sheets {{{ */
-table.spreadsheet {
+table.spreadsheet, table.conversion {
   width : auto;
 }
 table.spreadsheet td {
@@ -673,10 +676,31 @@ table.spreadsheet div.tally div.nr > span {
 table.spreadsheet input.xforms-value[type="text"] {
   width : 3em;
 }
-table.spreadsheet td.numeric {
+table td.numeric {
   padding: 0 1em;
   text-align: right;
 }
+table.conversion {
+  margin-top: 1em;
+}
+table.conversion caption {
+  background: none;
+  font-size: 1.2em;
+  font-weight: bold;
+  text-align: center;
+  white-space: nowrap;
+}
+table.conversion td.numeric {
+  padding-left: 4em;
+}
+table.conversion th {
+  padding-left: 2em;
+}
+table.conversion th.numeric {
+  padding-right: 1em;
+  text-align: right;
+}
+
 #case-visit .xforms-textarea textarea {
   width: 25em;
   height: 2em;
@@ -698,8 +722,7 @@ div.datepicker input[type="text"] {
   letter-spacing: 2px;
 }
 
-#case-epi_inventory .inventory thead th:first-child,
-#case-rdt_inventory .inventory thead th:first-child {
+#case-epi_inventory .inventory thead th:first-child {
   text-align: center;
 }
 
