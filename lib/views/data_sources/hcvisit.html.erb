@@ -59,14 +59,15 @@
           <%- end -%>
         <%- end -%>
       </div>
-      <div id="user" class="content">
+      <div id="user" class="content" show_if_selected="logged_in" style="display: none;">
         <a href="#" onclick="logout()" ><%= h(t("logout")) %></a>
-        <div id="recording-data-for" class="content">
-          <em><%= h(t(".selected_fc")) %></em>
-          <strong><span id="field-coordinator"></span></strong>
 
-          <a href="#" onclick="show_main_page()" ><%= h(t(".go_to_main_page")) %></a>
+        <div id="recording-data-for" class="content" show_if_selected="field_coordinator" style="display: none;">
+          <em><%= h(t(".selected_fc")) %></em>
+          <strong><span class="selected_field_coordinator_name"></span></strong>
         </div>
+
+        <%= link_to_function h(t(".go_to_main_page")), 'show_main_page()' %>
       </div>
     </div>
 
@@ -85,14 +86,12 @@
                 <label for='fc_selector'><%= h(t("field_coordinator")) %></label>
                 <select id="fc_selector"></select>
 
-                <!-- <xf:alert><%= h(t(".errors.select_fc")) %></xf:alert> -->
-
                 <label for='vdp_selector'><%= h(t(".visit_month")) %></label>
                 <select id="vdp_selector"></select>
                 
-                <!-- <xf:alert><%= h(t(".errors.select_visit_month")) %></xf:alert> -->
-
-               <button id="select_location" onclick="select_location()"><%= h(t("go")) %></button>
+                <div style="display: none" show_if_selected="visit_period_selected">
+                  <button id="select_location" onclick="select_location()"><%= h(t("go")) %></button>
+                </div>
               </div>
             </td><!-- id="enter-data" -->
 
@@ -113,8 +112,8 @@
       <h3>
         <!-- HACK: Evil, ugly hack to get at the raw translation. -->
         <%= (I18n.backend.send(:lookup, I18n.locale, "data_sources.hcvisit.hc.page_title") || '').
-          sub("{{delivery_zone}}",%Q{<span class="output selected_delivery_zone"></span>}).
-          sub("{{visit_month}}",%Q{<span class="output selected_date_period"></span>}) %>
+          sub("{{delivery_zone}}",%Q{<span class="output selected_delivery_zone_name"></span>}).
+          sub("{{visit_month}}",%Q{<span class="output selected_visit_date_period"></span>}) %>
       </h3>
 
       <div id="warehouse-actions">
@@ -130,31 +129,14 @@
 
       <div>
         <h4><%= h(t(".hc.choose")) %></h4>
-        <div id="year-month-selector" class="inline">
-          <xf:group>
-            <xf:select1 id="health-center-selector" ref="instance('data')/selected-values/health_center">
-              <xf:itemset nodeset="instance('data')/province/district/health_center">
-                <xf:label ref="@name"/>
-                <xf:value ref="@code"/>
-              </xf:itemset>
-            </xf:select1>
-            <xf:action ev:event="xforms-value-changed">
-              <xf:load resource="javascript:setup_visits()" />
-              <xf:send ev:event="xforms-submit" submission="load" if="instance('data')/selected-values/context-selected = true() and instance('data')/selected-values/selected-month-exists = true()" />
-              <xf:send ev:event="xforms-submit" submission="new"  if="instance('data')/selected-values/context-selected = true() and instance('data')/selected-values/selected-month-exists = false()" />
-            </xf:action>
-          </xf:group>
-        </div>
 
         <div id="saved-forms">
-          <form>
-            <div id="saved-forms-search">
-              <label><%= h(t("search_button")) %></label>
-              <input type="text" id="saved-forms-filter" />
-              <button id="saved-forms-search-reset" onclick="javascript:reset_saved_forms_search(); return false;"><%= h(t("reset_button")) %></button>
-            </div>
-            <select size="10" id="saved-forms-control" />
-          </form>
+          <div id="saved-forms-search">
+            <label><%= h(t("search_button")) %></label>
+            <input type="text" id="saved-forms-filter">
+            <button id="saved-forms-search-reset" onclick="javascript:reset_saved_forms_search(); return false;"><%= h(t("reset_button")) %></button>
+          </div>
+          <select size="10" id="saved-forms-control"></select>
         </div>
       </div>
     </div><!-- id="location-selector" -->
@@ -165,82 +147,58 @@
       </div>
     <%- end -%>
 
-<% if false %>
-    
     <div id="form" class="container">
       <h3 id="current_hc">
-        <xf:output value="instance('data')/province/district/health_center[@code=instance('data')/selected-values/health_center]/@name"/>, <xf:output value="olmis:month_of_year(instance('data')/selected-values/visit_date_period)" />
-        <xf:trigger appearance="minimal">
-          <xf:label><%= h(t(".go_to_hc_selection")) %></xf:label>
-          <xf:action ev:event="DOMActivate">
-            <xf:load resource="javascript:show_visits()" />
-          </xf:action>
-        </xf:trigger>
+        <span class="selected_health_center"></span>,
+        <span class="selected_visit_date_period"></span>
+
+        <%= link_to_function h(t(".go_to_hc_selection")), "show_visits()" %>
       </h3>
-
-      <xf:group bind="context-selected">
-        <div id="tab-menu">
-          <xf:group id="tab-menu-inner">
+      
+      <div>
+        <div id="tab-menu" class="tab_graphs ui-tabs">
+          <ul>
             <% (['visit'] + HealthCenterVisit.screens).each do |screen| %>
-              <xf:trigger 
-                <%- if HealthCenterVisit.klass_by_screen[screen].depends_on_visit? %>bind="visited_at"<% end -%> 
-                id="tab-<%= screen %>" class="menu-tab selected-tab" appearance="minimal">
-                <xf:label><%= h(t("visits.health_center_monthly_tasks.#{ screen }")) %></xf:label>              
-                <xf:action ev:event="DOMActivate">
-                  <xf:toggle case="case-<%= screen %>"/>
-                  <xf:load resource="javascript:set_active_tab('<%= screen %>')" />
-                </xf:action>
-              </xf:trigger>
-            <% end %>
-          </xf:group><!-- ref="instance('olmis')/hcvisit" -->
-        </div><!-- id="tab-menu" -->
+              <li id="tab-<%= screen %>">
+                <a href="#screen:<%= screen %>">
+                  <%= h(t("visits.health_center_monthly_tasks.#{ screen }")) %>
+                </a>
+              </li>
+            <%- end -%>
+          </ul>
+          <% (['visit'] + HealthCenterVisit.screens).each do |screen| %>
+            <div id="screen:<%= screen %>" class="ui-tabs-hide">
+              
+            </div>
+          <%- end -%>
+        </div>
 
-        <xf:group id="form-contents" ref="instance('olmis')/health_center_visit">
-          <xf:action ev:event="xforms-value-changed">
-            <xf:send ev:event="xforms-submit" submission="save" if="instance('data')/selected-values/context-selected = true()" />
-          </xf:action>
-          <xf:action ev:event="DOMFocusOut">
-            <xf:send ev:event="xforms-submit" submission="save" if="instance('data')/selected-values/context-selected = true()" />
-          </xf:action>
-          <xf:switch>
-            <% (['visit'] + HealthCenterVisit.screens).each do |screen|
-                 layout = "/data_sources/xforms/screen.xforms"
-                 begin %>
-               <%= render(:partial => "/data_sources/xforms/#{screen}_screen.xforms", :layout => layout, :locals => { :screen => screen }) %><%
-                 rescue ActionView::MissingTemplate
-                   klass = HealthCenterVisit.klass_by_screen[screen]
-                   begin %>
-                 <%= render(:partial => "/data_sources/xforms/#{klass.xforms_group_name}_screen.xforms", :layout => layout, :locals => { :klass => klass, :screen => screen } ) %><%
-                   rescue ActionView::MissingTemplate
-                     raise "Can't find _#{klass.xforms_group_name}_screen.xforms.erb"
-                   end
-                 end
-               end %>
-          </xf:switch>
-        </xf:group><!-- id="form-contents" -->
-      </xf:group><!-- bind="context-selected" -->
+        <%= javascript_tag "jQuery('#tab-menu').bind('tabsshow', function(event, ui) {  } )" %>
+      </div><!-- bind="context-selected" -->
     </div>
+    
     <div id="status_footer">
-      <xf:group bind="login-active">
+      <div show_if_selected="logged_in">
         <div id="online_indicator">
           <div class="online"><%= h(t(".status.online")) %></div>
           <div class="offline"><%= h(t(".status.offline")) %></div>
         </div>
-      </xf:group>
-      <xf:group>
-        <div id="status_indicator">
-          <div>
-            <a href="<%= request.url %>"><%= h(t(".status.updated")) %></a>
-          </div>
+      <div>
+
+      <div id="status_indicator">
+        <div>
+          <a href="<%= request.url %>"><%= h(t(".status.updated")) %></a>
         </div>
-        <div id="download_indicator">
-          <div>
-            <p><%= h(t(".status.downloading")) %> ... <span id="download-pct"></span></p>
-            <em id="download-progress-bar" style="width: 0"></em>
-          </div>
+      </div>
+      <div id="download_indicator">
+        <div>
+          <p><%= h(t(".status.downloading")) %> ... <span id="download-pct"></span></p>
+          <em id="download-progress-bar" style="width: 0"></em>
         </div>
-      </xf:group>
+      </div>
     </div>
+    
+    <% if false %>
     <div id="lightbox-data" style="display: none">
       <div id="login" class="lightbox-container">
         <h3><%= h(t(".login_to_server")) %></h3>
@@ -262,6 +220,6 @@
         <div id="upload-uploaded"><ul></ul></div>
       </div>
     </div>
-<% end %>
+    <% end %>
   </body>
 </html>

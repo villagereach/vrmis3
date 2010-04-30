@@ -30,11 +30,11 @@ function update_visit_navigation() {
   jQuery("#form-contents .xforms-switch .xforms-case div.block-form").css("min-height", jQuery("#tab-menu").css("height"));
 
   // Hide the previous link on the first screen and the next link on the last screen
-  var visible_tabs = jQuery("#tab-menu .menu-tab:visible");
-  var first_screen = visible_tabs.slice(0,1)[0].id.replace('tab-', 'case-');
-  var last_screen  = visible_tabs.slice(-1)[0].id.replace('tab-', 'case-');
-  jQuery("#" + first_screen + " .nav-links .xforms-trigger:first").hide();
-  jQuery("#" + last_screen + " .nav-links .xforms-trigger:last").hide();
+  //var visible_tabs = jQuery("#tab-menu .menu-tab:visible");
+  //var first_screen = visible_tabs.slice(0,1)[0].id.replace('tab-', 'case-');
+  //var last_screen  = visible_tabs.slice(-1)[0].id.replace('tab-', 'case-');
+  //jQuery("#" + first_screen + " .nav-links .xforms-trigger:first").hide();
+  //jQuery("#" + last_screen + " .nav-links .xforms-trigger:last").hide();
 }
 
 function go_to_next_screen(this_screen) {
@@ -238,30 +238,12 @@ function get_selected_value(name) {
 }
 
 function find_province_district_health_center(hc) {
-  var xp = new XPath("instance('data')/province/district/health_center[@code='"+hc+"']",
-             new PathExpr(
-               new FunctionCallExpr('http://www.w3.org/2002/xforms instance', new CteExpr('data')),
-               new LocationExpr(false,
-                 new StepExpr('child', new NodeTestName('', 'province')),
-                 new StepExpr('child', new NodeTestName('', 'district')),
-                 new StepExpr('child',
-                   new NodeTestName('', 'health_center'),
-                   new PredicateExpr(
-                     new BinaryExpr(
-                       new LocationExpr(false, new StepExpr('attribute', new NodeTestName(null, 'code'))),
-                       '=',
-                       new CteExpr(hc)))))), []);
+  var health_center = find_health_center_by_code(hc);
+  var dz            = health_center.delivery_zone;
+  var district      = data_instance.areas_by_area_code[health_center.area_code];
+  var province      = district ? data_instance.areas_by_area_code[district.parent_code] : null;
 
-  var nodeset = xp.evaluate($('data'));
-  
-  if (nodeset.length > 0)
-    return [nodeset[0].parentNode.parentNode.getAttributeNS(null, 'name'), // province
-            nodeset[0].parentNode.getAttributeNS(null, 'name'),            // district
-            nodeset[0].getAttributeNS(null, 'code'),                       // health_center
-            nodeset[0].getAttributeNS(null, 'dz'),                         // delivery_zone
-            get_selected_value('field_coordinator')];                      // field_coordinator
-  else
-    return null;
+  return [province.name, district.name, hc, dz, get_selected_value('field_coordinator')];
 }
 
 function find_health_centers_in_delivery_zone(dz) {
@@ -405,37 +387,24 @@ XFSelect.prototype.selectValue = function(value) {
 }
 */
 function select_visit() {
-  var savedVisits = $('saved-forms-control');
-  if (savedVisits.selectedIndex == -1) {
+  var key = $('#saved-forms-control').val();
+  if (!key) {
     return;
   }
 
-  xforms.openAction();
-
-  Dialog.show("statusPanel");
-
   setTimeout(function() {
-    var key = savedVisits.options[savedVisits.selectedIndex].value;
-    if (xforms.focus) {
-      xforms.blur();
-    }
-
     var selection = key.split('/', 2);
     var ym = selection[0];
     var hc = selection[1];
-    var pdh = find_province_district_health_center(hc);
 
-    if (!!pdh) {
-      $('health-center-selector').xfElement.selectValue(hc);
-      $('visit-month-selector').xfElement.selectValue(ym);
-    }
-    Dialog.hide("statusPanel");
+    var health_center = find_health_center_by_code(hc);
+    
+    set_selected_value('health_center', health_center.name);
+
     show_container(containers['visit']);
     update_visit_navigation();
     setup_fridge_form();
   }, 1);
-  
-  xforms.closeAction();
 }
 
 function show_warehouse(type) {
@@ -607,7 +576,7 @@ function setup_form_options(local_forms, only_set_monthly_status) {
     var optgroup;
     if (!only_set_monthly_status) {
       optgroup = jQuery(document.createElement('optgroup'));
-      optgroup.attr('label', data_instance.aas_by_code[district]);
+      optgroup.attr('label', data_instance.areas_by_area_code[district].name);
     }
 
     var keys = local_forms[district].sort();
@@ -1011,7 +980,7 @@ function finish_upload() {
 
 jQuery(document).ready(function() {
   show_container(containers['login']);
-  $('saved-forms-control').change(select_visit);
+  $('#saved-forms-control').change(select_visit);
   setup_visits();
   setup_visit_search();
   /*

@@ -10,13 +10,13 @@ var data_instance = <%=
     :logged_in          => false,
   },
   :delivery_zones     => DeliveryZone.all.sort.map { |dz| { :code => dz.code, :name => dz.name } },
-  :administrative_areas => AdministrativeArea.all.sort.map { |aa| { :code => aa.code, :name => aa.name } },
+  :administrative_areas => AdministrativeArea.all.sort.map { |aa| { :code => aa.code, :name => aa.name, :parent_code => aa.parent_code } },
   :health_centers     => HealthCenter.all.map { |hc| { :code => hc.code, :name => hc.name, :area_code => hc.administrative_area_code, :delivery_zone => hc.delivery_zone.code } },
   :field_coordinators => DeliveryZone.all.map(&:field_coordinator).compact.uniq.map { |fc| { :code => fc.username, :name => fc.name } },
 }.to_json %>;
 
-data_instance.aas_by_code = {};
-$(data_instance.administrative_areas).each(function(i,e) { data_instance.aas_by_code[e.code] = e.name; });
+data_instance.areas_by_area_code = {};
+$(data_instance.administrative_areas).each(function(i,e) { data_instance.areas_by_area_code[e.code] = e; });
 
 var AutoevalData = {};
 jQuery(document).ready(function() {
