@@ -1,0 +1,57 @@
+<h2><%= (I18n.backend.send(:lookup, I18n.locale, "pickups.inventory.page_title") || '').
+                      sub("{{delivery_zone}}", %Q{<span class="output selected_delivery_zone_name"></span>}).
+                      sub("{{visit_month}}", %Q{<span class="output selected_visit_date_period"></span>}) %></h2>
+
+<h3><%= h(t("pickups.inventory.after_visit")) %></h3>
+
+<div class="pickups">
+  <div class="nav">
+    <a href="#" onclick="show_visits()"><%= h(t("data_sources.hcvisit.go_to_hc_selection")) %></a>
+  </div>
+
+  <div class="wrapper">
+    <div class="header">
+      <span><%= (I18n.backend.send(:lookup, I18n.locale, "pickups.inventory.province") || '').
+                              sub("{{name}}", %Q{<span class="output selected_province_name"><span>}) %></span>
+      <span>
+        <label><%= h(t("headers.date")) %></label>
+        <input type="text" class="datepicker" />
+      </span>
+    </div>
+
+    <table class="inventory inventory-form">
+      <thead>
+        <tr>
+          <th><%= h(t("pickups.inventory.package")) %></th>
+          <th class="amount"><%= h(t("pickups.inventory.requested")) %></th>
+          <th class="amount"><%= h(t("pickups.inventory.furnished")) %></th>
+        </tr>
+      </thead>
+      <tbody>
+        <%- Package.active.sort.each do |package| -%>
+          <tr class="inventory_row">
+            <td><%= package.label %></td>
+            <%- %w(DeliveryRequest DeliveryPickup).each do |type| -%>
+              <td class="amount"><input type="text" id="warehouse_pickup_<%= package.code %>-<%= type %>" /></td>
+            <%- end -%>
+          </tr>
+        <%- end -%>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<%- javascript_tag do -%>
+  $(function() {
+    // Populate the delivery request values from the ideal stock amounts.
+    // TODO: If saved data exists, load it instead.
+    <%- Package.active.sort.each do |package| -%>
+      $("#warehouse_pickup_<%= package.code %>-DeliveryRequest", this).linkFrom(
+        "val",
+        data_instance.selected_values,
+        "delivery_zone",
+        function(value) { return value ? data_instance.warehouse_ideal_stock[value]['<%= package.code %>'] : ""; }
+      );
+    <%- end -%>
+  });
+<%- end -%>
