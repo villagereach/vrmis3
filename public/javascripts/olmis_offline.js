@@ -30,19 +30,21 @@ function update_visit_navigation() {
   jQuery("#form-contents .xforms-switch .xforms-case div.block-form").css("min-height", jQuery("#tab-menu").css("height"));
 
   // Hide the previous link on the first screen and the next link on the last screen
-  //var visible_tabs = jQuery("#tab-menu .menu-tab:visible");
-  //var first_screen = visible_tabs.slice(0,1)[0].id.replace('tab-', 'case-');
-  //var last_screen  = visible_tabs.slice(-1)[0].id.replace('tab-', 'case-');
-  //jQuery("#" + first_screen + " .nav-links .xforms-trigger:first").hide();
-  //jQuery("#" + last_screen + " .nav-links .xforms-trigger:last").hide();
+  var visible_tabs = jQuery("#tab-menu > ul > li:visible");
+  var first_screen = visible_tabs.slice(0,1)[0].id.replace('tab-', 'screen-');
+  var last_screen  = visible_tabs.slice(-1)[0].id.replace('tab-', 'screen-');
+  jQuery("#" + first_screen + " .nav-links a:first").hide();
+  jQuery("#" + last_screen + " .nav-links a:last").hide();
 }
 
 function go_to_next_screen(this_screen) {
-  jQuery("#tab-" + this_screen).nextAll(":visible").slice(0,1).find("a")[0].dispatchEvent(mouse_click);
+  var t = $('#tab-menu').tabs();
+  t.tabs('select', t.tabs('option', 'selected') + 1);
 }
 
 function go_to_previous_screen(this_screen) {
-  jQuery("#tab-" + this_screen).prevAll(":visible").slice(0,1).find("a")[0].dispatchEvent(mouse_click);
+  var t = $('#tab-menu').tabs();
+  t.tabs('select', t.tabs('option', 'selected') - 1);
 }
 
 function fixup_nr_checkboxes() {
@@ -185,9 +187,6 @@ function setup_visit_months() {
   var select_control = month_selector.find('select');
   select_control.empty();
 
-//  var ul = jQuery(document.createElement('ul'));
-//  ul.attr('id', 'visit-month-menu');
-
   var months = get_available_visit_months();
   for (var i = 0, l = months.length; i < l; i++) {
     var month_value = months[i][0];
@@ -202,29 +201,7 @@ function setup_visit_months() {
     //opt.attr('selected', is_current_month);
     //if (is_current_month) opt.attr('selected', 'selected');
     select_control.append(opt);
-
-//    var li = jQuery(document.createElement('li'));
-//    li.attr('id', 'month_'+month_value);
-//
-//    var span = jQuery(document.createElement('span'));
-//    span.text(month_text);
-//    span.click(function(item, value) {
-//      return function() {
-//        if (!item.hasClass('disabled')) {
-//          item.parent().siblings().find('span').removeClass('selected');
-//          item.addClass('selected');
-//          set_selected_value('health_center', '');
-//          $('visit-month-selector').xfElement.selectValue(value);
-//        }
-//      };
-//    }(span, month_value));
-//
-//    li.append(span);
-//    ul.append(li);
-  }
-
-//  month_selector.parent().append(ul);
-//  month_selector.hide();
+ }                    
 
   xforms.closeAction();
 }
@@ -399,12 +376,24 @@ function select_visit() {
 
     var health_center = find_health_center_by_code(hc);
     
-    set_selected_value('health_center', health_center.name);
+    set_selected_value('health_center', hc);
 
+    reset_olmis_instance(key);
+    
     show_container(containers['visit']);
     update_visit_navigation();
     setup_fridge_form();
   }, 1);
+}
+
+function reset_olmis_instance(key) {
+  var instance = localStorage.getItem(key);
+  if (instance)
+    olmis_instance = JSON.parse(instance);
+  else {
+    olmis_instance = generate_olmis_instance(); 
+  }
+  reset_olmis_bindings();
 }
 
 function show_warehouse(type) {
@@ -497,12 +486,12 @@ function get_context_path_value(ctx, path) {
   })
   return doc;
 }
-
+          
 function update_visit_history(obj) {
   // this data is to support the offline autoeval report, please see offline_autoeval.js.erb 
   
-  var health_center = get_context_path_value($('olmis'), '/health_center_visit/health_center')[0].getTextContent();
-  var date_period   = get_context_path_value($('olmis'), '/health_center_visit/visit_month')[0].getTextContent();
+  var health_center = get_selected_value('health_center');
+  var date_period   = get_selected_value('visit_month');
   var history = JSON.parse(localStorage[health_center + '/visit-history'] || '{}');
   
   if (!history[date_period])
@@ -527,16 +516,6 @@ function update_stockouts() {
   var d = inventory_quantities('DeliveredHealthCenterInventory');
   
   update_visit_history({ 'existing': e, 'delivered': d });
-}
-
-function visit_date_changed() {
-  var date = get_context_path_value($('olmis'), '/health_center_visit/visited_at')[0].getTextContent();
-  update_visit_history({ 'visit': date });
-}
-
-function non_visit_reason_changed() {
-  var reason = get_context_path_value($('olmis'), '/health_center_visit/non_visit_reason')[0].getTextContent();
-  update_visit_history({ 'visit': reason });
 }
 
 var save_timeouts = {};
@@ -859,6 +838,32 @@ XPathCoreFunctions['http://openlmis.org/xpath-functions sort'] =  new XPathFunct
     });
 */
 
+function radioValueFn(val) {
+  return function(ev) {
+    return((ev == val) ? 'checked' : false);
+  };
+}
+
+function olmis_localize_date(value) {
+  if (value && value.match(/^\d{4}-\d{2}-\d{2}$/)) {
+    return Date.parseExact(value, 'yyyy-MM-dd').format(I18n.t('date.formats.default'));
+  } else {
+    return '';
+  }
+}
+
+function olmis_delocalize_date(value) {
+  if(value) { 
+    try {
+      return Date.parse(value).toString('yyyy-MM-dd');
+    } catch(e) {
+      if(console)
+        console.exception(e);
+    }
+  }
+  return '';
+}
+
 function setup_saved_visits() {
   var local_forms = [];
 
@@ -978,11 +983,20 @@ function finish_upload() {
   jQuery('#upload-uploaded ul').empty();
 }
 
+function serialize_visit() {
+  var key = get_selected_value('visit_date_period') + '/' + get_selected_value('health_center');
+  localStorage[key] = JSON.stringify(olmis_instance);
+}
+
 jQuery(document).ready(function() {
   show_container(containers['login']);
   $('#saved-forms-control').change(select_visit);
+  
+  $('#visit-form *:input').blur(serialize_visit);
+  
   setup_visits();
   setup_visit_search();
+  
   /*
   window.setInterval(check_update_status, 3 * 1000);
   
@@ -1030,7 +1044,7 @@ function add_screen_sequence_tags() {
 function xf_user_init() {
   // Run actions that must be performed *after* XSLTForms init() runs
 /*
-fixup_nr_checkboxes();  
+  fixup_nr_checkboxes();  
   add_screen_sequence_tags();
   jQuery('div.datepicker').each(function(i, e) {
       var alt = jQuery('.alt_date', jQuery(e.parentNode))[0]

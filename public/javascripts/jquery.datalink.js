@@ -174,7 +174,7 @@ $.link = function( settings ) {
         else if ( sourceAttr && sourceAttr.indexOf( "data:" ) === 0 ) {
             newValue = source.data( sourceAttr.substr( 5 ) );
         }
-        else if ( sourceAttr ) {
+        else if ( sourceAttr && source.attr('type') != 'radio') {
             newValue = sourceAttr === "val" ? source.val() : source.attr( sourceAttr );
         }
         if ( convert ) {

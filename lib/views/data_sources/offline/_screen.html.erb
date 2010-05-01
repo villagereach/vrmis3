@@ -1,0 +1,11 @@
+<div id="screen-<%= screen %>" class="ui-tabs-hide">
+  <h4><%= h(t("visits.health_center_monthly_tasks.page_titles.#{screen}")) %></h4>
+  <%= yield %>
+  <div class="clear"></div>
+  <div class="nav-links">
+    <%= link_to_function(h(t("data_sources.hcvisit.navigation.prev_screen")), "go_to_previous_screen('#{ screen }')") %> 
+    <%= link_to_function(h(t("data_sources.hcvisit.navigation.next_screen")), "go_to_next_screen('#{ screen }')") %>
+  </div>
+  <div class="clear"></div>
+  <%= yield :actions %>
+</div>

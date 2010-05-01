@@ -1,7 +1,3 @@
-/* hcvisit.css */
-/* Global CSS for offline visit forms. Do not modify this file. */
-/* Local customizations should be placed in hcvisit_custom.css. */
-
 p {
   margin:0 0 0.5em;
 }
@@ -35,7 +31,7 @@ p {
   -webkit-border-top-left-radius: .5em;
 }
 */
-.xforms-switch .xforms-case div.block-form {
+.xforms-switch .xforms-case > div {
   background-color: #f6f6f6;
   border: 1px solid green;
   padding: 0.5em;
@@ -48,6 +44,11 @@ p {
 }
 */
 
+.xforms-group-label {
+  font-size: 150%;
+  padding: 1ex 0;
+}
+                                      
 .block-form {
   /*margin: 2px;*/
 }
@@ -68,15 +69,11 @@ p {
   margin-right: 1ex; /* margin to the right of the label */
 }
 
-#saved-forms {
-  margin: 0 auto;
-  width: 300px;
-}
 select#saved-forms-control, #saved-forms-search {
-  width: 100%;
+  width: 250px;
+  margin: 10px;
 }
 select#saved-forms-control {
-  display: block;
   height: 12em;
 }
 
@@ -84,15 +81,10 @@ select#saved-forms-control {
   display: inline;
   font-size: 90%;
 }
-#saved-forms-search label {
-  margin-right: 0.5em;
-}
+
 #saved-forms-search input {
-  margin: 0;
+  margin: 0 1.25em 0 0.25em;
   width: 10em;
-}
-#saved-forms-search button {
-  margin-left: 1.0em;
 }
 
 .hidden {
@@ -158,36 +150,14 @@ div.xforms-alert-value {
 .xforms-invalid span.xforms-alert-icon { display: inline; background-image: url(/images/icons/silk/exclamation.png); }
 .xforms-valid   span.xforms-alert { display: inline; }
 .menu-tab.xforms-valid span.xforms-alert, .xforms-optional span.xforms-alert, 
-#context-selector span.xforms-alert, #user_tools span.xforms-alert,
-#have_epi_data span.xforms-alert,
-#was_hc_visited span.xforms-alert,
-#non_visit_reason_selection span.xforms-alert { display: none; }
+#location-selector span.xforms-alert, #user_tools span.xforms-alert,
+#was_hc_visited span.xforms-alert { display: none; }
 
 .xforms-group-label { 
-  border-bottom: 1px solid #CCCCCC;
-  font-size: 130%;
+  border-bottom:1px solid #CCCCCC;
+  font-size:130%;
   padding: 0.25ex 0;
   margin-bottom: 1em;
-}
-.xforms-group .seqno-container {
-  background: white;
-  border: 1px solid #222;
-  border-radius: 24px;
-  -moz-border-radius: 24px;
-  -webkit-border-radius: 24px;
-  color: #222;
-  float: left;
-  height: 20px;
-  margin-right: 0.5em;
-  padding: 2px;
-  position: relative;
-  text-align: center;
-  top: 4px;
-  width: 20px;
-}
-.xforms-group .seqno-container .seqno {
-  font-size: 13px;
-  font-weight: bold;
 }
 
 p.note { font-weight: medium; font-style: italic; }
@@ -220,10 +190,6 @@ th { text-align: right; padding: 4px; }
 .header ul.action_links li a {
   cursor: pointer;
   text-decoration: none;
-}
-
-#visit-month-selector .xforms-alert {
-  display: none;
 }
 
 #visit-month-menu {
@@ -291,18 +257,6 @@ h1 a {
   height : 36px;
   display : block;
 }
-input, textarea {
-  font-family: sans-serif;
-  font-size: 16px;
-  padding: 0.2em;
-}
-span.radio.horizontal span.value {
-  float: left;
-}
-span.radio.horizontal div.xforms-item {
-  float: left;
-  margin-right: 0.5em;
-}
 /* }}} */
 /* user header & HC header {{{ */
 #user_tools {
@@ -353,7 +307,7 @@ span.radio.horizontal div.xforms-item {
   padding : 0 .3em;
   margin : 0;
 }
-#user_tools a, .container a {
+#user_tools a {
   cursor: pointer;
 }
 #user_tools .xforms-trigger a,
@@ -423,22 +377,17 @@ span.radio.horizontal div.xforms-item {
 }
 /* }}} */
 /* headings {{{ */
-h2, h3, h4 {
-  border: none;
-  color: #541;
-  font-weight: bold;
-  margin: 0 0 0.5em 0;
-  padding: 0.5em 0 0 0;
-  text-align: center;
+h2 {font-size:2em;margin-bottom:0.75em;}
+h2 {
+  color : #541;
+  font-size : 2em;
+  font-weight : bold;
+  text-align : center;
+  margin : .5em 0;
 }
 h2 {
-  font-size: 2.0em;
-}
-h3 {
-  font-size: 1.8em;
-}
-h4 {
-  font-size: 1.6em;
+  padding : .5em 0 0 0;
+  margin : 0 0 .5em 0;
 }
 /* }}} */
 /* container {{{ */
@@ -463,79 +412,27 @@ h4 {
 /* }}} */
 /* location-selector & context-selector {{{ */
 #form,
-#login-form,
 #location-selector,
 #context-selector,
 #offline-reports {
-  margin : 2em auto 0;
+  margin : 5em auto 0;
 }
-#login-form {
-  width: 400px;
-}
-#login-form input {
-  width: 8em;
-}
+#location-selector,
 #context-selector {
-  width: 750px;
+  width : 300px;
+}
+#location-selector .xforms-control,
+#context-selector .xforms-control {
+  clear : both;
+  display : block;
 }
 #location-selector {
-  width: 600px;
+  width : 600px;
 }
-.xforms-control span.focus {
-  /* Not sure what purpose this span serves, but it messes up the form layout if it's shown */
-  display: none;
-}
-#login-form .xforms-control,
-#context-selector .xforms-control,
-#location-selector .xforms-control {
-  clear : both;
-}
-#login-form button,
-#context-selector button {
+#location-selector button {
   font-size : 1em;
   margin : 1em 0 0 11em;
 }
-
-#context-selector table {
-  border-collapse: separate;
-  border-spacing: 4px 0;
-}
-#context-selector td {
-  border: 2px solid #541;
-  padding: 1em 0.5em;
-  vertical-align: top;
-}
-#context-selector td#enter-data {
-  width: 60%;
-}
-#context-selector #other-actions ul {
-  line-height: 3em;
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  text-align: center;
-}
-#context-selector span.xforms-optional.xforms-disabled {
-  display: block !important;
-  visibility: hidden;
-}
-#context-selector span.xforms-optional.xforms-enabled {
-  visiblity: visible;
-}
-
-#warehouse-actions {
-  font-size: 105%;
-  font-weight: bold;
-  margin: 0 auto;
-  width: 400px;
-}
-#warehouse-actions ul {
-  line-height: 2em;
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
 .inline label {
   text-align : right;
   padding-right : 1em;
@@ -562,135 +459,104 @@ h4 {
   width : auto;
 }
 /* }}} */
+/* calendar popup {{{ */
+table.calendar {
+  width: inherit;
+}
+/* }}} */
 /* navigation {{{ */
-#form-contents {
-  float: left;
-  margin-left: -11px;
-  width: 750px;
+#tab-menu-inner {
+  display : table;
+  width : 100%;
+}
+#tab-menu-inner .xforms-group-content {
+  display : table-row;
+}
+#tab-menu .menu-tab {
+  text-align : center;
+  display : table-cell;
+}
+#tab-menu .menu-tab a {
+  color : #fff;
+  font-size : 1.1em;
+  font-weight : normal;
+  text-decoration : none;
+  white-space : nowrap;
+  padding : .2em 0;
+  background : #541;
+  border-left : 1px solid #784;
+  border-right : 1px solid #120;
+  display : block;
+}
+#tab-menu  a:hover,
+#tab-menu .selected-tab a,
+#tab-menu .selected-tab a:hover {
+  background : #900;
+  border-left : 1px solid #c33;
+  border-right : 1px solid #600;
+}
+#tab-menu .selected-tab a,
+#tab-menu .selected-tab a:hover {
+  text-decoration : none;
+  cursor : text;
+}
+#tab-menu-inner .xforms-group-content span.menu-tab:first-child,
+#tab-menu-inner .xforms-group-content span.menu-tab:first-child a {
+  -moz-border-radius-topleft : 10px;
+  -webkit-border-top-left-radius : 10px;
+  border-top-left-radius : 10px;
+  border-left : none !important; /* to override hover */
+}
+#tab-menu-inner .last,
+#tab-menu-inner .last a {
+  -moz-border-radius-topright : 10px;
+  -webkit-border-top-right-radius : 10px;
+  border-top-right-radius : 10px;
+  border-right : none !important; /* to override hover */
 }
 /* }}} */
 /* individual sheets {{{ */
-table.spreadsheet {
+#case-visit .xforms-textarea textarea {
+  width : 50em;
+  height : 5em;
+  display : block;
+}
+#case-full_vaccination_tallies table.spreadsheet,
+#case-child_vaccination_tallies table.spreadsheet,
+#case-adult_vaccination_tallies table.spreadsheet,
+#case-epi_usage_tallies table.spreadsheet,
+#case-rdt_tallies table.spreadsheet,
+#case-inventory table.spreadsheet,
+#case-equipment table.spreadsheet {
   width : auto;
 }
-table.spreadsheet td {
-  padding: 0;
-}
-table.spreadsheet div.tally {
-  background-color: lightgray;
-  margin: 1px;
-  padding: 2px 0 14px 2px;
-  position: relative;
-  min-width: 75px;
-}
-table.spreadsheet div.tally > span {
-  display: table;
-  margin: 0;
-}
-table.spreadsheet div.tally > span span.value {
-  display: table-cell;
-}
-table.spreadsheet div.tally input[type="text"] {
-  border: 1px solid gray;
-  display: block;
-  margin: 1px 1px 0 1px;
-  padding: 0;
-  text-align: right;
-  width: 50px;
-}
-table.spreadsheet div.tally.month-year input[type="text"] {
-  width: 80px;
-  text-align: left;
-}
-table.spreadsheet div.tally div.nr {
-  position: absolute;
-  top: 20px;
-  left: 0;
-  padding: 0;
-  margin: 0;
-}
-table.spreadsheet div.tally div.nr > span {
-  margin: 0;
-}
-table.spreadsheet input.xforms-value[type="text"] {
+#case-full_vaccination_tallies input.xforms-value[type="text"],
+#case-child_vaccination_tallies input.xforms-value[type="text"],
+#case-adult_vaccination_tallies input.xforms-value[type="text"],
+#case-epi_usage_tallies input.xforms-value[type="text"],
+#case-rdt_tallies input.xforms-value[type="text"],
+#case-inventory input.xforms-value[type="text"],
+#case-equipment input.xforms-value[type="text"] {
   width : 3em;
 }
-table.spreadsheet td.numeric {
-  padding: 0 1em;
-  text-align: right;
+#case-inventory .inventory thead th:first-child,
+#case-equipment .equipment:not(.cold_chain) thead th:first-child {
+  text-align : right;
 }
-#case-visit .xforms-textarea textarea {
-  width: 25em;
-  height: 2em;
-  margin: 0;
-}
-#case-visit label {
-  margin-right: 4px;
-}
-#case-visit .block-form .xforms-input,
-#case-visit .block-form .xforms-select1,
-#case-visit .block-form .xforms-textarea {
-  margin: 0;
-}
-#case-visit .xforms-group {
-  margin-bottom: 1em;
-}
-div.datepicker input[type="text"] {
-  width: 8em !important;
-  letter-spacing: 2px;
-}
-
-#case-epi_inventory .inventory thead th:first-child,
-#case-rdt_inventory .inventory thead th:first-child {
-  text-align: center;
-}
-
 #case-child_vaccination_tallies tr:first-child th,
 #case-adult_vaccination_tallies tr:first-child th {
-  border-bottom: 0;
-  text-align: center;
+  border-bottom : 0;
 }
-
-#case-cold_chain div.fridge-id {
-  margin: 0 1%;
-  padding: 0;
+#case-epi_usage_tallies td:last-child .xforms-value,
+#case-equipment #fridge-list tr th .xforms-value {
+  width : 7em;
 }
-#case-cold_chain div.two-column > div {
+#case-equipment span.radio span.value {
   float: left;
-  margin: 0 1%;
-  width: 48%;
 }
-#case-cold_chain div.xforms-group-content {
-  clear: both;
-}
-#case-cold_chain div.xforms-repeat-item {
-  margin: 1em 0;
-}
-#case-cold_chain .fridge-id input[type="text"] {
-  width: 80px;
-}
-#case-cold_chain .fridge-temp span.value {
-  display: block;
-}
-#case-cold_chain .fridge-temp input[type="text"] {
-  margin: 0 2px 0 4px;
-  width: 20px;
-}
-#case-cold_chain .xforms-textarea textarea {
-  height: 4em;
-  width: 90%;
-}
-#case-cold_chain label {
+#case-equipment span.radio div.xforms-item {
+  float: left;
   margin-right: 0.5em;
-}
-#case-cold_chain .block-form .xforms-input,
-#case-cold_chain .block-form .xforms-select,
-#case-cold_chain .block-form .xforms-select1,
-#case-cold_chain .block-form .xforms-textarea {
-  margin: 0;
-}
-#case-cold_chain .xforms-group {
-  margin-bottom: 1em;
 }
 /* }}} */
 
@@ -737,12 +603,11 @@ body {
   background-color: #cfc;
   border: 2px solid green;
   color: green;
-  position: relative;
 }
 #status_footer #download_indicator em {
   background-color: green;
   position: absolute;
-  bottom: 0; left: 0;
+  bottom: 3px; left: 9px;
   height: 4px;
 }
 #status_footer #download_indicator p {
@@ -769,13 +634,6 @@ body {
   border: 2px solid red;
   color: red;
   display: block;
-}
-
-#upload_link.online {
-  display: block;
-}
-#upload_link.offline {
-  display: none;
 }
 /* }}} */
 /* lightbox {{{ */
@@ -810,57 +668,7 @@ body {
   overflow-x: hidden;
 }
 #upload li.status.working {
-  background-image: url('../images/indicator.gif');
+  background-image: url('/images/indicator.gif');
 }
 /* }}} */
 
-#tab-menu > div.ui-tabs-panel { 
-  float: left; 
-  background-color: #f6f6f6; 
-  border: thin solid green;
-  width: 650px;
-  margin-left: -1px; 
-}
-
-#tab-menu > ul.ui-tabs-nav { 
-  float: left;
-  margin-right: 10px;
-  width: 190px;
-  background: inherit; 
-  padding: 0; 
-  border: none;
-}
-
-#tab-menu > ul.ui-tabs-nav > li > a { padding: 2px; font-size: 75%; float: none; display: block; border: thin solid transparent; border-right-width: 0;  }
-#tab-menu > ul.ui-tabs-nav > li.ui-tabs-selected { padding: 0; }
-#tab-menu > ul.ui-tabs-nav > li { display: block; float: none; margin: 5px 0; padding: 0; border: none!important;  }
-#tab-menu > ul.ui-tabs-nav > li.ui-tabs-selected { background-color: #f6f6f6; -moz-border-radius: 0; -webkit-border-radius: 0; border-radius: 0; }
-#tab-menu > ul.ui-tabs-nav > li.ui-tabs-selected a { border-width: thin; border-style: solid; border-color: green #f6f6f6 green green; color: black;} 
-/*
-#tab-menu .menu-tab {
-  display: block;
-  padding: 2px 0 2px 24px;
-}
-
-#tab-menu-inner {
-  position: relative;
-  overflow: hidden;
-}
-#tab-menu a,
-#tab-menu a:visited {
-  color: #09c;
-  cursor: pointer;
-  font-weight: bold;
-  text-decoration: underline;
-}
-#tab-menu .selected-tab {
-  background-color: #f6f6f6;
-  border: 1px solid green;
-  border-right: none;
-}
-#tab-menu .selected-tab a {
-  color: black;
-  cursor: auto;
-  text-decoration: none;
-}
-*/

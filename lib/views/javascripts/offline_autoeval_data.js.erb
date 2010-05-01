@@ -1,5 +1,7 @@
 <% latest_visit = HealthCenterVisit.first(:order => 'updated_at desc', :limit => 1) %>
 <%# cache('autoeval_data:' + (latest_visit ? latest_visit.updated_at.to_s : 'never')) do %>
+var olmis_instance = {};
+
 var data_instance = <%=
 {
   :selected_values => { 
@@ -7,6 +9,7 @@ var data_instance = <%=
     :delivery_zone      => '',
     :field_coordinator  => '',
     :visit_month        => '',
+    :health_center      => '',
     :logged_in          => false,
   },
   :delivery_zones     => DeliveryZone.all.sort.map { |dz| { :code => dz.code, :name => dz.name } },

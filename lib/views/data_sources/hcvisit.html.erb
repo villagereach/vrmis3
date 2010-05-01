@@ -5,6 +5,7 @@
     <script type="text/javascript" src="http://code.jquery.com/jquery.js"></script>
     <script type="text/javascript" src="/javascripts/ui/ui.core.js" ></script>
     <script type="text/javascript" src="/javascripts/ui/ui.datepicker.js" ></script>
+    <script type="text/javascript" src="/javascripts/ui/ui.tabs.js" ></script>
     <script type="text/javascript" src="/javascripts/ui/i18n/jquery-ui-i18n.js" ></script>
 
     <script type="text/javascript" src="/javascripts/jquery.tmpl.js" ></script>
@@ -15,6 +16,8 @@
     <script type="text/javascript" src="/javascripts/offline_i18n.js" ></script>
     <script type="text/javascript" src="/javascripts/offline_autoeval_data.js" ></script>
 
+    <script type="text/javascript" src="/javascripts/date-<%= I18n.locale %>.js" ></script>
+    
     <script type="text/javascript" src="/javascripts/olmis_date.js" ></script>
     <script type="text/javascript" src="/javascripts/olmis_common.js" ></script>
     <script type="text/javascript" src="/javascripts/olmis_offline.js" ></script>
@@ -27,6 +30,44 @@
     <link rel="stylesheet" href="/stylesheets/theme.css" type="text/css" />
     <link rel="stylesheet" href="/stylesheets/hcvisit.css" type="text/css" />
     <link rel="stylesheet" href="/stylesheets/hcvisit_custom.css" type="text/css" />
+    
+    <script type="text/javascript">
+
+    function generate_olmis_instance() {
+      var instance = {};
+      
+      <% ([HealthCenterVisit] + HealthCenterVisit.tables).each do |t| -%>
+        <%- begin
+          data = render(:partial => '/data_sources/offline/' + t.xforms_group_name + '_data.js', :locals => { :klass => t } )
+        rescue ActionView::MissingTemplate
+          data = '';
+        end -%>
+      instance.<%= t.xforms_group_name %> = JSON.parse(<%= data.to_json %>);
+      <% end %>
+      
+      return instance;
+    }
+    
+    function reset_olmis_bindings() {
+     <%- ([HealthCenterVisit] + HealthCenterVisit.tables).each do |t| -%>
+        <%- begin
+          bind = render(:partial => '/data_sources/offline/' + t.xforms_group_name + '_bind.js', :locals => { :klass => t } )
+        rescue ActionView::MissingTemplate
+          bind = '';
+        end -%>
+        (function(data) { 
+          try { 
+            eval(<%= bind.to_json() %>); 
+          } catch (e) {
+            if (console)
+              console.exception(e);
+          }
+        })(olmis_instance.<%= t.xforms_group_name %>);
+     <%- end -%>
+    }
+    
+    </script>
+    
     <script type="text/html" id="selector_tmpl">
       <option />
       {{each(i,dz) data}}
@@ -149,32 +190,43 @@
 
     <div id="form" class="container">
       <h3 id="current_hc">
-        <span class="selected_health_center"></span>,
+        <span class="selected_health_center_name"></span>,
         <span class="selected_visit_date_period"></span>
 
         <%= link_to_function h(t(".go_to_hc_selection")), "show_visits()" %>
       </h3>
       
+      <form id="visit-form" onsubmit="serialize_visit(); return false;">
       <div>
         <div id="tab-menu" class="tab_graphs ui-tabs">
           <ul>
             <% (['visit'] + HealthCenterVisit.screens).each do |screen| %>
               <li id="tab-<%= screen %>">
-                <a href="#screen:<%= screen %>">
+                <a href="#screen-<%= screen %>">
                   <%= h(t("visits.health_center_monthly_tasks.#{ screen }")) %>
                 </a>
               </li>
             <%- end -%>
           </ul>
           <% (['visit'] + HealthCenterVisit.screens).each do |screen| %>
-            <div id="screen:<%= screen %>" class="ui-tabs-hide">
-              
-            </div>
+             <% klass = HealthCenterVisit.klass_by_screen[screen]
+               layout = "/data_sources/offline/screen"
+               begin %>
+                 <%= render(:partial => "/data_sources/offline/#{screen}_screen", :layout => layout, :locals => { :screen => screen }) %><%
+               rescue ActionView::MissingTemplate
+                 begin %>
+               <%= render(:partial => "/data_sources/offline/#{klass.xforms_group_name}_screen", :layout => layout, :locals => { :klass => klass, :screen => screen } ) %><%
+                 rescue ActionView::MissingTemplate
+                   raise "Can't find _#{klass.xforms_group_name}_screen"
+                 end
+               end %>
           <%- end -%>
+          <br clear="both" />
         </div>
-
-        <%= javascript_tag "jQuery('#tab-menu').bind('tabsshow', function(event, ui) {  } )" %>
-      </div><!-- bind="context-selected" -->
+      </div>
+      </form>
+      <%= javascript_tag "jQuery('#tab-menu').tabs()" %>
+      <%= javascript_tag "jQuery('#tab-menu').bind('tabsshow', function(event, ui) {  } )" %>
     </div>
     
     <div id="status_footer">

@@ -176,14 +176,18 @@ class HealthCenterVisit < ActiveRecord::Base
 
   def self.tables
     [ EquipmentStatus ]
-    Olmis.tally_klasses + [Inventory, EquipmentStatus, FridgeStatus, StockCardStatus] + Olmis.additional_visit_klasses
+    #Olmis.tally_klasses + [Inventory, EquipmentStatus, FridgeStatus, StockCardStatus] + Olmis.additional_visit_klasses
   end
-  
+
   def self.screens
     [ 'equipment_status' ]
-    Olmis.configuration['visit_screens']
+    #Olmis.configuration['visit_screens']
   end
-  
+
+  def self.xforms_group_name
+    'health_center_visit'
+  end
+
   def entry_counts=(c)
     @counts = c
   end

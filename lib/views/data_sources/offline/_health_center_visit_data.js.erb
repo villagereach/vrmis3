@@ -1,0 +1,4 @@
+<%= Hash[*%w(visited_at non_visit_reason notes other_non_visit_reason visit_month visited vehicle_id).map { |field|
+    [field, '']
+  }.flatten].to_json %>
+

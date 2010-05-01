@@ -23,7 +23,7 @@ $(document).ready(function() {
   $("#vdp_selector", this).linkBoth("val", data_instance.selected_values, "visit_date_period");
 
   for (var x in data_instance.selected_values) {
-    $(".selected_" + x).linkFrom("html", data_instance.selected_values, x);
+    $(".selected_" + x).linkFrom("html", data_instance.selected_values, x);    
     
     $(".selected_" + x + "_name").linkFrom(
       "html", 

@@ -1,0 +1,42 @@
+<% content_for :actions do %>
+  <%= javascript_tag "jQuery('#tab-menu').bind('tabsshow', function(event, ui) { set_equipment_notes_area_size() } )" %>
+<% end %>
+
+    <table class="equipment spreadsheet">
+      <thead>
+        <tr>
+          <th></th>
+          <th><%= h(t("visits.health_center_equipment.present")) %></th>
+          <th><%= h(t("visits.health_center_equipment.working")) %></th>
+          <th><%= h(t("visits.health_center_equipment.notes")) %></th>
+        </tr>
+      </thead>
+      <tbody>
+      <%- EquipmentType.active.sort.each_with_index do |type, idx|
+              id = "equipment_status-#{type.code}" -%>
+          <tr>
+            <th><%= h type.label %></th>
+            <td>
+              <%- [ [ t("yes"), "true" ], [ t("no"), "false" ], [ t("NR"), "nr" ] ].each do |label,value| -%>
+              <input type="radio" value="<%= value %>" name="<%= id %>-present" id="<%= id %>-present-<%= value %>" checked="false">
+              <label for="<%= id %>-present"><%= h(label) %></label>
+              <%- end -%>
+              <!-- <xf:alert><%= h(t("data_sources.hcvisit.errors.select_an_option")) %></xf:alert> -->
+            </td>
+            <td>
+              <%- [ [ t("yes"), "true" ], [ t("no"), "false" ], [ t("NR"), "nr" ] ].each do |label,value| -%>
+              <input type="radio" value="<%= value %>" name="<%= id %>-working" id="<%= id %>-working-<%= value %>" checked="false">
+              <label for="<%= id %>-working"><%= h(label) %></label>
+              <%- end -%>
+              <!-- <xf:alert><%= h(t("data_sources.hcvisit.errors.select_an_option")) %></xf:alert> -->
+            </td>
+            <%- if idx == 0 -%>
+              <td rowspan="<%= EquipmentType.count %>">
+                <textarea id="equipment-notes" name="equipment-notes"></textarea>
+              </td>
+            <%- end -%>
+          </tr>
+        <%- end -%>
+      </tbody>
+    </table>
+
