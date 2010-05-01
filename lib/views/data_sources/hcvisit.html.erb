@@ -50,7 +50,7 @@
     
     function reset_olmis_bindings() {
 
-      h = $('#visit-form').html();
+      var h = $('#visit-form').html();
       $('#visit-form').html(h);
 
       <%- ([HealthCenterVisit] + HealthCenterVisit.tables).each do |t| -%>
