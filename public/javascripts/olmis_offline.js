@@ -992,7 +992,6 @@ jQuery(document).ready(function() {
   show_container(containers['login']);
   $('#saved-forms-control').change(select_visit);
   
-  $('#visit-form *:input').blur(serialize_visit);
   
   setup_visits();
   setup_visit_search();
