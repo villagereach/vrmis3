@@ -9,7 +9,7 @@
         xmlns:ajx="http://www.ajaxforms.net/2006/ajx" 
         xmlns:olmis="http://openlmis.org/xpath-functions"
         lang="<%= I18n.locale %>"
-        manifest="<%= manifest_url(:locale => I18n.locale) %>">
+        manifest="<%= manifest_url(:format => 'xforms', :locale => I18n.locale) %>">
   <head>
     <title><%= h(t("health_center_visit")) %></title>
     <script type="text/javascript" src="/javascripts/jquery.min.js" />

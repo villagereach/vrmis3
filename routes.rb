@@ -41,11 +41,13 @@
   map.xforms_list  '/formList',             :controller => 'data_sources', :action => 'list_xforms',  :conditions => { :method => :get }
   map.xform_submit '/submission',           :controller => 'data_sources', :action => 'submit_xform', :conditions => { :method => :post }
 
-  map.manifest     '/xforms/manifest.txt',  :controller => 'data_sources', :action => 'manifest',     :conditions => { :method => :get }
+  map.manifest     '/xforms/manifest.:format', :controller => 'data_sources', :action => 'manifest',  :conditions => { :method => :get }
   map.xform_index  '/xforms',               :controller => 'data_sources', :action => 'index',        :conditions => { :method => :get }
   map.xform        '/xforms/:name.:format', :controller => 'data_sources', :action => 'get_xform',    :conditions => { :method => :get }
   map.data_sources        '/upload',        :controller => 'data_sources', :action => 'index',        :conditions => { :method => :get }
   map.data_sources_import '/upload',        :controller => 'data_sources', :action => 'submit_xform', :conditions => { :method => :post }
+
+  map.offline_visit '/offline/:name', :controller => 'data_sources', :action => 'get_offline', :conditions => { :method => :get }
 
   map.javascript '/javascripts/:action.js', :controller => 'javascripts', :format => 'js'
 
