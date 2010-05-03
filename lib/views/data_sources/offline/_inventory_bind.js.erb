@@ -1,0 +1,11 @@
+<%- Inventory.possible_fields.each do |type, package, screen| -%>
+  if (!data.<%= package.code %>) {
+    data.<%= package.code %> = {};
+    data.<%= package.code %>.<%= type %> = { nr: false, qty: '' };
+  }
+  $('#inventory_<%= package.code %>_<%= type %>-qty').linkFrom('val', data.<%= package.code %>.<%= type %>, 'qty');
+  <%- if Inventory.nullable_types.include?(type) -%>
+    $('#inventory_<%= package.code %>_<%= type %>-nr').linkFrom('checked', data.<%= package.code %>.<%= type %>, 'nr');
+  <%- end -%>
+<%- end -%>
+
