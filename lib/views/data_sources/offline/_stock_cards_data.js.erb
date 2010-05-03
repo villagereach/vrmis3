@@ -1,0 +1,2 @@
+<%= Hash[*StockCard.active.map { |type| [type.code, { 'have' => '', 'use' => '' }] }.flatten].to_json %>
+    

@@ -175,12 +175,12 @@ class HealthCenterVisit < ActiveRecord::Base
   end
 
   def self.tables
-    [ EquipmentStatus ]
+    [ EquipmentStatus, StockCardStatus ]
     #Olmis.tally_klasses + [Inventory, EquipmentStatus, FridgeStatus, StockCardStatus] + Olmis.additional_visit_klasses
   end
 
   def self.screens
-    [ 'equipment_status' ]
+    [ 'equipment_status', 'stock_cards' ]
     #Olmis.configuration['visit_screens']
   end
 
