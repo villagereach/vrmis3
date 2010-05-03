@@ -54,6 +54,9 @@
       var h = $('#visit-form').html();
       $('#visit-form').html(h);
 
+      $('#visit-form *:input').blur(serialize_visit);
+      $('#tab-menu').tabs();
+
       <%- ([HealthCenterVisit] + HealthCenterVisit.tables).each do |t| -%>
         <%- begin
           bind = render(:partial => '/data_sources/offline/' + t.xforms_group_name + '_bind.js', :locals => { :klass => t } )
