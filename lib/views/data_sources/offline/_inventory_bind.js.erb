@@ -3,9 +3,13 @@
     data.<%= package.code %> = {};
     data.<%= package.code %>.<%= type %> = { nr: false, qty: '' };
   }
-  $('#inventory_<%= package.code %>_<%= type %>-qty').linkFrom('val', data.<%= package.code %>.<%= type %>, 'qty');
+  $('#inventory_<%= package.code %>_<%= type %>-qty').
+    linkFrom('val', data.<%= package.code %>.<%= type %>, 'qty').
+    linkTo('val', data.<%= package.code %>.<%= type %>, 'qty');
   <%- if Inventory.nullable_types.include?(type) -%>
-    $('#inventory_<%= package.code %>_<%= type %>-nr').linkFrom('checked', data.<%= package.code %>.<%= type %>, 'nr');
+    $('#inventory_<%= package.code %>_<%= type %>-nr').
+      linkFrom('checked', data.<%= package.code %>.<%= type %>, 'nr').
+      linkTo('checked', data.<%= package.code %>.<%= type %>, 'nr');
   <%- end -%>
 <%- end -%>
 
