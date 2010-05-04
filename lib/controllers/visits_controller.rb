@@ -42,6 +42,13 @@ class VisitsController < OlmisController
         :remote_ip => request.remote_ip,
         :content_type => request.headers['CONTENT_TYPE'].to_s,
         :data => request.raw_post)
+    elsif params[:format] == 'json'
+      submission = DataSubmission.create(
+        :user => @current_user, 
+        :data_source => DataSource['JsonVisitDataSource'],
+        :remote_ip => request.remote_ip,
+        :content_type => request.headers['CONTENT_TYPE'].to_s,
+        :data => request.raw_post)
     else
       submission = DataSubmission.create(
         :user => @current_user, 
