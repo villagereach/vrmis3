@@ -61,8 +61,6 @@
       var h = $('#visit-form').html();
       $('#visit-form').html(h);
 
-      $('#visit-form *:input').blur(serialize_visit);
-      
       <%- ([HealthCenterVisit] + HealthCenterVisit.tables).each do |t| -%>
         if (!olmis_instance.<%= t.xforms_group_name %>)
           olmis_instance.<%= t.xforms_group_name %> = {}; 
@@ -83,13 +81,7 @@
 
      <%- end -%>
 
-     $('#visit-form').setupValidation();
-
-     $('#tab-menu').tabs({
-         show: function(event, ui) {
-           $('*:input', $(ui.panel)).valid();
-         }
-     });
+     initialize_visit();
     }
     
     </script>

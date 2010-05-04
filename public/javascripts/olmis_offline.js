@@ -1043,27 +1043,20 @@ function add_screen_sequence_tags() {
          });
 }
 
-function xf_user_init() {
-  // Run actions that must be performed *after* XSLTForms init() runs
-/*
-  fixup_nr_checkboxes();  
-  add_screen_sequence_tags();
-  jQuery('div.datepicker').each(function(i, e) {
-      var alt = jQuery('.alt_date', jQuery(e.parentNode))[0]
-      var altid;
-      if (alt)
-        altid = alt.getAttribute('id')
-      
-      setup_datepicker(jQuery('input[type="text"]', jQuery(e))[0],
-        { 
-          onClose: function(dateText, inst) {
-            XMLEvents.dispatch($('olmis'), "xforms-value-changed");
-          },
-          altField: '#' + altid + ' input',
-          altFormat: jQuery.datepicker.ISO_8601
-        }
-      );
+function initialize_visit() {
+  // Run actions that must be performed *after* health center is selected
+  $('#visit-form *:input').blur(serialize_visit);
+
+  $('#visit-form').setupValidation();
+
+  $('#tab-menu').tabs({
+    show: function(event, ui) {
+      $('*:input', $(ui.panel)).valid();
+    }
   });
-  */
+
+  jQuery('div.datepicker').each(function(i, e) {
+    setup_datepicker($('input[type="text"]', $(e))[0], {})
+  });
 }
 
