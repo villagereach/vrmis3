@@ -4,7 +4,7 @@
           <%= h(t("visits.health_center_monthly_visit.do_you_have_epi_data")) %>
           <%= h(t("epi_month")) %>: (<span link_from="olmis_instance.health_center_visit" attr="epi_month" transform="month_of_year"></span>)
         </label>
-        <select id="epi_data_ready">
+        <select id="epi_data_ready" name="epi_data_ready">
           <option value="true"><%= h(t("yes")) %></option>
           <option value="false"><%= h(t("no")) %></option>
         </select>
@@ -18,7 +18,7 @@
             sub("{{name}}",%Q{<span class="selected_health_center_name"></span>}).
             sub("{{month}}",%Q{<span class="selected_month_of_year"></span>}) %>
       </label>
-      <select id="visited">
+      <select required id="visited" name="visited">
         <option value="true"><%= h(t("visits.health_center_monthly_visit.yes_i_visited")) %>
         <option value="false"><%= h(t("visits.health_center_monthly_visit.no_noone_visited")) %>
       </select>
@@ -29,20 +29,17 @@
     <div>
       <div class="datepicker">
         <label for="visited_at"><%= h(t("visits.health_center_monthly_visit.date")) %></label>
-        <input type="date" id="visited_at">
-        <!-- <xf:alert><%= h(t("data_sources.hcvisit.errors.date_for_visit_month")) %></xf:alert> -->
-        <!-- <xf:setvalue bind="visited_at" value="olmis:date_from_local(instance('data')/selected-values/visit_date)" /> -->
+        <input required type="date" id="visited_at" name="visited_at" >
       </div>
     </div>
     <div>
       <label for="vehicle_id"><%= h(t("visits.health_center_monthly_visit.vehicle_code")) %></label>
-      <input id="vehicle_id" type="text"></xf:input>
-      <!-- <xf:alert><%= h(t("data_sources.hcvisit.errors.vehicle_id")) %></xf:alert> -->
+      <input id="vehicle_id" name="vehicle_id" type="text"></xf:input>
     </div>
 
     <div id="non_visit_reason_selection">
      <label for="non_visit_reason"><%= h(t("visits.health_center_monthly_visit.reason_for_not_visiting")) %></label>
-      <select id="non_visit_reason">
+      <select id="non_visit_reason" name="non_visit_reason">
         <%- %w(road_problem vehicle_problem health_center_closed other).each do |reason| -%>
           <option value="<%= h reason %>"><%= h(t("HealthCenterVisit.#{reason}")) %></option>
         <%- end -%>
@@ -51,6 +48,5 @@
 
     <div>
       <textarea id="other_non_visit_reason"></textarea>
-      <!-- <xf:alert><%= h(t("data_sources.hcvisit.errors.non_visit_reason")) %></xf:alert> -->
     </div>
     

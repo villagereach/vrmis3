@@ -115,7 +115,7 @@ select#saved-forms-control option {
   padding: 1px 0 1px 20px; 
   background-image: url(/images/icons/silk/exclamation.png);
   /*background-image: url(/xforms/xsltforms/icon_error.gif);*/
-  background-repeat: no-repeat; 
+  background-repeat: no-repeat;
   background-position: left middle;
 }
 select#saved-forms-control option:hover {
@@ -583,13 +583,17 @@ table.spreadsheet div.tally {
   position: relative;
   min-width: 75px;
 }
+/*
 table.spreadsheet div.tally > span {
   display: table;
   margin: 0;
 }
+
 table.spreadsheet div.tally > span span.value {
   display: table-cell;
 }
+*/
+
 table.spreadsheet div.tally input[type="text"] {
   border: 1px solid gray;
   display: block;
@@ -836,6 +840,7 @@ body {
 #tab-menu > ul.ui-tabs-nav > li { display: block; float: none; margin: 5px 0; padding: 0; border: none!important;  }
 #tab-menu > ul.ui-tabs-nav > li.ui-tabs-selected { background-color: #f6f6f6; -moz-border-radius: 0; -webkit-border-radius: 0; border-radius: 0; }
 #tab-menu > ul.ui-tabs-nav > li.ui-tabs-selected a { border-width: thin; border-style: solid; border-color: green #f6f6f6 green green; color: black;} 
+
 /*
 #tab-menu .menu-tab {
   display: block;
@@ -864,3 +869,16 @@ body {
   text-decoration: none;
 }
 */
+
+.error .notice { 
+  display: inline; 
+  background-image: url(/images/icons/silk/exclamation.png); 
+  background-repeat: no-repeat; 
+  background-color: inherit;
+  border: none; 
+  margin: none; 
+  padding: 0 8px; 
+}
+
+.notice { display: none; }
+

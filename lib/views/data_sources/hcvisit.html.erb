@@ -11,7 +11,12 @@
 
     <script type="text/javascript" src="/javascripts/jquery.tmpl.js" ></script>
     <script type="text/javascript" src="/javascripts/jquery.datalink.js" ></script>
+
+    <script type="text/javascript" src="/javascripts/jquery-validate/jquery.validate.js" ></script>
+    <script type="text/javascript" src="/javascripts/html5-pseudo.jquery.js" ></script>
     
+    <script type="text/javascript" src="/javascripts/jquery-validate/localization/messages_<%= I18n.locale %>.js"></script>
+
     <script type="text/javascript" src="/javascripts/olmis_datalink.js" ></script>
     
     <script type="text/javascript" src="/javascripts/offline_i18n.js" ></script>
@@ -23,7 +28,9 @@
     <script type="text/javascript" src="/javascripts/olmis_common.js" ></script>
     <script type="text/javascript" src="/javascripts/olmis_offline.js" ></script>
     <script type="text/javascript" src="/javascripts/olmis_formgrid.js" ></script>
-    
+
+    <script type="text/javascript" src="/javascripts/olmis_validation.js" ></script>
+
     <script type="text/javascript" src="/fancybox/jquery.fancybox.js" ></script>
     <link rel="stylesheet" href="/fancybox/jquery.fancybox.css" type="text/css" />
     <link rel="stylesheet" href="/stylesheets/ui/jquery-ui-1.7.2.custom.css" type="text/css" />
@@ -55,8 +62,15 @@
       $('#visit-form').html(h);
 
       $('#visit-form *:input').blur(serialize_visit);
-      $('#tab-menu').tabs();
 
+      $('#visit-form').setupValidation();
+
+      $('#tab-menu').tabs({
+          show: function(event, ui) {
+            $('*:input', $(ui.panel)).valid();
+          }   
+      });
+      
       <%- ([HealthCenterVisit] + HealthCenterVisit.tables).each do |t| -%>
         <%- begin
           bind = render(:partial => '/data_sources/offline/' + t.xforms_group_name + '_bind.js', :locals => { :klass => t } )

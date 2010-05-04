@@ -14,7 +14,7 @@
             <%- %w(have use).each do |state| -%>
               <td>
                 <%- [ [ h(t("yes")), "true" ], [ h(t("no")), "false" ], [ h(t("NR")), "nr" ] ].each do |label,value| -%>
-                  <input type="radio" value="<%= value %>" name="<%= id %>-<%= state %>" id="<%= id %>-<%= state %>-<%= value %>" checked="false">
+                  <input required type="radio" value="<%= value %>" name="<%= id %>-<%= state %>" id="<%= id %>-<%= state %>-<%= value %>" checked="false">
                   <label for="<%= id %>-<%= state %>"><%= h label %></label>
                 <%- end -%>
                 <!--xf:alert><%= h(t("data_sources.hcvisit.errors.select_an_option")) %></xf:alert-->
