@@ -984,6 +984,8 @@ function finish_upload() {
 function serialize_visit() {
   var key = get_selected_value('visit_date_period') + '/' + get_selected_value('health_center');
   localStorage[key] = JSON.stringify(olmis_instance);
+  set_hc_form_status(key, $('#visit-form').valid());
+  setup_visits();
 }
 
 
