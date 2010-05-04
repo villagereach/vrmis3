@@ -1,8 +1,10 @@
 <%- Inventory.possible_fields.each do |type, package, screen| -%>
-  if (!data.<%= package.code %>) {
+  if (!data.<%= package.code %>)
     data.<%= package.code %> = {};
+
+  if (!data.<%= package.code %>.<%= type %>)
     data.<%= package.code %>.<%= type %> = { nr: false, qty: '' };
-  }
+
   $('#inventory_<%= package.code %>_<%= type %>-qty').
     linkFrom('val', data.<%= package.code %>.<%= type %>, 'qty').
     linkTo('val', data.<%= package.code %>.<%= type %>, 'qty');
