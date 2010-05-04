@@ -62,16 +62,11 @@
       $('#visit-form').html(h);
 
       $('#visit-form *:input').blur(serialize_visit);
-
-      $('#visit-form').setupValidation();
-
-      $('#tab-menu').tabs({
-          show: function(event, ui) {
-            $('*:input', $(ui.panel)).valid();
-          }   
-      });
       
       <%- ([HealthCenterVisit] + HealthCenterVisit.tables).each do |t| -%>
+        if (!olmis_instance.<%= t.xforms_group_name %>)
+          olmis_instance.<%= t.xforms_group_name %> = {}; 
+
         <%- begin
           bind = render(:partial => '/data_sources/offline/' + t.xforms_group_name + '_bind.js', :locals => { :klass => t } )
         rescue ActionView::MissingTemplate
@@ -86,6 +81,14 @@
           }
         })(olmis_instance.<%= t.xforms_group_name %>);
      <%- end -%>
+
+     $('#visit-form').setupValidation();
+
+     $('#tab-menu').tabs({
+         show: function(event, ui) {
+           $('*:input', $(ui.panel)).valid();
+         }
+     });
     }
     
     </script>
