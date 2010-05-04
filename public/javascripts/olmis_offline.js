@@ -996,6 +996,11 @@ jQuery(document).ready(function() {
   show_container(containers['login']);
   $('#saved-forms-control').change(select_visit);
   
+  try {
+    valid_forms = JSON.parse(localStorage['valid forms']) || {};
+  } catch(e) {
+    valid_forms = {};
+  }
   
   setup_visits();
   setup_visit_search();
@@ -1012,11 +1017,6 @@ jQuery(document).ready(function() {
   applicationCache.addEventListener('updateready', do_update,   true);
   applicationCache.addEventListener('cached',      do_cached,   true);
   */  
-  try {
-    valid_forms = JSON.parse(localStorage['valid forms']) || {};
-  } catch(e) {
-    valid_forms = {};
-  }
   /*
   fixup_menu_tabs();
 
