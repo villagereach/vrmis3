@@ -56,8 +56,7 @@
   map.visits_by_month         '/visits/:visit_month', :controller => 'visits', :action => 'by_month', :method => :get
   map.health_center_visit_title '/visits/:visit_month/:health_center/title', :controller => 'visits', :action => 'health_center_monthly_visit_title'
 
-  map.health_center_visit     '/visits/:visit_month/:health_center', :screen => 'visit', :controller => 'visits', :action => 'health_center_monthly_visit'
-  map.health_center_visit_format '/visits/:visit_month/:health_center.:format', :screen => 'visit', :controller => 'visits', :action => 'health_center_monthly_visit'
+  map.health_center_visit     '/visits/:visit_month/:health_center.:format', :screen => 'visit', :controller => 'visits', :action => 'health_center_monthly_visit'
 
   map.nuke_caches             '/nuke_caches', :controller => 'olmis', :action => 'nuke_caches'
 

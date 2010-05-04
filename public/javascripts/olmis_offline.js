@@ -902,11 +902,11 @@ function upload(node, do_sync) {
   var upload_button = jQuery('#upload-button').find('input');
   upload_button.attr('disabled', true);
   item.addClass('working');
-  jQuery.ajax( { 
+  $.ajax( { 
       async: do_sync,
-      contentType: 'application/xml',
+      contentType: 'application/json',
       data: localStorage[key],
-      url: '/visits/' + key + '.xml',
+      url: '/visits/' + key + '.json',
       dataType: 'html',
       type: 'PUT',
       error: function (XMLHttpRequest, textStatus, errorThrown) {      
@@ -927,27 +927,27 @@ function upload(node, do_sync) {
 }
 
 function find_correct_label(key) {
-  jQuery.ajax( { 
+  $.ajax( { 
       async: true,
       data: null,
       url: '/visits/' + key + '/title',
       dataType: 'html',
       type: 'GET',
-      success: function(data, textStatus, xhr) { jQuery('#'+key.replace('/','_')+' span').html(data); },
+      success: function(data, textStatus, xhr) { $('#'+key.replace('/','_')+' span').html(data); },
   } );
 }
 
 function upload_all() {
-  jQuery('#upload-ready li.complete').each(function(i,n) { upload(n, false) });
+  $('#upload-ready li.complete').each(function(i,n) { upload(n, false) });
 }
 
 function is_logged_in() {
-  jQuery('#other-actions a[href="#upload"]')[0].dispatchEvent(mouse_click);
+  $('#other-actions a[href="#upload"]').click();
 }
 
 function check_logged_in() {
-  jQuery('#login-login').focus();
-  jQuery.ajax( { 
+  $('#login-login').focus();
+  $.ajax( { 
       async: true,
       url: '/logged-in?',
       type: 'GET',
@@ -958,10 +958,10 @@ function check_logged_in() {
 }
 
 function ajax_login() {
-  jQuery('#login-button').attr('disabled', true);
-  jQuery.ajax( { 
+  $('#login-button').attr('disabled', true);
+  $.ajax( { 
       async: true,
-      data: { 'login[username]': jQuery('#login-login').attr('value'), 'login[password]': jQuery('#login-password').attr('value') },
+      data: { 'login[username]': $('#login-login').attr('value'), 'login[password]': $('#login-password').attr('value') },
       url: '/login',
       dataType: 'html',
       type: 'POST',
@@ -971,14 +971,14 @@ function ajax_login() {
         is_logged_in();
       },
       complete: function(xhr, textStatus) {
-        jQuery('#login-button').attr('disabled', false);
+        $('#login-button').attr('disabled', false);
       }
   } );
 }
 
 function finish_upload() {
   setup_visits();
-  jQuery('#upload-uploaded ul').empty();
+  $('#upload-uploaded ul').empty();
 }
 
 function serialize_visit() {
@@ -1009,29 +1009,28 @@ jQuery(document).ready(function() {
   applicationCache.addEventListener('progress',    do_progress, true);
   applicationCache.addEventListener('updateready', do_update,   true);
   applicationCache.addEventListener('cached',      do_cached,   true);
-  
+  */  
   try {
     valid_forms = JSON.parse(localStorage['valid forms']) || {};
   } catch(e) {
     valid_forms = {};
   }
-
+  /*
   fixup_menu_tabs();
 
   go_offline();
-
-  jQuery('#other-actions a[href="#login"]').fancybox( 
+  */
+  $('#other-actions a[href="#login"]').fancybox( 
     { 'hideOnContentClick': false,
       'autoScale': false,
       'autoDimension': true,
       'onComplete': check_logged_in });
-  jQuery('#other-actions a[href="#upload"]').fancybox( 
+  $('#other-actions a[href="#upload"]').fancybox( 
     { 'hideOnContentClick': false,
       'autoScale': false,
       'autoDimension': true,
       'onComplete': setup_saved_visits,
       'onClosed': finish_upload });
-  */
 });
 
 function add_screen_sequence_tags() {
