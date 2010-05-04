@@ -582,6 +582,7 @@ table.spreadsheet div.tally {
   padding: 2px 0 14px 2px;
   position: relative;
   min-width: 75px;
+  min-height: 30px;
 }
 /*
 table.spreadsheet div.tally > span {
@@ -597,6 +598,7 @@ table.spreadsheet div.tally > span span.value {
 table.spreadsheet div.tally input[type="text"] {
   border: 1px solid gray;
   display: block;
+  float: left;
   margin: 1px 1px 0 1px;
   padding: 0;
   text-align: right;
@@ -608,17 +610,23 @@ table.spreadsheet div.tally.month-year input[type="text"] {
 }
 table.spreadsheet div.tally div.nr {
   position: absolute;
-  top: 20px;
+  top: 24px;
   left: 0;
   padding: 0;
   margin: 0;
+  font-size: 90%;
 }
+table.spreadsheet .notice {
+  margin: 0 4px;
+}
+/*
 table.spreadsheet div.tally div.nr > span {
   margin: 0;
 }
 table.spreadsheet input.xforms-value[type="text"] {
   width : 3em;
 }
+*/
 table.spreadsheet td.numeric {
   padding: 0 1em;
   text-align: right;
