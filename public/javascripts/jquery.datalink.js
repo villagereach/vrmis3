@@ -136,7 +136,11 @@ $.extend(special.attrChange, {
             if ( formElems.test( this.nodeName ) ) {
                 $(this).bind( "change.attrChange", function(ev) {
                     var self = $( this );
-                    self.trigger( "attrChange", { attrName: "val", newValue: self.val() } );
+                    if (this.getAttribute('type') == 'checkbox') {
+                      self.trigger( "attrChange", { attrName: "checked", newValue: self.attr('checked') } );
+                    } else {
+                      self.trigger( "attrChange", { attrName: "val", newValue: self.val() } );
+                    }
                 } );
             }
         },
