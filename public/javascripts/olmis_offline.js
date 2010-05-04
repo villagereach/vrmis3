@@ -845,21 +845,19 @@ function radioValueFn(val) {
 }
 
 function olmis_localize_date(value) {
-  if (value && value.match(/^\d{4}-\d{2}-\d{2}$/)) {
-    return Date.parseExact(value, 'yyyy-MM-dd').format(I18n.t('date.formats.default'));
-  } else {
-    return '';
-  }
+  try {
+    if (value && value.match(/^\d{4}-\d{2}-\d{2}$/)) {
+      return Date.parseExact(value, 'yyyy-MM-dd').format(I18n.t('date.formats.default'));
+    }
+  } catch (e) { }
+  return '';
 }
 
 function olmis_delocalize_date(value) {
   if(value) { 
     try {
       return Date.parse(value).toString('yyyy-MM-dd');
-    } catch(e) {
-      if(console)
-        console.exception(e);
-    }
+    } catch(e) { }
   }
   return '';
 }
@@ -987,6 +985,8 @@ function serialize_visit() {
   var key = get_selected_value('visit_date_period') + '/' + get_selected_value('health_center');
   localStorage[key] = JSON.stringify(olmis_instance);
 }
+
+
 
 jQuery(document).ready(function() {
   show_container(containers['login']);
