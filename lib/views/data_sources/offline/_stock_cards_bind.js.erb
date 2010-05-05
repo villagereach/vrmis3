@@ -1,8 +1,8 @@
 <%- StockCard.active.map(&:code).each do |type| -%>
   if (!data.<%= type %>)
-    data.<%= type %> = { have: '', use: '' };
+    data.<%= type %> = { have: '', used_correctly: '' };
   <%- %w(nr true false).each do |val| -%>
-    <%- %w(have use).each do |state| -%>
+    <%- %w(have used_correctly).each do |state| -%>
       <%-# 
          # radioValueFn accepts 'val' and returns a function that returns 'checked' if the new value is equal to 'val',
          # but otherwise returns false. This leaves radio buttons unchecked if the source value is not the same as the radio 
