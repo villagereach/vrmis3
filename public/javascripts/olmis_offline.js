@@ -65,12 +65,12 @@ function update_visit_navigation() {
 
 function go_to_next_screen(this_screen) {
   var t = $('#tab-menu').tabs();
-  t.tabs('select', t.tabs('option', 'selected') + 1);
+  $("#tab-" + this_screen).nextAll().not(".ui-state-disabled").first().find('a').click()
 }
 
 function go_to_previous_screen(this_screen) {
   var t = $('#tab-menu').tabs();
-  t.tabs('select', t.tabs('option', 'selected') - 1);
+  $("#tab-" + this_screen).prevAll().not(".ui-state-disabled").first().find('a').click()
 }
 
 function fixup_nr_checkboxes() {
