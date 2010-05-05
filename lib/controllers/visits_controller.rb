@@ -66,7 +66,7 @@ class VisitsController < OlmisController
       submission.status = 'success'
       submission.save
 
-      if params[:format] == 'xml'
+      if %w(xml json).include?(params[:format])
         render :text => 'ok'
       else
         if params[:save_and_continue] && link = helpers.next_link      
