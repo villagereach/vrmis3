@@ -643,23 +643,18 @@ table.spreadsheet td.numeric {
   padding: 0 1em;
   text-align: right;
 }
-#case-visit .xforms-textarea textarea {
+#screen-visit textarea {
   width: 25em;
-  height: 2em;
+  height: 4em;
   margin: 0;
 }
-#case-visit label {
+#screen-visit label {
   margin-right: 4px;
 }
-#case-visit .block-form .xforms-input,
-#case-visit .block-form .xforms-select1,
-#case-visit .block-form .xforms-textarea {
-  margin: 0;
+#non_visit_reason {
+  margin-bottom: 0;
 }
-#case-visit .xforms-group {
-  margin-bottom: 1em;
-}
-div.datepicker input[type="text"] {
+div.datepicker input[type="text"], div.datepicker input[type="date"] {
   width: 8em !important;
   letter-spacing: 2px;
 }
