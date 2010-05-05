@@ -474,11 +474,10 @@ function select_location() {
 }
 
 function show_visits() {
-  // If no month is currently selected, autoselect the first month that is not finished
-  //if (jQuery('#visit-month-menu span.selected').length === 0) {
-  //  jQuery('#visit-month-menu li:not(.accept):first').find('span').click();
-  //}
   show_container(containers['hc']);
+  $('input.hasDatepicker').each(function(i, e) {
+    $(e).datepicker('destroy');
+  });
 }
 
 function show_main_page() {
@@ -1094,8 +1093,8 @@ function initialize_visit() {
   
   $('#visit-form *:input').blur(serialize_visit);
   $('#visit-form').setup_selected_values();
-  
-  jQuery('div.datepicker').each(function(i, e) {
+
+  $('div.datepicker').each(function(i, e) {
     setup_datepicker($('input[type="text"]', $(e))[0], {})
   });
 
