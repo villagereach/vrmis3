@@ -1,7 +1,7 @@
 <%= 
-  { 'visited' => 'true' }.
+  { 'visited' => 'true', 'non_visit_reason' => 'other' }.
   merge(
-    Hash[*%w(visited_at non_visit_reason notes other_non_visit_reason vehicle_id).map { |field|
+    Hash[*%w(visited_at other_non_visit_reason vehicle_id).map { |field|
       [field, '']
     }.flatten]
   ).to_json %>
