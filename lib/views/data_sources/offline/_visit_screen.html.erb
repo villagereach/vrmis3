@@ -1,15 +1,21 @@
     <div id="was_hc_visited">
-      <label for="visited">
+      <p class="radio_label">
         <%= (I18n.backend.send(:lookup, I18n.locale, "visits.health_center_monthly_visit.was_this_visited") || '').
           sub("{{name}}",%Q{<span class="selected_health_center_name"></span>}).
              sub("{{month}}",%Q{<span class="selected_visit_date_period_name"></span>}) %>
-      </label>
-      <select required id="visited" name="visited">
-        <option value="true"><%= h(t("visits.health_center_monthly_visit.yes_i_visited")) %>
-        <option value="false"><%= h(t("visits.health_center_monthly_visit.no_noone_visited")) %>
-      </select>
+      </p>
+      <ul id="visited" class="radio">
+        <li>
+          <input type="radio" value="true" name="health_center_visit[visited]" id="health_center_visit-visited-true" />
+          <label for="health_center_visit-visited-true"><%= h(t("visits.health_center_monthly_visit.yes_i_visited")) %></label>
+        </li>
+        <li>
+          <input type="radio" value="false" name="health_center_visit[visited]" id="health_center_visit-visited-false" />
+          <label for="health_center_visit-visited-false"><%= h(t("visits.health_center_monthly_visit.no_noone_visited")) %></label>
+        </li>
+      </ul>
       
-      <%= javascript_tag "$('#visited').change(update_visit_navigation)" %>
+      <%= javascript_tag "$('#visited input').change(update_visit_navigation)" %>
     </div>
 
     <div id="visited_data">
