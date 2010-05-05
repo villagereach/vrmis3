@@ -6,11 +6,11 @@
       </p>
       <ul id="visited" class="radio">
         <li>
-          <input type="radio" value="true" name="health_center_visit[visited]" id="health_center_visit-visited-true" />
+          <input type="radio" value="true" name="health_center_visit-visited" id="health_center_visit-visited-true" />
           <label for="health_center_visit-visited-true"><%= h(t("visits.health_center_monthly_visit.yes_i_visited")) %></label>
         </li>
         <li>
-          <input type="radio" value="false" name="health_center_visit[visited]" id="health_center_visit-visited-false" />
+          <input type="radio" value="false" name="health_center_visit-visited-" id="health_center_visit-visited-false" />
           <label for="health_center_visit-visited-false"><%= h(t("visits.health_center_monthly_visit.no_noone_visited")) %></label>
         </li>
       </ul>
@@ -32,12 +32,17 @@
 
     <div id="unvisited_data">
       <div id="non_visit_reason_selection">
-       <label for="non_visit_reason"><%= h(t("visits.health_center_monthly_visit.reason_for_not_visiting")) %></label>
-        <select id="non_visit_reason" name="non_visit_reason">
-          <%- %w(road_problem vehicle_problem health_center_closed other).each do |reason| -%>
-            <option value="<%= h reason %>"><%= h(t("HealthCenterVisit.#{reason}")) %></option>
-          <%- end -%>
-        </select> 
+       <p class="radio_label"><%= h(t("visits.health_center_monthly_visit.reason_for_not_visiting")) %></p>
+       <div class="required-group">
+          <ul id="non_visit_reason" class="radio">
+            <%- %w(road_problem vehicle_problem health_center_closed other).each do |reason| -%>
+              <li>
+                <input type="radio" value="<%= h reason %>" name="health_center_visit-non_visit_reason" id="health_center_visit-non_visit_reason-<%= h reason %>" />
+                <label for="health_center_visit-non_visit_reason-<%= h reason %>"><%= h(t("HealthCenterVisit.#{reason}")) %></label>
+              </li>
+            <%- end -%>
+          </ul>
+       </div>
       </div>
 
       <div>

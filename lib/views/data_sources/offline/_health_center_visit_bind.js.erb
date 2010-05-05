@@ -34,13 +34,18 @@ function hcvisit_non_visit_reason_other(ev) {
 $('#visited input').attrChange('val', hcvisit_visited);
 $('#non_visit_reason').attrChange('val', hcvisit_non_visit_reason_other);
 
-<% %w(non_visit_reason notes other_non_visit_reason vehicle_id).each do |field| %>
+<% %w(other_non_visit_reason vehicle_id).each do |field| %>
   $('#<%= field %>').linkFrom('val', data, '<%= field %>').linkTo('val', data, '<%= field %>');
 <% end %>
 
 <%- %w(true false).each do |val| -%>
   $('#health_center_visit-visited-<%= val %>').linkFrom('checked', data, 'visited', radioValueFn('<%= val %>'));
   $('#health_center_visit-visited-<%= val %>').linkTo('val', data, 'visited');
+<%- end -%>
+
+<%- %w(road_problem vehicle_problem health_center_closed other).each do |reason| -%>
+  $('#health_center_visit-non_visit_reason-<%= reason %>').linkFrom('checked', data, 'non_visit_reason', radioValueFn('<%= reason %>'));
+  $('#health_center_visit-non_visit_reason-<%= reason %>').linkTo('val', data, 'non_visit_reason');
 <%- end -%>
 
 $('#visited_at').linkFrom('val', data, 'visited_at', olmis_localize_date);
