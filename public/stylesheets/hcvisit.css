@@ -643,6 +643,15 @@ table.spreadsheet td.numeric {
   padding: 0 1em;
   text-align: right;
 }
+
+table.equipment thead th {
+  text-align: center;
+}
+table.equipment td {
+  padding: 0 0.5em;
+  white-space: nowrap;
+}
+
 #screen-visit textarea {
   width: 25em;
   height: 4em;
@@ -659,49 +668,52 @@ div.datepicker input[type="text"], div.datepicker input[type="date"] {
   letter-spacing: 2px;
 }
 
-#case-epi_inventory .inventory thead th:first-child,
-#case-rdt_inventory .inventory thead th:first-child {
+#screen-epi_inventory .inventory thead th:first-child,
+#screen-rdt_inventory .inventory thead th:first-child {
   text-align: center;
 }
 
-#case-child_vaccination_tallies tr:first-child th,
-#case-adult_vaccination_tallies tr:first-child th {
+#screen-child_vaccination_tallies tr:first-child th,
+#screen-adult_vaccination_tallies tr:first-child th {
   border-bottom: 0;
   text-align: center;
 }
 
-#case-cold_chain div.fridge-id {
+#screen-cold_chain div.fridge-id {
   margin: 0 1%;
   padding: 0;
 }
-#case-cold_chain div.two-column > div {
+#screen-cold_chain div.two-column > div {
   float: left;
   margin: 0 1%;
   width: 48%;
 }
+/*
 #case-cold_chain div.xforms-group-content {
   clear: both;
 }
 #case-cold_chain div.xforms-repeat-item {
   margin: 1em 0;
 }
-#case-cold_chain .fridge-id input[type="text"] {
+*/
+#screen-cold_chain .fridge-id input[type="text"] {
   width: 80px;
 }
-#case-cold_chain .fridge-temp span.value {
+#screen-cold_chain .fridge-temp span.value {
   display: block;
 }
-#case-cold_chain .fridge-temp input[type="text"] {
+#screen-cold_chain .fridge-temp input[type="text"] {
   margin: 0 2px 0 4px;
   width: 20px;
 }
-#case-cold_chain .xforms-textarea textarea {
+#screen-cold_chain textarea {
   height: 4em;
   width: 90%;
 }
-#case-cold_chain label {
+#screen-cold_chain label {
   margin-right: 0.5em;
 }
+/*
 #case-cold_chain .block-form .xforms-input,
 #case-cold_chain .block-form .xforms-select,
 #case-cold_chain .block-form .xforms-select1,
@@ -711,6 +723,7 @@ div.datepicker input[type="text"], div.datepicker input[type="date"] {
 #case-cold_chain .xforms-group {
   margin-bottom: 1em;
 }
+*/
 /* }}} */
 
 /* the goal of this is to not show the success icon next to values that aren't form controls
