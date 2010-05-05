@@ -1,8 +1,54 @@
-<% %w(non_visit_reason notes other_non_visit_reason visit_month visited vehicle_id).each do |field| %>
+function hcvisit_visited(ev) {
+  var disabled = [];
+
+  if (ev.newValue == 'true') {
+    $('#unvisited_data').hide();
+    $('#visited_data').show();
+
+    $('#unvisited_data *:input').removeClass('enabled');
+    $('#visited_data *:input').addClass('enabled');
+  } else {
+    disabled = <%= (1...HealthCenterVisit.screens.length).select { |i|
+      HealthCenterVisit.klass_by_screen[HealthCenterVisit.screens[i]].depends_on_visit?
+    }.to_json %>;
+    $('#unvisited_data').show();
+    $('#visited_data').hide();
+
+    $('#unvisited_data *:input').addClass('enabled');
+    $('#visited_data *:input').removeClass('enabled');
+  }
+
+  $('#tab-menu').data('disabled.tabs', disabled);
+}
+
+function hcvisit_non_visit_reason_other(ev) {
+  if (ev.newValue == 'other') {
+    $('#other_non_visit_reason').show();
+    $('#other_non_visit_reason').addClass('enabled');
+  } else {
+    $('#other_non_visit_reason').hide();
+    $('#other_non_visit_reason').removeClass('enabled');
+  }
+}
+
+$('#visited').attrChange('val', hcvisit_visited);
+$('#non_visit_reason').attrChange('val', hcvisit_non_visit_reason_other);
+
+<% %w(non_visit_reason notes other_non_visit_reason visited vehicle_id).each do |field| %>
 $('#<%= field %>').linkFrom('val', data, '<%= field %>').linkTo('val', data, '<%= field %>');
 <% end %>
+
 $('#visited_at').linkFrom('val', data, 'visited_at', olmis_localize_date);
 $('#visited_at').linkTo('val', data, 'visited_at', olmis_delocalize_date);
-$(data).attrChange('visited_at',       function(ev) { update_visit_history({ 'visit': ev.newValue }); });
-$(data).attrChange('non_visit_reason', function(ev) { update_visit_history({ 'visit': ev.newValue }); });
+
+$(data).attrChange('visited_at',       function(ev) {
+  update_visit_history({ 'visit': ev.newValue });
+});
+
+$(data).attrChange('non_visit_reason', function(ev) {
+  update_visit_history({ 'visit': ev.newValue });
+});
+
+hcvisit_visited({ newValue: data.visited });
+hcvisit_non_visit_reason_other({ newValue: data.non_visit_reason });
 

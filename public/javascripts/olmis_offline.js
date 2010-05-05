@@ -12,6 +12,32 @@ var containers = {
   wh_before: 'warehouse-before',
   wh_after:  'warehouse-after'
 };
+
+var container_hooks = {
+  hide: {},
+  show: {},
+}
+
+container_hooks.show['location-selector'] = function() {
+  setup_visits();
+}
+
+container_hooks.hide['form'] = function() {
+  var key = get_selected_value('visit_date_period') + '/' + get_selected_value('health_center');
+  var valid = true;
+  
+  $('#tab-menu > ul > li').each(function(i,e) {
+    if(!$(e).hasClass('ui-state-disabled')) {
+      var div = $($('a', $(e)).attr('href'));
+      var inputs = $('*:input.enabled', div);
+      if (inputs.length > 0 && !inputs.valid())
+        valid = false;
+    }
+  });  
+
+  set_hc_form_status(key, valid);
+};
+
 var options = {
   months_to_show: 6,
   autoset_default_visit_date: true
@@ -27,7 +53,7 @@ function fixup_menu_tabs() {
 
 function update_visit_navigation() {
   // Adjust form container size to be at least as tall as the menu
-  jQuery("#form-contents .xforms-switch .xforms-case div.block-form").css("min-height", jQuery("#tab-menu").css("height"));
+  //jQuery("#form-contents .xforms-switch .xforms-case div.block-form").css("min-height", jQuery("#tab-menu").css("height"));
 
   // Hide the previous link on the first screen and the next link on the last screen
   var visible_tabs = jQuery("#tab-menu > ul > li:visible");
@@ -152,7 +178,7 @@ function set_active_tab(tab) {
   jQuery('.menu-tab[id="tab-'+tab+'"]').addClass('selected-tab');
 }
 
-function get_available_visit_months() {
+function get_available_visit_date_periods() {
   var now = new Date();
   var month = now.getMonth();
   var year = now.getFullYear();
@@ -180,14 +206,14 @@ function get_available_visit_months() {
   return months;
 }
 
-function setup_visit_months() {
+function setup_visit_date_periods() {
   xforms.openAction();
 
   var month_selector = jQuery('#visit-month-selector');
   var select_control = month_selector.find('select');
   select_control.empty();
 
-  var months = get_available_visit_months();
+  var months = get_available_visit_date_periods();
   for (var i = 0, l = months.length; i < l; i++) {
     var month_value = months[i][0];
     var month_text  = months[i][1];
@@ -401,8 +427,16 @@ function show_warehouse(type) {
 }
 
 function show_container( container ) {
-  jQuery('.container').hide();
-  jQuery('body #'+container).show();
+  var visible = $('body > .container:visible').attr('id')
+  
+  if (container_hooks.hide[visible])
+    container_hooks.hide[visible].call()
+
+  if (container_hooks.show[container])
+    container_hooks.show[container].call()
+  
+  jQuery('body > .container').hide();
+  jQuery('body > #'+container).show();
 }
 
 function login() {
@@ -440,7 +474,6 @@ function select_location() {
 }
 
 function show_visits() {
-  setup_visits();
   // If no month is currently selected, autoselect the first month that is not finished
   //if (jQuery('#visit-month-menu span.selected').length === 0) {
   //  jQuery('#visit-month-menu li:not(.accept):first').find('span').click();
@@ -449,6 +482,7 @@ function show_visits() {
 }
 
 function show_main_page() {
+   
   set_selected_value('health_center', '');
   set_selected_value('visit_period_selected',false);
   show_or_hide_upload_link();
@@ -491,7 +525,7 @@ function update_visit_history(obj) {
   // this data is to support the offline autoeval report, please see offline_autoeval.js.erb 
   
   var health_center = get_selected_value('health_center');
-  var date_period   = get_selected_value('visit_month');
+  var date_period   = get_selected_value('visit_date_period');
   var history = JSON.parse(localStorage[health_center + '/visit-history'] || '{}');
   
   if (!history[date_period])
@@ -594,12 +628,11 @@ function uniq(arr) {
 
 function setup_visits() {
   var hcs = find_health_centers_in_delivery_zone(get_selected_value('delivery_zone'));
-  var months = get_available_visit_months();
+  var months = get_available_visit_date_periods();
   var month_period = get_selected_value('visit_date_period');
 
   localStorage['valid forms'] = JSON.stringify(valid_forms); 
 
-  
   for (var i = 0, l = months.length; i < l; i++) {
     var month = months[i][0];
     var local_forms = {};
@@ -986,8 +1019,6 @@ function serialize_visit() {
   localStorage[key] = JSON.stringify(olmis_instance).
     replace(/,"jQuery[0-9]+":[0-9]+/g, '').
     replace(/{"jQuery[0-9]+":[0-9]+,/g, '{');
-  set_hc_form_status(key, $('#visit-form').valid());
-  setup_visits();
 }
 
 
@@ -1002,7 +1033,6 @@ jQuery(document).ready(function() {
     valid_forms = {};
   }
   
-  setup_visits();
   setup_visit_search();
   
   /*
@@ -1043,18 +1073,28 @@ function add_screen_sequence_tags() {
          });
 }
 
-function initialize_visit() {
-  // Run actions that must be performed *after* health center is selected
-  $('#visit-form *:input').blur(serialize_visit);
-
+function preinitialize_visit() {
+  // Run actions that must be performed *after* visit form is reset but
+  // *before* health center bindings are installed
+  
+  $('#visit-form *:input').addClass('enabled');
+  
   $('#visit-form').setupValidation();
 
   $('#tab-menu').tabs({
     show: function(event, ui) {
       $('*:input', $(ui.panel)).valid();
     }
-  });
+  });  
+}
 
+function initialize_visit() {
+  // Run actions that must be performed *after* health center bindings are 
+  // installed
+  
+  $('#visit-form *:input').blur(serialize_visit);
+  $('#visit-form').setup_selected_values();
+  
   jQuery('div.datepicker').each(function(i, e) {
     setup_datepicker($('input[type="text"]', $(e))[0], {})
   });

@@ -61,6 +61,8 @@
       var h = $('#visit-form').html();
       $('#visit-form').html(h);
 
+      preinitialize_visit();
+      
       <%- ([HealthCenterVisit] + HealthCenterVisit.tables).each do |t| -%>
         if (!olmis_instance.<%= t.xforms_group_name %>)
           olmis_instance.<%= t.xforms_group_name %> = {}; 
@@ -172,7 +174,7 @@
         <!-- HACK: Evil, ugly hack to get at the raw translation. -->
         <%= (I18n.backend.send(:lookup, I18n.locale, "data_sources.hcvisit.hc.page_title") || '').
           sub("{{delivery_zone}}",%Q{<span class="output selected_delivery_zone_name"></span>}).
-          sub("{{visit_month}}",%Q{<span class="output selected_visit_date_period"></span>}) %>
+          sub("{{visit_month}}",%Q{<span class="output selected_visit_date_period_name"></span>}) %>
       </h3>
 
       <div id="warehouse-actions">

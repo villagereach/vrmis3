@@ -1,22 +1,8 @@
-    <%- if Rails.env == "development" -%>
-      <div id="have_epi_data">
-        <label for="epi_data_ready">
-          <%= h(t("visits.health_center_monthly_visit.do_you_have_epi_data")) %>
-          <%= h(t("epi_month")) %>: (<span link_from="olmis_instance.health_center_visit" attr="epi_month" transform="month_of_year"></span>)
-        </label>
-        <select id="epi_data_ready" name="epi_data_ready">
-          <option value="true"><%= h(t("yes")) %></option>
-          <option value="false"><%= h(t("no")) %></option>
-        </select>
-        <%= javascript_tag "$('#epi_data_ready').change(update_visit_navigation)" %>
-     </div>
-    <%- end -%>
-
     <div id="was_hc_visited">
       <label for="visited">
         <%= (I18n.backend.send(:lookup, I18n.locale, "visits.health_center_monthly_visit.was_this_visited") || '').
-            sub("{{name}}",%Q{<span class="selected_health_center_name"></span>}).
-            sub("{{month}}",%Q{<span class="selected_month_of_year"></span>}) %>
+          sub("{{name}}",%Q{<span class="selected_health_center_name"></span>}).
+             sub("{{month}}",%Q{<span class="selected_visit_date_period_name"></span>}) %>
       </label>
       <select required id="visited" name="visited">
         <option value="true"><%= h(t("visits.health_center_monthly_visit.yes_i_visited")) %>
@@ -26,27 +12,30 @@
       <%= javascript_tag "$('#visited').change(update_visit_navigation)" %>
     </div>
 
-    <div>
+    <div id="visited_data">
       <div class="datepicker">
         <label for="visited_at"><%= h(t("visits.health_center_monthly_visit.date")) %></label>
         <input required type="date" id="visited_at" name="visited_at" >
       </div>
-    </div>
-    <div>
-      <label for="vehicle_id"><%= h(t("visits.health_center_monthly_visit.vehicle_code")) %></label>
-      <input id="vehicle_id" name="vehicle_id" type="text"></xf:input>
+
+      <div>
+        <label for="vehicle_id"><%= h(t("visits.health_center_monthly_visit.vehicle_code")) %></label>
+        <input id="vehicle_id" name="vehicle_id" type="text"></xf:input>
+      </div>
     </div>
 
-    <div id="non_visit_reason_selection">
-     <label for="non_visit_reason"><%= h(t("visits.health_center_monthly_visit.reason_for_not_visiting")) %></label>
-      <select id="non_visit_reason" name="non_visit_reason">
-        <%- %w(road_problem vehicle_problem health_center_closed other).each do |reason| -%>
-          <option value="<%= h reason %>"><%= h(t("HealthCenterVisit.#{reason}")) %></option>
-        <%- end -%>
-      </select> 
-    </div>
+    <div id="unvisited_data">
+      <div id="non_visit_reason_selection">
+       <label for="non_visit_reason"><%= h(t("visits.health_center_monthly_visit.reason_for_not_visiting")) %></label>
+        <select id="non_visit_reason" name="non_visit_reason">
+          <%- %w(road_problem vehicle_problem health_center_closed other).each do |reason| -%>
+            <option value="<%= h reason %>"><%= h(t("HealthCenterVisit.#{reason}")) %></option>
+          <%- end -%>
+        </select> 
+      </div>
 
-    <div>
-      <textarea id="other_non_visit_reason"></textarea>
+      <div>
+        <textarea required id="other_non_visit_reason"></textarea>
+      </div>
     </div>
     

@@ -15,13 +15,7 @@ function select_data() {
   });
 }
 
-$(document).ready(function() {
-  $("#access_code", this).linkBoth("val", data_instance.selected_values, "access_code");
-  
-  $("#dz_selector", this).linkBoth("val", data_instance.selected_values, "delivery_zone");
-  $("#fc_selector", this).linkBoth("val", data_instance.selected_values, "field_coordinator");
-  $("#vdp_selector", this).linkBoth("val", data_instance.selected_values, "visit_date_period");
-
+$.fn.setup_selected_values = function() {
   for (var x in data_instance.selected_values) {
     $(".selected_" + x).linkFrom("html", data_instance.selected_values, x);    
     
@@ -41,15 +35,25 @@ $(document).ready(function() {
       })(x)
     );
   }
+};
+
+$(document).ready(function() {
+  $("#access_code", this).linkBoth("val", data_instance.selected_values, "access_code");
   
+  $("#dz_selector", this).linkBoth("val", data_instance.selected_values, "delivery_zone");
+  $("#fc_selector", this).linkBoth("val", data_instance.selected_values, "field_coordinator");
+  $("#vdp_selector", this).linkBoth("val", data_instance.selected_values, "visit_date_period");
+  
+  data_instance.visit_date_periods = get_available_visit_date_periods().map(function(e) { return { name: e[1], code: e[0] }; });
+
+  $(document).setup_selected_values();
   select_data();
   $(data_instance.selected_values).attrChange(select_data)
   
   $("#dz_selector", this).html($.tmpl($("#selector_tmpl").html(), {data: data_instance.delivery_zones}));
   $("#fc_selector", this).html($.tmpl($("#selector_tmpl").html(), {data: data_instance.field_coordinators}));
   
-  months = get_available_visit_months().map(function(e) { return { name: e[1], code: e[0] }; });
-  $("#vdp_selector", this).html($.tmpl($("#selector_tmpl").html(), {data: months}));
+  $("#vdp_selector", this).html($.tmpl($("#selector_tmpl").html(), {data: data_instance.visit_date_periods}));
 
   autofocus();
 });
