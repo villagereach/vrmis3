@@ -163,13 +163,13 @@ div.xforms-alert-value {
 #was_hc_visited span.xforms-alert,
 #non_visit_reason_selection span.xforms-alert { display: none; }
 
-.xforms-group-label { 
+#tab-menu .ui-tabs-panel .header { 
   border-bottom: 1px solid #CCCCCC;
   font-size: 130%;
   padding: 0.25ex 0;
   margin-bottom: 1em;
 }
-.xforms-group .seqno-container {
+#tab-menu .ui-tabs-panel .seqno-container {
   background: white;
   border: 1px solid #222;
   border-radius: 24px;
@@ -185,7 +185,7 @@ div.xforms-alert-value {
   top: 4px;
   width: 20px;
 }
-.xforms-group .seqno-container .seqno {
+#tab-menu .ui-tabs-panel .seqno-container .seqno {
   font-size: 13px;
   font-weight: bold;
 }

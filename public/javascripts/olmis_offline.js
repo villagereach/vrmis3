@@ -1023,7 +1023,7 @@ function serialize_visit() {
 
 
 
-jQuery(document).ready(function() {
+$(function() {
   show_container(containers['login']);
   $('#saved-forms-control').change(select_visit);
   
@@ -1034,7 +1034,8 @@ jQuery(document).ready(function() {
   }
   
   setup_visit_search();
-  
+  add_screen_sequence_tags();
+
   /*
   window.setInterval(check_update_status, 3 * 1000);
   
@@ -1066,7 +1067,7 @@ jQuery(document).ready(function() {
 });
 
 function add_screen_sequence_tags() {
-  jQuery(".xforms-case > div > .xforms-group > .xforms-group-label:first-child").
+  $("#tab-menu div.ui-tabs-panel .header").
     each(function(index) {
            var text = '<div class="seqno-container"><span class="seqno">' + (index+1) + '</span></div>'
            jQuery(this).before(text);
@@ -1076,7 +1077,7 @@ function add_screen_sequence_tags() {
 function preinitialize_visit() {
   // Run actions that must be performed *after* visit form is reset but
   // *before* health center bindings are installed
-  
+
   $('#visit-form *:input').addClass('enabled');
   
   $('#visit-form').setupValidation();
