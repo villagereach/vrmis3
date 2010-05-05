@@ -1034,7 +1034,6 @@ $(function() {
   }
   
   setup_visit_search();
-  add_screen_sequence_tags();
 
   /*
   window.setInterval(check_update_status, 3 * 1000);
@@ -1067,11 +1066,7 @@ $(function() {
 });
 
 function add_screen_sequence_tags() {
-  $("#tab-menu div.ui-tabs-panel .header").
-    each(function(index) {
-           var text = '<div class="seqno-container"><span class="seqno">' + (index+1) + '</span></div>'
-           jQuery(this).before(text);
-         });
+  $("#tab-menu div.ui-tabs-panel span.seqno").each(function(i,e) { $(e).html(i+1); });
 }
 
 function preinitialize_visit() {
@@ -1085,8 +1080,12 @@ function preinitialize_visit() {
   $('#tab-menu').tabs({
     show: function(event, ui) {
       $('*:input', $(ui.panel)).valid();
+      if (ui.panel.id == 'screen-equipment_status') {
+        set_equipment_notes_area_size();
+      }
     }
-  });  
+  });
+  add_screen_sequence_tags();
 }
 
 function initialize_visit() {
@@ -1099,5 +1098,12 @@ function initialize_visit() {
   jQuery('div.datepicker').each(function(i, e) {
     setup_datepicker($('input[type="text"]', $(e))[0], {})
   });
+
+  // Show the first (visit) screen rather than the last screen viewed, possibly
+  // for a different health center. However, the screen's validations are not
+  // run unless another screen is selected first (so select the last screen before
+  // selecting the first screen).
+  $('#tab-menu').tabs('select', $('#tab-menu').tabs('length')-1);
+  $('#tab-menu').tabs('select', 0);
 }
 
