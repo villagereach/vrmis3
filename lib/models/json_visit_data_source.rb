@@ -13,7 +13,7 @@ class JsonVisitDataSource < DataSource
   ContentType="application/json"
 
   def description
-    'Json'
+    'Offline'
   end
   
   def data_to_params(submission)
