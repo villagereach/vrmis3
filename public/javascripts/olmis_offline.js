@@ -459,10 +459,6 @@ function select_location() {
   var today = Date.today();
   var date = Date.from_date_period(get_selected_value('visit_date_period'));
 
-  //var dp = jQuery('#case-visit div.datepicker input[type="text"]');
-  //dp.datepicker('option', 'minDate', date.beginning_of_month());
-  //dp.datepicker('option', 'maxDate', new Date(Math.min(date.end_of_month(), today)));
-
   if (options['autoset_default_visit_date']) {
     var default_visit_date = date.getMonth() == today.getMonth() ? today : date.beginning_of_month();
     set_selected_value('default_visit_date', default_visit_date.format('%Y-%m-%d'));
@@ -1095,11 +1091,17 @@ function initialize_visit() {
   $('#visit-form').setup_selected_values();
 
   $('div.datepicker').each(function(i, e) {
-      setup_datepicker($('input[type="text"]', $(e))[0],
-        {
-          onSelect: function(dateText, inst) { $(this).valid(); }
-        });
+    var dp = setup_datepicker($('input[type="text"]', $(e))[0],
+                              {
+                                onSelect: function(dateText, inst) { $(this).valid(); }
+                              });
+    if (dp.attr('id') == 'visited_at') {
+      var date = Date.from_date_period(get_selected_value('visit_date_period'));
+      dp.datepicker('option', 'minDate', date.beginning_of_month());
+      dp.datepicker('option', 'maxDate', new Date(Math.min(date.end_of_month(), Date.today())));
+    }
   });
+
 
   // Show the first (visit) screen rather than the last screen viewed, possibly
   // for a different health center. However, the screen's validations are not

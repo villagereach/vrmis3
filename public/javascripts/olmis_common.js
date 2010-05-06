@@ -28,10 +28,9 @@ function setup_datepicker(id, options) {
 
   region = typeof jQuery.datepicker.regional[locale] === 'object' ? locale : ''
 
-  jQuery(id).
-    datepicker(jQuery.extend(js_datepicker_default_options,
-                             options,
-                             jQuery.datepicker.regional[region]));
+  return jQuery(id).datepicker(jQuery.extend(js_datepicker_default_options,
+                                             options,
+                                             jQuery.datepicker.regional[region]));
 };
 
 function autofocus() {
