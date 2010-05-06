@@ -492,6 +492,10 @@ h4 {
   margin : 1em 0 0 11em;
 }
 
+#form {
+  width: 950px;
+}
+
 #fc-home table, #fc-actions table {
   border-collapse: separate;
   border-spacing: 4px 0;
