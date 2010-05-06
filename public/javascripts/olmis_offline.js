@@ -25,7 +25,7 @@ var container_hooks = {
   show: {},
 }
 
-container_hooks.show['location-selector'] = function() {
+container_hooks.show['hc-selection'] = function() {
   setup_visits();
 }
 
