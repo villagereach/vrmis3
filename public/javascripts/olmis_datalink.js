@@ -1,8 +1,8 @@
 var olmis_instance = {};
 
 function select_data() {
-  var visible = (data_instance.selected_values.delivery_zone > '' &&
-                 data_instance.selected_values.visit_date_period > '');
+  var visible = (selected_values.delivery_zone > '' &&
+                 selected_values.visit_date_period > '');
   
   $(selected_values).attr('visit_period_selected', visible);
 
