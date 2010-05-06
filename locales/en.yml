@@ -649,7 +649,7 @@ en:
       navigation:
         next_screen:                     "Next >>"
         prev_screen:                     "<< Previous"
-      main:
+      fc_main:
         page_title:                      "Main Page"
         choose_subtitle:                 "Choose Zone and Month"
         choose_button:                   "Choose >>"
@@ -674,6 +674,17 @@ en:
           input:                         "Input the monthly data forms"
           review:                        "Review the results"
           upload:                        "Upload data"
+      admin_main:
+        page_title:                      "Main Page (Admin)"
+        view_reports:                    "View Reports"
+        upload:                          "Upload all Data"
+        add_fc:                          "Add Field Coordinator"
+      manager_main:
+        page_title:                      "Main Page (Manager)"
+        update:                          "Update Application"
+        upload:                          "Upload all Data"
+        backup:                          "Backup Instructions"
+        reset:                           "Reset Instructions"
       hc:
         page_title:                      "Data for {{delivery_zone}}, {{visit_month}}"
         choose:                          "Choose Health Center"

@@ -521,6 +521,12 @@ h4 {
   text-align: left;
 }
 
+#admin-home > ul, #manager-home > ul {
+  line-height: 2em;
+  list-style: none;
+  margin: 0;
+}
+
 .inline label {
   text-align : right;
   padding-right : 1em;

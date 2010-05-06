@@ -1,12 +1,12 @@
     <div id="fc-home" class="container login inline">   
-      <h2><%= h(t("data_sources.hcvisit.main.page_title")) %></h2>
+      <h2><%= h(t("data_sources.hcvisit.fc_main.page_title")) %></h2>
 
       <table>
         <tbody>
           <tr>
             <td>
               <form onsubmit="set_context(); return false;">
-                <h3><%= h(t("data_sources.hcvisit.main.choose_subtitle")) %></h3>
+                <h3><%= h(t("data_sources.hcvisit.fc_main.choose_subtitle")) %></h3>
                 <div>
                   <label for="dz_selector"><%= h(t("delivery_zone")) %></label>
                   <select id="dz_selector"></select>
@@ -15,7 +15,7 @@
                   <select id="vdp_selector"></select>
 
                   <div style="display: none" show_if_selected="visit_period_selected">
-                    <button id="select_location"><%= h(t("data_sources.hcvisit.main.choose_button")) %></button>
+                    <button id="select_location"><%= h(t("data_sources.hcvisit.fc_main.choose_button")) %></button>
                   </div>
                 </div>
               </form>
@@ -23,20 +23,20 @@
 
             <td id="fc-actions-overview">
               <dl>
-                <dt><%= h(t("data_sources.hcvisit.main.before.title")) %></dt>
-                <dd><%= h(t("data_sources.hcvisit.main.before.prepare_load")) %></dd>
-                <dd><%= h(t("data_sources.hcvisit.main.before.determine_pickups")) %></dd>
-                <dd><%= h(t("data_sources.hcvisit.main.before.record_pickups")) %></dd>
+                <dt><%= h(t("data_sources.hcvisit.fc_main.before.title")) %></dt>
+                <dd><%= h(t("data_sources.hcvisit.fc_main.before.prepare_load")) %></dd>
+                <dd><%= h(t("data_sources.hcvisit.fc_main.before.determine_pickups")) %></dd>
+                <dd><%= h(t("data_sources.hcvisit.fc_main.before.record_pickups")) %></dd>
 
-                <dt><%= h(t("data_sources.hcvisit.main.during.title")) %></dt>
-                <dd><%= h(t("data_sources.hcvisit.main.during.collect_at_district")) %></dd>
-                <dd><%= h(t("data_sources.hcvisit.main.during.collect_at_health_center")) %></dd>
+                <dt><%= h(t("data_sources.hcvisit.fc_main.during.title")) %></dt>
+                <dd><%= h(t("data_sources.hcvisit.fc_main.during.collect_at_district")) %></dd>
+                <dd><%= h(t("data_sources.hcvisit.fc_main.during.collect_at_health_center")) %></dd>
 
-                <dt><%= h(t("data_sources.hcvisit.main.after.title")) %></dt>
-                <dd><%= h(t("data_sources.hcvisit.main.after.return")) %></dd>
-                <dd><%= h(t("data_sources.hcvisit.main.after.input")) %></dd>
-                <dd><%= h(t("data_sources.hcvisit.main.after.review")) %></dd>
-                <dd><%= h(t("data_sources.hcvisit.main.after.upload")) %></dd>
+                <dt><%= h(t("data_sources.hcvisit.fc_main.after.title")) %></dt>
+                <dd><%= h(t("data_sources.hcvisit.fc_main.after.return")) %></dd>
+                <dd><%= h(t("data_sources.hcvisit.fc_main.after.input")) %></dd>
+                <dd><%= h(t("data_sources.hcvisit.fc_main.after.review")) %></dd>
+                <dd><%= h(t("data_sources.hcvisit.fc_main.after.upload")) %></dd>
               </dl>
             </td>
           </tr>
@@ -45,13 +45,13 @@
     </div>
 
     <div id="fc-actions" class="container login inline">   
-      <h2><%= h(t("data_sources.hcvisit.main.page_title")) %></h2>
+      <h2><%= h(t("data_sources.hcvisit.fc_main.page_title")) %></h2>
 
       <table>
         <tbody>
           <tr>
             <td>
-              <h3><%= h(t("data_sources.hcvisit.main.show_subtitle")) %></h3>
+              <h3><%= h(t("data_sources.hcvisit.fc_main.show_subtitle")) %></h3>
               <div class="table">
                 <div class="row">
                   <label><%= h(t("delivery_zone")) %></label>
@@ -62,26 +62,26 @@
                   <span class="cell output selected_visit_date_period_name"></span>
                 </div>
               </div>
-              <button id="select_location" onclick="show_main_page('fc_home')"><%= h(t("data_sources.hcvisit.main.show_button")) %></button>
+              <button id="select_location" onclick="show_main_page('fc_home')"><%= h(t("data_sources.hcvisit.fc_main.show_button")) %></button>
             </td>
 
             <td id="fc-action-links">
               <dl>
-                <dt><%= h(t("data_sources.hcvisit.main.before.title")) %></dt>
-                <dd><%= h(t("data_sources.hcvisit.main.before.prepare_load")) %></dd>
-                <dd><%= link_to_function(h(t("data_sources.hcvisit.main.before.determine_pickups")), "show_warehouse('before')") %></dd>
-                <dd><%= link_to_function(h(t("data_sources.hcvisit.main.before.record_pickups")), "show_warehouse('after')") %></dd>
+                <dt><%= h(t("data_sources.hcvisit.fc_main.before.title")) %></dt>
+                <dd><%= h(t("data_sources.hcvisit.fc_main.before.prepare_load")) %></dd>
+                <dd><%= link_to_function(h(t("data_sources.hcvisit.fc_main.before.determine_pickups")), "show_warehouse('before')") %></dd>
+                <dd><%= link_to_function(h(t("data_sources.hcvisit.fc_main.before.record_pickups")), "show_warehouse('after')") %></dd>
 
-                <dt><%= h(t("data_sources.hcvisit.main.during.title")) %></dt>
-                <dd><%= h(t("data_sources.hcvisit.main.during.collect_at_district")) %></dd>
-                <dd><%= h(t("data_sources.hcvisit.main.during.collect_at_health_center")) %></dd>
+                <dt><%= h(t("data_sources.hcvisit.fc_main.during.title")) %></dt>
+                <dd><%= h(t("data_sources.hcvisit.fc_main.during.collect_at_district")) %></dd>
+                <dd><%= h(t("data_sources.hcvisit.fc_main.during.collect_at_health_center")) %></dd>
 
-                <dt><%= h(t("data_sources.hcvisit.main.after.title")) %></dt>
-                <dd><%= h(t("data_sources.hcvisit.main.after.return")) %></dd>
-                <dd><%= link_to_function(h(t("data_sources.hcvisit.main.after.input")), "select_location()") %></dd>
-                <dd><%= link_to_function(h(t("data_sources.hcvisit.main.after.review")), "action_not_implemented()") %></dd>
+                <dt><%= h(t("data_sources.hcvisit.fc_main.after.title")) %></dt>
+                <dd><%= h(t("data_sources.hcvisit.fc_main.after.return")) %></dd>
+                <dd><%= link_to_function(h(t("data_sources.hcvisit.fc_main.after.input")), "select_location()") %></dd>
+                <dd><%= link_to_function(h(t("data_sources.hcvisit.fc_main.after.review")), "action_not_implemented()") %></dd>
                 <dd id="upload_link" class="online">
-                  <%= link_to(h(t("data_sources.hcvisit.main.after.upload")), "#login", :class => "inline") %>
+                  <%= link_to(h(t("data_sources.hcvisit.fc_main.after.upload")), "#login", :class => "inline") %>
                   <%= link_to("", "#upload", :class => "inline", :style => "display:none") %>
                 </dd>
               </dl>
@@ -92,12 +92,21 @@
     </div>
 
     <div id="manager-home" class="container login inline">
-      <h2>Manager Landing Page</h2>
-      <p>TODO: Create real content</p>
+      <h2><%= h(t("data_sources.hcvisit.manager_main.page_title")) %></h2>
+      <ul>
+        <li><%= link_to_function(h(t("data_sources.hcvisit.manager_main.update")), "action_not_implemented()") %></li>
+        <li><%= link_to_function(h(t("data_sources.hcvisit.manager_main.upload")), "action_not_implemented()") %></li>
+        <li><%= link_to_function(h(t("data_sources.hcvisit.manager_main.backup")), "action_not_implemented()") %></li>
+        <li><%= link_to_function(h(t("data_sources.hcvisit.manager_main.reset")), "action_not_implemented()") %></li>
+      </ul>
     </div>
 
     <div id="admin-home" class="container login inline">
-      <h2>Admin Landing Page</h2>
-      <p>TODO: Create real content</p>
+      <h2><%= h(t("data_sources.hcvisit.admin_main.page_title")) %></h2>
+      <ul>
+        <li><%= link_to_function(h(t("data_sources.hcvisit.admin_main.view_reports")), "action_not_implemented()") %></li>
+        <li><%= link_to_function(h(t("data_sources.hcvisit.admin_main.upload")), "action_not_implemented()") %></li>
+        <li><%= link_to_function(h(t("data_sources.hcvisit.admin_main.add_fc")), "action_not_implemented()") %></li>
+      </ul>
     </div>
 
