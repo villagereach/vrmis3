@@ -175,12 +175,12 @@ class HealthCenterVisit < ActiveRecord::Base
   end
 
   def self.tables
-    [ Inventory, EquipmentStatus, StockCardStatus ]
-    #Olmis.tally_klasses + [Inventory, EquipmentStatus, FridgeStatus, StockCardStatus] + Olmis.additional_visit_klasses
+    [ Inventory, EquipmentStatus, StockCardStatus ] + Olmis.tally_klasses + Olmis.additional_visit_klasses
+    #Olmis.tally_klasses + [Inventory, EquipmentStatus, FridgeStatus, StockCardStatus]
   end
 
   def self.screens
-    [ 'epi_inventory', 'equipment_status', 'stock_cards' ]
+    [ 'epi_inventory', 'equipment_status', 'stock_cards' ] + (Olmis.tally_klasses + Olmis.additional_visit_klasses).map(&:screens).flatten
     #Olmis.configuration['visit_screens']
   end
 

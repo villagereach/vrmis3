@@ -1,0 +1,4 @@
+{<%= klass.expected_params().map { |param, type| 
+    %Q{"#{ param.gsub(/[:,]/, '-') }":{"val":"","nr":""}}
+  }.join(",") 
+ %>}

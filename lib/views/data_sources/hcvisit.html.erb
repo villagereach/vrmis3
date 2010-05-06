@@ -50,7 +50,7 @@
         rescue ActionView::MissingTemplate
           data = '';
         end -%>
-      instance.<%= t.xforms_group_name %> = JSON.parse(<%= data.to_json %>);
+      instance.<%= t.table_name.singularize %> = JSON.parse(<%= data.to_json %>);
       <% end %>
       
       return instance;
@@ -64,8 +64,8 @@
       preinitialize_visit();
       
       <%- ([HealthCenterVisit] + HealthCenterVisit.tables).each do |t| -%>
-        if (!olmis_instance.<%= t.xforms_group_name %>)
-          olmis_instance.<%= t.xforms_group_name %> = {}; 
+        if (!olmis_instance.<%= t.table_name.singularize %>)
+          olmis_instance.<%= t.table_name.singularize %> = {}; 
 
         <%- begin
           bind = render(:partial => '/data_sources/offline/' + t.xforms_group_name + '_bind.js', :locals => { :klass => t } )
@@ -79,7 +79,7 @@
             if (console)
               console.exception(e);
           }
-        })(olmis_instance.<%= t.xforms_group_name %>);
+        })(olmis_instance.<%= t.table_name.singularize %>);
 
      <%- end -%>
 

@@ -9,7 +9,7 @@ function hcvisit_visited(ev) {
     $('#visited_data *:input').addClass('enabled');
   } else {
     disabled = <%= (1...HealthCenterVisit.screens.length).select { |i|
-      HealthCenterVisit.klass_by_screen[HealthCenterVisit.screens[i]].depends_on_visit?
+      HealthCenterVisit.klass_by_screen[HealthCenterVisit.screens[i-1]].depends_on_visit?
     }.to_json %>;
     $('#unvisited_data').show();
     $('#visited_data').hide();
@@ -34,7 +34,7 @@ function hcvisit_non_visit_reason_other(ev) {
 $('#visited input').attrChange('val', hcvisit_visited);
 $('#non_visit_reason').attrChange('val', hcvisit_non_visit_reason_other);
 
-<% %w(other_non_visit_reason vehicle_id).each do |field| %>
+<% %w(other_non_visit_reason vehicle_id notes).each do |field| %>
   $('#<%= field %>').linkFrom('val', data, '<%= field %>').linkTo('val', data, '<%= field %>');
 <% end %>
 
