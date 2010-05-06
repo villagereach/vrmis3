@@ -200,6 +200,10 @@ div.xforms-alert-value {
 #tab-menu .ui-tabs-panel .seqno-container .seqno {
   font-size: 13px;
   font-weight: bold;
+  position: absolute;
+  top: 2px;
+  left: 0;
+  right: 0;
 }
 
 p.note { font-weight: medium; font-style: italic; }
