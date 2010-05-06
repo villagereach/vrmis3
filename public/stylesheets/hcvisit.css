@@ -599,7 +599,11 @@ table.spreadsheet div.tally > span span.value {
 }
 */
 
-table.spreadsheet div.tally input[type="text"] {
+table.spreadsheet div.tally input[type="text"], 
+table.spreadsheet div.tally input[type="number"],
+table.spreadsheet div.tally input[type="yearmonth"],
+table.spreadsheet div.tally input[type="date"] 
+{
   border: 1px solid gray;
   display: block;
   float: left;
@@ -608,7 +612,9 @@ table.spreadsheet div.tally input[type="text"] {
   text-align: right;
   width: 50px;
 }
-table.spreadsheet div.tally.month-year input[type="text"] {
+
+
+table.spreadsheet div.tally.month-year input[type="month-year"] {
   width: 80px;
   text-align: left;
 }
@@ -694,7 +700,7 @@ div.datepicker input[type="text"], div.datepicker input[type="date"] {
 #screen-cold_chain .fridge-temp span.value {
   display: block;
 }
-#screen-cold_chain .fridge-temp input[type="text"] {
+#screen-cold_chain .fridge-temp input[type="number"] {
   margin: 0 2px 0 4px;
   width: 20px;
 }
