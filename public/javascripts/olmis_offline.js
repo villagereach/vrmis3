@@ -453,7 +453,7 @@ function login() {
 
 function logout() {
   set_selected_value('access_code', '');
-  set_selected_value('logged_in',   false);
+  set_selected_value('logged_in',   '');
   show_container(containers['login']);
   autofocus();
 }
