@@ -48,7 +48,7 @@
     <%- Package.active.sort.each do |package| -%>
       $("#warehouse_pickup_<%= package.code %>-DeliveryRequest", this).linkFrom(
         "val",
-        data_instance.selected_values,
+        selected_values,
         "delivery_zone",
         function(value) { return value ? data_instance.warehouse_ideal_stock[value]['<%= package.code %>'] : ""; }
       );

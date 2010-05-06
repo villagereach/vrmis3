@@ -238,11 +238,11 @@ function setup_visit_date_periods() {
 }
 
 function set_selected_value(name, value) {
-  $(data_instance.selected_values).attr(name, value);
+  $(selected_values).attr(name, value.toString());
 }
 
 function get_selected_value(name) {
-  return data_instance.selected_values[name]
+  return selected_values[name] || ''
 }
 
 function find_province_district_health_center(hc) {
@@ -458,7 +458,7 @@ function login() {
 
 function logout() {
   set_selected_value('access_code', '');
-  set_selected_value('logged_in',   false);
+  set_selected_value('logged_in',   '');
   show_container(containers['login']);
   autofocus();
 }
@@ -1029,10 +1029,9 @@ function serialize_visit() {
     replace(/{"jQuery[0-9]+":[0-9]+,/g, '{');
 }
 
-
+var selected_values = {};
 
 $(function() {
-  show_container(containers['login']);
   $('#saved-forms-control').change(select_visit);
   
   try {
@@ -1040,6 +1039,19 @@ $(function() {
   } catch(e) {
     valid_forms = {};
   }
+  
+  for (var x=0; x<sessionStorage.length; x++) {
+    $(selected_values).attr(sessionStorage[x], sessionStorage[sessionStorage[x]]);
+  }
+
+  $(selected_values).attrChange(function(ev) {
+      sessionStorage[ev.attrName] = ev.newValue;
+  });
+  
+  if (get_selected_value('logged_in') == "true")
+    show_container(containers['main']);
+  else    
+    show_container(containers['login']);
   
   setup_visit_search();
 
