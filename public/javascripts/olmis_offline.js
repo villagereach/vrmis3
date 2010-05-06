@@ -1095,7 +1095,10 @@ function initialize_visit() {
   $('#visit-form').setup_selected_values();
 
   $('div.datepicker').each(function(i, e) {
-    setup_datepicker($('input[type="text"]', $(e))[0], {})
+      setup_datepicker($('input[type="text"]', $(e))[0],
+        {
+          onSelect: function(dateText, inst) { $(this).valid(); }
+        });
   });
 
   // Show the first (visit) screen rather than the last screen viewed, possibly

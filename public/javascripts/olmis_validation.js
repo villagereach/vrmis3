@@ -18,6 +18,12 @@ function validateRequiredRadio(value, element) {
   return (btns.length > 0);
 }
 
+function validateRequiredVisitDate(value, element) {
+  var d = Date.from_date_period(get_selected_value('visit_date_period'));
+  var date = $.datepicker.parseDate($(element).datepicker('option', 'dateFormat'), value);
+  return date >= d.beginning_of_month() && date <= Math.min(d.end_of_month(), Date.today());
+}
+
 function show_errors(errorMap, errorList) {
   for (var k in errorMap) {
     if(k) {
@@ -39,6 +45,7 @@ function show_errors(errorMap, errorList) {
 
 $.validator.addMethod('required_unless_nr', validateRequiredUnlessNr, $.validator.messages.required);
 $.validator.addMethod('required_radio',     validateRequiredRadio, $.validator.messages.required);
+$.validator.addMethod('required_visit_date',validateRequiredVisitDate, $.validator.messages.required);
 
 $.extend($.fn, {
   setupValidation: function() {
@@ -52,8 +59,9 @@ $.extend($.fn, {
     $('*:input:text:required_unless_nr', this).each(function(i,e) { $(e).rules('add', { required_unless_nr: true });   });
     $('*:number',               this).each(function(i,e) { $(e).rules('add', { digits: true });               });
     $('*:input:min',            this).each(function(i,e) { $(e).rules('add', { min: e.getAttribute('min') } ) });
-    $('*:input:max',            this).each(function(i,e) { $(e).rules('add', { max: e.getAttribute('max') } ) });;
+    $('*:input:max',            this).each(function(i,e) { $(e).rules('add', { max: e.getAttribute('max') } ) });
     $('*:input:date',           this).each(function(i,e) { $(e).rules('add', { date: true } );                });
+    $('*:input:date[required="visit_date"]', this).each(function(i,e) { $(e).rules('add', { required_visit_date: true } ); });
   }
 });
 
