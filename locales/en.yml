@@ -645,6 +645,7 @@ en:
       logout:                            "Logout"
       login:
         access_code:                     "Enter access code"
+        invalid:                         "Invalid access code"
       navigation:
         next_screen:                     "Next >>"
         prev_screen:                     "<< Previous"

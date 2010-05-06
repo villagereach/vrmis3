@@ -6,13 +6,19 @@ var manifest_files = {
 };
 var containers = {
   login:     'login-form',
+  admin:     'admin-home',
+  manager:   'manager-home',
   main:      'context-selector',
   hc:        'location-selector',
   visit:     'form',
   wh_before: 'warehouse-before',
   wh_after:  'warehouse-after'
 };
-
+var roles_screens = {
+  fc:      'main',
+  manager: 'manager',
+  admin:   'admin'
+}
 var container_hooks = {
   hide: {},
   show: {},
@@ -434,10 +440,14 @@ function show_container( container ) {
 }
 
 function login() {
-  // FIXME: Implement something more than a trivial check
-  if (get_selected_value('access_code').length > 0) {
+  // NOTE: Only checking for a valid role
+  var landing_page = roles_screens[get_selected_value('access_code')];
+  if (landing_page) {
     set_selected_value('logged_in', true)
-    show_main_page();
+    show_main_page(landing_page);
+  } else {
+    $('#access_code').val('');
+    alert(I18n.t('data_sources.hcvisit.login.invalid'));
   }
 }
 
@@ -445,6 +455,7 @@ function logout() {
   set_selected_value('access_code', '');
   set_selected_value('logged_in',   false);
   show_container(containers['login']);
+  autofocus();
 }
 
 function select_location() {
@@ -470,12 +481,11 @@ function show_visits() {
   });
 }
 
-function show_main_page() {
-   
+function show_main_page(landing_page) {
   set_selected_value('health_center', '');
   set_selected_value('visit_period_selected',false);
   show_or_hide_upload_link();
-  show_container(containers['main']);
+  show_container(containers[landing_page]);
 }
 
 function show_or_hide_upload_link() {
