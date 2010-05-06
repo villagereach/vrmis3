@@ -176,17 +176,6 @@
           sub("{{visit_month}}",%Q{<span class="output selected_visit_date_period_name"></span>}) %>
       </h3>
 
-      <div id="warehouse-actions">
-        <ul>
-          <li>
-            <%= link_to_function(h(t(".hc.before_warehouse_visit")), "show_warehouse('before')") %>
-          </li>
-          <li>
-            <%= link_to_function(h(t(".hc.after_warehouse_visit")), "show_warehouse('after')") %>
-          </li>
-        </ul>
-      </div>
-
       <div>
         <h4><%= h(t(".hc.choose")) %></h4>
 

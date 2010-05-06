@@ -8,14 +8,15 @@ var containers = {
   login:     'login-form',
   admin:     'admin-home',
   manager:   'manager-home',
-  main:      'context-selector',
+  context:   'context-selector',
+  actions:   'main-page',
   hc:        'location-selector',
   visit:     'form',
   wh_before: 'warehouse-before',
   wh_after:  'warehouse-after'
 };
 var roles_screens = {
-  fc:      'main',
+  fc:      'context',
   manager: 'manager',
   admin:   'admin'
 }
@@ -171,6 +172,10 @@ function check_update_status() {
       DebugConsole.write("applicationCache.update failed: " + e);
     }
   }
+}
+
+function action_not_implemented() {
+  alert("Action not yet implemented");
 }
 
 function set_active_tab(tab) {
@@ -458,9 +463,7 @@ function logout() {
   autofocus();
 }
 
-function select_location() {
-  //jQuery('#visit-month-menu span').removeClass();  // reset to empty state
-
+function set_context() {
   var today = Date.today();
   var date = Date.from_date_period(get_selected_value('visit_date_period'));
 
@@ -470,6 +473,10 @@ function select_location() {
   }
 
   set_selected_value('visit_period_selected', 'true()');
+  show_container(containers['actions']);
+}
+
+function select_location() {
   //populate_warehouse_pickups();
   show_visits();
 }
@@ -482,17 +489,19 @@ function show_visits() {
 }
 
 function show_main_page(landing_page) {
+  landing_page = landing_page || roles_screens[get_selected_value('access_code')];
+
   set_selected_value('health_center', '');
-  set_selected_value('visit_period_selected',false);
+  set_selected_value('visit_period_selected', false);
   show_or_hide_upload_link();
   show_container(containers[landing_page]);
 }
 
 function show_or_hide_upload_link() {
   if (has_forms_ready_for_upload()) {
-    jQuery("#upload_link").addClass("online").removeClass("offline");
+    $("#upload_link").addClass("online").removeClass("offline");
   } else {
-    jQuery("#upload_link").removeClass("online").addClass("offline");
+    $("#upload_link").removeClass("online").addClass("offline");
   }
 }
 

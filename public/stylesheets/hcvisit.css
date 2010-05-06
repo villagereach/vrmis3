@@ -99,6 +99,17 @@ select#saved-forms-control {
   display: none;
 }
 
+.table {
+  display: table;
+  border-collapse: collapse;
+}
+.row {
+  display: table-row;
+}
+.cell {
+  display: table-cell;
+}
+
 select#saved-forms-control optgroup {
   color: green;
   font-size: 14px;
@@ -146,13 +157,13 @@ select#saved-forms-control option.reject, #visit-month-menu li.reject {
   background-image: url(/images/icons/missing.png);
 }
 
+/*
 div.xforms-alert-value {
   font-weight: normal;
   font-size: 90%;
   text-align: left;
   z-index: 1000;
 }
-
 
 .xforms-valid   span.xforms-alert-icon { display: inline; background-image: url(/images/icons/silk/accept.png); }
 .xforms-invalid span.xforms-alert-icon { display: inline; background-image: url(/images/icons/silk/exclamation.png); }
@@ -162,6 +173,7 @@ div.xforms-alert-value {
 #have_epi_data span.xforms-alert,
 #was_hc_visited span.xforms-alert,
 #non_visit_reason_selection span.xforms-alert { display: none; }
+*/
 
 #tab-menu .ui-tabs-panel .header { 
   border-bottom: 1px solid #CCCCCC;
@@ -378,7 +390,7 @@ span.radio.horizontal div.xforms-item {
   padding-left : 1em;
 }
 /* }}} */
-/* offline tasks {{{ */
+/* offline tasks {{{
 #offline_tasks {
   color : #541;
   font-size : .9em;
@@ -466,6 +478,7 @@ h4 {
 #login-form,
 #location-selector,
 #context-selector,
+#main-page,
 #offline-reports {
   margin : 2em auto 0;
 }
@@ -475,65 +488,40 @@ h4 {
 #login-form input {
   width: 8em;
 }
-#context-selector {
+#context-selector, #main-page {
   width: 750px;
 }
 #location-selector {
   width: 600px;
 }
-.xforms-control span.focus {
-  /* Not sure what purpose this span serves, but it messes up the form layout if it's shown */
-  display: none;
-}
-#login-form .xforms-control,
-#context-selector .xforms-control,
-#location-selector .xforms-control {
-  clear : both;
-}
-#login-form button,
-#context-selector button {
+#login-form button, #context-selector button, #main-page button {
   font-size : 1em;
   margin : 1em 0 0 11em;
 }
 
-#context-selector table {
+#context-selector table, #main-page table {
   border-collapse: separate;
   border-spacing: 4px 0;
 }
-#context-selector td {
+#context-selector td, #main-page td {
   border: 2px solid #541;
   padding: 1em 0.5em;
   vertical-align: top;
 }
-#context-selector td#enter-data {
+#context-selector td:first-child, #main-page td:first-child {
   width: 60%;
 }
-#context-selector #other-actions ul {
-  line-height: 3em;
-  list-style: none;
+
+#context-selector td dl, #main-page td dl {
   margin: 0;
-  padding: 0;
-  text-align: center;
-}
-#context-selector span.xforms-optional.xforms-disabled {
-  display: block !important;
-  visibility: hidden;
-}
-#context-selector span.xforms-optional.xforms-enabled {
-  visiblity: visible;
 }
 
-#warehouse-actions {
-  font-size: 105%;
-  font-weight: bold;
-  margin: 0 auto;
-  width: 400px;
+#main-page td:first-child label {
+  float: none;
 }
-#warehouse-actions ul {
-  line-height: 2em;
-  list-style: none;
-  margin: 0;
-  padding: 0;
+#main-page td:first-child label + span {
+  font-weight: bold;
+  text-align: left;
 }
 
 .inline label {
@@ -560,6 +548,10 @@ h4 {
 }
 #year-month-selector label {
   width : auto;
+}
+
+#actions-overview {
+  background-color: #ccc;
 }
 /* }}} */
 /* navigation {{{ */
@@ -804,10 +796,10 @@ body {
 }
 
 #upload_link.online {
-  display: block;
+  visibility: visible;
 }
 #upload_link.offline {
-  display: none;
+  visibility: hidden;
 }
 /* }}} */
 /* lightbox {{{ */

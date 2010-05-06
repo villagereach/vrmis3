@@ -651,10 +651,29 @@ en:
         prev_screen:                     "<< Previous"
       main:
         page_title:                      "Main Page"
-        enter_data:                      "Enter Data"
-        other_actions:                   "or"
-        view_pickups:                    "View Pickup Amounts"
-        view_reports:                    "View Reports"
+        choose_subtitle:                 "Choose Zone and Month"
+        choose_button:                   "Choose >>"
+        show_subtitle:                   "Selected Zone and Month"
+        show_button:                     "<< Change Zone or Month"
+        #enter_data:                      "Enter Data"
+        #other_actions:                   "or"
+        #view_pickups:                    "View Pickup Amounts"
+        #view_reports:                    "View Reports"
+        before:
+          title:                         "Before Deliveries"
+          prepare_load:                  "Prepare the load"
+          determine_pickups:             "Determine how much to take"
+          record_pickups:                "Record warehouse pickup amounts"
+        during:
+          title:                         "During Deliveries"
+          collect_at_district:           "Data collection at district"
+          collect_at_health_center:      "Data collection at health center"
+        after:
+          title:                         "After Deliveries"
+          return:                        "Return supply"
+          input:                         "Input the monthly data forms"
+          review:                        "Review the results"
+          upload:                        "Upload data"
       hc:
         page_title:                      "Data for {{delivery_zone}}, {{visit_month}}"
         choose:                          "Choose Health Center"
