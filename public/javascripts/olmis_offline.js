@@ -73,12 +73,6 @@ function go_to_previous_screen(this_screen) {
   $("#tab-" + this_screen).prevAll().not(".ui-state-disabled").first().find('a').click()
 }
 
-function fixup_nr_checkboxes() {
-  jQuery('div.nr span.value').each(function() {
-    jQuery(this).insertBefore(jQuery(this).prev());
-  });
-}
-
 function setup_fridge_form() {
   var temp_input = jQuery('#case-cold_chain .fridge-temp input');
   if (temp_input.siblings().length == 0) {
@@ -1102,6 +1096,21 @@ function initialize_visit() {
     }
   });
 
+  // Link NR checkboxes to their associated input fields so that checking a NR checkbox clears the
+  // associated input field, and entering a value in an input field clears the associated NR checkbox.
+  $('div.nr input[type="checkbox"]').change(function() {
+    var associated_field = $(this).parent().prev();
+    if ($(this).attr('checked')) {
+      associated_field.val('');
+    }
+    // Also need to perform a validation check so that a checked field doesn't continue to show as
+    // invalid (or a newly unchecked field with no associated field value continues to show as valid)
+    associated_field.valid();
+  }).parent().prev().change(function() {
+    if ($(this).val().length > 0) {
+      $(this).next().find('input').attr('checked', false);
+    }
+  });
 
   // Show the first (visit) screen rather than the last screen viewed, possibly
   // for a different health center. However, the screen's validations are not
