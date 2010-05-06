@@ -5,20 +5,20 @@ var manifest_files = {
   downloaded: 0
 };
 var containers = {
-  login:     'login-form',
-  admin:     'admin-home',
-  manager:   'manager-home',
-  context:   'context-selector',
-  actions:   'main-page',
-  hc:        'location-selector',
-  visit:     'form',
-  wh_before: 'warehouse-before',
-  wh_after:  'warehouse-after'
+  login:        'login-form',
+  admin_home:   'admin-home',
+  manager_home: 'manager-home',
+  fc_home:      'fc-home',
+  fc_actions:   'fc-actions',
+  hc:           'hc-selection',
+  visit:        'form',
+  wh_before:    'warehouse-before',
+  wh_after:     'warehouse-after'
 };
 var roles_screens = {
-  fc:      'context',
-  manager: 'manager',
-  admin:   'admin'
+  fc:      'fc_home',
+  manager: 'manager_home',
+  admin:   'admin_home'
 }
 var container_hooks = {
   hide: {},
@@ -473,7 +473,7 @@ function set_context() {
   }
 
   set_selected_value('visit_period_selected', 'true()');
-  show_container(containers['actions']);
+  show_container(containers['fc_actions']);
 }
 
 function select_location() {

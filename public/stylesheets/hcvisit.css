@@ -474,13 +474,9 @@ h4 {
 }
 /* }}} */
 /* location-selector & context-selector {{{ */
-#form,
-#login-form,
-#location-selector,
-#context-selector,
-#main-page,
-#offline-reports {
+.container {
   margin : 2em auto 0;
+  width: 750px;
 }
 #login-form {
   width: 400px;
@@ -488,38 +484,39 @@ h4 {
 #login-form input {
   width: 8em;
 }
-#context-selector, #main-page {
-  width: 750px;
-}
-#location-selector {
+#hc-selection {
   width: 600px;
 }
-#login-form button, #context-selector button, #main-page button {
+#login-form button, #fc-home button, #fc-actions button {
   font-size : 1em;
   margin : 1em 0 0 11em;
 }
 
-#context-selector table, #main-page table {
+#fc-home table, #fc-actions table {
   border-collapse: separate;
   border-spacing: 4px 0;
 }
-#context-selector td, #main-page td {
+#fc-home td, #fc-actions td {
   border: 2px solid #541;
   padding: 1em 0.5em;
   vertical-align: top;
 }
-#context-selector td:first-child, #main-page td:first-child {
+#fc-home td:first-child, #fc-actions td:first-child {
   width: 60%;
 }
 
-#context-selector td dl, #main-page td dl {
+#fc-home td dl, #fc-actions td dl {
   margin: 0;
 }
 
-#main-page td:first-child label {
+#fc-actions-overview {
+  background-color: #ccc;
+}
+
+#fc-actions td:first-child label {
   float: none;
 }
-#main-page td:first-child label + span {
+#fc-actions td:first-child label + span {
   font-weight: bold;
   text-align: left;
 }
@@ -548,10 +545,6 @@ h4 {
 }
 #year-month-selector label {
   width : auto;
-}
-
-#actions-overview {
-  background-color: #ccc;
 }
 /* }}} */
 /* navigation {{{ */
