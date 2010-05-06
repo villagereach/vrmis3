@@ -15,12 +15,14 @@ var valid_forms;
 if (!valid_forms)
   valid_forms = {};
 
-<% HealthCenter.all.each do |hc| -%>
+<%- unless Rails.env == 'development' -%>
+<%- HealthCenter.all.each do |hc| -%>
 <%-   if visit = hc.most_recent_visit -%>
 <%-     key = "#{ visit.date_period }/#{ hc.code }" -%>
 localStorage['<%= key %>'] = <%= visit.to_json.to_json %>;
 valid_forms['<%= key %>'] = 'stored';
 <%-   end -%>
+<%- end -%>
 <%- end -%>
 
 data_instance.areas_by_area_code = {};
