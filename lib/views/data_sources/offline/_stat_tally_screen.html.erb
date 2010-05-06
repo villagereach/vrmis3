@@ -3,7 +3,7 @@
   <%= render :partial => '/data_sources/offline/' + screen + '.html.erb' %>
 <% rescue ActionView::MissingTemplate %>  
 <%= tally_table(klass, lambda { |point|
-      node = klass.param_name(point).gsub(/[:,]/, '-')
+      node = klass.table_name.singularize + '_' + klass.param_name(point).gsub(/[:,]/, '-')
       
       msg_key, input_type, constraints = 
         klass.expected_params.assoc(klass.param_name(point)).last == :date ?

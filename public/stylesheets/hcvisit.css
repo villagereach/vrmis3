@@ -621,7 +621,7 @@ table.spreadsheet div.tally input[type="date"]
 }
 
 
-table.spreadsheet div.tally.month-year input[type="month-year"] {
+table.spreadsheet div.tally input[type="yearmonth"] {
   width: 80px;
   text-align: left;
 }

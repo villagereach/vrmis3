@@ -56,7 +56,7 @@ $.extend($.fn, {
 
     $('*:input:text:required',  this).each(function(i,e) { $(e).rules('add', { required: true });                 });
     $('*:input:radio:required', this).each(function(i,e) { $(e).rules('add', { required_radio: true });           });
-    $('*:input:text:required_unless_nr', this).each(function(i,e) { $(e).rules('add', { required_unless_nr: true });   });
+    $('*:input:required_unless_nr', this).each(function(i,e) { $(e).rules('add', { required_unless_nr: true });   });
     $('*:number',               this).each(function(i,e) { $(e).rules('add', { digits: true });               });
     $('*:input:min',            this).each(function(i,e) { $(e).rules('add', { min: e.getAttribute('min') } ) });
     $('*:input:max',            this).each(function(i,e) { $(e).rules('add', { max: e.getAttribute('max') } ) });

@@ -1,6 +1,8 @@
 <%- klass.expected_params().each do |param, value_type|
-  node = param.gsub(/[:,]/, '-') -%>
-$('#<%= node %>'   ).linkFrom('val',     data['<%= node %>'], 'value').linkTo('val',     data['<%= node %>'], 'value');
-$('#<%= node %>-nr').linkFrom('checked', data['<%= node %>'], 'nr').linkTo('checked', data['<%= node %>'], 'nr');
+  node = param.gsub(/[:,]/, '-')
+  id = klass.table_name.singularize + '_' + node 
+-%>
+$('#<%= id %>'   ).linkFrom('val',     data['<%= node %>'], 'value').linkTo('val',     data['<%= node %>'], 'value');
+$('#<%= id %>-nr').linkFrom('checked', data['<%= node %>'], 'nr').linkTo('checked', data['<%= node %>'], 'nr');
 <%- end -%>
 

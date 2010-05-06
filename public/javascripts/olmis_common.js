@@ -1,10 +1,10 @@
 // only functions below
-jQuery.fn.findInput = function() {
+$.fn.findInput = function() {
   return this.map(function(i, e) {
     if (e.nodeName == 'INPUT')
       return e;
     else
-      return jQuery('*:input', jQuery(e))[0]
+      return $('*:input', $(e))[0]
   });
 };
 
@@ -49,36 +49,33 @@ function update_calculated_field_function(field, expression, suffix) {
   };
 }
 
-function init_expression_fields() {
-  jQuery('input[expression]').each(function(i,field) {
+$.fn.init_expression_fields = function() {
+  $('input[expression]', this).each(function(i,field) {
     // every field starts with an alpha and contains no spaces
-    var tokens = jQuery(field.getAttribute('expression').split(/([A-Za-z][^ \(\)]+)/))
-
-    var suffix = field.getAttribute('suffix').toString();
+    var tokens = $($(field).attr('expression').split(/([A-Za-z][^ \(\)]+)/));
+    var suffix = $(field).attr('suffix').toString();
     
     if(tokens.length % 2 == 0)
       tokens.push('')
 
-    var fields = jQuery(jQuery.grep(tokens.map(function(i, t) { return(i % 2 == 1 ? t : '') }),
-                                    function(t, i) { return t != '' }))
+    var fields = tokens.map(function(i, t) { return(i % 2 == 1 ? t : '') }).
+                        filter(function(i) { return this != ''; }); 
 
-    var expression = jQuery.makeArray(tokens.map(function(i, f) { 
-      if(jQuery.inArray(f, fields) > -1)
-        return 'parseFloat(0 + jQuery("#' + f + '").findInput().val())'
+    var expression = $.makeArray(tokens.map(function(i, f) { 
+      if($.inArray(f, fields) > -1)
+        return 'parseFloat(0 + $("#' + f + '").findInput().val())'
       else
         return f
     })).join("");
     
     fn = update_calculated_field_function(field, expression, suffix)
  
-    jQuery(document).ready(fn);
+    $(document).ready(fn);
     
     fields.each(function(i, e) {
-      jQuery('#' + e).findInput().change(fn);
+      $('#' + e).findInput().change(fn);
     });
   });
 }
 
-jQuery( document ).ready( function() {
-  init_expression_fields();
-});
+$(function() { $(document).init_expression_fields(); })

@@ -25,8 +25,30 @@ var container_hooks = {
   show: {},
 }
 
+var hash_param_slots = {
+  'container': 0,
+}
+
+function get_hash_param(param) {
+  var values = window.location.hash.replace(/^#/, '').split('/');
+  return values[hash_param_slots[param]];
+}
+
+function set_hash_param(param, value) {
+  var values = window.location.hash.replace(/^#/, '').split('/');
+  values[hash_param_slots[param]] = value;
+  window.location.hash = values.join('#');
+}
+
 container_hooks.show['hc-selection'] = function() {
   setup_visits();
+}
+
+container_hooks.show['form'] = function() {
+  var key = get_selected_value('visit_date_period') + '/' + get_selected_value('health_center');
+  reset_olmis_instance(key);
+  update_visit_navigation();
+  setup_fridge_form();
 }
 
 container_hooks.hide['form'] = function() {
@@ -409,11 +431,7 @@ function select_visit() {
     
     set_selected_value('health_center', hc);
 
-    reset_olmis_instance(key);
-    
     show_container(containers['visit']);
-    update_visit_navigation();
-    setup_fridge_form();
   }, 1);
 }
 
@@ -433,15 +451,17 @@ function show_warehouse(type) {
 
 function show_container( container ) {
   var visible = $('body > .container:visible').attr('id')
-  
+
   if (container_hooks.hide[visible])
     container_hooks.hide[visible].call()
 
+  jQuery('body > .container').hide();
+  jQuery('body > #'+container).show();
+  
   if (container_hooks.show[container])
     container_hooks.show[container].call()
   
-  jQuery('body > .container').hide();
-  jQuery('body > #'+container).show();
+  set_hash_param('container', container)
 }
 
 function login() {
@@ -880,8 +900,14 @@ $(function() {
       sessionStorage[ev.attrName] = ev.newValue;
   });
   
-  if (get_selected_value('logged_in') == "true")
-    show_main_page();
+  if (get_selected_value('logged_in') == "true") {
+    var screen = get_hash_param('container');
+
+    if (screen)
+      show_container(screen);
+    else
+      show_main_page();
+  }
   else    
     show_container(containers['login']);
   
@@ -948,7 +974,9 @@ function initialize_visit() {
 
   $('#visit-form *:input').blur(serialize_visit);
   $('#visit-form').setup_selected_values();
-
+  
+  $('#visit-form').init_expression_fields();
+  
   $('div.datepicker').each(function(i, e) {
     var dp = setup_datepicker($('input[type="text"]', $(e))[0],
                               {
@@ -963,18 +991,22 @@ function initialize_visit() {
 
   // Link NR checkboxes to their associated input fields so that checking a NR checkbox clears the
   // associated input field, and entering a value in an input field clears the associated NR checkbox.
-  $('div.nr input[type="checkbox"]').change(function() {
-    var associated_field = $(this).parent().prev();
-    if ($(this).attr('checked')) {
-      associated_field.val('');
-    }
-    // Also need to perform a validation check so that a checked field doesn't continue to show as
-    // invalid (or a newly unchecked field with no associated field value continues to show as valid)
-    associated_field.valid();
-  }).parent().prev().change(function() {
-    if ($(this).val().length > 0) {
-      $(this).next().find('input').attr('checked', false);
-    }
+  $('input[required_unless_nr]', $('#visit-form')).each(function(i, e) {
+    var nr = $('#'+$(e).attr('required_unless_nr'), $(e).parent())
+    nr.change(function() {
+      if ($(this).attr('checked')) {
+        $(e).val('');
+        $(e).change();
+      }
+      $(e).valid();
+    });
+    
+    $(e).change(function() { 
+      if ($(this).val().length > 0) {
+        var nr = $('#'+$(this).attr('required_unless_nr'), $(this.parentNode));
+        nr.attr('checked', false);
+      }
+    });
   });
 
   // Show the first (visit) screen rather than the last screen viewed, possibly
