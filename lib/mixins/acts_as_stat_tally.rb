@@ -407,6 +407,18 @@ module ActsAsStatTally
       }.flatten]
     end
 
+    def json_to_params(json)
+      json['table_name'].inject({}) { |hash, (key, value)|
+        hash[key] = value['value']
+
+        if value['nr'] == 'true'
+          hash[key + '/NR'] = 1
+        end
+
+        hash
+      }
+    end
+
     def progress_query(date_periods)    
       <<-TALLY
         select health_center_visits.id as id,

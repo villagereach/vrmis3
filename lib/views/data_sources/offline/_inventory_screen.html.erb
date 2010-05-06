@@ -26,13 +26,13 @@
                   <div class="tally">
                     <!--xf:alert><%= h(t("data_sources.hcvisit.errors.quantity")) %></xf:alert-->
                     <%- if Inventory.nullable_types.include?(type) -%>
-                      <input required_unless_nr="<%= id %>-nr" type="text" id="<%= id %>-qty" name="<%= id %>-qty" />
+                      <input required_unless_nr="<%= id %>-nr" size="4" type="number" min="0" id="<%= id %>-qty" name="<%= id %>-qty" />
                       <div class="nr">
                         <input type="checkbox" id="<%= id %>-nr" name="<%= id %>-nr" />
                         <label for="<%= id %>-nr"><%= h(t("NR")) %></label>
                       </div>
                     <%- else -%>
-                      <input required type="text" id="<%= id %>-qty" name="<%= id %>-qty" />
+                      <input required type="number" min="0" id="<%= id %>-qty" name="<%= id %>-qty" />
                     <%- end -%>
                   </div>
                 <%- end -%>

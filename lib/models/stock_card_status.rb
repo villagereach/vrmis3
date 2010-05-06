@@ -51,6 +51,10 @@ class StockCardStatus < ActiveRecord::Base
       end.flatten_once
     ]
   end
+  
+  def self.json_to_params(json)
+    json['stock_card_status']
+  end
 
   def self.odk_to_params(xml)
     Hash[
