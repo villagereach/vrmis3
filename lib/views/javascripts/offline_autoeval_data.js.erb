@@ -4,14 +4,6 @@ var olmis_instance = {};
 
 var data_instance = <%=
 {
-  :selected_values => { 
-    :access_code        => '',
-    :delivery_zone      => '',
-    :field_coordinator  => '',
-    :visit_date_period  => '',
-    :health_center      => '',
-    :logged_in          => false,
-  },
   :delivery_zones     => DeliveryZone.all.sort.map { |dz| { :code => dz.code, :name => dz.name } },
   :administrative_areas => AdministrativeArea.all.sort.map { |aa| { :code => aa.code, :name => aa.name, :parent_code => aa.parent_code } },
   :health_centers     => HealthCenter.all.map { |hc| { :code => hc.code, :name => hc.name, :area_code => hc.administrative_area_code, :delivery_zone => hc.delivery_zone.code } },
