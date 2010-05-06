@@ -37,7 +37,8 @@ class HealthCenterVisit < ActiveRecord::Base
   validates_presence_of :visit_status
   validates_presence_of :data_status
 
-  defaults :visit_status => 'Visited', :data_status => 'pending', :vehicle_code => lambda { |r| r.field_coordinator.try(&:default_vehicle_code) }
+  defaults :visit_status => 'Visited', :data_status => 'pending', 
+    :vehicle_code => lambda { |r| r.field_coordinator ? r.field_coordinator.default_vehicle_code : '' }
 
   named_scope :recent, lambda{|count| { :order => 'updated_at DESC', :limit => count } }
 
@@ -238,6 +239,13 @@ class HealthCenterVisit < ActiveRecord::Base
 
   public
   
+  def to_json
+    ([self.class] + self.class.tables).inject({}) { |hash, table| 
+      hash[table.table_name.singularize] = table.visit_json(self)
+      hash
+    }.to_json
+  end
+  
   def epi_month
     if !visit_month.blank?
       year, month = visit_month.split('-', 2)
@@ -293,12 +301,16 @@ class HealthCenterVisit < ActiveRecord::Base
   end    
   
   def find_or_initialize_stock_card_statuses
-    stock_cards = StockCard.active.sort
-    stock_card_statuses = stock_cards.collect{|stock_card|
-      StockCardStatus.find_or_initialize_by_stock_card_id_and_stock_room_id_and_health_center_visit_id(
-        stock_card.id,
-        self.health_center ? self.health_center.stock_room.id : nil,
-        self.id) }
+    @stock_card_statuses ||= begin
+      scs = self.stock_card_statuses
+      extra = StockCard.active.sort - scs.map(&:stock_card)
+      scs + extra.collect{ |stock_card|
+        StockCardStatus.new(
+          :stock_card => stock_card,
+          :stock_room => self.health_center ? self.health_center.stock_room : nil,
+          :health_center_visit => self) 
+        }
+    end
   end
 
   def find_or_create_inventory_records
@@ -307,6 +319,16 @@ class HealthCenterVisit < ActiveRecord::Base
           self.visited_at ? self.visited_at.to_date : Date.today,
           self.health_center ? self.health_center.stock_room.id : nil,
           t).tap { |i| i.user_id ||= self.user_id }
+    }
+  end
+  
+  def self.visit_json(visit)
+    { 'visited'                => visit.visited.to_s, 
+      'non_visit_reason'       => visit.reason_for_not_visiting || 'other',
+      'visited_at'             => visit.visited_at ? visit.visited_at.strftime("%Y-%m-%d") : '',
+      'notes'                  => visit.notes || '',
+      'other_non_visit_reason' => visit.other_non_visit_reason || '',
+      'vehicle_id'             => visit.vehicle_code || '',
     }
   end
 end

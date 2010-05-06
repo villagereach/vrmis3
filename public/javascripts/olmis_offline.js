@@ -1081,6 +1081,8 @@ function initialize_visit() {
   // Run actions that must be performed *after* health center bindings are 
   // installed
   
+  $('#visit-form').addFormGridEvents();
+
   $('#visit-form *:input').blur(serialize_visit);
   $('#visit-form').setup_selected_values();
 

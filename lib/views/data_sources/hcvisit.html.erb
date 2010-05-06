@@ -42,18 +42,7 @@
     <script type="text/javascript">
 
     function generate_olmis_instance() {
-      var instance = {};
-      
-      <% ([HealthCenterVisit] + HealthCenterVisit.tables).each do |t| -%>
-        <%- begin
-          data = render(:partial => '/data_sources/offline/' + t.xforms_group_name + '_data.js', :locals => { :klass => t } )
-        rescue ActionView::MissingTemplate
-          data = '';
-        end -%>
-      instance.<%= t.table_name.singularize %> = JSON.parse(<%= data.to_json %>);
-      <% end %>
-      
-      return instance;
+      return <%= HealthCenterVisit.new.to_json %>;
     }
     
     function reset_olmis_bindings() {

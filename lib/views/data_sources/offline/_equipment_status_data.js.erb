@@ -1,7 +1,1 @@
-<%= 
-  { 'notes' => '' }.
-    merge(Hash[*EquipmentType.active.map { |type| 
-      [type.code, { 'present' => '', 'working' => '' }] }.flatten
-    ]).to_json 
-%>
 

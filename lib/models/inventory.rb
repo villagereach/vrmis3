@@ -153,6 +153,20 @@ class Inventory < ActiveRecord::Base
     
     errors
   end    
+
+  def self.visit_json(visit)
+    ideal = visit.ideal_stock.except(:ideal)
+    
+    Inventory.possible_fields.inject({}) { |hash,(type,package,screen)|
+      h = ideal[type][package.code] && !ideal[type][package.code].new_record? ?
+          { 'qty' => ideal[type][package.code].quantity.to_s, 'nr' => ideal[type][package.code].quantity.nil?.to_s } :
+          { 'qty' => '', 'nr' => '' }
+        
+      hash[package.code] ||= {}
+      hash[package.code][type] = h
+      hash
+    }
+  end
   
   def self.visit_navigation_category
     'inventory'

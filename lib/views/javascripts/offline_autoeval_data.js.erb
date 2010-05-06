@@ -19,6 +19,18 @@ var data_instance = <%=
   :warehouse_ideal_stock => DeliveryZone.all.inject({}) { |hash,dz| hash[dz.code] = Hash[*dz.total_ideal_stock_by_package.map { |package,qty| [ package.code, qty ] }.flatten] ; hash },
 }.to_json %>;
 
+var valid_forms;
+if (!valid_forms)
+  valid_forms = {};
+
+<% HealthCenter.all.each do |hc| -%>
+<%-   if visit = hc.most_recent_visit -%>
+<%-     key = "#{ visit.date_period }/#{ hc.code }" -%>
+localStorage['<%= key %>'] = <%= visit.to_json.to_json %>;
+valid_forms['<%= key %>'] = 'stored';
+<%-   end -%>
+<%- end -%>
+
 data_instance.areas_by_area_code = {};
 $(data_instance.administrative_areas).each(function(i,e) { data_instance.areas_by_area_code[e.code] = e; });
 

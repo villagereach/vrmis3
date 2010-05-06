@@ -1,6 +1,2 @@
-<%= Inventory.possible_fields.inject({}) { |hash,(type,package,screen)|
-  hash[package.code] ||= {}
-  hash[package.code][type] = { :nr => false, :qty => '' }
-  hash
-}.to_json %>
+
 

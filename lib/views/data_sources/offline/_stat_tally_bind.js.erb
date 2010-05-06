@@ -1,6 +1,6 @@
 <%- klass.expected_params().each do |param, value_type|
   node = param.gsub(/[:,]/, '-') -%>
-$('#<%= param %>').linkBoth('val', data['<%= param %>'], 'val')
-$('#<%= param %>-nr').linkBoth('val', data['<%= param %>'], 'nr')
+$('#<%= node %>'   ).linkFrom('val',     data['<%= node %>'], 'value').linkTo('val',     data['<%= node %>'], 'value');
+$('#<%= node %>-nr').linkFrom('checked', data['<%= node %>'], 'nr').linkTo('checked', data['<%= node %>'], 'nr');
 <%- end -%>
 

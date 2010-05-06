@@ -32,6 +32,10 @@ module ActsAsVisitModel
       table_name.singularize
     end
 
+    def visit_json(visit)
+      {}
+    end
+
     def process_data_submission(visit, params)
       nil
     end

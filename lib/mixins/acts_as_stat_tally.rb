@@ -370,6 +370,20 @@ module ActsAsStatTally
       errors
     end
 
+    def visit_json(visit)
+      record_value_hash = records_by_param_names_for_keys(visit.health_center, visit.epi_month)
+      expected_params().inject({}) { |hash, (param, type)|
+        if r = record_value_hash[param]
+          v = r.send(value_field(param))
+          hash[param.gsub(/[:,]/, '-')] = { 'value' => v.to_s, 'nr' => v.nil? ? 'true' : 'false' }
+        else
+          hash[param.gsub(/[:,]/, '-')] = { 'value' => '', 'nr' => '' }
+        end
+
+        hash
+      }
+    end
+
     def xforms_group_name
       'stat_tally'
     end
