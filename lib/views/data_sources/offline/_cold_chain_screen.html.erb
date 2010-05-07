@@ -1,104 +1,76 @@
-<div id="fridges">
-</div>
+<div id="fridges"></div>
 <%= button_to_function(h(t("data_sources.hcvisit.add_fridge")), "new_fridge()", :id => "add-fridge") %>
 
 <script type="text/html" id="fridge_template">
-{{each(i,fridge) data}}
-<div class="fridge-data">  <div class="fridge-id">
-    <label for="fridge_status_${ i }_fridge_code">ID</label>
-    <input id="fridge_status_${ i }_fridge_code" name="fridge_status[${ i }][fridge_code]" size="30" type="text" required>
-  </div>
-  <div class="two-column">
-    <div class="fridge-in">
-      <div class="fridge-past_problem">
-  
-        <div>Has there been a problem with the refrigerator since the last visit?</div>
-        <ul class="radio">
-            <li>
-              <input id="fridge_status_${ i }_past_problem_true" name="fridge_status[${ i }][past_problem]" value="true" type="radio" required>
-              <label for="fridge_status_${ i }_past_problem_true">Yes</label>
-            </li>
-            <li>
-              <input id="fridge_status_${ i }_past_problem_false" name="fridge_status[${ i }][past_problem]" value="false" type="radio" required>
-  
-              <label for="fridge_status_${ i }_past_problem_false">No</label>
-            </li>
-            <li>
-              <input id="fridge_status_${ i }_past_problem_nr" name="fridge_status[${ i }][past_problem]" value="nr" type="radio" required>
-              <label for="fridge_status_${ i }_past_problem_nr">Don\'t know</label>
-            </li>
-        </ul>
+  {{each(i,fridge) data}}
+    <div class="fridge-data">
+      <div class="fridge-id">
+        <label for="fridge_status_${ i }_fridge_code"><%= jt(t("visits.health_center_cold_chain.fridge_id")) %></label>
+        <input id="fridge_status_${ i }_fridge_code" name="fridge_status[${ i }][fridge_code]" type="text" required />
       </div>
-  
-      <div class="fridge-temp">
-        <div>What was the refrigerator\'s temperature when you arrived at the health center?</div>
-        <div>
-          <label for="fridge_status_${ i }_temperature">Temp:</label>
-          <input id="fridge_status_${ i }_temperature" name="fridge_status[${ i }][temperature]" size="4" type="number" required>
-          <span>°C</span>
+      <div class="two-column">
+        <div class="fridge-in">
+          <div class="fridge-past_problem">
+            <div><%= jt(t("visits.health_center_cold_chain.past_problem")) %></div>
+            <ul class="radio">
+              <%- [ [ jt(t("yes")), "true" ], [ jt(t("no")), "false" ], [ jt(t("unknown")), "nr" ] ].each do |label,value| -%>
+                <li>
+                  <input id="fridge_status_${ i }_past_problem_<%= value %>" name="fridge_status[${ i }][past_problem]" value="<%= value %>" type="radio" required />
+                  <label for="fridge_status_${ i }_past_problem_<%= value %>"><%= label %></label>
+                </li>
+              <%- end -%>
+            </ul>
+          </div>
+          <div class="fridge-temp">
+            <div><%= jt(t("visits.health_center_cold_chain.arrival_temp")) %></div>
+            <div>
+              <label for="fridge_status_${ i }_temperature"><%= jt(t("visits.health_center_cold_chain.temp_input_prefix")) %></label>
+              <input id="fridge_status_${ i }_temperature" name="fridge_status[${ i }][temperature]" type="number" required />
+              <span><%= jt(t("visits.health_center_cold_chain.temp_input_suffix")) %></span>
+            </div>
+          </div>
         </div>
-  
-      </div>
-    </div>
-    <div class="fridge-out">
-      <div class="fridge-state">
-        <div>Was the refrigerator functioning adequately (within 2-8°C) when you left the health center?</div>
-        <ul class="radio">
-            <li>
-              <input id="fridge_status_${ i }_state_ok" name="fridge_status[${ i }][state]" onclick="jQuery(\'#fridge-problem-${ i }\').hide();" value="OK" type="radio" required>  
-              <label for="fridge_status_${ i }_state_OK">Yes</label>
-            </li>
-            <li>
-              <input id="fridge_status_${ i }_state_problem" name="fridge_status[${ i }][state]" onclick="jQuery(\'#fridge-problem-${ i }\').show();" value="problem" type="radio" required>
-              <label for="fridge_status_${ i }_state_problem">No</label>
-            </li>
-            <li>
-              <input id="fridge_status_${ i }_state_nr" name="fridge_status[${ i }][state]" onclick="jQuery(\'#fridge-problem-${ i }\').hide();" value="nr" type="radio" required>
-  
-              <label for="fridge_status_${ i }_state_nr">Don\'t know</label>
-            </li>
-        </ul>
-      </div>
-      <div id="fridge-problem-${ i }" class="fridge-problem checkbox-group" style="display: none;">
-        <div>What is the problem(s)?</div>
-        <ul class="check-list">
-            <label>  
-              <input id="fridge_status_${ i }_problem_OPER" name="fridge_status[${ i }][problem][]" value="OPER" type="checkbox">
-              Operator error
-            </label>
-            <label>
-              <input id="fridge_status_${ i }_problem_BURN" name="fridge_status[${ i }][problem][]" value="BURN" type="checkbox">
-              Burner problem
-            </label>
-            <label>
-              <input id="fridge_status_${ i }_problem_GAS" name="fridge_status[${ i }][problem][]" value="GAS" type="checkbox">
-              Gas leak or gas line problem
-            </label>
-  
-            <label>
-              <input id="fridge_status_${ i }_problem_FAULT" name="fridge_status[${ i }][problem][]" value="FAULT" type="checkbox">
-              Electrical/Gas/Petrol fault
-            </label>
-            <label>
-              <input id="fridge_status_${ i }_problem_THERM" name="fridge_status[${ i }][problem][]" value="THERM" type="checkbox">
-              Thermostat Setting
-            </label>
-            <label>
-              <input id="fridge_status_${ i }_problem_OTHER" name="fridge_status[${ i }][problem][]" onclick="jQuery(\'#fridge-other_problem-${ i }\').toggle();" value="OTHER" type="checkbox">
-  
-              Other
-            </label>
-        </ul>
-        <div id="fridge-other_problem-${ i }" class="fridge-other_problem" style="display: none;">
-          <textarea cols="25" id="fridge_status_${ i }_other_problem" name="fridge_status[${ i }][other_problem]" rows="4"></textarea>
+        <div class="fridge-out">
+          <div class="fridge-state">
+            <div><%= jt(t("visits.health_center_cold_chain.departure_state")) %></div>
+            <ul class="radio">
+              <%- [ [ jt(t("yes")), "OK" ], [ jt(t("no")), "problem" ], [ jt(t("unknown")), "nr" ] ].each do |label,value| -%>
+                <li>
+                  <input id="fridge_status_${ i }_state_<%= value %>" name="fridge_status[${ i }][state]"
+                    <%- if value == "problem" -%>
+                         onclick="$(\'#fridge-problem-${ i }\').show();"
+                    <%- else -%>
+                         onclick="$(\'#fridge-problem-${ i }\').hide();"
+                    <%- end -%>
+                         value="<%= value %>" type="radio" required />
+                  <label for="fridge_status_${ i }_state_<%= value %>"><%= label %></label>
+                </li>
+              <%- end -%>
+            </ul>
+          </div>
+          <div id="fridge-problem-${ i }" class="fridge-problem checkbox-group" style="display: none;">
+            <div><%= jt(t("visits.health_center_cold_chain.problem")) %></div>
+            <ul class="check-list">
+              <%- FridgeStatus.not_ok_status_options.each do |label,value| -%>
+                <label>  
+                  <input id="fridge_status_${ i }_problem_<%= value %>" name="fridge_status[${ i }][problem][]"
+                    <%- if value == "OTHER" -%>
+                         onclick="$(\'#fridge-other_problem-${ i }\').toggle();"
+                    <%- end -%>
+                         value="<%= value %>" type="checkbox" />
+                  <%= jt(label) %>
+                </label>
+              <%- end -%>
+            </ul>
+            <div id="fridge-other_problem-${ i }" class="fridge-other_problem" style="display: none;">
+              <textarea id="fridge_status_${ i }_other_problem" name="fridge_status[${ i }][other_problem]"></textarea>
+            </div>
+          </div>
         </div>
       </div>
+      <div class="clear"></div>
     </div>
-  </div>
-  
-  <div class="clear"></div>
-</div>
-{{/each}}
+  {{/each}}
 </script>
 <script type="text/javascript">
 var new_fridge = function(code) { 
