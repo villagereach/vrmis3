@@ -1,0 +1,48 @@
+function new_fridge() {
+  $(olmis_instance.fridge_status).push({ 
+        'fridge_code'   :'', 
+        'past_problem'  :'',
+        'temperature'   :'',
+        'state'         :'',
+        'problem'       :[],
+        'other_problem' :'',
+      });
+}
+
+function refresh_fridges() {
+    $("#fridges").empty().append("fridge_template", {data:olmis_template.fridge_status});
+    // bind inputs to the data items
+//    $(".contact").each(function(i) {
+//        var contact = contacts[i];
+//        $(".firstname", this).linkTo("val", contact, "firstName");
+//        $(".lastname", this).linkTo("val", contact, "lastName");
+//        $(".contact-fullname", this).linkFrom("text", contact, null, "fullname");
+//        $(".contact-remove", this).click(function() {
+//            $.splice(contacts, i, 1);
+//        });
+//        $(".phone", this).each(function(i) {
+//            var phone = contact.phones[i];
+//            $(".phone-type", this).linkTo("val", phone, "type");
+//            $(".phone-number", this).linkTo("val", phone, "number", "phone");
+//            $(".phone-remove", this).click(function() {
+//                // note: I'd like to only redraw the phones portion of the
+//                // template, but jquery.tmpl.js does not support nested templates
+//                // very easily. So here I am triggering an arrayChange event on
+//                // the main contacts array to force the entire thing to refresh.
+//                // Note that user input is not lost since the live linking has
+//                // already stored the values in the object graph.
+//                $.splice(contact.phones, i, 1);
+//                $([contacts]).trigger("arrayChange");
+//            });
+//        });
+//        $(".newphone", this).click(function() {
+//            $.push(contact.phones, { type: "", number: "" });
+//            $([contacts]).trigger("arrayChange");
+//        });
+//    });
+}
+
+// subscribe to changes to the fridge_status array, automatically refreshing
+// the rendering of the template
+$([data]).arrayChange(refresh_fridges);
+

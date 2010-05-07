@@ -24,6 +24,10 @@ module ActsAsVisitModel
       params[table_name.singularize]
     end
     
+    def empty_json
+      '{}'
+    end
+    
     def json_to_params(params)
       params[xforms_group_name]
     end

@@ -6,7 +6,7 @@ var data_instance = <%=
 {
   :delivery_zones     => DeliveryZone.all.sort.map { |dz| { :code => dz.code, :name => dz.name } },
   :administrative_areas => AdministrativeArea.all.sort.map { |aa| { :code => aa.code, :name => aa.name, :parent_code => aa.parent_code } },
-  :health_centers     => HealthCenter.all.map { |hc| { :code => hc.code, :name => hc.name, :area_code => hc.administrative_area_code, :delivery_zone => hc.delivery_zone.code } },
+  :health_centers     => HealthCenter.all.map { |hc| { :code => hc.code, :name => hc.name, :area_code => hc.administrative_area_code, :delivery_zone => hc.delivery_zone.code, :fridge_codes => Fridge.stock_room(hc.stock_room_id).map(&:code) } },
   :field_coordinators => DeliveryZone.all.map(&:field_coordinator).compact.sort.uniq.map { |fc| { :code => fc.username, :name => fc.name } },
   :warehouse_ideal_stock => DeliveryZone.all.inject({}) { |hash,dz| hash[dz.code] = Hash[*dz.total_ideal_stock_by_package.map { |package,qty| [ package.code, qty ] }.flatten] ; hash },
 }.to_json %>;

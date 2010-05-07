@@ -54,7 +54,7 @@
       
       <%- ([HealthCenterVisit] + HealthCenterVisit.tables).each do |t| -%>
         if (!olmis_instance.<%= t.table_name.singularize %>)
-          olmis_instance.<%= t.table_name.singularize %> = {}; 
+          olmis_instance.<%= t.table_name.singularize %> = <%= t.empty_json %>; 
 
         <%- begin
           bind = render(:partial => '/data_sources/offline/' + t.xforms_group_name + '_bind.js', :locals => { :klass => t } )

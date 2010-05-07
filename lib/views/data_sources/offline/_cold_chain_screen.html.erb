@@ -1,0 +1,152 @@
+<div id="fridges">
+</div>
+
+<script type="text/html" id="fridge_template">
+{{each(i,fridge) data}}
+<div class="fridge-data">  <div class="fridge-id">
+    <label for="fridge_status_${ i }_fridge_code">ID</label>
+    <input id="fridge_status_${ i }_fridge_code" name="fridge_status[${ i }][fridge_code]" size="30" type="text" required>
+  </div>
+  <div class="two-column">
+    <div class="fridge-in">
+      <div class="fridge-past_problem">
+  
+        <div>Has there been a problem with the refrigerator since the last visit?</div>
+        <ul class="radio">
+            <li>
+              <input id="fridge_status_${ i }_past_problem_true" name="fridge_status[${ i }][past_problem]" value="true" type="radio" required>
+              <label for="fridge_status_${ i }_past_problem_true">Yes</label>
+            </li>
+            <li>
+              <input id="fridge_status_${ i }_past_problem_false" name="fridge_status[${ i }][past_problem]" value="false" type="radio" required>
+  
+              <label for="fridge_status_${ i }_past_problem_false">No</label>
+            </li>
+            <li>
+              <input id="fridge_status_${ i }_past_problem_nr" name="fridge_status[${ i }][past_problem]" value="nr" type="radio" required>
+              <label for="fridge_status_${ i }_past_problem_nr">Don\'t know</label>
+            </li>
+        </ul>
+      </div>
+  
+      <div class="fridge-temp">
+        <div>What was the refrigerator\'s temperature when you arrived at the health center?</div>
+        <div>
+          <label for="fridge_status_${ i }_temperature">Temp:</label>
+          <input id="fridge_status_${ i }_temperature" name="fridge_status[${ i }][temperature]" size="4" type="number" required>
+          <span>°C</span>
+        </div>
+  
+      </div>
+    </div>
+    <div class="fridge-out">
+      <div class="fridge-state">
+        <div>Was the refrigerator functioning adequately (within 2-8°C) when you left the health center?</div>
+        <ul class="radio">
+            <li>
+              <input id="fridge_status_${ i }_state_ok" name="fridge_status[${ i }][state]" onclick="jQuery(\'#fridge-problem-${ i }\').hide();" value="OK" type="radio" required>  
+              <label for="fridge_status_${ i }_state_OK">Yes</label>
+            </li>
+            <li>
+              <input id="fridge_status_${ i }_state_problem" name="fridge_status[${ i }][state]" onclick="jQuery(\'#fridge-problem-${ i }\').show();" value="problem" type="radio" required>
+              <label for="fridge_status_${ i }_state_problem">No</label>
+            </li>
+            <li>
+              <input id="fridge_status_${ i }_state_nr" name="fridge_status[${ i }][state]" onclick="jQuery(\'#fridge-problem-${ i }\').hide();" value="nr" type="radio" required>
+  
+              <label for="fridge_status_${ i }_state_nr">Don\'t know</label>
+            </li>
+        </ul>
+      </div>
+      <div id="fridge-problem-${ i }" class="fridge-problem checkbox-group" style="display: none;">
+        <div>What is the problem(s)?</div>
+        <ul class="check-list">
+            <label>  
+              <input id="fridge_status_${ i }_problem_OPER" name="fridge_status[${ i }][problem][]" value="OPER" type="checkbox">
+              Operator error
+            </label>
+            <label>
+              <input id="fridge_status_${ i }_problem_BURN" name="fridge_status[${ i }][problem][]" value="BURN" type="checkbox">
+              Burner problem
+            </label>
+            <label>
+              <input id="fridge_status_${ i }_problem_GAS" name="fridge_status[${ i }][problem][]" value="GAS" type="checkbox">
+              Gas leak or gas line problem
+            </label>
+  
+            <label>
+              <input id="fridge_status_${ i }_problem_FAULT" name="fridge_status[${ i }][problem][]" value="FAULT" type="checkbox">
+              Electrical/Gas/Petrol fault
+            </label>
+            <label>
+              <input id="fridge_status_${ i }_problem_THERM" name="fridge_status[${ i }][problem][]" value="THERM" type="checkbox">
+              Thermostat Setting
+            </label>
+            <label>
+              <input id="fridge_status_${ i }_problem_OTHER" name="fridge_status[${ i }][problem][]" onclick="jQuery(\'#fridge-other_problem-${ i }\').toggle();" value="OTHER" type="checkbox">
+  
+              Other
+            </label>
+        </ul>
+        <div id="fridge-other_problem-${ i }" class="fridge-other_problem" style="display: none;">
+          <textarea cols="25" id="fridge_status_${ i }_other_problem" name="fridge_status[${ i }][other_problem]" rows="4"></textarea>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="clear"></div>
+</div>
+{{/each}}
+</script>
+<script type="text/javascript">
+var new_fridge = function(code) { 
+  $.push(olmis_instance.fridge_status, {
+    fridge_code:   code || '',     
+    past_problem:  '',
+    temperature:   '',
+    state:         '',
+    problem:       [],
+    other_problem: ''             
+}) };
+
+var refresh_fridges = function() {  
+  $("#fridges").empty().append("fridge_template", {data:olmis_instance.fridge_status});
+  $('#fridges *:input').blur(serialize_visit);
+  $('#fridges *:input').addClass('enabled');
+  $('#fridges').setupValidation();
+/*
+    // bind inputs to the data items
+//    $(".contact").each(function(i) {
+//        var contact = contacts[i];
+//        $(".firstname", this).linkTo("val", contact, "firstName");
+//        $(".lastname", this).linkTo("val", contact, "lastName");
+//        $(".contact-fullname", this).linkFrom("text", contact, null, "fullname");
+//        $(".contact-remove", this).click(function() {
+//            $.splice(contacts, i, 1);
+//        });
+//        $(".phone", this).each(function(i) {
+//            var phone = contact.phones[i];
+//            $(".phone-type", this).linkTo("val", phone, "type");
+//            $(".phone-number", this).linkTo("val", phone, "number", "phone");
+//            $(".phone-remove", this).click(function() {
+//                // note: I'd like to only redraw the phones portion of the
+//                // template, but jquery.tmpl.js does not support nested templates
+//                // very easily. So here I am triggering an arrayChange event on
+//                // the main contacts array to force the entire thing to refresh.
+//                // Note that user input is not lost since the live linking has
+//                // already stored the values in the object graph.
+//                $.splice(contact.phones, i, 1);
+//                $([contacts]).trigger("arrayChange");
+//            });
+//        });
+//        $(".newphone", this).click(function() {
+//            $.push(contact.phones, { type: "", number: "" });
+//            $([contacts]).trigger("arrayChange");
+//        });
+//    });
+*/
+};
+    
+$(function() { $.templates.fridge_template = $.tmpl($("#fridge_template").html()); });
+</script>

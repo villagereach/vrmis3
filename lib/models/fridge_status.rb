@@ -156,6 +156,33 @@ class FridgeStatus < ActiveRecord::Base
     }
   end    
 
+  def self.visit_json(visit)
+    visit.find_or_initialize_fridge_statuses().sort.map do |fs|
+      { 
+        'fridge_code'   => fs.fridge_code, 
+        'past_problem'  => fs.past_problem,
+        'temperature'   => fs.temperature,
+        'state'         => case fs.status_code
+                           when 'OK', 'nr' then fs.status_code
+                           else                 'problem'
+                           end,
+        'problem'       => case fs.status_code
+                           when 'OK', 'nr' then []
+                           else                 fs.status_code.split /\s+/
+                           end,
+        'other_problem' => fs.other_problem
+      }
+    end
+  end
+  
+  def self.empty_json
+    '[]'
+  end
+  
+  def self.json_to_params(json)
+    json['fridge_status']
+  end
+  
   def self.xforms_to_params(xml)
     xml.xpath('/olmis/cold_chain/fridge').map do |fridge|
       {
