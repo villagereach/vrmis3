@@ -687,6 +687,10 @@ div.datepicker input[type="text"], div.datepicker input[type="date"] {
 #add-fridge {
   margin-top: 2em;
 }
+.delete-fridge {
+  font-size: 0.8em;
+  margin-left: 1em;
+}
 
 #screen-cold_chain div.fridge-data {
   margin: 1em 0;

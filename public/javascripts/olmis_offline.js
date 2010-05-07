@@ -48,7 +48,7 @@ container_hooks.show['form'] = function() {
   var key = get_selected_value('visit_date_period') + '/' + get_selected_value('health_center');
   reset_olmis_instance(key);
   update_visit_navigation();
-  setup_fridge_form();
+  refresh_fridges();
 }
 
 container_hooks.hide['form'] = function() {
@@ -100,21 +100,6 @@ function go_to_next_screen(this_screen) {
 function go_to_previous_screen(this_screen) {
   var t = $('#tab-menu').tabs();
   $("#tab-" + this_screen).prevAll().not(".ui-state-disabled").first().find('a').click()
-}
-
-function setup_fridge_form() {
-  var temp_input = jQuery('#case-cold_chain .fridge-temp input');
-  if (temp_input.siblings().length == 0) {
-    jQuery('<span>' + I18n.t("visits.health_center_cold_chain.temp_input_prefix") + '</span>').insertBefore(temp_input);
-    jQuery('<span>' + I18n.t("visits.health_center_cold_chain.temp_input_suffix") + '</span>').insertAfter(temp_input);
-
-    // Shift nodes so that the alert icon precedes the input field, except for the other problem text area
-    jQuery('#case-cold_chain span.value').each(function() {
-      if (jQuery(this).children()[0].nodeName.toLowerCase() != 'textarea') {
-        jQuery(this).insertAfter(jQuery(this).next());
-      }
-    });
-  }
 }
 
 function set_equipment_notes_area_size() {
@@ -344,78 +329,10 @@ function get_warehouse_stock_amounts_for_delivery_zone() {
   return stock_amounts;
 }
 
-function populate_fridge_form() {
-  try {
-    var fridge_codes = get_fridge_codes_for_health_center();
-
-    if (fridge_codes.length > 0) {
-      var xf_action = new XFAction(null, null);
-
-      for (var i = 0, l = fridge_codes.length; i < l; i++) {
-        var path = "instance('olmis')/cold_chain/fridge["+(i+1)+"]/@code"
-
-        // Create an XPath (required by setvalue) for the fridge code node if it doesn't already exist
-        var xp = XPath.get(path) || new XPath(path,
-                                      new PathExpr(
-                                        new FunctionCallExpr('http://www.w3.org/2002/xforms instance', new CteExpr('olmis')),
-                                        new LocationExpr(false,
-                                          new StepExpr('child', new NodeTestName('', 'cold_chain')),
-                                          new StepExpr('child', new NodeTestName('', 'fridge'),
-                                            new PredicateExpr(new CteExpr(i+1))),
-                                          new StepExpr('attribute', new NodeTestName('', 'code')))), []);
-
-        xf_action.add(new XFSetvalue(new Binding(false, path), null, fridge_codes[i], null, null));
-      }
-      run(xf_action, "statusPanel", "DOMActivate", false, true);
-    }
-  } catch(e) {
-    DebugConsole.write("Error populating fridge form: " + e.message + "\n" + e.stack.split("\n"));
-  }
-}
-
 function get_fridge_codes_for_health_center() {
-  var path = "instance('data')/province/district/health_center[@code=instance('data')/selected-values/health_center]/fridge";
-  var xp = XPath.get(path) || new XPath(path,
-                                new PathExpr(
-                                  new FunctionCallExpr('http://www.w3.org/2002/xforms instance', new CteExpr('data')),
-                                    new LocationExpr(false,
-                                       new StepExpr('child', new NodeTestName('', 'province')),
-                                       new StepExpr('child', new NodeTestName('', 'district')),
-                                       new StepExpr('child',
-                                         new NodeTestName('', 'health_center'),
-                                          new PredicateExpr(
-                                            new BinaryExpr(
-                                              new LocationExpr(false, new StepExpr('attribute', new NodeTestName(null, 'code'))),
-                                              '=',
-                                              new PathExpr(
-                                                new FunctionCallExpr('http://www.w3.org/2002/xforms instance', new CteExpr('data')),
-                                                  new LocationExpr(false,
-                                                    new StepExpr('child', new NodeTestName('', 'selected-values')),
-                                                    new StepExpr('child', new NodeTestName('', 'health_center'))))))),
-                                      new StepExpr('child', new NodeTestName('', 'fridge')))), []);
-
-  var nodeset = xp.evaluate($('data'));
-  var fridge_codes = [];
-  for (var i = 0, l = nodeset.length; i < l; i++) {
-    fridge_codes.push(nodeset[i].getAttributeNS(null, 'code'));
-  }
-  return fridge_codes;
+  return find_health_center_by_code(get_selected_value('health_center'))['fridge_codes'];
 }
 
-/*
-XFSelect.prototype.selectValue = function(value) {
-  var selectElement = this.element.getElementsByTagName('select')[0];
-  for (var x = 0, l = selectElement.options.length; x < l; x++) {
-    if (selectElement.options[x].value == value) {
-      selectElement.selectedIndex = x;
-      var event = document.createEvent('HTMLEvents');
-      event.initEvent('change', false, false);
-      selectElement.dispatchEvent(event);
-      break;
-    }
-  }
-}
-*/
 function select_visit() {
   var key = $('#saved-forms-control').val();
   if (!key) {
@@ -440,7 +357,16 @@ function reset_olmis_instance(key) {
   if (instance)
     olmis_instance = JSON.parse(instance);
   else {
-    olmis_instance = generate_olmis_instance(); 
+    olmis_instance = generate_olmis_instance();
+    var fridge_codes = get_fridge_codes_for_health_center();
+    if (fridge_codes.length > 0) {
+      for (var i = 0, l = fridge_codes.length; i < l; i++) {
+        new_fridge(fridge_codes[i]);
+      }
+    } else {
+      // There must be at least one fridge, even if it's blank
+      new_fridge();
+    }
   }
   reset_olmis_bindings();
 }

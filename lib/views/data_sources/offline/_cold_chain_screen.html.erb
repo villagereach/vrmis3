@@ -6,7 +6,8 @@
     <div class="fridge-data">
       <div class="fridge-id">
         <label for="fridge_status_${ i }_fridge_code"><%= jt(t("visits.health_center_cold_chain.fridge_id")) %></label>
-        <input id="fridge_status_${ i }_fridge_code" name="fridge_status[${ i }][fridge_code]" type="text" required />
+        <input class="fridge_status-fridge_code" id="fridge_status_${ i }_fridge_code" name="fridge_status[${ i }][fridge_code]" type="text" required />
+        <a href="#" class="delete-fridge"><%= jt(t("data_sources.hcvisit.delete_fridge")) %></a>
       </div>
       <div class="two-column">
         <div class="fridge-in">
@@ -15,7 +16,7 @@
             <ul class="radio">
               <%- [ [ jt(t("yes")), "true" ], [ jt(t("no")), "false" ], [ jt(t("unknown")), "nr" ] ].each do |label,value| -%>
                 <li>
-                  <input id="fridge_status_${ i }_past_problem_<%= value %>" name="fridge_status[${ i }][past_problem]" value="<%= value %>" type="radio" required />
+                  <input class="fridge_status-past_problem" id="fridge_status_${ i }_past_problem_<%= value %>" name="fridge_status[${ i }][past_problem]" value="<%= value %>" type="radio" required />
                   <label for="fridge_status_${ i }_past_problem_<%= value %>"><%= label %></label>
                 </li>
               <%- end -%>
@@ -25,7 +26,7 @@
             <div><%= jt(t("visits.health_center_cold_chain.arrival_temp")) %></div>
             <div>
               <label for="fridge_status_${ i }_temperature"><%= jt(t("visits.health_center_cold_chain.temp_input_prefix")) %></label>
-              <input id="fridge_status_${ i }_temperature" name="fridge_status[${ i }][temperature]" type="number" required />
+              <input class="fridge_status-temperature" id="fridge_status_${ i }_temperature" name="fridge_status[${ i }][temperature]" type="number" required />
               <span><%= jt(t("visits.health_center_cold_chain.temp_input_suffix")) %></span>
             </div>
           </div>
@@ -36,7 +37,7 @@
             <ul class="radio">
               <%- [ [ jt(t("yes")), "OK" ], [ jt(t("no")), "problem" ], [ jt(t("unknown")), "nr" ] ].each do |label,value| -%>
                 <li>
-                  <input id="fridge_status_${ i }_state_<%= value %>" name="fridge_status[${ i }][state]"
+                  <input class="fridge_status-state" id="fridge_status_${ i }_state_<%= value %>" name="fridge_status[${ i }][state]"
                     <%- if value == "problem" -%>
                          onclick="$(\'#fridge-problem-${ i }\').show();"
                     <%- else -%>
@@ -53,7 +54,7 @@
             <ul class="check-list">
               <%- FridgeStatus.not_ok_status_options.each do |label,value| -%>
                 <label>  
-                  <input id="fridge_status_${ i }_problem_<%= value %>" name="fridge_status[${ i }][problem][]"
+                  <input class="fridge_status-problem" id="fridge_status_${ i }_problem_<%= value %>" name="fridge_status[${ i }][problem][]"
                     <%- if value == "OTHER" -%>
                          onclick="$(\'#fridge-other_problem-${ i }\').toggle();"
                     <%- end -%>
@@ -63,7 +64,7 @@
               <%- end -%>
             </ul>
             <div id="fridge-other_problem-${ i }" class="fridge-other_problem" style="display: none;">
-              <textarea id="fridge_status_${ i }_other_problem" name="fridge_status[${ i }][other_problem]"></textarea>
+              <textarea class="fridge_status-other-problem" id="fridge_status_${ i }_other_problem" name="fridge_status[${ i }][other_problem]"></textarea>
             </div>
           </div>
         </div>
@@ -73,53 +74,55 @@
   {{/each}}
 </script>
 <script type="text/javascript">
-var new_fridge = function(code) { 
-  $.push(olmis_instance.fridge_status, {
-    fridge_code:   code || '',     
-    past_problem:  '',
-    temperature:   '',
-    state:         '',
-    problem:       [],
-    other_problem: ''             
-}) };
+function new_fridge(code) { 
+  $.push(olmis_instance.fridge_status,
+    {
+      fridge_code:   code || '',     
+      past_problem:  '',
+      temperature:   '',
+      state:         '',
+      problem:       [],
+      other_problem: ''             
+    });
+}
 
-var refresh_fridges = function() {  
+function refresh_fridges() {
   $("#fridges").empty().append("fridge_template", {data:olmis_instance.fridge_status});
   $('#fridges *:input').blur(serialize_visit);
   $('#fridges *:input').addClass('enabled');
   $('#fridges').setupValidation();
-/*
-    // bind inputs to the data items
-//    $(".contact").each(function(i) {
-//        var contact = contacts[i];
-//        $(".firstname", this).linkTo("val", contact, "firstName");
-//        $(".lastname", this).linkTo("val", contact, "lastName");
-//        $(".contact-fullname", this).linkFrom("text", contact, null, "fullname");
-//        $(".contact-remove", this).click(function() {
-//            $.splice(contacts, i, 1);
-//        });
-//        $(".phone", this).each(function(i) {
-//            var phone = contact.phones[i];
-//            $(".phone-type", this).linkTo("val", phone, "type");
-//            $(".phone-number", this).linkTo("val", phone, "number", "phone");
-//            $(".phone-remove", this).click(function() {
-//                // note: I'd like to only redraw the phones portion of the
-//                // template, but jquery.tmpl.js does not support nested templates
-//                // very easily. So here I am triggering an arrayChange event on
-//                // the main contacts array to force the entire thing to refresh.
-//                // Note that user input is not lost since the live linking has
-//                // already stored the values in the object graph.
-//                $.splice(contact.phones, i, 1);
-//                $([contacts]).trigger("arrayChange");
-//            });
-//        });
-//        $(".newphone", this).click(function() {
-//            $.push(contact.phones, { type: "", number: "" });
-//            $([contacts]).trigger("arrayChange");
-//        });
-//    });
-*/
-};
+
+  if (olmis_instance.fridge_status.length == 1) {
+    $(".delete-fridge").hide(); // Hide the delete action if there's only one fridge because it can't be deleted
+  } else {
+    $(".delete-fridge").show();
+  }
+
+  // bind inputs to the data items
+  $(".fridge-data").each(function(i) {
+    var fridge_status = olmis_instance.fridge_status[i];
+    $(".delete-fridge", this).click(function() { $.splice(olmis_instance.fridge_status, i, 1); });
+
+    $(".fridge_status-fridge_code", this).linkFrom("val", fridge_status, "fridge_code").linkTo("val", fridge_status, "fridge_code");
+    $(".fridge_status-past_problem", this).each(function() {
+      $(this).linkFrom("checked", fridge_status, "past_problem", radioValueFn($(this).val()));
+      $(this).linkTo("val", fridge_status, "past_problem");
+    });
+    $(".fridge_status-temperature", this).linkFrom("val", fridge_status, "temperature").linkTo("val", fridge_status, "temperature");
+    $(".fridge_status-state", this).each(function() {
+      $(this).linkFrom("checked", fridge_status, "state", radioValueFn($(this).val()));
+      $(this).linkTo("val", fridge_status, "state");
+    });
+    // FIXME: The check box bindings are wrong
+    $(".fridge_status-problem", this).each(function() {
+      $(this).linkFrom("checked", fridge_status, "problem");
+      $(this).linkTo("checked", fridge_status, "problem");
+    });
+    $(".fridge_status-other_problem", this).linkFrom("val", fridge_status, "other_problem").linkTo("val", fridge_status, "other_problem");
+  });
+}
     
-$(function() { $.templates.fridge_template = $.tmpl($("#fridge_template").html()); });
+$(function() {
+  $.templates.fridge_template = $.tmpl($("#fridge_template").html());
+});
 </script>
