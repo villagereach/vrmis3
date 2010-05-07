@@ -637,7 +637,7 @@ en:
       tab_title_child_vaccination_tally: "Child Vaccinations"
       tab_title_full_vaccination_tally:  "Fully Vaccinated Children"
       tab_title_epi_usage_tally:         "EPI Stock"
-      #add_fridge:                        "Add new fridge"
+      add_fridge:                        "Add new fridge"
       upload_all:                        "Upload all completed forms"
       upload_empty:                      "You have no completed forms available for uploading"
       submit_failed:                     "Form submission failed"

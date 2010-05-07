@@ -684,6 +684,20 @@ div.datepicker input[type="text"], div.datepicker input[type="date"] {
   text-align: center;
 }
 
+#add-fridge {
+  margin-top: 2em;
+}
+
+#screen-cold_chain div.fridge-data {
+  margin: 1em 0;
+}
+#screen-cold_chain div.fridge-data ul.check-list {
+  padding-left: 0;
+}
+#screen-cold_chain div.fridge-data ul.check-list label {
+  display: block;
+}
+
 #screen-cold_chain div.fridge-id {
   margin: 0 1%;
   padding: 0;
@@ -696,9 +710,6 @@ div.datepicker input[type="text"], div.datepicker input[type="date"] {
 /*
 #case-cold_chain div.xforms-group-content {
   clear: both;
-}
-#case-cold_chain div.xforms-repeat-item {
-  margin: 1em 0;
 }
 */
 #screen-cold_chain .fridge-id input[type="text"] {
@@ -713,6 +724,7 @@ div.datepicker input[type="text"], div.datepicker input[type="date"] {
 }
 #screen-cold_chain textarea {
   height: 4em;
+  margin-top: -1em;
   width: 90%;
 }
 #screen-cold_chain label {

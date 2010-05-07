@@ -1,5 +1,6 @@
 <div id="fridges">
 </div>
+<%= button_to_function(h(t("data_sources.hcvisit.add_fridge")), "new_fridge()", :id => "add-fridge") %>
 
 <script type="text/html" id="fridge_template">
 {{each(i,fridge) data}}
