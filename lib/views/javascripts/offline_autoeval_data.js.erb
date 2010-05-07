@@ -19,8 +19,8 @@ if (!valid_forms)
 <%- HealthCenter.all.each do |hc| -%>
 <%-   if visit = hc.most_recent_visit -%>
 <%-     key = "#{ visit.date_period }/#{ hc.code }" -%>
-localStorage['<%= key %>'] = <%= visit.to_json.to_json %>;
-valid_forms['<%= key %>'] = 'stored';
+//localStorage['<%= key %>'] = <%#= visit.to_json.to_json %>;
+//valid_forms['<%= key %>'] = 'stored';                        
 <%-   end -%>
 <%- end -%>
 <%- end -%>
