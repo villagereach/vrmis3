@@ -111,12 +111,6 @@
       </div>
       <div id="user" class="content" show_if_selected="logged_in" style="display: none;">
         <a href="#" onclick="logout()" ><%= h(t("logout")) %></a>
-
-        <div id="recording-data-for" class="content" show_if_selected="field_coordinator" style="display: none;">
-          <em><%= h(t(".selected_fc")) %></em>
-          <strong><span class="selected_field_coordinator_name"></span></strong>
-        </div>
-
         <%= link_to_function h(t(".go_to_main_page")), 'show_main_page()' %>
       </div>
     </div>
