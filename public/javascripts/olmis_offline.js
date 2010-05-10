@@ -590,16 +590,16 @@ function setup_visits() {
   for (var i = 0, l = months.length; i < l; i++) {
     var month = months[i][0];
     var local_forms = {};
-    for (var idx=0; idx < hcs.length; idx++) {
-      var name = hcs[idx].name;
-      var code = hcs[idx].code;
+    for (var hci = 0, hcl = hcs.length; hci < hcl; hci++) {
+      var name = hcs[hci].name;
+      var code = hcs[hci].code;
       
       var key = [month, code, name];
       
-      if (local_forms[hcs[idx].area_code] === undefined)
-        local_forms[hcs[idx].area_code] = []
+      if (local_forms[hcs[hci].area_code] === undefined)
+        local_forms[hcs[hci].area_code] = []
       
-      local_forms[hcs[idx].area_code].push(key);
+      local_forms[hcs[hci].area_code].push(key);
     }
 
     setup_form_options(local_forms, month_period != month);
@@ -722,8 +722,8 @@ function setup_saved_visits() {
 
 function forEachLocalStorageKey(f) {
   if (localStorage[0]) {
-    for (var x = 0, l = localStorage.length; x < l; x++)  {
-      f(localStorage[x]);
+    for (var i = 0, l = localStorage.length; i < l; i++)  {
+      f(localStorage[i]);
     }
   } else {
     for (var x in localStorage) {
@@ -837,8 +837,8 @@ $(function() {
     valid_forms = {};
   }
   
-  for (var x=0; x<sessionStorage.length; x++) {
-    $(selected_values).attr(sessionStorage[x], sessionStorage[sessionStorage[x]]);
+  for (var i = 0, l = sessionStorage.length; i < l; i++) {
+    $(selected_values).attr(sessionStorage[i], sessionStorage[sessionStorage[i]]);
   }
 
   $(selected_values).attrChange(function(ev) {
