@@ -36,13 +36,10 @@
             <div><%= jt(t("visits.health_center_cold_chain.departure_state")) %></div>
             <ul class="radio">
               <%- [ [ jt(t("yes")), "OK" ], [ jt(t("no")), "problem" ], [ jt(t("unknown")), "nr" ] ].each do |label,value| -%>
+                <%- action = value == "problem" ? "show" : "hide" -%>
                 <li>
                   <input class="fridge_status-state" id="fridge_status_${ i }_state_<%= value %>" name="fridge_status[${ i }][state]"
-                    <%- if value == "problem" -%>
-                         onclick="$(\'#fridge-problem-${ i }\').show();"
-                    <%- else -%>
-                         onclick="$(\'#fridge-problem-${ i }\').hide();"
-                    <%- end -%>
+                         onclick="$(\'#fridge-problem-${ i }\').<%= action %>();"
                          value="<%= value %>" type="radio" required />
                   <label for="fridge_status_${ i }_state_<%= value %>"><%= label %></label>
                 </li>
@@ -113,10 +110,9 @@ function refresh_fridges() {
       $(this).linkFrom("checked", fridge_status, "state", radioValueFn($(this).val()));
       $(this).linkTo("val", fridge_status, "state");
     });
-    // FIXME: The check box bindings are wrong
     $(".fridge_status-problem", this).each(function() {
-      $(this).linkFrom("checked", fridge_status, "problem");
-      $(this).linkTo("checked", fridge_status, "problem");
+      $(this).linkFrom("checked", fridge_status, "problem", fridgeProblemsGetFn($(this).val()));
+      $(this).linkTo("checked", fridge_status, "problem", fridgeProblemsSetFn($(this).val()));
     });
     $(".fridge_status-other_problem", this).linkFrom("val", fridge_status, "other_problem").linkTo("val", fridge_status, "other_problem");
   });

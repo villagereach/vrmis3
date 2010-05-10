@@ -663,6 +663,25 @@ function radioValueFn(val) {
   };
 }
 
+function fridgeProblemsGetFn(val) {
+  return function(newValue, settings) {
+    return newValue.indexOf(val) < 0 ? false : 'checked';
+  };
+}
+
+function fridgeProblemsSetFn(val) {
+  return function(newValue, settings) {
+    var problems = settings.target.problem;
+    var i = problems.indexOf(val);
+    if (newValue && i < 0) {
+      problems.push(val);
+    } else if (!newValue && i >= 0) {
+      problems.splice(i, 1);
+    }
+    return problems;
+  };
+}
+
 function olmis_localize_date(value) {
   try {
     if (value && value.match(/^\d{4}-\d{2}-\d{2}$/)) {
