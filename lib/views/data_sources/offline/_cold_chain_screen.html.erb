@@ -36,11 +36,8 @@
             <div><%= jt(t("visits.health_center_cold_chain.departure_state")) %></div>
             <ul class="radio">
               <%- [ [ jt(t("yes")), "OK" ], [ jt(t("no")), "problem" ], [ jt(t("unknown")), "nr" ] ].each do |label,value| -%>
-                <%- action = value == "problem" ? "show" : "hide" -%>
                 <li>
-                  <input class="fridge_status-state" id="fridge_status_${ i }_state_<%= value %>" name="fridge_status[${ i }][state]"
-                         onclick="$(\'#fridge-problem-${ i }\').<%= action %>();"
-                         value="<%= value %>" type="radio" required />
+                  <input class="fridge_status-state" id="fridge_status_${ i }_state_<%= value %>" name="fridge_status[${ i }][state]" value="<%= value %>" type="radio" required />
                   <label for="fridge_status_${ i }_state_<%= value %>"><%= label %></label>
                 </li>
               <%- end -%>
@@ -51,17 +48,13 @@
             <ul class="check-list">
               <%- FridgeStatus.not_ok_status_options.each do |label,value| -%>
                 <label>  
-                  <input class="fridge_status-problem" id="fridge_status_${ i }_problem_<%= value %>" name="fridge_status[${ i }][problem][]"
-                    <%- if value == "OTHER" -%>
-                         onclick="$(\'#fridge-other_problem-${ i }\').toggle();"
-                    <%- end -%>
-                         value="<%= value %>" type="checkbox" />
+                  <input class="fridge_status-problem" id="fridge_status_${ i }_problem_<%= value %>" name="fridge_status[${ i }][problem][]" value="<%= value %>" type="checkbox" />
                   <%= jt(label) %>
                 </label>
               <%- end -%>
             </ul>
             <div id="fridge-other_problem-${ i }" class="fridge-other_problem" style="display: none;">
-              <textarea class="fridge_status-other-problem" id="fridge_status_${ i }_other_problem" name="fridge_status[${ i }][other_problem]"></textarea>
+              <textarea class="fridge_status-other_problem" id="fridge_status_${ i }_other_problem" name="fridge_status[${ i }][other_problem]"></textarea>
             </div>
           </div>
         </div>
@@ -83,6 +76,24 @@ function new_fridge(code) {
     });
 }
 
+function fridge_state(ev) {
+  if (ev.newValue == 'problem') {
+    $(ev.target).parents('.fridge-state').next().show().addClass('enabled');
+  } else {
+    $(ev.target).parents('.fridge-state').next().hide().removeClass('enabled');
+  }
+}
+
+function fridge_problem_other(ev) {
+  if ($(ev.target).val() == 'OTHER') {
+    if (ev.newValue) {
+      $(ev.target).parents('ul').next().show().addClass('enabled');
+    } else {
+      $(ev.target).parents('ul').next().hide().removeClass('enabled');
+    }
+  }
+}
+    
 function refresh_fridges() {
   $("#fridges").empty().append("fridge_template", {data:olmis_instance.fridge_status});
   $('#fridges *:input').blur(serialize_visit);
@@ -94,6 +105,9 @@ function refresh_fridges() {
   } else {
     $(".delete-fridge").show();
   }
+
+  $(".fridge-state input").attrChange('val', fridge_state);
+  $(".fridge-problem input").attrChange('checked', fridge_problem_other);
 
   // bind inputs to the data items
   $(".fridge-data").each(function(i) {
@@ -115,9 +129,12 @@ function refresh_fridges() {
       $(this).linkTo("checked", fridge_status, "problem", fridgeProblemsSetFn($(this).val()));
     });
     $(".fridge_status-other_problem", this).linkFrom("val", fridge_status, "other_problem").linkTo("val", fridge_status, "other_problem");
+
+    fridge_state({ newValue: fridge_status.state, target: $(this).find('.fridge_status-state') });
+    fridge_problem_other({ newValue: fridge_status.problem.indexOf('OTHER') >= 0, target: $(this).find('.fridge_status-problem') });
   });
 }
-    
+
 $(function() {
   $.templates.fridge_template = $.tmpl($("#fridge_template").html());
 });
