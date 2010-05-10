@@ -902,7 +902,13 @@ function preinitialize_visit() {
 
   $('#tab-menu').tabs({
     show: function(event, ui) {
-      $('*:input', $(ui.panel)).valid();
+      var valid = $('*:input.enabled', $(ui.panel)).valid();
+      $(ui.tab).removeClass("complete incomplete todo");
+      if (valid) {
+        $(ui.tab).addClass("complete");
+      } else {
+        $(ui.tab).addClass("todo");
+      }
       if (ui.panel.id == 'screen-equipment_status') {
         set_equipment_notes_area_size();
       }

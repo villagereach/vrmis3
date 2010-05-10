@@ -884,11 +884,45 @@ body {
   border: none;
 }
 
-#tab-menu > ul.ui-tabs-nav > li > a { padding: 2px; font-size: 75%; float: none; display: block; border: thin solid transparent; border-right-width: 0;  }
-#tab-menu > ul.ui-tabs-nav > li.ui-tabs-selected { padding: 0; }
-#tab-menu > ul.ui-tabs-nav > li { display: block; float: none; margin: 5px 0; padding: 0; border: none!important;  }
-#tab-menu > ul.ui-tabs-nav > li.ui-tabs-selected { background-color: #f6f6f6; -moz-border-radius: 0; -webkit-border-radius: 0; border-radius: 0; }
-#tab-menu > ul.ui-tabs-nav > li.ui-tabs-selected a { border-width: thin; border-style: solid; border-color: green #f6f6f6 green green; color: black;} 
+#tab-menu > ul.ui-tabs-nav > li > a {
+  background: url( /images/icons/silk/cancel.png ) no-repeat 2px 2px transparent;
+  padding: 2px 2px 2px 22px;
+  font-size: 75%;
+  float: none;
+  display: block;
+  border: thin solid transparent; border-right-width: 0;
+}
+#tab-menu > ul.ui-tabs-nav > li > a.complete {
+  background-image: url( /images/icons/silk/accept.png );
+}
+#tab-menu > ul.ui-tabs-nav > li > a.incomplete {
+  background-image: url( /images/icons/exclamation_yellow.png );
+}
+#tab-menu > ul.ui-tabs-nav > li > a.todo {
+  background-image: url( /images/icons/silk/exclamation.png );
+}
+#tab-menu > ul.ui-tabs-nav > li.ui-tabs-selected {
+  padding: 0;
+}
+#tab-menu > ul.ui-tabs-nav > li {
+  display: block;
+  float: none;
+  margin: 5px 0;
+  padding: 0;
+  border: none!important;
+}
+#tab-menu > ul.ui-tabs-nav > li.ui-tabs-selected {
+  background-color: #f6f6f6;
+  border-radius: 0;
+  -moz-border-radius: 0;
+  -webkit-border-radius: 0;
+}
+#tab-menu > ul.ui-tabs-nav > li.ui-tabs-selected a {
+  border-width: thin;
+  border-style: solid;
+  border-color: green #f6f6f6 green green;
+  color: black;
+}
 
 /*
 #tab-menu .menu-tab {
