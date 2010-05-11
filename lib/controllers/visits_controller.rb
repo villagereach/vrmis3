@@ -78,6 +78,8 @@ class VisitsController < OlmisController
     else
       submission.status = 'error'
       submission.save
+
+      render :text => 'error', :status => 400 and return if %w(xml json).include?(params[:format])
     end
   end    
 
