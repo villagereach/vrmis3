@@ -123,6 +123,8 @@ class DataSubmission < ActiveRecord::Base
       if (!visit_month && @params['health_center_visit']['epi_month'])
         visit_month = (Date.parse(@params['health_center_visit']['epi_month'] + '-01') + 1.month).strftime("%Y-%m")
         @params['health_center_visit']['visited_at'] ||= visit_month + '-01'
+      elsif (@params['health_center_visit']['visited_at'].empty? && visit_month)
+        @params['health_center_visit']['visited_at'] = visit_month + '-01'
       end
       
       @params['health_center_visit']['vehicle_code'] ||= ''    
