@@ -49,22 +49,12 @@ container_hooks.show['form'] = function() {
   reset_olmis_instance(key);
   update_visit_navigation();
   refresh_fridges();
+  update_progress_status();  // TODO: Retrieve cached values
 }
 
 container_hooks.hide['form'] = function() {
   var key = get_selected_value('visit_date_period') + '/' + get_selected_value('health_center');
-  var valid = true;
-  
-  $('#tab-menu > ul > li').each(function(i,e) {
-    if(!$(e).hasClass('ui-state-disabled')) {
-      var div = $($('a', $(e)).attr('href'));
-      var inputs = $('*:input.enabled', div);
-      if (inputs.length > 0 && !inputs.valid())
-        valid = false;
-    }
-  });  
-
-  set_hc_form_status(key, valid);
+  set_hc_form_status(key, update_progress_status());
 };
 
 var options = {
@@ -93,13 +83,15 @@ function update_visit_navigation() {
 }
 
 function go_to_next_screen(this_screen) {
-  var t = $('#tab-menu').tabs();
-  $("#tab-" + this_screen).nextAll().not(".ui-state-disabled").first().find('a').click()
+  //var t = $('#tab-menu').tabs();
+  update_progress_status(this_screen);
+  $("#tab-" + this_screen).nextAll().not(".ui-state-disabled").first().find('a').click();
 }
 
 function go_to_previous_screen(this_screen) {
-  var t = $('#tab-menu').tabs();
-  $("#tab-" + this_screen).prevAll().not(".ui-state-disabled").first().find('a').click()
+  //var t = $('#tab-menu').tabs();
+  update_progress_status(this_screen);
+  $("#tab-" + this_screen).prevAll().not(".ui-state-disabled").first().find('a').click();
 }
 
 function set_equipment_notes_area_size() {
@@ -892,6 +884,50 @@ function add_screen_sequence_tags() {
   $("#tab-menu div.ui-tabs-panel span.seqno").each(function(i,e) { $(e).html(i+1); });
 }
 
+function update_progress_status(tabs) {
+  var valid = true;
+
+  // TODO: Refactor and cache validation results
+
+  if (tabs) {
+    tabs = $.makeArray(tabs);
+    for (var i = 0, l = tabs.length; i < l; i++) {
+      var e = typeof tabs[i] == "number" ? $('#tab-menu > ul > li')[tabs[i]] : $('#tab-'+tabs[i]);
+      var link = $(e).find('a');
+      link.removeClass("complete incomplete todo");
+
+      if (!$(e).hasClass('ui-state-disabled')) {
+        var div = $($('a', $(e)).attr('href'));
+        var inputs = $('*:input.enabled', div);
+        if (inputs.length > 0 && inputs.valid()) {
+          link.addClass("complete");
+        } else {
+          valid = false;
+          link.addClass("todo");
+        }
+      }
+    }
+  } else {
+    $('#tab-menu > ul > li').each(function(i,e) {
+      var link = $(e).find('a');
+      link.removeClass("complete incomplete todo");
+
+      if (!$(e).hasClass('ui-state-disabled')) {
+        var div = $($('a', $(e)).attr('href'));
+        var inputs = $('*:input.enabled', div);
+        if (inputs.length > 0 && inputs.valid()) {
+          link.addClass("complete");
+        } else {
+          valid = false;
+          link.addClass("todo");
+        }
+      }
+   });
+  }
+
+  return valid;
+}
+
 function preinitialize_visit() {
   // Run actions that must be performed *after* visit form is reset but
   // *before* health center bindings are installed
@@ -902,13 +938,9 @@ function preinitialize_visit() {
 
   $('#tab-menu').tabs({
     show: function(event, ui) {
-      var valid = $('*:input.enabled', $(ui.panel)).valid();
-      $(ui.tab).removeClass("complete incomplete todo");
-      if (valid) {
-        $(ui.tab).addClass("complete");
-      } else {
-        $(ui.tab).addClass("todo");
-      }
+      var current_screen = get_selected_value('current_screen');
+      update_progress_status(current_screen.substr(7));
+      set_selected_value('current_screen', ui.panel.id);
       if (ui.panel.id == 'screen-equipment_status') {
         set_equipment_notes_area_size();
       }

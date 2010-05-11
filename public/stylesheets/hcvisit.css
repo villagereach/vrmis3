@@ -890,7 +890,8 @@ body {
   font-size: 75%;
   float: none;
   display: block;
-  border: thin solid transparent; border-right-width: 0;
+  border: thin solid transparent;
+  border-right-width: 0;
 }
 #tab-menu > ul.ui-tabs-nav > li > a.complete {
   background-image: url( /images/icons/silk/accept.png );
@@ -909,7 +910,7 @@ body {
   float: none;
   margin: 5px 0;
   padding: 0;
-  border: none!important;
+  border: none !important;
 }
 #tab-menu > ul.ui-tabs-nav > li.ui-tabs-selected {
   background-color: #f6f6f6;

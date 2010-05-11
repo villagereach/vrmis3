@@ -1,5 +1,7 @@
 function hcvisit_visited(ev) {
-  var disabled = [];
+  var depends_on_visit_tabs = <%= (1...HealthCenterVisit.screens.length).select { |i|
+      HealthCenterVisit.klass_by_screen[HealthCenterVisit.screens[i-1]].depends_on_visit?
+    }.to_json %>;
 
   if (ev.newValue == 'true') {
     $('#unvisited_data').hide();
@@ -7,18 +9,18 @@ function hcvisit_visited(ev) {
 
     $('#unvisited_data *:input').removeClass('enabled');
     $('#visited_data *:input').addClass('enabled');
+
+    $('#tab-menu').data('disabled.tabs', []);
   } else {
-    disabled = <%= (1...HealthCenterVisit.screens.length).select { |i|
-      HealthCenterVisit.klass_by_screen[HealthCenterVisit.screens[i-1]].depends_on_visit?
-    }.to_json %>;
     $('#unvisited_data').show();
     $('#visited_data').hide();
 
     $('#unvisited_data *:input').addClass('enabled');
     $('#visited_data *:input').removeClass('enabled');
-  }
 
-  $('#tab-menu').data('disabled.tabs', disabled);
+    $('#tab-menu').data('disabled.tabs', depends_on_visit_tabs);
+  }
+  update_progress_status(depends_on_visit_tabs);
 }
 
 function hcvisit_non_visit_reason_other(ev) {
