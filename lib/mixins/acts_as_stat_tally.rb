@@ -409,8 +409,14 @@ module ActsAsStatTally
 
     def json_to_params(json)
       json[table_name.singularize].inject({}) { |hash, (key, value)|
-        hash[key] = value['value']
-        hash["#{key}/NR"] = 1 if value['nr'] #== 'true'  # NOTE: value['nr'] should be a boolean, not a string
+        # NOTE: Internally, the dimensions separator is a comma, but because of a
+        # limitation of jQuery (i.e., support for multiple selectors) the offline
+        # forms use a hyphen as the dimensions separator. This step fixes the key
+        # so it can be decoded correctly.
+        fixed_key = key.gsub('-',',')
+
+        hash[fixed_key] = value['value']
+        hash["#{fixed_key}/NR"] = 1 if value['nr'] # NOTE: value['nr'] should be a boolean, not a string
         hash
       }
     end
