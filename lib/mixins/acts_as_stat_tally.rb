@@ -408,13 +408,9 @@ module ActsAsStatTally
     end
 
     def json_to_params(json)
-      json['table_name'].inject({}) { |hash, (key, value)|
+      json[table_name.singularize].inject({}) { |hash, (key, value)|
         hash[key] = value['value']
-
-        if value['nr'] == 'true'
-          hash[key + '/NR'] = 1
-        end
-
+        hash["#{key}/NR"] = 1 if value['nr'] #== 'true'  # NOTE: value['nr'] should be a boolean, not a string
         hash
       }
     end
