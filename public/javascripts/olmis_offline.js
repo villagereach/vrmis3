@@ -772,7 +772,7 @@ function upload_all() {
 }
 
 function is_logged_in() {
-  $('#other-actions a[href="#upload"]').click();
+  $('#fc-action-links a[href="#upload"]').click();
 }
 
 function check_logged_in() {
@@ -867,12 +867,12 @@ $(function() {
 
   go_offline();
   */
-  $('#other-actions a[href="#login"]').fancybox( 
+  $('#fc-action-links a[href="#login"]').fancybox( 
     { 'hideOnContentClick': false,
       'autoScale': false,
       'autoDimension': true,
       'onComplete': check_logged_in });
-  $('#other-actions a[href="#upload"]').fancybox( 
+  $('#fc-action-links a[href="#upload"]').fancybox( 
     { 'hideOnContentClick': false,
       'autoScale': false,
       'autoDimension': true,
