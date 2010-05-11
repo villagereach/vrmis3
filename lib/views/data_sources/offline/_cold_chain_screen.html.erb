@@ -11,8 +11,11 @@
       </div>
       <div class="two-column">
         <div class="fridge-in">
-          <div class="fridge-past_problem">
-            <div><%= jt(t("visits.health_center_cold_chain.past_problem")) %></div>
+          <div class="fridge-past_problem validation-group">
+            <div>
+              <%= jt(t("visits.health_center_cold_chain.past_problem")) %>
+              <span class="notice"></span>
+            </div>
             <ul class="radio">
               <%- [ [ jt(t("yes")), "true" ], [ jt(t("no")), "false" ], [ jt(t("unknown")), "nr" ] ].each do |label,value| -%>
                 <li>
@@ -22,8 +25,11 @@
               <%- end -%>
             </ul>
           </div>
-          <div class="fridge-temp">
-            <div><%= jt(t("visits.health_center_cold_chain.arrival_temp")) %></div>
+          <div class="fridge-temp validation-group">
+            <div>
+              <%= jt(t("visits.health_center_cold_chain.arrival_temp")) %>
+              <span class="notice"></span>
+            </div>
             <div>
               <label for="fridge_status_${ i }_temperature"><%= jt(t("visits.health_center_cold_chain.temp_input_prefix")) %></label>
               <input class="fridge_status-temperature" id="fridge_status_${ i }_temperature" name="fridge_status-${ i }-temperature" type="number" required />
@@ -32,8 +38,11 @@
           </div>
         </div>
         <div class="fridge-out">
-          <div class="fridge-state">
-            <div><%= jt(t("visits.health_center_cold_chain.departure_state")) %></div>
+          <div class="fridge-state validation-group">
+            <div>
+              <%= jt(t("visits.health_center_cold_chain.departure_state")) %>
+              <span class="notice"></span>
+            </div>
             <ul class="radio">
               <%- [ [ jt(t("yes")), "OK" ], [ jt(t("no")), "problem" ], [ jt(t("unknown")), "nr" ] ].each do |label,value| -%>
                 <li>
@@ -43,8 +52,11 @@
               <%- end -%>
             </ul>
           </div>
-          <div id="fridge-problem-${ i }" class="fridge-problem checkbox-group" style="display: none;">
-            <div><%= jt(t("visits.health_center_cold_chain.problem")) %></div>
+          <div id="fridge-problem-${ i }" class="fridge-problem validation-group" style="display: none;">
+            <div>
+              <%= jt(t("visits.health_center_cold_chain.problem")) %>
+              <span class="notice"></span>
+            </div>
             <ul class="check-list">
               <%- FridgeStatus.not_ok_status_options.each do |label,value| -%>
                 <label>  

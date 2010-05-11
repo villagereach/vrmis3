@@ -13,9 +13,14 @@ function validateRequiredUnlessNr(value, element) {
     return $.validator.methods.required.call(this, value, element) 
 }
 
-function validateRequiredRadio(value, element) { 
-  var btns = $('*[name='+element.name+']', $(element.parentNode)).filter(function(i) { return this.checked; }); 
+function validateRequiredRadio(value, element) {
+  var group = get_validation_container_for($(element));
+  var btns = $('*[name='+element.name+']', $(group)).filter(function(i) { return this.checked; }); 
   return (btns.length > 0);
+}
+
+function validateRequiredCheckbox(value, element) {
+  return validateRequiredRadio(value, element);  // Same validations as for radio buttons
 }
 
 function validateRequiredVisitDate(value, element) {
@@ -27,7 +32,7 @@ function validateRequiredVisitDate(value, element) {
 function show_errors(errorMap, errorList) {
   for (var k in errorMap) {
     if(k) {
-      var container = $('*:input[name='+k+']').parent();
+      var container = get_validation_container_for($('*:input[name='+k+']'));
       var notice = $('.notice', container);
       if (notice.length == 0) {
         container.append('<span class="notice"></span>');
@@ -38,13 +43,23 @@ function show_errors(errorMap, errorList) {
     }
   }
   this.validElements().each(function(i,e) { 
-    if (errorMap[e.name] == null)
-      $(e.parentNode).removeClass('error'); 
+      if (errorMap[e.name] == null) {
+        get_validation_container_for($(e)).removeClass('error');
+      }
   })
 }
 
-$.validator.addMethod('required_unless_nr', validateRequiredUnlessNr, $.validator.messages.required);
-$.validator.addMethod('required_radio',     validateRequiredRadio, $.validator.messages.required);
+// Return the given element's first ancestor with class="validation-group" or,
+// if no such ancestor exists, the given element's parent.
+function get_validation_container_for(element) {
+  var group = element.parents(".validation-group").first();
+  if (group.length == 0) group = element.parent();
+  return group;
+}
+
+$.validator.addMethod('required_unless_nr', validateRequiredUnlessNr,  $.validator.messages.required);
+$.validator.addMethod('required_radio',     validateRequiredRadio,     $.validator.messages.required);
+$.validator.addMethod('required_checkbox',  validateRequiredCheckbox,  $.validator.messages.required);
 $.validator.addMethod('required_visit_date',validateRequiredVisitDate, $.validator.messages.required);
 
 $.extend($.fn, {
@@ -56,6 +71,7 @@ $.extend($.fn, {
 
     $('*:input:text:required',  this).each(function(i,e) { $(e).rules('add', { required: true });                 });
     $('*:input:radio:required', this).each(function(i,e) { $(e).rules('add', { required_radio: true });           });
+    $('*:input:checkbox:required', this).each(function(i,e) { $(e).rules('add', { required_checkbox: true });     });
     $('*:input:required_unless_nr', this).each(function(i,e) { $(e).rules('add', { required_unless_nr: true });   });
     $('*:number',               this).each(function(i,e) { $(e).rules('add', { digits: true });               });
     $('*:input:min',            this).each(function(i,e) { $(e).rules('add', { min: e.getAttribute('min') } ) });

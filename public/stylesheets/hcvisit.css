@@ -954,13 +954,17 @@ body {
 }
 */
 
+.error {
+  color: inherit;
+}
+
 .error .notice { 
   display: inline; 
   background-image: url(/images/icons/silk/exclamation.png); 
   background-repeat: no-repeat; 
   background-color: inherit;
   border: none; 
-  margin: none; 
+  margin: 0 0 0 0.5em; 
   padding: 0 8px; 
 }
 
