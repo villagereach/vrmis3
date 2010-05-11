@@ -257,8 +257,8 @@ function find_health_centers_in_delivery_zone(dz) {
   return find_health_centers_by_attr('delivery_zone', dz);
 }
 
-function find_health_center_by_code(dz) {
-  return find_health_centers_by_attr('code', dz)[0];
+function find_health_center_by_code(code) {
+  return find_health_centers_by_attr('code', code)[0];
 }
 
 function find_health_centers_by_attr(attr, value) {
@@ -696,10 +696,9 @@ function setup_saved_visits() {
   var local_forms = [];
 
   forEachLocalStorageKey(function(key) {
-      if (key.match(/^[\d\-]+\/.+$/) && valid_forms[key]) {
-        local_forms.push('<li id="' + key.replace('/','_') + '" class="status ' + (valid_forms[key] ? 'complete' : 'todo') + '"><span>' + key + '</span></li>');
-        setTimeout((function(k) { return function() { find_correct_label(k) }; })(key), 1);
-      }
+    if (key.match(/^[\d\-]+\/.+$/) && valid_forms[key]) {
+      local_forms.push('<li id="' + key.replace('/','_') + '" class="status ' + (valid_forms[key] ? 'complete' : 'todo') + '"><span>' + get_hc_visit_label_for(key) + '</span></li>');
+    }
   });
 
   jQuery('#upload-ready ul').html(local_forms.join('')) 
@@ -756,15 +755,9 @@ function upload(node, do_sync) {
   } );
 }
 
-function find_correct_label(key) {
-  $.ajax( { 
-      async: true,
-      data: null,
-      url: '/visits/' + key + '/title',
-      dataType: 'html',
-      type: 'GET',
-      success: function(data, textStatus, xhr) { $('#'+key.replace('/','_')+' span').html(data); },
-  } );
+function get_hc_visit_label_for(key) {
+  var v = key.split('/');
+  return find_health_center_by_code(v[1]).name + ', ' + I18n.l(Date.from_date_period(v[0]), { format: 'month_of_year'});
 }
 
 function upload_all() {
