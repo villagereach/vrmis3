@@ -608,7 +608,6 @@ table.spreadsheet div.tally > span span.value {
 
 table.spreadsheet div.tally input[type="text"], 
 table.spreadsheet div.tally input[type="number"],
-table.spreadsheet div.tally input[type="yearmonth"],
 table.spreadsheet div.tally input[type="date"] 
 {
   border: 1px solid gray;
@@ -621,8 +620,8 @@ table.spreadsheet div.tally input[type="date"]
 }
 
 
-table.spreadsheet div.tally input[type="yearmonth"] {
-  width: 80px;
+table.spreadsheet div.tally input[required="year_month"] {
+  width: 4em;
   text-align: left;
 }
 table.spreadsheet div.tally div.nr {

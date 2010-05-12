@@ -692,6 +692,26 @@ function olmis_delocalize_date(value) {
   return '';
 }
 
+function olmis_localize_yearmonth(value) {
+  if (value) {
+    var m;
+    if (m = value.match(/^(\d{4})-(\d{2})-\d{2}$/)) {
+      return m[2] + '/' + m[1];
+    }
+  }
+  return '';
+}
+
+function olmis_delocalize_yearmonth(value) {
+  if (value) {
+    var m;
+    if (m = value.match(/^(0[1-9]|1[0-2])\/(\d{4})$/)) {
+      return m[2] + '-' + m[1] + '-01';
+    }
+  }
+  return '';
+}
+
 function setup_saved_visits() {
   var local_forms = [];
 

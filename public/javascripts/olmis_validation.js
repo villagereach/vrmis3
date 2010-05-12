@@ -29,6 +29,10 @@ function validateRequiredVisitDate(value, element) {
   return date >= d.beginning_of_month() && date <= Math.min(d.end_of_month(), Date.today());
 }
 
+function validateRequiredYearMonth(value, element) {
+  return this.optional(element) || value.match(/^0[1-9]|1[0-2]\/\d{4}$/);
+}
+
 function show_errors(errorMap, errorList) {
   for (var k in errorMap) {
     if(k) {
@@ -57,10 +61,11 @@ function get_validation_container_for(element) {
   return group;
 }
 
-$.validator.addMethod('required_unless_nr', validateRequiredUnlessNr,  $.validator.messages.required);
-$.validator.addMethod('required_radio',     validateRequiredRadio,     $.validator.messages.required);
-$.validator.addMethod('required_checkbox',  validateRequiredCheckbox,  $.validator.messages.required);
-$.validator.addMethod('required_visit_date',validateRequiredVisitDate, $.validator.messages.required);
+$.validator.addMethod('required_unless_nr',  validateRequiredUnlessNr,  $.validator.messages.required);
+$.validator.addMethod('required_radio',      validateRequiredRadio,     $.validator.messages.required);
+$.validator.addMethod('required_checkbox',   validateRequiredCheckbox,  $.validator.messages.required);
+$.validator.addMethod('required_visit_date', validateRequiredVisitDate, $.validator.messages.required);
+$.validator.addMethod('required_year_month', validateRequiredYearMonth, $.validator.messages.required);
 
 $.extend($.fn, {
   setupValidation: function() {
@@ -78,6 +83,7 @@ $.extend($.fn, {
     $('*:input:max',            this).each(function(i,e) { $(e).rules('add', { max: e.getAttribute('max') } ) });
     $('*:input:date',           this).each(function(i,e) { $(e).rules('add', { date: true } );                });
     $('*:input:date[required="visit_date"]', this).each(function(i,e) { $(e).rules('add', { required_visit_date: true } ); });
+    $('*:input:text[required="year_month"]', this).each(function(i,e) { $(e).rules('add', { required_year_month: true } ); });
   }
 });
 
