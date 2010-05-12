@@ -30,7 +30,7 @@ module ActsAsStatTally
     base.send(:acts_as_visit_model)
     base.send :extend, ClassMethods
     base.send :include, InstanceMethods
-    
+
     base.class_eval do
       belongs_to :health_center
       belongs_to :created_by, :class_name => 'User'
@@ -375,9 +375,9 @@ module ActsAsStatTally
       expected_params().inject({}) { |hash, (param, type)|
         if r = record_value_hash[param]
           v = r.send(value_field(param))
-          hash[param.gsub(/[:,]/, '-')] = { 'value' => v.to_s, 'nr' => v.nil? ? 'true' : 'false' }
+          hash[param_to_jquery(param)] = { 'value' => v.to_s, 'nr' => v.nil? ? 'true' : 'false' }
         else
-          hash[param.gsub(/[:,]/, '-')] = { 'value' => '', 'nr' => '' }
+          hash[param_to_jquery(param)] = { 'value' => '', 'nr' => '' }
         end
 
         hash
@@ -409,14 +409,10 @@ module ActsAsStatTally
 
     def json_to_params(json)
       json[table_name.singularize].inject({}) { |hash, (key, value)|
-        # NOTE: Internally, the dimensions separator is a comma, but because of a
-        # limitation of jQuery (i.e., support for multiple selectors) the offline
-        # forms use a hyphen as the dimensions separator. This step fixes the key
-        # so it can be decoded correctly.
-        fixed_key = key.gsub('-',',')
+        fixed_key = param_from_jquery(key)
 
         hash[fixed_key] = value['value']
-        hash["#{fixed_key}/NR"] = 1 if value['nr'] # NOTE: value['nr'] should be a boolean, not a string
+        hash["#{fixed_key}/NR"] = 1 if value['nr'] # NOTE: value['nr'] should come in as a boolean, not a string
         hash
       }
     end
@@ -442,5 +438,19 @@ module ActsAsStatTally
     def previous_date_period_sql(dp)
       "date_format((date(concat(#{dp}, '-01')) - interval 1 month), '%Y-%m')"
     end    
+
+    # NOTE: param_to_jquery and param_from_jquery are copied from OlmisHelper
+    # because the OlmisHelper methods are not accessible from here. Do not change
+    # these methods without also changing them in OlmisHelper.
+
+    # Convert reserved meta characters to safe characters; used when generating data for offline use.
+    def param_to_jquery(str)
+      str.tr(':,', '%-')
+    end
+
+    # Reverse the action of #param_to_jquery; used when parsing data from an offline data submission.
+    def param_from_jquery(str)
+      str.tr('%-', ':,')
+    end
   end
 end

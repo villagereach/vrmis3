@@ -2,7 +2,7 @@
 # Methods added to this helper will be available to all templates in the application.
 
 module OlmisHelper
-  
+
   def get_area_from_params(ps = params)
     hierarchy = Olmis.area_hierarchy.map(&:constantize)
     
@@ -305,6 +305,21 @@ module OlmisHelper
     controller.expire_fragment(/.*/)
   end
   
+  ####
+  #  jQuery helpers
+  ####
 
-      
+  # NOTE: Copies of param_to_jquery and param_from_jquery also live in ActsAsStatTally
+  # because the OlmisHelper methods are not accessible there. Do not change these
+  # methods without also changing them in ActsAsStatTally.
+
+  # Convert reserved meta characters to safe characters; used when generating data for offline use.
+  def param_to_jquery(str)
+    str.tr(':,', '%-')
+  end
+
+  # Reverse the action of #param_to_jquery; used when parsing data from an offline data submission.
+  def param_from_jquery(str)
+    str.tr('%-', ':,')
+  end
 end

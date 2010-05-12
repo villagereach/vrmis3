@@ -3,7 +3,7 @@
     <ul>
       <%- errors.select { |slice, slice_errors| slice_errors.present? }.each do |slice, slice_errors| -%>
         <%- slice_errors.each do |k, v| -%>
-          <li><%= link_to(v.full_messages, '#' + slice + '_' + k.gsub(/[:,]/,'-')) %></li>
+          <li><%= link_to(v.full_messages, '#' + slice + '_' + param_to_id(k)) %></li>
         <%- end -%>
       <%- end -%>
     </ul>

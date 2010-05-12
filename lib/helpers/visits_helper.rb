@@ -186,6 +186,11 @@ module VisitsHelper
     output = '<div style="text-align: center">' + text_field_tag(nil, '', :suffix => suffix, :expression => expression, :disabled => 'disabled', :size => 3, :id => name, :class => 'expression') + '</div>'
   end
 
+  # Convert a parameter to a format acceptable for use in a DOM ID
+  def param_to_id(str)
+    str.gsub(/[,:\/]/,'-')
+  end
+
   def tally_form_field(type, name, options)
     @record_value_hash ||= {}
     
@@ -201,7 +206,7 @@ module VisitsHelper
     
     nr_checked = @record_value_hash[slice].has_key?(name) && @record_value_hash[slice][name].send(field).nil?
 
-    id = slice + '_' + name.gsub(/[,:\/]/,'-').downcase
+    id = slice + '_' + param_to_id(name.downcase)
     nrid = id + '-nr'
 
     case type.fields_hash[field.to_sym]
@@ -286,7 +291,7 @@ module VisitsHelper
   end
   
   def xforms_tally_field(input_type, node, tally, msg_key, incr='', suppress_nr=false)
-    id="#{node}:#{tally}".gsub(/[,:]/,'-')
+    id = param_to_id("#{node}:#{tally}")
     
     xf = <<-XFORMS
       <xf:input id="#{id}" bind="#{node}:#{tally}" #{incr}>
