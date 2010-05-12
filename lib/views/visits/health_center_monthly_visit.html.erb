@@ -20,14 +20,13 @@
         </li>
     </ul>
 
+    <%# TODO: Store ISO-formatted visit date in a hidden field -- requires datapicker config changes %>
     <%- visible_container('visit_fields', @visit.visited, 'dl', 'stacked') do -%>
-        <dt><%= f.label :date, h(t(".date")) %></dt>
-        <dd><%= f.text_field :date, :class => "datepicker", :value => I18n.l(@visit.date || Date.from_date_period(visit_month)) %></dd>
+        <dt><%= f.label :visited_at, h(t(".date")) %></dt>
+        <dd><%= f.text_field :visited_at, :class => "datepicker", :value => I18n.l(@visit.visited_at || Date.from_date_period(visit_month)) %></dd>
 
         <dt><%= f.label :vehicle_code, h(t(".vehicle_code")) %></dt>
         <dd><%= f.text_field :vehicle_code %></dd>
-        <%#= f.label :hour, h(t(".time")) %>
-        <%#= f.select :hour, (0..23).map { |i| "%02d:00" % i } %>
     <%- end -%>
 
     <%- visible_container('nonvisit_fields', !@visit.visited, 'dl', 'stacked') do -%>
