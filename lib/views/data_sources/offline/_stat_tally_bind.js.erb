@@ -2,7 +2,11 @@
   node = param.gsub(/[:,]/, '-')
   id = klass.table_name.singularize + '_' + node 
 -%>
-$('#<%= id %>'   ).linkFrom('val',     data['<%= node %>'], 'value').linkTo('val',     data['<%= node %>'], 'value');
+<%- if value_type == :date -%>
+$('#<%= id %>'   ).linkFrom('val',     data['<%= node %>'], 'value', olmis_localize_yearmonth).linkTo('val', data['<%= node %>'], 'value', olmis_delocalize_yearmonth);
+<%- else -%>
+$('#<%= id %>'   ).linkFrom('val',     data['<%= node %>'], 'value').linkTo('val',  data['<%= node %>'], 'value');
+<%- end -%>
 $('#<%= id %>-nr').linkFrom('checked', data['<%= node %>'], 'nr').linkTo('checked', data['<%= node %>'], 'nr');
 <%- end -%>
 

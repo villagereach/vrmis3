@@ -7,7 +7,7 @@
       
       msg_key, input_type, constraints = 
         klass.expected_params.assoc(klass.param_name(point)).last == :date ?
-          [ 'date',     'month-year', 'size=8'        ] :
+          [ 'date',     'text',       'size=8 required="month_year"' ] :
           [ 'quantity', 'number',     'size=4 min="0"' ]
         
       %Q{<div class="tally #{input_type}">} + 
