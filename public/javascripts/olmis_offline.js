@@ -996,12 +996,17 @@ function preinitialize_pickup() {
   // Run actions that must be performed *after* warehouse pickup form is reset but
   // *before* warehouse pickup bindings are installed
   
+  $('#warehouse_visit-form *:input').addClass('enabled');
   $('#warehouse_visit-form').setupValidation();
 }
 
 function initialize_pickup() {
   // Run actions that must be performed *after* warehouse pickup bindings are 
   // installed
+
+  $('#warehouse_visit-form *:input').blur(serialize_warehouse_visit);
+
+  $('#warehouse_visit-form *:input.enabled').valid();
 
   $('div.datepicker').each(function(i, e) {
     var date = Date.from_date_period(get_selected_value('visit_date_period'));
