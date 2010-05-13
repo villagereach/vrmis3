@@ -538,10 +538,16 @@ h4 {
 .pickups div.wrapper {
   clear: both;
   margin: 0 auto;
-  width: 50%;
+  width: 70%;
+}
+.pickups div.datepicker {
+  float: right;
 }
 .pickups table.inventory tr.inventory_row td {
   padding-top: 0.5em;
+}
+.pickups table.inventory tr.inventory_row td.group_label {
+  padding-right: 2em;
 }
 .pickups table.inventory input[type="number"] {
   margin: 0;

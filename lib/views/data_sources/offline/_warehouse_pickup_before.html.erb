@@ -14,18 +14,26 @@
     <table class="inventory">
       <thead>
         <tr>
+          <th class="empty"></th>
           <th><%= h(t("pickups.inventory.package")) %></th>
           <th class="amount"><%= h(t("pickups.inventory.requested")) %></th>
         </tr>
       </thead>
-      <tbody>
-        <%- Package.active.sort.each do |package| -%>
-          <tr class="inventory_row">
-            <td><%= package.label %></td>
-            <td class="amount"><input type="number" id="warehouse_pickup-before-<%= package.code %>-DeliveryRequest" readonly="readonly" /></td>
-          </tr>
-        <%- end -%>
-      </tbody>
+      <%- Package.active.sort.partition_by{|package| package.product.product_type}.each do |type, stocks| -%>
+        <tbody>
+          <%- stocks.sort.each_with_index do |package, idx| -%>
+            <tr class="inventory_row">
+              <%- if idx == 0 -%>
+                <td class="group_label"><%= h type.label %></td>
+              <%- else -%>
+                <td></td>
+              <%- end -%>
+              <td><%= h package.label %></td>
+              <td class="amount"><input type="number" id="warehouse_pickup-before-<%= package.code %>-DeliveryRequest" readonly="readonly" /></td>
+            </tr>
+          <%- end -%>
+        </tbody>
+      <%- end -%>
     </table>
   </div>
 </div>
