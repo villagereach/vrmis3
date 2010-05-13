@@ -58,22 +58,25 @@ function set_hash_param(param, value) {
   var values = window.location.hash.replace(/^#/, '').split('/');
   values[hash_param_slots[param]] = value;
   window.location.hash = values.join('#');
-}
+};
 
 container_hooks.show['hc-selection'] = function() {
   setup_visits();
-}
+};
 
 container_hooks.show['warehouse-after'] = function() {
   reset_pickup_instance(get_warehouse_pickup_key());
-}
+};
+container_hooks.hide['warehouse-after'] = function() {
+  serialize_warehouse_visit();
+};
 
 container_hooks.show['form'] = function() {
   reset_olmis_instance(get_health_center_key());
   update_visit_navigation();
   refresh_fridges();
   update_progress_status();  // TODO: Retrieve cached values
-}
+};
 
 container_hooks.hide['form'] = function() {
   set_hc_form_status(get_health_center_key(), update_progress_status());
