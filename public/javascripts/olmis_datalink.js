@@ -1,5 +1,3 @@
-var olmis_instance = {};
-
 function select_data() {
   var visible = (selected_values.delivery_zone > '' &&
                  selected_values.visit_date_period > '');
