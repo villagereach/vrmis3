@@ -540,7 +540,11 @@ h4 {
   margin: 0 auto;
   width: 50%;
 }
+.pickups table.inventory tr.inventory_row td {
+  padding-top: 0.5em;
+}
 .pickups table.inventory input[type="number"] {
+  margin: 0;
   width: 50px;
 }
 

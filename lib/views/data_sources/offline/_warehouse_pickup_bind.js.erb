@@ -2,6 +2,10 @@
   if (!data.<%= package.code %>)
     data.<%= package.code %> = { DeliveryRequest: '', DeliveryPickup: '' };
 
+  $('#warehouse_pickup_date').
+    linkFrom('val', data, 'pickup_date', olmis_localize_date).
+    linkTo('val', data, 'pickup_date', olmis_delocalize_date);
+
   <%- %w(before after).each do |visit_type| -%>
     <%- %w(DeliveryRequest DeliveryPickup).each do |pickup_type| -%>
       $('#warehouse_pickup-<%= visit_type %>-<%= package.code %>-<%= pickup_type %>').

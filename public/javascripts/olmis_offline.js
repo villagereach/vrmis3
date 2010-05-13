@@ -795,10 +795,19 @@ function finish_upload() {
   $('#upload-uploaded ul').empty();
 }
 
+function _serialize_instance_for(key, instance) 
+{
+  var re1 = new RegExp(',"jQuery\\d+":\\d+', 'g');
+  var re2 = new RegExp('{"jQuery\\d+":\\d+,', 'g');
+  localStorage[key] = JSON.stringify(instance).replace(re1, '').replace(re2, '{');
+}
+
 function serialize_visit() {
-  localStorage[get_health_center_key()] = JSON.stringify(olmis_instance).
-    replace(/,"jQuery[0-9]+":[0-9]+/g, '').
-    replace(/{"jQuery[0-9]+":[0-9]+,/g, '{');
+  _serialize_instance_for(get_health_center_key(), olmis_instance);
+}
+
+function serialize_warehouse_visit() {
+  _serialize_instance_for(get_warehouse_pickup_key(), pickup_instance);
 }
 
 var selected_values = {};
@@ -986,9 +995,21 @@ function initialize_visit() {
 function preinitialize_pickup() {
   // Run actions that must be performed *after* warehouse pickup form is reset but
   // *before* warehouse pickup bindings are installed
+  
+  $('#warehouse_visit-form').setupValidation();
 }
 
 function initialize_pickup() {
   // Run actions that must be performed *after* warehouse pickup bindings are 
   // installed
+
+  $('div.datepicker').each(function(i, e) {
+    var date = Date.from_date_period(get_selected_value('visit_date_period'));
+    setup_datepicker($('input[type="text"]', $(e))[0],
+                     {
+                       onSelect: function(dateText, inst) { $(this).valid(); },
+                       minDate:  date.beginning_of_month(),
+                       maxDate:  new Date(Math.min(date.end_of_month(), Date.today()))
+                     });
+  });
 }
