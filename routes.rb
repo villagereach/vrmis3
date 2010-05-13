@@ -2,7 +2,7 @@
 
   map.resources :users, :member => { :profile => [:get, :put] }
 
-  map.new_fridge_status '/fridge_statuses/new', :controller => :fridge_statuses, :action => 'create', :conditions => { :method => [:put, :post] }
+  map.new_fridge_status '/fridge_statuses/new', :controller => :fridge_statuses, :action => 'create', :conditions => { :method => :post }
   
   map.resources :fridges, :path_prefix => 'cold_chain'
   map.resources :health_centers, :has_many => [:fridges, :street_addresses]
@@ -10,9 +10,9 @@
   map.health_center_cold_chain '/cold_chain/:health_center', :controller => 'cold_chain', :action => 'location'
   map.cold_chain '/cold_chain', :controller => 'cold_chain', :action => 'index'
 
-  map.fc_visits          '/fcs',                  :controller => 'field_coordinators', :action => 'index', :method => :get
-  map.fc_visits_by_month '/fcs/:visit_month',     :controller => 'field_coordinators', :action => 'index', :method => :get
-  map.fc                 '/fcs/:id/:visit_month', :controller => 'field_coordinators', :action => 'show',  :method => :get
+  map.fc_visits          '/fcs',                  :controller => 'field_coordinators', :action => 'index', :conditions => { :method => :get }
+  map.fc_visits_by_month '/fcs/:visit_month',     :controller => 'field_coordinators', :action => 'index', :conditions => { :method => :get }
+  map.fc                 '/fcs/:id/:visit_month', :controller => 'field_coordinators', :action => 'show',  :conditions => { :method => :get }
 
   map.isa '/pickups/:delivery_zone/isa/:health_center', :controller => 'pickups', :action => 'isa_edit'
   map.isa_redirect '/pickups/:delivery_zone/isa_redirect', :controller=>'pickups', :action => 'isa_redirect'
@@ -51,9 +51,9 @@
 
   map.javascript '/javascripts/:action.js', :controller => 'javascripts', :format => 'js'
 
-  map.visits                  '/visits', :controller => 'visits', :action => 'index', :method => :get
-  map.visits_search           '/visits/search', :controller => 'visits', :action => 'search', :method => :get
-  map.visits_by_month         '/visits/:visit_month', :controller => 'visits', :action => 'by_month', :method => :get
+  map.visits                  '/visits', :controller => 'visits', :action => 'index', :conditions => { :method => :get }
+  map.visits_search           '/visits/search', :controller => 'visits', :action => 'search', :conditions => { :method => :get }
+  map.visits_by_month         '/visits/:visit_month', :controller => 'visits', :action => 'by_month', :conditions => { :method => :get }
   map.health_center_visit_title '/visits/:visit_month/:health_center/title', :controller => 'visits', :action => 'health_center_monthly_visit_title'
 
   map.health_center_visit     '/visits/:visit_month/:health_center.:format', :screen => 'visit', :controller => 'visits', :action => 'health_center_monthly_visit'
