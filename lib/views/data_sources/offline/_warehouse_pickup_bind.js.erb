@@ -1,0 +1,10 @@
+<%- Package.active.each do |package| -%>
+  if (!data.<%= package.code %>)
+    data.<%= package.code %> = { DeliveryRequest: '', DeliveryPickup: '' };
+
+  <%- %w(DeliveryRequest DeliveryPickup).each do |type| -%>
+    $('#warehouse_pickup-<%= package.code %>-<%= type %>').
+      linkFrom('val', data.<%= package.code %>, '<%= type %>').
+      linkTo('val', data.<%= package.code %>, '<%= type %>');
+  <%- end -%>
+<%- end -%>

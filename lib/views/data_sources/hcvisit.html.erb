@@ -44,9 +44,8 @@
     function generate_olmis_instance() {
       return <%= HealthCenterVisit.new.to_json %>;
     }
-    
-    function reset_olmis_bindings() {
 
+    function reset_olmis_bindings() {
       var h = $('#visit-form').html();
       $('#visit-form').html(h);
 
@@ -73,6 +72,27 @@
      <%- end -%>
 
      initialize_visit();
+    }
+
+    function generate_pickup_instance() {
+      return <%= Hash[*Package.active.map {|p| [ p.code, { :DeliveryRequest => '', :DeliveryPickup => '' } ] }.flatten].to_json %>;
+    }
+
+    function reset_pickup_bindings() {
+      var h = $('#warehouse-after').html();
+      $('#warehouse-after').html(h);
+
+      preinitialize_pickup();
+
+      (function(data) { 
+        try {
+          eval(<%= render(:partial => '/data_sources/offline/warehouse_pickup_bind.js').to_json() %>);
+        } catch(e) {
+          if (console) console.exception(e);
+        }
+      })(pickup_instance);
+
+      initialize_pickup();
     }
     
     </script>

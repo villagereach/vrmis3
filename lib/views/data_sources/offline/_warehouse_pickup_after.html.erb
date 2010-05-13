@@ -1,21 +1,17 @@
 <h2><%= (I18n.backend.send(:lookup, I18n.locale, "pickups.inventory.page_title") || '').
                       sub("{{delivery_zone}}", %Q{<span class="output selected_delivery_zone_name"></span>}).
-                      sub("{{visit_month}}", %Q{<span class="output selected_visit_date_period"></span>}) %></h2>
+                      sub("{{visit_month}}", %Q{<span class="output selected_visit_date_period_name"></span>}) %></h2>
 
 <h3><%= h(t("pickups.inventory.after_visit")) %></h3>
 
 <div class="pickups">
-  <div class="nav">
-    <a href="#" onclick="show_visits()"><%= h(t("data_sources.hcvisit.go_to_hc_selection")) %></a>
-  </div>
-
   <div class="wrapper">
     <div class="header">
       <span><%= (I18n.backend.send(:lookup, I18n.locale, "pickups.inventory.province") || '').
                               sub("{{name}}", %Q{<span class="output selected_province_name"><span>}) %></span>
-      <span>
+      <span clss="datepicker">
         <label><%= h(t("headers.date")) %></label>
-        <input type="text" class="datepicker" />
+        <input type="date" id="pickup_date" name="" />
       </span>
     </div>
 
@@ -32,7 +28,7 @@
           <tr class="inventory_row">
             <td><%= package.label %></td>
             <%- %w(DeliveryRequest DeliveryPickup).each do |type| -%>
-              <td class="amount"><input type="text" id="warehouse_pickup_<%= package.code %>-<%= type %>" /></td>
+              <td class="amount"><input type="number" id="warehouse_pickup-<%= package.code %>-<%= type %>" /></td>
             <%- end -%>
           </tr>
         <%- end -%>
@@ -40,18 +36,3 @@
     </table>
   </div>
 </div>
-
-<%- javascript_tag do -%>
-  $(function() {
-    // Populate the delivery request values from the ideal stock amounts.
-    // TODO: If saved data exists, load it instead.
-    <%- Package.active.sort.each do |package| -%>
-      $("#warehouse_pickup_<%= package.code %>-DeliveryRequest", this).linkFrom(
-        "val",
-        selected_values,
-        "delivery_zone",
-        function(value) { return value ? data_instance.warehouse_ideal_stock[value]['<%= package.code %>'] : ""; }
-      );
-    <%- end -%>
-  });
-<%- end -%>

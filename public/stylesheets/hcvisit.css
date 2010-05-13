@@ -488,7 +488,7 @@ h4 {
 #login-form input {
   width: 8em;
 }
-#hc-selection {
+#hc-selection, #warehouse-before, #warehouse-after {
   width: 600px;
 }
 #login-form button, #fc-home button, #fc-actions button {
@@ -533,6 +533,15 @@ h4 {
   line-height: 2em;
   list-style: none;
   margin: 0;
+}
+
+.pickups div.wrapper {
+  clear: both;
+  margin: 0 auto;
+  width: 50%;
+}
+.pickups table.inventory input[type="number"] {
+  width: 50px;
 }
 
 .inline label {

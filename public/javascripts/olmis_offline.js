@@ -44,6 +44,11 @@ container_hooks.show['hc-selection'] = function() {
   setup_visits();
 }
 
+container_hooks.show['warehouse-after'] = function() {
+  var key = get_selected_value('visit_date_period') + '/' + get_selected_value('delivery_zone');
+  reset_pickup_instance(key);
+}
+
 container_hooks.show['form'] = function() {
   var key = get_selected_value('visit_date_period') + '/' + get_selected_value('health_center');
   reset_olmis_instance(key);
@@ -262,63 +267,7 @@ function find_health_center_by_code(code) {
 }
 
 function find_health_centers_by_attr(attr, value) {
-  return $(data_instance.health_centers).filter(function(i) { return this[attr] == value })
-}
-
-function populate_warehouse_pickups() {
-  try {
-    var pickup_amounts = get_warehouse_stock_amounts_for_delivery_zone();
-
-    var xf_action = new XFAction(null, null);
-    for (var key in pickup_amounts) {
-      var path = "instance('pickups')/item[@for='"+key+"']/@DeliveryRequest";
-
-      // Create an XPath (required by setvalue) for the item node if it doesn't already exist
-      var xp = XPath.get(path) || new XPath(path,
-                                    new PathExpr(
-                                      new FunctionCallExpr('http://www.w3.org/2002/xforms instance', new CteExpr('pickups')),
-                                      new LocationExpr(false,
-                                        new StepExpr('child', new NodeTestName('', 'item'),
-                                          new PredicateExpr(
-                                            new BinaryExpr(
-                                              new LocationExpr(false, new StepExpr('attribute', new NodeTestName(null, 'for'))),
-                                              '=',
-                                              new CteExpr(key)))),
-                                        new StepExpr('attribute', new NodeTestName('', 'DeliveryRequest')))), []);
-
-      xf_action.add(new XFSetvalue(new Binding(false, path), null, pickup_amounts[key], null, null));
-    }
-    run(xf_action, "statusPanel", "DOMActivate", false, true);
-  } catch(e) {
-    DebugConsole.write("Error populating warehouse pickup amounts: " + e.message + "\n" + e.stack.split("\n"));
-  }
-}
-
-function get_warehouse_stock_amounts_for_delivery_zone() {
-  var path = "instance('data')/province/delivery_zone[@code=instance('data')/selected-values/delivery_zone]/ideal_stock";
-  var xp = XPath.get(path) || new XPath(path,
-                                new PathExpr(
-                                  new FunctionCallExpr('http://www.w3.org/2002/xforms instance', new CteExpr('data')),
-                                    new LocationExpr(false,
-                                       new StepExpr('child', new NodeTestName('', 'province')),
-                                       new StepExpr('child',
-                                         new NodeTestName('', 'delivery_zone'),
-                                          new PredicateExpr(
-                                            new BinaryExpr(
-                                              new LocationExpr(false, new StepExpr('attribute', new NodeTestName(null, 'code'))),
-                                              '=',
-                                              new PathExpr(
-                                                new FunctionCallExpr('http://www.w3.org/2002/xforms instance', new CteExpr('data')),
-                                                  new LocationExpr(false,
-                                                    new StepExpr('child', new NodeTestName('', 'selected-values')),
-                                                    new StepExpr('child', new NodeTestName('', 'delivery_zone'))))))),
-                                      new StepExpr('child', new NodeTestName('', 'ideal_stock')))), []);
-  var nodeset = xp.evaluate($('data'));
-  var stock_amounts = {};
-  for (var i = 0, l = nodeset.length; i < l; i++) {
-    stock_amounts[nodeset[i].getAttributeNS(null, 'for')] = nodeset[i].getAttributeNS(null, 'qty');
-  }
-  return stock_amounts;
+  return $(data_instance.health_centers).filter(function(i) { return this[attr] == value; });
 }
 
 function get_fridge_codes_for_health_center() {
@@ -342,6 +291,24 @@ function select_visit() {
 
     show_container(containers['visit']);
   }, 1);
+}
+
+function reset_pickup_instance(key) {
+  var instance = localStorage.getItem(key);
+  if (instance) {
+    pickup_instance = JSON.parse(instance);
+  } else {
+    pickup_instance = generate_pickup_instance();
+    var ideal_stock = data_instance.warehouse_ideal_stock[get_selected_value('delivery_zone')];
+    for (var x in ideal_stock) {
+      try {
+        if (pickup_instance[x]) pickup_instance[x].DeliveryRequest = ideal_stock[x];
+      } catch(e) {
+        if (console) console.exception(e);
+      }
+    }
+  }
+  reset_pickup_bindings();
 }
 
 function reset_olmis_instance(key) {
@@ -1013,3 +980,12 @@ function initialize_visit() {
   $('#tab-menu').tabs('select', 0);
 }
 
+function preinitialize_pickup() {
+  // Run actions that must be performed *after* warehouse pickup form is reset but
+  // *before* warehouse pickup bindings are installed
+}
+
+function initialize_pickup() {
+  // Run actions that must be performed *after* warehouse pickup bindings are 
+  // installed
+}
