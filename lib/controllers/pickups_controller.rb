@@ -165,6 +165,20 @@ class PickupsController < OlmisController
     render :inventory_form
   end
 
+  def warehouse_monthly_visit
+    if params[:format] == 'xml'
+      # TODO: Setup for XML submission
+    elsif params[:format] == 'json'
+      # TODO: Setup for JSON submission
+    else
+      # TODO: Setup for HTML submission
+    end
+
+    # TODO: Process the data
+
+    # FIXME: Until the data is actually processed, return an error
+    render :text => 'error', :status => 400 and return #if %w(xml json).include?(params[:format])
+  end
 
   private
 

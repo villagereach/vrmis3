@@ -19,14 +19,34 @@ var roles_screens = {
   fc:      'fc_home',
   manager: 'manager_home',
   admin:   'admin_home'
-}
+};
 var container_hooks = {
   hide: {},
   show: {},
-}
-
+};
 var hash_param_slots = {
   'container': 0,
+};
+var options = {
+  months_to_show: 6,
+  autoset_default_visit_date: true
+};
+var settings = {
+  health_center_key_regex: /^\d{4}-\d{2}\/hc\/[^/]+$/,
+  warehouse_key_regex:     /^\d{4}-\d{2}\/wh\/[^/]+$/,
+  visit_key_regex:         /^\d{4}-\d{2}\/(hc|wh)\/[^/]+$/
+};
+
+function get_health_center_key(month, hc) {
+  month = month || get_selected_value('visit_date_period');
+  hc = hc || get_selected_value('health_center');
+  return month + '/hc/' + hc;
+}
+
+function get_warehouse_pickup_key(month, dz) {
+  month = month || get_selected_value('visit_date_period');
+  dz = dz || get_selected_value('delivery_zone');
+  return month + '/wh/' + dz;
 }
 
 function get_hash_param(param) {
@@ -45,26 +65,18 @@ container_hooks.show['hc-selection'] = function() {
 }
 
 container_hooks.show['warehouse-after'] = function() {
-  var key = get_selected_value('visit_date_period') + '/' + get_selected_value('delivery_zone');
-  reset_pickup_instance(key);
+  reset_pickup_instance(get_warehouse_pickup_key());
 }
 
 container_hooks.show['form'] = function() {
-  var key = get_selected_value('visit_date_period') + '/' + get_selected_value('health_center');
-  reset_olmis_instance(key);
+  reset_olmis_instance(get_health_center_key());
   update_visit_navigation();
   refresh_fridges();
   update_progress_status();  // TODO: Retrieve cached values
 }
 
 container_hooks.hide['form'] = function() {
-  var key = get_selected_value('visit_date_period') + '/' + get_selected_value('health_center');
-  set_hc_form_status(key, update_progress_status());
-};
-
-var options = {
-  months_to_show: 6,
-  autoset_default_visit_date: true
+  set_hc_form_status(get_health_center_key(), update_progress_status());
 };
 
 function fixup_menu_tabs() {
@@ -276,21 +288,12 @@ function get_fridge_codes_for_health_center() {
 
 function select_visit() {
   var key = $('#saved-forms-control').val();
-  if (!key) {
-    return;
+  if (key && key.match(settings.health_center_key_regex)) {
+    setTimeout(function() {
+      set_selected_value('health_center', key.split('/')[2]);
+      show_container(containers['visit']);
+    }, 1);
   }
-
-  setTimeout(function() {
-    var selection = key.split('/', 2);
-    var ym = selection[0];
-    var hc = selection[1];
-
-    var health_center = find_health_center_by_code(hc);
-    
-    set_selected_value('health_center', hc);
-
-    show_container(containers['visit']);
-  }, 1);
 }
 
 function reset_pickup_instance(key) {
@@ -413,7 +416,7 @@ function show_or_hide_upload_link() {
 function has_forms_ready_for_upload() {
   var ready = false;
   for (var key in valid_forms) {
-    ready = key.match(/^[\d\-]+\/.+$/) && valid_forms[key];
+    ready = key.match(settings.visit_key_regex) && valid_forms[key];
     if (ready) break;
   }
   return ready;
@@ -507,7 +510,7 @@ function setup_form_options(local_forms, only_set_monthly_status) {
 
     var keys = local_forms[district].sort();
     for (var hci = 0, hcl = keys.length; hci < hcl; hci++, si++) {
-      visit_key = keys[hci][0] + '/' + keys[hci][1];
+      visit_key = get_health_center_key(keys[hci][0], keys[hci][1]);
       var status = get_hc_form_status(visit_key);
       statuses.push(status);
       if (!month) month = keys[hci][0];
@@ -554,7 +557,8 @@ function setup_visits() {
       var code = hcs[hci].code;
       
       var key = [month, code, name];
-      
+
+      // TODO: Separate HC and WH forms
       if (local_forms[hcs[hci].area_code] === undefined)
         local_forms[hcs[hci].area_code] = []
       
@@ -683,7 +687,7 @@ function setup_saved_visits() {
   var local_forms = [];
 
   forEachLocalStorageKey(function(key) {
-    if (key.match(/^[\d\-]+\/.+$/) && valid_forms[key]) {
+    if (key.match(settings.health_center_key_regex) && valid_forms[key]) {
       local_forms.push('<li id="' + key.replace('/','_') + '" class="status ' + (valid_forms[key] ? 'complete' : 'todo') + '"><span>' + get_hc_visit_label_for(key) + '</span></li>');
     }
   });
@@ -744,7 +748,7 @@ function upload(node, do_sync) {
 
 function get_hc_visit_label_for(key) {
   var v = key.split('/');
-  return find_health_center_by_code(v[1]).name + ', ' + I18n.l(Date.from_date_period(v[0]), { format: 'month_of_year'});
+  return find_health_center_by_code(v[2]).name + ', ' + I18n.l(Date.from_date_period(v[0]), { format: 'month_of_year'});
 }
 
 function upload_all() {
@@ -792,8 +796,7 @@ function finish_upload() {
 }
 
 function serialize_visit() {
-  var key = get_selected_value('visit_date_period') + '/' + get_selected_value('health_center');
-  localStorage[key] = JSON.stringify(olmis_instance).
+  localStorage[get_health_center_key()] = JSON.stringify(olmis_instance).
     replace(/,"jQuery[0-9]+":[0-9]+/g, '').
     replace(/{"jQuery[0-9]+":[0-9]+,/g, '{');
 }
