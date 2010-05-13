@@ -22,7 +22,7 @@
         <%- Package.active.sort.each do |package| -%>
           <tr class="inventory_row">
             <td><%= package.label %></td>
-            <td class="amount"><span id="warehouse_pickup_<%= package.code %>_DeliveryRequest" class="output"></span></td>
+            <td class="amount"><input type="number" id="warehouse_pickup-before-<%= package.code %>-DeliveryRequest" readonly="readonly" /></td>
           </tr>
         <%- end -%>
       </tbody>

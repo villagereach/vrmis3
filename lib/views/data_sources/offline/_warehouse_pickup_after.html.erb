@@ -28,7 +28,7 @@
           <tr class="inventory_row">
             <td><%= package.label %></td>
             <%- %w(DeliveryRequest DeliveryPickup).each do |type| -%>
-              <td class="amount"><input type="number" id="warehouse_pickup-<%= package.code %>-<%= type %>" /></td>
+              <td class="amount"><input type="number" id="warehouse_pickup-after-<%= package.code %>-<%= type %>" /></td>
             <%- end -%>
           </tr>
         <%- end -%>

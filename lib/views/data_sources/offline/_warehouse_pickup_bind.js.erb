@@ -2,9 +2,11 @@
   if (!data.<%= package.code %>)
     data.<%= package.code %> = { DeliveryRequest: '', DeliveryPickup: '' };
 
-  <%- %w(DeliveryRequest DeliveryPickup).each do |type| -%>
-    $('#warehouse_pickup-<%= package.code %>-<%= type %>').
-      linkFrom('val', data.<%= package.code %>, '<%= type %>').
-      linkTo('val', data.<%= package.code %>, '<%= type %>');
+  <%- %w(before after).each do |visit_type| -%>
+    <%- %w(DeliveryRequest DeliveryPickup).each do |pickup_type| -%>
+      $('#warehouse_pickup-<%= visit_type %>-<%= package.code %>-<%= pickup_type %>').
+        linkFrom('val', data.<%= package.code %>, '<%= pickup_type %>').
+        linkTo('val', data.<%= package.code %>, '<%= pickup_type %>');
+    <%- end -%>
   <%- end -%>
 <%- end -%>
