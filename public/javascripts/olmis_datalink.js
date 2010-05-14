@@ -5,10 +5,17 @@ function select_data() {
   $(selected_values).attr('visit_period_selected', visible);
 
   $('*[show_if_selected]').each(function(i,e) {
-      if(selected_values[$(e).attr('show_if_selected')])
-      $(e).show()
+    if (selected_values[$(e).attr('show_if_selected')])
+      $(e).show();
     else
-      $(e).hide()
+      $(e).hide();
+  });
+
+  $('*[show_unless_selected]').each(function(i,e) {
+    if (selected_values[$(e).attr('show_unless_selected')])
+      $(e).hide();
+    else
+      $(e).show();
   });
 }
 

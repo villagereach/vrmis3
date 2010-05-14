@@ -120,7 +120,7 @@
     </div>
 
     <div id="user_tools">
-      <div id="language" class="content">
+      <div id="language" class="content" show_unless_selected="logged_in">
         <em><%= h(t("layouts.locale.select_language")) %></em>
         <%- I18n.available_locales.each do |locale| -%>
           <%- if I18n.locale.to_s == locale.to_s -%>

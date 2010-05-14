@@ -342,6 +342,7 @@ span.radio.horizontal div.xforms-item {
   margin : 0;
   float : left;
 }
+/*
 #user_tools #user {
   padding-left : 1em;
   border-left : 1px solid #ccc;
@@ -349,6 +350,7 @@ span.radio.horizontal div.xforms-item {
 #user_tools #language {
   padding-right : 1em;
 }
+*/
 #user_tools #language p#language-select {
   padding-right : 0;
 }
