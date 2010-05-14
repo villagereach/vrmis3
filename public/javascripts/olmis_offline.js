@@ -860,7 +860,6 @@ $(function() {
     show_container(containers['login']);
   
   setup_visit_search();
-  fixup_menu_tabs();
 
   /*
   window.setInterval(check_update_status, 3 * 1000);
@@ -955,6 +954,7 @@ function preinitialize_visit() {
       }
     }
   });
+  fixup_menu_tabs();
   add_screen_sequence_tags();
 }
 
