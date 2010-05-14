@@ -545,7 +545,8 @@ en:
       province:     "Province: {{name}}"
       before_visit: "Before Warehouse Visit: View amounts to request"
       after_visit:  "After Warehouse Visit: Enter amounts"
-      package:      "Description (units)"
+      #package:      "Description (units)"
+      package:      "Description"
       requested:    "Quantity Requested"
       furnished:    "Quantity Furnished"
     no_pickup:
