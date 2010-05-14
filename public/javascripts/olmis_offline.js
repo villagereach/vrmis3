@@ -83,33 +83,38 @@ container_hooks.hide['form'] = function() {
 };
 
 function fixup_menu_tabs() {
-  jQuery('#tab-menu a').each(function() {
-    jQuery(this).focus(function() {
-      jQuery(this).blur();
-    });
-  });
+  $('#tab-menu').removeClass('ui-corner-all ui-widget-content');
+  $('#tab-menu .ui-tabs-nav li').removeClass('ui-state-default ui-corner-top');
+  $('#tab-menu .ui-tabs-panel').removeClass('ui-corner-bottom');
+
+  // $('#tab-menu a').each(function() {
+  //   $(this).focus(function() {
+  //     $(this).blur();
+  //   });
+  // });
 }
 
 function update_visit_navigation() {
   // Adjust form container size to be at least as tall as the menu
-  //jQuery("#form-contents .xforms-switch .xforms-case div.block-form").css("min-height", jQuery("#tab-menu").css("height"));
+  var tabs_height = parseInt($("#tab-menu > ul.ui-tabs-nav").css("height"));
+  var panel_vpadd = parseInt($("#tab-menu > div.ui-tabs-panel").css("padding-top")) +
+                    parseInt($("#tab-menu > div.ui-tabs-panel").css("padding-bottom"));
+  $("#tab-menu > div.ui-tabs-panel").css("min-height", (tabs_height - panel_vpadd)+'px');
 
   // Hide the previous link on the first screen and the next link on the last screen
-  var visible_tabs = jQuery("#tab-menu > ul > li:visible");
-  var first_screen = visible_tabs.slice(0,1)[0].id.replace('tab-', 'screen-');
-  var last_screen  = visible_tabs.slice(-1)[0].id.replace('tab-', 'screen-');
-  jQuery("#" + first_screen + " .nav-links a:first").hide();
-  jQuery("#" + last_screen + " .nav-links a:last").hide();
+  var visible_tabs = $("#tab-menu > ul > li:visible");
+  var first_screen = visible_tabs.first()[0].id.replace('tab-', 'screen-');
+  var last_screen  = visible_tabs.last()[0].id.replace('tab-', 'screen-');
+  $("#" + first_screen + " .nav-links a:first").hide();
+  $("#" + last_screen + " .nav-links a:last").hide();
 }
 
 function go_to_next_screen(this_screen) {
-  //var t = $('#tab-menu').tabs();
   update_progress_status(this_screen);
   $("#tab-" + this_screen).nextAll().not(".ui-state-disabled").first().find('a').click();
 }
 
 function go_to_previous_screen(this_screen) {
-  //var t = $('#tab-menu').tabs();
   update_progress_status(this_screen);
   $("#tab-" + this_screen).prevAll().not(".ui-state-disabled").first().find('a').click();
 }
@@ -855,6 +860,7 @@ $(function() {
     show_container(containers['login']);
   
   setup_visit_search();
+  fixup_menu_tabs();
 
   /*
   window.setInterval(check_update_status, 3 * 1000);
@@ -867,9 +873,6 @@ $(function() {
   applicationCache.addEventListener('progress',    do_progress, true);
   applicationCache.addEventListener('updateready', do_update,   true);
   applicationCache.addEventListener('cached',      do_cached,   true);
-  */  
-  /*
-  fixup_menu_tabs();
 
   go_offline();
   */

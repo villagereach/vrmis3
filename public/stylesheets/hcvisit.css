@@ -10,64 +10,6 @@ p {
   clear: left;
 }
 
-/*
-#tab-menu .xforms-trigger {
-  background: none;
-  border: none;
-  font-weight: bold;
-  font-family: Helvetica, sans-serif;
-  font-size: .9em;
-  margin-right: 8px;
-  padding: 4px 4px 0;
-}
-
-#tab-menu .xforms-trigger.selected-tab {
-  background-color: #f6f6f6;
-  border-top: 1px solid green;
-  border-right: 1px solid green;
-  border-bottom: 1px solid #f6f6f6;
-  border-left: 1px solid green;
-  border-top-right-radius: .5em;
-  border-top-left-radius: .5em;
-  -moz-border-radius-topright: .5em;
-  -moz-border-radius-topleft: .5em;
-  -webkit-border-top-right-radius: .5em;
-  -webkit-border-top-left-radius: .5em;
-}
-*/
-.xforms-switch .xforms-case div.block-form {
-  background-color: #f6f6f6;
-  border: 1px solid green;
-  padding: 0.5em;
-}
-
-/*
-.menu-tab {
-  background-color: #f6f6f6;
-  border: 1px solid green;
-}
-*/
-
-.block-form {
-  /*margin: 2px;*/
-}
-
-.block-form .xforms-input,
-.block-form .xforms-select,
-.block-form .xforms-select1,
-.block-form .xforms-textarea {
-  clear: both;
-  margin: 1ex;
-}
-
-.block-form > .xforms-label {
-  display: inline-block;
-  width: 12em; /* fix the width of all the labels in the block form */
-  float: left;
-  text-align: right;
-  margin-right: 1ex; /* margin to the right of the label */
-}
-
 #saved-forms {
   margin: 0 auto;
   width: 300px;
@@ -156,24 +98,6 @@ select#saved-forms-control option.incomplete, #visit-month-menu li.incomplete {
 select#saved-forms-control option.reject, #visit-month-menu li.reject {
   background-image: url(/images/icons/missing.png);
 }
-
-/*
-div.xforms-alert-value {
-  font-weight: normal;
-  font-size: 90%;
-  text-align: left;
-  z-index: 1000;
-}
-
-.xforms-valid   span.xforms-alert-icon { display: inline; background-image: url(/images/icons/silk/accept.png); }
-.xforms-invalid span.xforms-alert-icon { display: inline; background-image: url(/images/icons/silk/exclamation.png); }
-.xforms-valid   span.xforms-alert { display: inline; }
-.menu-tab.xforms-valid span.xforms-alert, .xforms-optional span.xforms-alert, 
-#context-selector span.xforms-alert, #user_tools span.xforms-alert,
-#have_epi_data span.xforms-alert,
-#was_hc_visited span.xforms-alert,
-#non_visit_reason_selection span.xforms-alert { display: none; }
-*/
 
 #tab-menu .ui-tabs-panel .header { 
   border-bottom: 1px solid #CCCCCC;
@@ -499,7 +423,7 @@ h4 {
 }
 
 #form {
-  width: 950px;
+  width: 1150px;
 }
 
 #fc-home table, #fc-actions table {
@@ -891,30 +815,50 @@ body {
 /* }}} */
 
 #tab-menu > div.ui-tabs-panel { 
-  float: left; 
   background-color: #f6f6f6; 
   border: thin solid green;
-  width: 650px;
-  margin-left: -1px; 
+  float: left; 
+  margin-left: -11px; 
+  padding: 0.5em 1em;
+  width: 950px;
 }
 
 #tab-menu > ul.ui-tabs-nav { 
   float: left;
   margin-right: 10px;
-  width: 190px;
+  width: 150px;
   background: inherit; 
   padding: 0; 
   border: none;
+  position: relative;
+  overflow: hidden;
 }
 
+#tab-menu > ul.ui-tabs-nav > li {
+  background: none;
+  display: block;
+  float: none;
+  margin: 0;
+  padding: 2px;
+  border: none;
+}
+#tab-menu > ul.ui-tabs-nav > li.ui-tabs-selected {
+  background-color: #f6f6f6;
+  border-radius: 0;
+  -moz-border-radius: 0;
+  -webkit-border-radius: 0;
+  border: 1px solid green !important;
+  border-right: none !important;
+}
+#tab-menu > ul.ui-tabs-nav > li.ui-tabs-selected a {
+  color: black;
+}
 #tab-menu > ul.ui-tabs-nav > li > a {
-  background: url( /images/icons/silk/cancel.png ) no-repeat 2px 2px transparent;
-  padding: 2px 2px 2px 22px;
-  font-size: 75%;
+  background: url( /images/icons/silk/cancel.png ) no-repeat 2px 4px transparent;
+  padding: 4px 2px 4px 22px;
+  font-size: 80%;
   float: none;
   display: block;
-  border: thin solid transparent;
-  border-right-width: 0;
 }
 #tab-menu > ul.ui-tabs-nav > li > a.complete {
   background-image: url( /images/icons/silk/accept.png );
@@ -925,57 +869,6 @@ body {
 #tab-menu > ul.ui-tabs-nav > li > a.todo {
   background-image: url( /images/icons/silk/exclamation.png );
 }
-#tab-menu > ul.ui-tabs-nav > li.ui-tabs-selected {
-  padding: 0;
-}
-#tab-menu > ul.ui-tabs-nav > li {
-  display: block;
-  float: none;
-  margin: 5px 0;
-  padding: 0;
-  border: none !important;
-}
-#tab-menu > ul.ui-tabs-nav > li.ui-tabs-selected {
-  background-color: #f6f6f6;
-  border-radius: 0;
-  -moz-border-radius: 0;
-  -webkit-border-radius: 0;
-}
-#tab-menu > ul.ui-tabs-nav > li.ui-tabs-selected a {
-  border-width: thin;
-  border-style: solid;
-  border-color: green #f6f6f6 green green;
-  color: black;
-}
-
-/*
-#tab-menu .menu-tab {
-  display: block;
-  padding: 2px 0 2px 24px;
-}
-
-#tab-menu-inner {
-  position: relative;
-  overflow: hidden;
-}
-#tab-menu a,
-#tab-menu a:visited {
-  color: #09c;
-  cursor: pointer;
-  font-weight: bold;
-  text-decoration: underline;
-}
-#tab-menu .selected-tab {
-  background-color: #f6f6f6;
-  border: 1px solid green;
-  border-right: none;
-}
-#tab-menu .selected-tab a {
-  color: black;
-  cursor: auto;
-  text-decoration: none;
-}
-*/
 
 .error {
   color: inherit;
