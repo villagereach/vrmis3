@@ -615,6 +615,10 @@ table.spreadsheet div.tally {
   position: relative;
   min-width: 75px;
   min-height: 30px;
+  white-space: no-wrap;
+}
+table.spreadsheet div.date div.tally {
+  min-width: 90px;
 }
 /*
 table.spreadsheet div.tally > span {
@@ -640,9 +644,8 @@ table.spreadsheet div.tally input[type="date"]
   width: 50px;
 }
 
-
 table.spreadsheet div.tally input[required="year_month"] {
-  width: 4em;
+  width: 65px;
   text-align: left;
 }
 table.spreadsheet div.tally div.nr {
@@ -654,7 +657,7 @@ table.spreadsheet div.tally div.nr {
   font-size: 90%;
 }
 table.spreadsheet .notice {
-  margin: 0 4px;
+  margin: 0 2px;
 }
 /*
 table.spreadsheet div.tally div.nr > span {
