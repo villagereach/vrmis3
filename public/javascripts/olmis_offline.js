@@ -383,7 +383,7 @@ function set_context() {
     set_selected_value('default_visit_date', default_visit_date.format('%Y-%m-%d'));
   }
 
-  set_selected_value('visit_period_selected', 'true()');
+  set_selected_value('visit_period_selected', true);
   show_container(containers['fc_actions']);
 }
 
@@ -400,10 +400,21 @@ function show_visits() {
 }
 
 function show_main_page(landing_page) {
-  landing_page = landing_page || roles_screens[get_selected_value('access_code')];
+  var code = get_selected_value('access_code');
+  if (!landing_page) {
+    // For a FC, return to the fc-actions page if a visit period has already been selected,
+    // e.g., the user is on the HC selection page or a visit or warehouse pickup form.
+    if (code == 'fc' && get_selected_value('visit_period_selected')) {
+      landing_page = 'fc_actions';
+    } else {
+      landing_page = roles_screens[code];
+    }
+  }
 
+  if (landing_page != 'fc_actions') {
+    set_selected_value('visit_period_selected', false);
+  }
   set_selected_value('health_center', '');
-  set_selected_value('visit_period_selected', false);
   show_or_hide_upload_link();
   show_container(containers[landing_page]);
 }
