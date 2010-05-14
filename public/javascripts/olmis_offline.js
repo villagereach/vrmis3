@@ -64,7 +64,7 @@ container_hooks.show['hc-selection'] = function() {
   setup_visits();
 };
 
-container_hooks.show['warehouse-after'] = function() {
+container_hooks.show['warehouse-before'] = container_hooks.show['warehouse-after'] = function() {
   reset_pickup_instance(get_warehouse_pickup_key());
 };
 container_hooks.hide['warehouse-after'] = function() {
