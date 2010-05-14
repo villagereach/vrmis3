@@ -878,7 +878,7 @@ body {
 
 
 #tab-menu > ul.ui-tabs-nav > li {
-  background: none;
+  background: none !important;
   display: block;
   float: none;
   margin: 0;
@@ -886,12 +886,14 @@ body {
   border: none;
 }
 #tab-menu > ul.ui-tabs-nav > li.ui-tabs-selected {
-  background-color: #f6f6f6;
+  background-color: #f6f6f6 !important;
   border-radius: 0;
   -moz-border-radius: 0;
   -webkit-border-radius: 0;
-  border: 1px solid green !important;
+  border-top: 1px solid green !important;
   border-right: none !important;
+  border-bottom: 1px solid green !important;
+  border-left: 1px solid green !important;
 }
 #tab-menu > ul.ui-tabs-nav > li.ui-tabs-selected a {
 
