@@ -33,24 +33,43 @@ function validateRequiredYearMonth(value, element) {
   return this.optional(element) || value.match(/^0[1-9]|1[0-2]\/\d{4}$/);
 }
 
+function add_notice(container) {
+  var notice = get_notice(container);
+  if (notice.length == 0) {
+    container.append('<span class="notice"></span>');
+    notice = $('.notice', container);
+  }
+  return notice;
+}
+
+function get_notice(container) {
+  return $('.notice', container);
+}
+
+function escape_metas(str) {
+  var re = new RegExp('([#;&,.\\+\\*~\':"!^$\\[\\]()=>|/])', 'g');
+  return str.replace(re, '\\$1');
+}
+
 function show_errors(errorMap, errorList) {
   for (var k in errorMap) {
-    if(k) {
-      var container = get_validation_container_for($('*:input[name='+k+']'));
-      var notice = $('.notice', container);
-      if (notice.length == 0) {
-        container.append('<span class="notice"></span>');
-        notice = $('.notice', container);
-      }
+    if (k) {
+      var container = get_validation_container_for($('*:input[name='+escape_metas(k)+']'));
+      var notice = add_notice(container);
       notice.attr('title', errorMap[k]);
-      container.addClass('error');
+      container.removeClass('valid').addClass('invalid');
     }
   }
   this.validElements().each(function(i,e) { 
-      if (errorMap[e.name] == null) {
-        get_validation_container_for($(e)).removeClass('error');
-      }
-  })
+    if (e.name.length > 0 &&
+        (e.getAttribute('required') != undefined || e.getAttribute('required_unless_nr') != undefined) &&
+        !errorMap[e.name]) {
+      var container = get_validation_container_for($(e));
+      var notice = get_notice(container);
+      if (notice) notice.removeAttr('title');
+      container.removeClass('invalid').addClass('valid');
+    }
+  });
 }
 
 // Return the given element's first ancestor with class="validation-group" or,
@@ -84,6 +103,13 @@ $.extend($.fn, {
     $('*:input:date',           this).each(function(i,e) { $(e).rules('add', { date: true } );                });
     $('*:input:date[required="visit_date"]', this).each(function(i,e) { $(e).rules('add', { required_visit_date: true } ); });
     $('*:input:text[required="year_month"]', this).each(function(i,e) { $(e).rules('add', { required_year_month: true } ); });
+
+    $('*:input:required, *:input:required_unless_nr', this).each(function(i,e) {
+      var container = get_validation_container_for($(e));
+      var notice = add_notice(container);
+      notice.removeAttr('title');
+      container.removeClass('invalid').addClass('valid');
+    });
   }
 });
 

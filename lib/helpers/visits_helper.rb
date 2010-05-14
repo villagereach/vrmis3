@@ -274,14 +274,22 @@ module VisitsHelper
   end
 
   def nr_field(builder, name, index, value, nr_checked, error, suppress_nr = false)
+    base_name = builder.object_name.to_s + '_' + index + '_' + name
+    text_field_options = {
+      :id => base_name + '-qty',
+      :index => index,
+      :value => value,
+      :type => 'number',
+      :min => '0',
+      :step => 1
+    }
+    if suppress_nr
+      text_field_options[:required] = true
+    else
+      text_field_options[:required_unless_nr] = base_name + '-nr'
+    end
     content_tag(:div,
-      builder.text_field(name,
-        :id => builder.object_name.to_s + '_' + index + '_' + name + '-qty',
-        :index => index,
-        :value => value,
-        :type => 'number',
-        :min => '0',
-        :step => 1 ) +
+      builder.text_field(name, text_field_options) +
 
         (suppress_nr ? '' : content_tag(:div,
           builder.check_box("#{name}/NR", :checked => nr_checked, :index => index) +

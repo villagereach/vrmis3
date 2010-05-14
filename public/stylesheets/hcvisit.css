@@ -978,15 +978,17 @@ body {
   color: inherit;
 }
 
-.error .notice { 
+.notice { 
   display: inline; 
-  background-image: url(/images/icons/silk/exclamation.png); 
   background-repeat: no-repeat; 
   background-color: inherit;
   border: none; 
   margin: 0 0 0 0.5em; 
   padding: 0 8px; 
 }
-
-.notice { display: none; }
-
+.invalid .notice { 
+  background-image: url(/images/icons/silk/exclamation.png); 
+}
+.valid .notice {
+  background-image: url(/images/icons/silk/accept.png);
+}
