@@ -93,6 +93,7 @@ $.extend($.fn, {
       showErrors: show_errors
     } );
 
+    $('select:required',        this).each(function(i,e) { $(e).rules('add', { required: true });                 });
     $('*:input:text:required',  this).each(function(i,e) { $(e).rules('add', { required: true });                 });
     $('*:input:radio:required', this).each(function(i,e) { $(e).rules('add', { required_radio: true });           });
     $('*:input:checkbox:required', this).each(function(i,e) { $(e).rules('add', { required_checkbox: true });     });
