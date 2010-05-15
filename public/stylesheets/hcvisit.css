@@ -133,20 +133,18 @@ select#saved-forms-control option.reject, #visit-month-menu li.reject {
 p.note { font-weight: medium; font-style: italic; }
 
 thead tr {
-	border-left: 1px solid gray;
-	border-top: 1px solid gray;
+  border-left: 1px solid gray;
+  border-top: 1px solid gray;
 }
-thead th { text-align: center;
-	 padding: 4px;
-	border-right: 1px solid gray;
-	border-bottom: 1px solid gray;
-	}
-th { text-align: right;
-	font-size: 0.8em;
-	 padding: 4px;
-	 }
-td {
-	font-size: 0.9em;
+thead th {
+  text-align: center;
+  padding: 4px;
+  border-right: 1px solid gray;
+  border-bottom: 1px solid gray;
+}
+th {
+  text-align: right;
+  padding: 4px;
 }
 .header .id {
   border-bottom: 2px solid #ccc;
@@ -482,15 +480,30 @@ h4 {
 .pickups div.datepicker {
   float: right;
 }
+.pickups table {
+  border: 1px solid gray;
+}
+.pickups table thead th {
+  border-right: none;
+}
 .pickups table.inventory tr.inventory_row td {
   padding-top: 0.5em;
 }
 .pickups table.inventory tr.inventory_row td.group_label {
   padding-right: 2em;
 }
-.pickups table.inventory input[type="number"] {
+.pickups table.inventory td.amount input[type="number"] {
   margin: 0;
+  padding: 1px;
   width: 50px;
+}
+.pickups table.inventory td.amount input[readonly] {
+  /*border: none;*/
+  float: right;
+  margin-right: 0.5em;
+}
+.pickups .datepicker input[type="date"] {
+  padding: 1px;
 }
 
 .inline label {
@@ -542,17 +555,26 @@ h4 {
 table.spreadsheet {
   width : auto;
 }
-table.spreadsheet td {
-  padding: 2px;
-	border-right: 1px dotted gray;
-	text-align: center;
-}
 table.spreadsheet th {
+  font-size: 0.8em;
+}
+table.spreadsheet td {
+  font-size: 0.9em;
+  padding: 2px;
+  text-align: center;
+}
+table.spreadsheet th, table.spreadsheet td {
   border-right: 1px dotted gray;
+}
+table.spreadsheet th:last-child, table.spreadsheet td:last-child {
+  border-right: 1px solid gray;
+}
+table.spreadsheet th:first-child, table.spreadsheet td:first-child {
+  border-left: 1px solid gray;
 }
 
 table.spreadsheet tr {
-	border-bottom: 1px solid black;
+  border-bottom: 1px solid black;
 }
 
 table.spreadsheet div.tally {
@@ -561,8 +583,8 @@ table.spreadsheet div.tally {
   position: relative;
   min-width: 75px;
   min-height: 30px;
-	text-align: center;
-  white-space: no-wrap;
+  text-align: center;
+  white-space: nowrap;
 }
 table.spreadsheet td[rowspan] {
 	vertical-align: bottom;
@@ -590,10 +612,8 @@ table.spreadsheet div.tally > span span.value {
 }
 */
 
-table.spreadsheet div.tally input[type="text"], 
-table.spreadsheet div.tally input[type="number"],
-table.spreadsheet div.tally input[type="date"] 
-{
+table.inventory td.amount input[type="text"], table.inventory td.amount input[type="number"],
+table.spreadsheet div.tally input[type="text"], table.spreadsheet div.tally input[type="number"] {
   border: 1px solid gray;
   display: block;
   float: left;
@@ -658,8 +678,8 @@ table.equipment td {
   margin-bottom: 0;
 }
 div.datepicker input[type="text"], div.datepicker input[type="date"] {
-  width: 8em !important;
-  letter-spacing: 2px;
+  width: 7em !important;
+  letter-spacing: 1px;
 }
 
 #screen-epi_inventory .inventory thead th:first-child,
