@@ -434,7 +434,7 @@ h4 {
 }
 
 #form {
-  width: 1350px;
+  width: 1150px;
 }
 
 #fc-home table, #fc-actions table {
@@ -718,7 +718,7 @@ div.datepicker input[type="text"], div.datepicker input[type="date"] {
 #screen-cold_chain div.two-column > div {
   float: left;
   margin: 0 10px;
-  width: 300px;
+  width: 350px;
 }
 /*
 #case-cold_chain div.xforms-group-content {
@@ -882,7 +882,8 @@ body {
   float: left; 
   margin-left: -11px; 
   padding: 0.5em 1em;
-  width: 950px;
+  max-width: 950px;
+  min-width: 750px;
 }
 
 #tab-menu > ul.ui-tabs-nav { 
