@@ -67,8 +67,12 @@ container_hooks.show['hc-selection'] = function() {
 container_hooks.show['warehouse-before'] = container_hooks.show['warehouse-after'] = function() {
   reset_pickup_instance(get_warehouse_pickup_key());
 };
+container_hooks.hide['warehouse-before'] = function() {
+  $('#warehouse_visit-form div.datepicker input').datepicker('destroy');
+};
 container_hooks.hide['warehouse-after'] = function() {
   serialize_warehouse_visit();
+  $('#warehouse_visit-form div.datepicker input').datepicker('destroy');
 };
 
 container_hooks.show['form'] = function() {
@@ -80,18 +84,13 @@ container_hooks.show['form'] = function() {
 
 container_hooks.hide['form'] = function() {
   set_hc_form_status(get_health_center_key(), update_progress_status());
+  $('#visit-form div.datepicker input').datepicker('destroy');
 };
 
 function fixup_menu_tabs() {
   $('#tab-menu').removeClass('ui-corner-all ui-widget-content');
   $('#tab-menu .ui-tabs-nav li').removeClass('ui-state-default ui-corner-top');
   $('#tab-menu .ui-tabs-panel').removeClass('ui-corner-bottom');
-
-  // $('#tab-menu a').each(function() {
-  //   $(this).focus(function() {
-  //     $(this).blur();
-  //   });
-  // });
 }
 
 function update_visit_navigation() {
@@ -969,7 +968,7 @@ function initialize_visit() {
   
   $('#visit-form').init_expression_fields();
   
-  $('div.datepicker').each(function(i, e) {
+  $('#visit-form div.datepicker').each(function(i, e) {
     var dp = setup_datepicker($('input[type="text"]', $(e))[0],
                               {
                                 onSelect: function(dateText, inst) { $(this).valid(); }
@@ -1023,15 +1022,15 @@ function initialize_pickup() {
 
   $('#warehouse_visit-form *:input').blur(serialize_warehouse_visit);
 
-  $('#warehouse_visit-form *:input.enabled').valid();
-
-  $('div.datepicker').each(function(i, e) {
+  $('#warehouse_visit-form div.datepicker').each(function(i, e) {
     var date = Date.from_date_period(get_selected_value('visit_date_period'));
-    setup_datepicker($('input[type="text"]', $(e))[0],
-                     {
-                       onSelect: function(dateText, inst) { $(this).valid(); },
-                       minDate:  date.beginning_of_month(),
-                       maxDate:  new Date(Math.min(date.end_of_month(), Date.today()))
-                     });
+    var dp = setup_datepicker($('input[type="text"]', $(e))[0],
+                              {
+                                onSelect: function(dateText, inst) { $(this).valid(); },
+                                minDate:  date.beginning_of_month(),
+                                maxDate:  new Date(Math.min(date.end_of_month(), Date.today()))
+                             });
   });
+
+  $('#warehouse_visit-form *:input.enabled').valid();
 }
