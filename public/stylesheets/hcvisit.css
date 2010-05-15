@@ -712,13 +712,13 @@ div.datepicker input[type="text"], div.datepicker input[type="date"] {
 }
 
 #screen-cold_chain div.fridge-id {
-  margin: 0 1%;
+  margin: 0 10px;
   padding: 0;
 }
 #screen-cold_chain div.two-column > div {
   float: left;
-  margin: 0 1%;
-  width: 48%;
+  margin: 0 10px;
+  width: 300px;
 }
 /*
 #case-cold_chain div.xforms-group-content {
