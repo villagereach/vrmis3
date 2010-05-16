@@ -235,12 +235,12 @@ module VisitsHelper
       to_input_field_tag(options[:type], options)
 
     content_tag(:div,
-      tf +
-        content_tag(:div,
-          check_box(slice, name + '/NR', :id => nrid, :checked => nr_checked) +
-            content_tag(:label, t('NR'), :for => nrid),
-          :class => 'nr'),
-        :class => 'tally')
+      content_tag(:div, tf, :class => 'value') +
+      content_tag(:div,
+        check_box(slice, "#{name}/NR", :id => nrid, :checked => nr_checked) +
+          content_tag(:label, t('NR'), :for => nrid),
+        :class => 'nr'),
+      :class => 'tally')
   end
     
   def tally_form_erb(type, name, options)
@@ -289,13 +289,13 @@ module VisitsHelper
       text_field_options[:required_unless_nr] = base_name + '-nr'
     end
     content_tag(:div,
-      builder.text_field(name, text_field_options) +
+      content_tag(:div, builder.text_field(name, text_field_options), :class => 'value') +
 
         (suppress_nr ? '' : content_tag(:div,
           builder.check_box("#{name}/NR", :checked => nr_checked, :index => index) +
           builder.label("#{name}/NR", t("NR"), :index => index),
           :class => 'nr')),
-      :class => ['tally', error ? 'error' : ''].reject(&:blank?).join(" "))
+      :class => ['tally', error ? 'error' : nil].compact.join(" "))
   end
   
   def xforms_tally_field(input_type, node, tally, msg_key, incr='', suppress_nr=false)

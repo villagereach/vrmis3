@@ -22,17 +22,22 @@
             <%- types.each do |type|
                   id = "inventory_#{package.code}_#{type}" -%>
               <td>
-                <%- if package.inventoried_by_type?(type, screen) -%>
+                <%- if package.inventoried_by_type?(type, screen)
+                      qty_id = "#{id}-qty"
+                      if Inventory.nullable_types.include?(type)
+                        nr_id, required = [ "#{id}-nr", %Q{required_unless_nr="#{id}-nr"} ]
+                      else
+                        nr_id, required = [ nil, 'required="true"' ]
+                      end -%>
                   <div class="tally">
-                    <!--xf:alert><%= h(t("data_sources.hcvisit.errors.quantity")) %></xf:alert-->
-                    <%- if Inventory.nullable_types.include?(type) -%>
-                      <input required_unless_nr="<%= id %>-nr" size="4" type="number" min="0" id="<%= id %>-qty" name="<%= id %>-qty" />
+                    <div class="value">
+                      <input <%= required %> type="number" size="4" min="0" id="<%= qty_id %>" name="<%= qty_id %>" />
+                    </div>
+                    <%- if nr_id -%>
                       <div class="nr">
-                        <input type="checkbox" id="<%= id %>-nr" name="<%= id %>-nr" />
-                        <label for="<%= id %>-nr"><%= h(t("NR")) %></label>
+                        <input type="checkbox" id="<%= nr_id %>" name="<%= nr_id %>" />
+                        <label for="<%= nr_id %>"><%= h(t("NR")) %></label>
                       </div>
-                    <%- else -%>
-                      <input required type="number" min="0" id="<%= id %>-qty" name="<%= id %>-qty" />
                     <%- end -%>
                   </div>
                 <%- end -%>
@@ -42,7 +47,3 @@
         <%- end -%>
       </tbody>
     </table>
-    <!--xf:action ev:event="xforms-value-changed">
-      <xf:load resource="javascript:update_stockouts()" />
-    </xf:action-->
-

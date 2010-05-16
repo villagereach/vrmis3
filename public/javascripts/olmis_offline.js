@@ -983,7 +983,7 @@ function initialize_visit() {
   // Link NR checkboxes to their associated input fields so that checking a NR checkbox clears the
   // associated input field, and entering a value in an input field clears the associated NR checkbox.
   $('input[required_unless_nr]', $('#visit-form')).each(function(i, e) {
-    var nr = $('#'+$(e).attr('required_unless_nr'), $(e).parent())
+    var nr = $('#'+$(e).attr('required_unless_nr'), $(e).parents('.tally').first())
     nr.change(function() {
       if ($(this).attr('checked')) {
         $(e).val('');

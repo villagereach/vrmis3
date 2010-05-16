@@ -7,7 +7,7 @@
 })(jQuery);
 
 function validateRequiredUnlessNr(value, element) {
-  if($('#'+element.getAttribute('required_unless_nr'), $(element.parentNode)).attr('checked'))
+  if ($('#'+element.getAttribute('required_unless_nr'), $(element).parents('.tally').first()).attr('checked'))
     return true
   else
     return $.validator.methods.required.call(this, value, element) 

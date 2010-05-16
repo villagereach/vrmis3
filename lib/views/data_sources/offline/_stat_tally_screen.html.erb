@@ -7,11 +7,11 @@
       
       msg_key, input_type, constraints = 
         klass.expected_params.assoc(klass.param_name(point)).last == :date ?
-          [ 'date',     'text',       'size=8 required="month_year"' ] :
-          [ 'quantity', 'number',     'size=4 min="0"' ]
-        
+          [ 'date',     'text',       'size="8" required="month_year"' ] :
+          [ 'quantity', 'number',     'size="4" min="0"' ]
+
       %Q{<div class="tally #{input_type}">} + 
-      %Q{<input type="#{input_type}" #{constraints} required_unless_nr="#{node}-nr" name="#{node}" id="#{node}">} +
+        %Q{<div class="value"><input type="#{input_type}" #{constraints} required_unless_nr="#{node}-nr" name="#{node}" id="#{node}"></div>} +
         %Q{<div class="nr"><input type="checkbox" id="#{node}-nr" name="#{node}-nr"><label for="#{node}-nr">#{h(t("NR"))}</label></div>} +
       %Q{</div>}
     }) %>

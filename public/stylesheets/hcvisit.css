@@ -579,38 +579,30 @@ table.spreadsheet tr {
 
 table.spreadsheet div.tally {
   margin: 0;
-  padding: 2px 0 12px 2px;
+  padding: 2px 2px 12px 2px;
   position: relative;
-  min-width: 75px;
   min-height: 30px;
+  min-width: 65px;
   text-align: center;
-  white-space: nowrap;
 }
+table.spreadsheet div.date div.tally {
+  min-width: 85px;
+}
+
+table.spreadsheet div.tally div.value {
+  display: table;
+}
+
 table.spreadsheet td[rowspan] {
-	vertical-align: bottom;
-	background: #F9f9f9;
-	padding-bottom: 1em;
-	padding-left: 0.5em;
+  vertical-align: bottom;
+  background: #f9f9f9;
+  padding-bottom: 1em;
+  padding-left: 0.5em;
 }
 table.spreadsheet td[rowspan="1"] {
-	padding-bottom: 0;
+  padding-bottom: 0;
 }
 
-
-table.spreadsheet div.date div.tally {
-  min-width: 90px;
-}
-
-/*
-table.spreadsheet div.tally > span {
-  display: table;
-  margin: 0;
-}
-
-table.spreadsheet div.tally > span span.value {
-  display: table-cell;
-}
-*/
 
 table.inventory td.amount input[type="text"], table.inventory td.amount input[type="number"],
 table.spreadsheet div.tally input[type="text"], table.spreadsheet div.tally input[type="number"] {
@@ -624,16 +616,17 @@ table.spreadsheet div.tally input[type="text"], table.spreadsheet div.tally inpu
 }
 
 table.spreadsheet input[disabled="disabled"] {
-	border: none;
-	background: none;
-	color: navy;
+  border: none;
+  background: none;
+  color: navy;
   text-align: right;
 }
 
 table.spreadsheet div.tally input[required="year_month"] {
-  width: 65px;
+  width: 60px;
   text-align: left;
 }
+
 table.spreadsheet div.tally div.nr {
   position: absolute;
   top: 24px;
@@ -642,17 +635,14 @@ table.spreadsheet div.tally div.nr {
   margin: 0;
   font-size: 90%;
 }
+
 table.spreadsheet .notice {
-  margin: 0 2px;
+  margin: 0 0 0 4px;
 }
-/*
-table.spreadsheet div.tally div.nr > span {
-  margin: 0;
+table.spreadsheet input[type="radio"] ~ .notice {
+  margin-left: 8px;
 }
-table.spreadsheet input.xforms-value[type="text"] {
-  width : 3em;
-}
-*/
+
 table.spreadsheet td.numeric {
   padding: 0 1em;
   text-align: right;
