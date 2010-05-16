@@ -554,6 +554,7 @@ h4 {
 /* individual sheets {{{ */
 table.spreadsheet {
   width : auto;
+  border: 1px solid gray;
 }
 table.spreadsheet th {
   font-size: 0.8em;
@@ -565,12 +566,6 @@ table.spreadsheet td {
 }
 table.spreadsheet th, table.spreadsheet td {
   border-right: 1px dotted gray;
-}
-table.spreadsheet th:last-child, table.spreadsheet td:last-child {
-  border-right: 1px solid gray;
-}
-table.spreadsheet th:first-child, table.spreadsheet td:first-child {
-  border-left: 1px solid gray;
 }
 
 table.spreadsheet tr {
