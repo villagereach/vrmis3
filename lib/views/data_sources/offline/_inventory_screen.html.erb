@@ -16,8 +16,10 @@
         <%- packages.sort.each do |package| -%>
           <tr>
             <th><%= h package.label %></th>
-            <td class="numeric">
-              <span class="output ideal_stock-health_center-<%= package.code %>"></span>
+            <td>
+              <div class="calculated">
+                <input id="ideal_stock-<%= package.code %>" type="text" size="3" disabled="disabled" />
+              </div>
             </td>
             <%- types.each do |type|
                   id = "inventory_#{package.code}_#{type}" -%>

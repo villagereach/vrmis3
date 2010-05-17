@@ -183,7 +183,7 @@ module VisitsHelper
     # If the resulting value is NaN, the field will appear blank. Otherwise, the value will be truncated
     # to an integer and the value of the third argument, if any, will be appended.
 
-    output = '<div style="text-align: center">' + text_field_tag(nil, '', :suffix => suffix, :expression => expression, :disabled => 'disabled', :size => 3, :id => name, :class => 'expression') + '</div>'
+    output = '<div class="calculated">' + text_field_tag(nil, '', :suffix => suffix, :expression => expression, :disabled => 'disabled', :size => 3, :id => name, :class => 'expression') + '</div>'
   end
 
   # Convert a parameter to a format acceptable for use in a DOM ID

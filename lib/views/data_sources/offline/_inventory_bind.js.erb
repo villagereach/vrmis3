@@ -13,5 +13,7 @@
       linkFrom('checked', data.<%= package.code %>.<%= type %>, 'nr').
       linkTo('checked', data.<%= package.code %>.<%= type %>, 'nr');
   <%- end -%>
+
+  $('#ideal_stock-<%= package.code %>').linkFrom('val', get_ideal_stock_for_health_center(), '<%= package.code %>');
 <%- end -%>
 

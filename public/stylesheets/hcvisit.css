@@ -615,6 +615,7 @@ table.spreadsheet input[disabled="disabled"] {
   background: none;
   color: navy;
   text-align: right;
+  min-width: 40px;
 }
 
 table.spreadsheet div.tally input[required="year_month"] {

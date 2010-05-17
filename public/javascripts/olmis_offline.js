@@ -293,6 +293,10 @@ function get_fridge_codes_for_health_center() {
   return find_health_center_by_code(get_selected_value('health_center'))['fridge_codes'];
 }
 
+function get_ideal_stock_for_health_center() {
+  return find_health_center_by_code(get_selected_value('health_center'))['ideal_stock'];
+}
+
 function select_visit() {
   var key = $('#saved-forms-control').val();
   if (key && key.match(settings.health_center_key_regex)) {
