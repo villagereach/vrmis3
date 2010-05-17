@@ -998,7 +998,7 @@ function initialize_visit() {
     
     $(e).change(function() { 
       if ($(this).val().length > 0) {
-        var nr = $('#'+$(this).attr('required_unless_nr'), $(this.parentNode));
+        var nr = $('#'+$(this).attr('required_unless_nr'), $(this).parents('.tally'));
         nr.attr('checked', false);
       }
     });
