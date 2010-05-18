@@ -164,7 +164,7 @@ function do_update() {
     applicationCache.swapCache();
   }
   catch (e) {
-    DebugConsole.write("applicationCache.swapCache failed: " + e);
+    if (console) console.log("applicationCache.swapCache failed: " + e);
     return;
   }
   jQuery('#status_indicator').addClass('updated');
@@ -192,7 +192,7 @@ function check_update_status() {
       applicationCache.update();
     }
     catch (e) {
-      DebugConsole.write("applicationCache.update failed: " + e);
+      if (console) console.log("applicationCache.update failed: " + e);
     }
   }
 }
@@ -864,20 +864,21 @@ $(function() {
   
   setup_visit_search();
 
-  /*
-  window.setInterval(check_update_status, 3 * 1000);
+  if ($('html').attr('manifest')) {
+    window.setInterval(check_update_status, 3 * 1000);
   
-  var statuses = ['cached', 'checking', 'downloading', 'error', 'noupdate', 'obsolete', 'progress', 'updateready'];
+    //var statuses = ['cached', 'checking', 'downloading', 'error', 'noupdate', 'obsolete', 'progress', 'updateready'];
 
-  applicationCache.addEventListener('error',       go_offline,  true);
-  applicationCache.addEventListener('noupdate',    go_online,   true);
-  applicationCache.addEventListener('downloading', do_download, true);
-  applicationCache.addEventListener('progress',    do_progress, true);
-  applicationCache.addEventListener('updateready', do_update,   true);
-  applicationCache.addEventListener('cached',      do_cached,   true);
+    applicationCache.addEventListener('error',       go_offline,  true);
+    applicationCache.addEventListener('noupdate',    go_online,   true);
+    applicationCache.addEventListener('downloading', do_download, true);
+    applicationCache.addEventListener('progress',    do_progress, true);
+    applicationCache.addEventListener('updateready', do_update,   true);
+    applicationCache.addEventListener('cached',      do_cached,   true);
 
-  go_offline();
-  */
+    go_offline();
+  }
+
   $('#fc-action-links a[href="#login"]').fancybox( 
     { 'hideOnContentClick': false,
       'autoScale': false,
