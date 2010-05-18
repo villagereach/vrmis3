@@ -47,7 +47,10 @@ CACHE:
 /javascripts/jquery.tmpl.js
 /javascripts/jquery.datalink.js
 /javascripts/jquery-validate/jquery.validate.js
-/javascripts/jquery-validate/localization/messages_<%= I18n.locale %>.js
+<%- f = "/javascripts/jquery-validate/localization/messages_#{I18n.locale}.js"
+    if File.size?(File.join(Rails.root, 'public', f)) -%>
+<%= f %>
+<%- end -%>
 /javascripts/html5-pseudo.jquery.js
 /javascripts/date-<%= I18n.locale %>.js
 <%- third_party_files = Dir.glob(File.join(Rails.root, 'public', 'javascripts', 'ui', 'i18n', '*.js')) +

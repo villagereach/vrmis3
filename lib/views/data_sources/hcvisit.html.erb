@@ -1,6 +1,6 @@
 <!doctype html>
-<html lang="<%= I18n.locale %>">
-      <!--manifest="<%= manifest_url(:format => 'offline', :locale => I18n.locale) %>"-->
+<html lang="<%= I18n.locale %>"
+      manifest="<%= manifest_url(:format => 'offline', :locale => I18n.locale) %>">
   <head>
     <title><%= h(t("health_center_visit")) %></title>
     <script type="text/javascript" src="/javascripts/jquery-1.4.2.js"></script>
@@ -14,8 +14,11 @@
 
     <script type="text/javascript" src="/javascripts/jquery-validate/jquery.validate.js" ></script>
     <script type="text/javascript" src="/javascripts/html5-pseudo.jquery.js" ></script>
-    
-    <script type="text/javascript" src="/javascripts/jquery-validate/localization/messages_<%= I18n.locale %>.js"></script>
+
+    <%- jqvl = "/javascripts/jquery-validate/localization/messages_#{I18n.locale}.js"
+        if File.size?(File.join(Rails.root, 'public', jqvl)) -%>
+      <script type="text/javascript" src="<%= jqvl %>"></script>
+    <%- end -%>
 
     <script type="text/javascript" src="/javascripts/olmis_datalink.js" ></script>
     
