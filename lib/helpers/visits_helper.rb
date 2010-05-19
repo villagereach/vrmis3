@@ -141,7 +141,7 @@ module VisitsHelper
     # for the target percentage identified by the first argument.
 
     if target = TargetPercentage.find_by_code(code)
-      size = @health_center.nil? ? '' : (@health_center.catchment_population * target.percentage / Date.date_periods_per_year / 100).to_i
+      size = @health_center.nil? || @health_center.catchment_population.nil? ? '' : (@health_center.catchment_population * target.percentage / Date.date_periods_per_year / 100).to_i
       text_field_tag(code + '_target', size, :disabled => 'disabled', :size => [3, size.to_s.length + 1].max )
     end
   end
