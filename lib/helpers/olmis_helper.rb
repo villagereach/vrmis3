@@ -59,8 +59,8 @@ module OlmisHelper
     {
       'field_coordinator' => [
         ['tab_to_do',             '/'],
-        ['tab_go_on_route',       pickups_path(@current_user.delivery_zone.maybe.code)],
-        ['tab_return_from_route', unloads_path(@current_user.delivery_zone.maybe.code)],
+        ['tab_before_warehouse_visit', pickup_request_path(@current_user.delivery_zone.maybe.code)],
+        ['tab_after_warehouse_visit',  new_pickup_request_path(@current_user.delivery_zone.maybe.code)],
         ['tab_site_visits',       visits_path],
         ['tab_view_reports',           '/reports'],],
       'admin' => [

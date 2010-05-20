@@ -13,6 +13,8 @@ en:
   tab_site_visits:             "Site Visits"
   tab_go_on_route:             "Go on Route"
   tab_return_from_route:       "Return from Route"
+  tab_before_warehouse_visit:  "Before Warehouse Visit"
+  tab_after_warehouse_visit:   "After Warehouse Visit"
   tab_cold_chain:              "Cold Chain"
   tab_fcs:                     "Field Coordinators"
   tab_manage_assets:           "Manage Assets"

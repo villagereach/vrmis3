@@ -1,23 +1,23 @@
 class PickupsController < OlmisController
-  add_breadcrumb(lambda { |c| I18n.t('breadcrumb.pickups', :name => c.delivery_zone.name) }, 'pickups_path', 
-                 :only => ['pickups', 'pickup', 'pickup_new', 'pickup_edit', 'isa', 'isa_edit'])
-  add_breadcrumb(lambda { |c| I18n.l(Date.parse(c.param_date), :format => :default) }, 'pickup_path',
-                 :only => ['pickup','pickup_edit'])
-  add_breadcrumb(lambda { |c| I18n.t('breadcrumb.new_pickup', :name => c.delivery_zone.name) }, '',
-                 :only => ['pickup_new', 'pickup_request'])
+  # add_breadcrumb(lambda { |c| I18n.t('breadcrumb.pickups', :name => c.delivery_zone.name) }, 'pickups_path', 
+  #                :only => ['pickups', 'pickup', 'pickup_new', 'pickup_edit', 'isa', 'isa_edit'])
+  # add_breadcrumb(lambda { |c| I18n.l(Date.parse(c.param_date), :format => :default) }, 'pickup_path',
+  #                :only => ['pickup','pickup_edit'])
+  # add_breadcrumb(lambda { |c| I18n.t('breadcrumb.new_pickup', :name => c.delivery_zone.name) }, '',
+  #                :only => ['pickup_new', 'pickup_request'])
 
-  add_breadcrumb(lambda { |c| I18n.t('breadcrumb.unloads', :name => c.delivery_zone.name) }, 'unloads_path', 
-                 :only => ['unloads', 'unload', 'unload_new', 'unload_edit' ])
-  add_breadcrumb(lambda { |c| I18n.l(Date.parse(c.param_date), :format => :default) }, 'unload_path',
-                 :only => ['unload','unload_edit'])
-  add_breadcrumb(lambda { |c| I18n.t('breadcrumb.new_unload', :name => c.delivery_zone.name) }, '',
-                 :only => 'unload_new')
+  # add_breadcrumb(lambda { |c| I18n.t('breadcrumb.unloads', :name => c.delivery_zone.name) }, 'unloads_path', 
+  #                :only => ['unloads', 'unload', 'unload_new', 'unload_edit' ])
+  # add_breadcrumb(lambda { |c| I18n.l(Date.parse(c.param_date), :format => :default) }, 'unload_path',
+  #                :only => ['unload','unload_edit'])
+  # add_breadcrumb(lambda { |c| I18n.t('breadcrumb.new_unload', :name => c.delivery_zone.name) }, '',
+  #                :only => 'unload_new')
 
-  add_breadcrumb('breadcrumb.edit', '',
-                 :only => ['pickup_edit','unload_edit'])
+  # add_breadcrumb('breadcrumb.edit', '',
+  #                :only => ['pickup_edit','unload_edit'])
 
-  add_breadcrumb(lambda { |c| I18n.t('breadcrumb.edit_ideal_stock', :name => c.health_center.name) }, '',
-                 :only => 'isa_edit')
+  # add_breadcrumb(lambda { |c| I18n.t('breadcrumb.edit_ideal_stock', :name => c.health_center.name) }, '',
+  #                :only => 'isa_edit')
 
 
   def pickups
@@ -32,7 +32,6 @@ class PickupsController < OlmisController
 
   def pickup_request
     setup_inventory('DeliveryRequest')
-    @back_link = helpers.link_to(I18n.t('inventory.back_to_pickups'),pickups_path) 
     @amounts = @zone.total_ideal_stock_by_package
     render :inventory_delivery_request
   end
@@ -103,15 +102,8 @@ class PickupsController < OlmisController
 
   def pickup_new
     setup_inventory('DeliveryPickup')
-    @show_date = true
-    @edit_date = true
-    @verb_code = 'new'
-    if params[:inventory] 
-      @amounts = amounts_from_params 
-    else
-      @zone.total_ideal_stock_by_package.each{|package,requested| @amounts[package] = { 'DeliveryRequest' => requested, 'DeliveryPickup' => nil } }
-    end
-    save_if_post_and_redirect_or_render_form('DeliveryPickup', :pickup)
+    @zone.total_ideal_stock_by_package.each{|package,requested| @amounts[package] = { 'DeliveryRequest' => requested, 'DeliveryPickup' => nil } }
+    render :inventory_delivery_pickup_form
   end
 
   def unload_new

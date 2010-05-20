@@ -19,44 +19,51 @@
   <%- end -%>
 
   <%- form_for :inventory do |f| -%>
+    <div class="wrapper">
+      <div class="header">
+        <!--span><%= h(t("pickups.inventory.province", :name => @zone.warehouse.administrative_area.name)) %></span-->
+        <div class="datepicker">
+          <%= f.label :date, h(t("headers.date")) %>
+          <%= f.text_field :date, :class => "datepicker", :value => I18n.l(@date) %>
+        </div>
+      </div>
 
-    <div class="header">
-      <span><%= h(t("pickups.inventory.province", :name => @zone.warehouse.administrative_area.name)) %></span>
-      <span>
-        <%= f.label :date, h(t("headers.date")) %>
-        <%= f.text_field :date, :class => "datepicker", :value => I18n.l(@date) %>
-      </span>
-    </div>
-
-    <table class="inventory inventory-form">
-      <thead>
-        <tr>
-          <th><%= h(t("pickups.inventory.package")) %></th>
-          <th class="amount"><%= h(t("pickups.inventory.requested")) %></th>
-          <th class="amount"><%= h(t("pickups.inventory.furnished")) %></th>
-        </tr>
-      </thead>
-      <tbody>
-        <%- @amounts.keys.map.sort_by{|i| [ i.product, i ]}.each do |package| -%>
-          <tr class="inventory_row">
-            <td><%= package.label %></td>
-            <td class="amount">
-              <div class="tally <%= 'error' if @errors['DeliveryRequest'].maybe[package.code] %>">
-                <%= f.text_field package.code, :value => params[:inventory].maybe['DeliveryRequest'].maybe[package.code] || @amounts[package]['DeliveryRequest'], :index => 'DeliveryRequest', :size => 3, :class => "numeric" %>
-              </div>
-            </td>
-            <td class="amount">
-              <div class="tally <%= 'error' if @errors['DeliveryPickup'].maybe[package.code] %>">
-                <%= f.text_field package.code, :value => params[:inventory].maybe['DeliveryPickup'].maybe[package.code] || "", :index => 'DeliveryPickup', :size => 3, :class => "numeric" %>
-              </div>
-            </td>
+      <table class="inventory inventory-form">
+        <thead>
+          <tr>
+            <th class="empty"></th>
+            <th><%= h(t("pickups.inventory.package")) %></th>
+            <th class="amount"><%= h(t("pickups.inventory.requested")) %></th>
+            <th class="amount"><%= h(t("pickups.inventory.furnished")) %></th>
           </tr>
+        </thead>
+        <%- Package.active.sort.partition_by{|package| package.product.product_type}.each do |type, stocks| -%>
+          <tbody>
+            <%- stocks.sort.each_with_index do |package, idx| -%>
+              <tr class="inventory_row">
+                <%- if idx == 0 -%>
+                  <td class="group_label"><%= h type.label %></td>
+                <%- else -%>
+                  <td></td>
+                <%- end -%>
+                <td><%= h package.label %></td>
+                <td class="amount">
+                  <div class="tally <%= 'error' if @errors['DeliveryRequest'].maybe[package.code] %>">
+                    <%= f.text_field package.code, :value => params[:inventory].maybe['DeliveryRequest'].maybe[package.code] || @amounts[package]['DeliveryRequest'], :index => 'DeliveryRequest', :size => 3, :class => "numeric" %>
+                  </div>
+                </td>
+                <td class="amount">
+                  <div class="tally <%= 'error' if @errors['DeliveryPickup'].maybe[package.code] %>">
+                    <%= f.text_field package.code, :value => params[:inventory].maybe['DeliveryPickup'].maybe[package.code] || "", :index => 'DeliveryPickup', :size => 3, :class => "numeric" %>
+                  </div>
+                </td>
+              </tr>
+            <%- end -%>
+          </tbody>
         <%- end -%>
-      </tbody>
-    </table>
+      </table>
 
-    <p class="submit"><%= f.submit h(t('save')) %></p>
+      <p class="submit"><%= f.submit h(t('save')) %></p>
+    </div>
   <%- end -%>
 </div>
-
-<%= javascript_tag "jQuery('.pickups table tr:even').addClass('even')" %>

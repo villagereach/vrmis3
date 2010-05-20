@@ -798,6 +798,16 @@ li.status.complete {
   font-weight: bold;
   text-align: center;
 }
+.pickups div.wrapper {
+  clear: both;
+  width: 30em;
+}
+.pickup_request div.wrapper {
+  width: 24em;
+}
+.pickups div.datepicker {
+  float: right;
+}
 .pickups .header {
   font-weight: bold;
   padding: 2px 4px;
@@ -806,7 +816,11 @@ li.status.complete {
   font-weight: bold;
 }
 .pickups table {
+  border: 1px solid gray;
   width: auto;
+}
+.pickups div.wrapper table {
+  width: 100%;
 }
 .pickups .header span {
   margin-right: 1em;
@@ -822,15 +836,20 @@ li.status.complete {
 .pickups table.inventory th {
   vertical-align: middle;
 }
-.pickups table.inventory th.amount,
-.pickups table.inventory td.amount {
+.pickups table.inventory tr.inventory_row td.group_label {
+  padding-right: 2em;
+}
+.pickups table.inventory th.amount {
   text-align: right;
-  width: 6em;
+  width: 4em;
+}
+.pickups table.inventory td.amount input {
+  margin-left: 1em;
+  text-align: right;
+  width: 4em;
 }
 .pickups .submit {
   padding-top : 1em;
-  border-top : 1px solid #ccc;
-  margin-top : 1em;
 }
 /* }}} */
 /* reports {{{ */
