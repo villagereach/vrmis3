@@ -276,6 +276,7 @@ module VisitsHelper
 
   def nr_field(builder, name, index, value, nr_checked, error, suppress_nr = false)
     base_name = builder.object_name.to_s + '_' + index + '_' + name
+    nrid = "#{base_name}-nr"
     text_field_options = {
       :id => base_name + '-qty',
       :index => index,
@@ -285,13 +286,13 @@ module VisitsHelper
       :step => 1,
       :required => 'required'
     }
-    text_field_options[:'data-required'] = "unless_nr=#{base_name}-nr" unless suppress_nr
+    text_field_options[:'data-required'] = "unless_nr=#{nrid}" unless suppress_nr
     content_tag(:div,
       content_tag(:div, builder.text_field(name, text_field_options), :class => 'value') +
 
         (suppress_nr ? '' : content_tag(:div,
-          builder.check_box("#{name}/NR", :checked => nr_checked, :index => index) +
-          builder.label("#{name}/NR", t("NR"), :index => index),
+          builder.check_box("#{name}/NR", :id => nrid, :checked => nr_checked, :index => index) +
+          builder.label("#{nrid}", t("NR"), :index => index),
           :class => 'nr')),
       :class => ['tally', error ? 'error' : nil].compact.join(" "))
   end
