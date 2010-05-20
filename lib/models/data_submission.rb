@@ -170,6 +170,9 @@ class DataSubmission < ActiveRecord::Base
     #temporary hiding of epi_data_ready; remove it later if it stays hidden
     @visit.epi_data_ready = true
 
+    # Discard localized visit date
+    @params['health_center_visit'].delete('i18n_visited_at')
+
     visited = @params['health_center_visit'].delete('visited')
 
     reason_for_not_visiting = @params['health_center_visit'].delete('reason_for_not_visiting')

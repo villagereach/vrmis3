@@ -20,10 +20,12 @@
         </li>
     </ul>
 
-    <%# TODO: Store ISO-formatted visit date in a hidden field -- requires datapicker config changes %>
     <%- visible_container('visit_fields', @visit.visited, 'dl', 'stacked') do -%>
         <dt><%= f.label :visited_at, h(t(".date")) %></dt>
-        <dd><%= f.text_field :visited_at, :class => "datepicker", :value => I18n.l(@visit.visited_at || Date.from_date_period(visit_month)) %></dd>
+        <dd>
+          <%= f.hidden_field :visited_at, :value => (@visit.visited_at || Date.from_date_period(visit_month)).to_s(:db) %>
+          <%= f.text_field :i18n_visited_at, :class => "datepicker", :value => I18n.l(@visit.visited_at || Date.from_date_period(visit_month)) %>
+        </dd>
 
         <dt><%= f.label :vehicle_code, h(t(".vehicle_code")) %></dt>
         <dd><%= f.text_field :vehicle_code %></dd>
@@ -47,3 +49,14 @@
     <%= save_and_continue %>
 <%- end -%>
 
+<% javascript_tag do
+     first_day = @visit.visited_at.beginning_of_month
+     last_day = [ @visit.visited_at.end_of_month, Date.today ].min %>
+  setup_datepicker('input.datepicker',
+                   {
+                     minDate: new Date(<%= [ first_day.year, first_day.month - 1, first_day.day ].join(',') %>),
+                     maxDate: new Date(<%= [  last_day.year,  last_day.month - 1,  last_day.day ].join(',') %>),
+                     altField: '#health_center_visit_visited_at',
+                     altFormat: $.datepicker.ISO_8601
+                   });
+<% end %>

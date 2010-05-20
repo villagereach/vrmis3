@@ -131,7 +131,7 @@ function call_anchor_method() {
   }
 }
 
-jQuery( document ).ready( function() {
+$(function() {
   init_collapser_lists();
   init_fridge_list();
   init_switcher_panes();
@@ -141,6 +141,5 @@ jQuery( document ).ready( function() {
   autofocus();
   
   setup_error_links();
-  setup_datepicker('input.datepicker', { changeMonth: true, changeYear: true, yearRange: '-1:+5' });
 });
 
