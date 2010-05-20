@@ -897,7 +897,7 @@ function add_screen_sequence_tags() {
 }
 
 function update_progress_status(tabs) {
-  var valid = true;
+  var valid = false;
 
   // TODO: Refactor and cache validation results
 
@@ -911,10 +911,15 @@ function update_progress_status(tabs) {
       if (!$(e).hasClass('ui-state-disabled')) {
         var div = $($('a', $(e)).attr('href'));
         var inputs = $('*:input.enabled', div);
-        if (inputs.length > 0 && inputs.valid()) {
-          link.addClass("complete");
+        if (inputs.length > 0) {
+          if (valid = inputs.valid()) {
+            link.addClass("complete");
+          } else {
+            var invalid_count = inputs.map(function() { return $(this).parents('.invalid')[0]; }).length;
+            var   valid_count = inputs.map(function() { return $(this).parents('.valid')[0]; }).length;
+            link.addClass(valid_count > 0 && invalid_count > 0 ? "incomplete" : "todo");
+          }
         } else {
-          valid = false;
           link.addClass("todo");
         }
       }
@@ -927,10 +932,15 @@ function update_progress_status(tabs) {
       if (!$(e).hasClass('ui-state-disabled')) {
         var div = $($('a', $(e)).attr('href'));
         var inputs = $('*:input.enabled', div);
-        if (inputs.length > 0 && inputs.valid()) {
-          link.addClass("complete");
+        if (inputs.length > 0) {
+          if (valid = inputs.valid()) {
+            link.addClass("complete");
+          } else {
+            var invalid_count = inputs.map(function() { return $(this).parents('.invalid')[0]; }).length;
+            var   valid_count = inputs.map(function() { return $(this).parents('.valid')[0]; }).length;
+            link.addClass(valid_count > 0 && invalid_count > 0 ? "incomplete" : "todo");
+          }
         } else {
-          valid = false;
           link.addClass("todo");
         }
       }
