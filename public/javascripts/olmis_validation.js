@@ -1,18 +1,19 @@
 (function($){
-  $.each('min max required required_unless_nr'.split(' '),function(i,type){
+  $.each('min max required data-required'.split(' '),function(i,type){
     $.expr[":"][type] = function(elem){
         return typeof(elem.getAttribute(type)) == 'string';
     };
   });
 })(jQuery);
 
-function validateRequiredUnlessNr(value, element) {
-  if ($('#'+element.getAttribute('required_unless_nr'), $(element).parents('.tally').first()).attr('checked'))
-    return true
-  else
-    return $.validator.methods.required.call(this, value, element) 
+function no_nr(element) {
+  var nrid = get_nrid(element);
+  if (nrid) {
+    return !$('#'+nrid, $(element).parents('.tally').first()).attr('checked');
+  }
+  return true;
 }
-
+  
 function validateRequiredRadio(value, element) {
   var group = get_validation_container_for($(element));
   var btns = $('*[name='+element.name+']', $(group)).filter(function(i) { return this.checked; }); 
@@ -80,7 +81,6 @@ function get_validation_container_for(element) {
   return group;
 }
 
-$.validator.addMethod('required_unless_nr',  validateRequiredUnlessNr,  $.validator.messages.required);
 $.validator.addMethod('required_radio',      validateRequiredRadio,     $.validator.messages.required);
 $.validator.addMethod('required_checkbox',   validateRequiredCheckbox,  $.validator.messages.required);
 $.validator.addMethod('required_visit_date', validateRequiredVisitDate, $.validator.messages.required);
@@ -93,19 +93,19 @@ $.extend($.fn, {
       showErrors: show_errors
     } );
 
-    $('select:required',        this).each(function(i,e) { $(e).rules('add', { required: true });                 });
-    $('*:input:text:required',  this).each(function(i,e) { $(e).rules('add', { required: true });                 });
-    $('*:input:radio:required', this).each(function(i,e) { $(e).rules('add', { required_radio: true });           });
-    $('*:input:checkbox:required', this).each(function(i,e) { $(e).rules('add', { required_checkbox: true });     });
-    $('*:input:required_unless_nr', this).each(function(i,e) { $(e).rules('add', { required_unless_nr: true });   });
-    $('*:number',               this).each(function(i,e) { $(e).rules('add', { digits: true });               });
-    $('*:input:min',            this).each(function(i,e) { $(e).rules('add', { min: e.getAttribute('min') } ) });
-    $('*:input:max',            this).each(function(i,e) { $(e).rules('add', { max: e.getAttribute('max') } ) });
-    $('*:input:date',           this).each(function(i,e) { $(e).rules('add', { date: true } );                });
-    $('*:input:date[required="visit_date"]', this).each(function(i,e) { $(e).rules('add', { required_visit_date: true } ); });
-    $('*:input:text[required="year_month"]', this).each(function(i,e) { $(e).rules('add', { required_year_month: true } ); });
+    $('*:input:text[required]:not([data-required*="unless_nr="])', this).each(function(i,e) { $(e).rules('add', { required: true }); });
+    $('*:input:text[data-required*="unless_nr="]', this).each(function(i,e) { $(e).rules('add', { required: { depends: no_nr } }); });
+    $('select[required]',           this).each(function(i,e) { $(e).rules('add', { required: true }); });
+    $('*:input:radio[required]',    this).each(function(i,e) { $(e).rules('add', { required_radio: true }); });
+    $('*:input:checkbox[required]', this).each(function(i,e) { $(e).rules('add', { required_checkbox: true }); });
+    $('*:number',     this).each(function(i,e) { $(e).rules('add', { digits: { depends: no_nr, param: true } }); });
+    $('*:input:date', this).each(function(i,e) { $(e).rules('add', { date:   { depends: no_nr, param: true } }); });
+    $('*:input:min',  this).each(function(i,e) { $(e).rules('add', { min:    { depends: no_nr, param: e.getAttribute('min') } }); });
+    $('*:input:max',  this).each(function(i,e) { $(e).rules('add', { max:    { depends: no_nr, param: e.getAttribute('max') } }); });
+    $('*:input:date[data-required~="type=visit_date"]', this).each(function(i,e) { $(e).rules('add', { required_visit_date: true }); });
+    $('*:input:text[data-required~="type=year_month"]', this).each(function(i,e) { $(e).rules('add', { required_year_month: { depends: no_nr } }); });
 
-    $('*:input:required, *:input:required_unless_nr', this).each(function(i,e) {
+    $('*:input:required', this).each(function(i,e) {
       var container = get_validation_container_for($(e));
       var notice = add_notice(container);
       notice.removeAttr('title');

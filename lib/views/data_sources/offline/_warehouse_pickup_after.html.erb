@@ -12,7 +12,7 @@
                                 sub("{{name}}", %Q{<span class="output selected_province_name"><span>}) %></span-->
         <div class="datepicker">
           <label for="warehouse_pickup_date"><%= h(t("headers.date")) %></label>
-          <input type="date" id="warehouse_pickup_date" name="warehouse_pickup_date" required="visit_date" />
+          <input type="date" id="warehouse_pickup_date" name="warehouse_pickup_date" required="required" data-required="type=visit_date" />
         </div>
       </div>
 
@@ -37,7 +37,7 @@
                 <td><%= h package.label %></td>
                 <%- %w(DeliveryRequest DeliveryPickup).each do |type|
                       node = "warehouse_pickup-after-#{package.code}-#{type}" -%>
-                  <td class="amount"><input type="number" min="0" id="<%= node %>" name="<%= node %>" required /></td>
+                  <td class="amount"><input type="number" min="0" id="<%= node %>" name="<%= node %>" required="required" /></td>
                 <%- end -%>
               </tr>
             <%- end -%>

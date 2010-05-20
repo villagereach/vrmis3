@@ -987,8 +987,9 @@ function initialize_visit() {
 
   // Link NR checkboxes to their associated input fields so that checking a NR checkbox clears the
   // associated input field, and entering a value in an input field clears the associated NR checkbox.
-  $('input[required_unless_nr]', $('#visit-form')).each(function(i, e) {
-    var nr = $('#'+$(e).attr('required_unless_nr'), $(e).parents('.tally').first())
+  $('input[data-required*="unless_nr="]', $('#visit-form')).each(function(i, e) {
+    var nrid = get_nrid(e);
+    var nr = $('#'+nrid, $(e).parents('.tally').first())
     nr.change(function() {
       if ($(this).attr('checked')) {
         $(e).val('');
@@ -999,7 +1000,7 @@ function initialize_visit() {
     
     $(e).change(function() { 
       if ($(this).val().length > 0) {
-        var nr = $('#'+$(this).attr('required_unless_nr'), $(this).parents('.tally'));
+        var nr = $('#'+get_nrid(this), $(this).parents('.tally'));
         nr.attr('checked', false);
       }
     });
@@ -1011,6 +1012,17 @@ function initialize_visit() {
   // selecting the first screen).
   $('#tab-menu').tabs('select', $('#tab-menu').tabs('length')-1);
   $('#tab-menu').tabs('select', 0);
+}
+
+function get_nrid(element) {
+  var required_data = $(element).attr('data-required');
+  if (required_data) {
+    var nr = required_data.split(/\s+/).filter(function(str) { return str.match(/^unless_nr=/); });
+    if (nr.length == 1) {
+      return nr[0].split('=')[1];
+    }
+  }
+  return null;
 }
 
 function preinitialize_pickup() {

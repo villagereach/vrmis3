@@ -206,30 +206,31 @@ module VisitsHelper
     
     nr_checked = @record_value_hash[slice].has_key?(name) && @record_value_hash[slice][name].send(field).nil?
 
-    id = slice + '_' + param_to_id(name.downcase)
-    nrid = id + '-nr'
+    id = "#{slice}_#{param_to_id(name.downcase)}"
+    nrid = "#{id}-nr"
 
-    case type.fields_hash[field.to_sym]
-    when :date
-      options = {
-        :type => 'date',
-        :value => value,
-        :size => 8,
-        :id => id,
-        :class => "datepicker"
-      }.merge(options)
+    options = case type.fields_hash[field.to_sym]
+              when :date
+                {
+                  :type => 'date',
+                  :value => value,
+                  :size => 8,
+                  :class => "datepicker"
+                }
+              else
+               {
+                 :type => 'number',
+                 :value => value.to_s,
+                 :size => 4,
+                 :min => '0',
+                 :step => '1',
+               }
+              end.merge({ :id => id, :required => 'required' }).merge(options)
+    if options[:'data-required']
+      options[:'data-required'] << " unless_nr=#{nrid}"
     else
-      options = {
-        :type => 'number',
-        :value => value.to_s,
-        :size => 4,
-        :min => '0',
-        :step => '1',
-        :id => id
-      }.merge(options)
+      options[:'data-required'] = "unless_nr=#{nrid}"
     end
-
-    options[:required_unless_nr] = nrid
 
     tf = ActionView::Helpers::InstanceTag.new(slice, name, self).
       to_input_field_tag(options[:type], options)
@@ -281,13 +282,10 @@ module VisitsHelper
       :value => value,
       :type => 'number',
       :min => '0',
-      :step => 1
+      :step => 1,
+      :required => 'required'
     }
-    if suppress_nr
-      text_field_options[:required] = true
-    else
-      text_field_options[:required_unless_nr] = base_name + '-nr'
-    end
+    text_field_options[:'data-required'] = "unless_nr=#{base_name}-nr" unless suppress_nr
     content_tag(:div,
       content_tag(:div, builder.text_field(name, text_field_options), :class => 'value') +
 

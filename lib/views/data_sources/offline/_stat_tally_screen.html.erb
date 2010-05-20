@@ -5,13 +5,16 @@
 <%= tally_table(klass, lambda { |point|
       node = klass.table_name.singularize + '_' + param_to_jquery(klass.param_name(point))
       
-      msg_key, input_type, constraints = 
+      msg_key, input_type, constraints, required_options = 
         klass.expected_params.assoc(klass.param_name(point)).last == :date ?
-          [ 'date',     'text',       'size="8" required="month_year"' ] :
-          [ 'quantity', 'number',     'size="4" min="0"' ]
+          [ 'date',     'text',   'size="8"', { :type => 'month_year' } ] :
+          [ 'quantity', 'number', 'size="4" min="0"', {} ]
+
+      required_options[:unless_nr] = "#{node}-nr"
+      required_data = required_options.map{|key,val| "#{key}=#{val}"}.join(' ')
 
       %Q{<div class="tally #{input_type}">} + 
-        %Q{<div class="value"><input type="#{input_type}" #{constraints} required_unless_nr="#{node}-nr" name="#{node}" id="#{node}"></div>} +
+        %Q{<div class="value"><input type="#{input_type}" #{constraints} required="required" data-required="#{required_data}" name="#{node}" id="#{node}"></div>} +
         %Q{<div class="nr"><input type="checkbox" id="#{node}-nr" name="#{node}-nr"><label for="#{node}-nr">#{h(t("NR"))}</label></div>} +
       %Q{</div>}
     }) %>

@@ -6,7 +6,7 @@
     <div class="fridge-data">
       <div class="fridge-id">
         <label for="fridge_status_${ i }_fridge_code"><%= jt(t("visits.health_center_cold_chain.fridge_id")) %></label>
-        <input class="fridge_status-fridge_code" id="fridge_status_${ i }_fridge_code" name="fridge_status-${ i }-fridge_code" type="text" required />
+        <input class="fridge_status-fridge_code" id="fridge_status_${ i }_fridge_code" name="fridge_status-${ i }-fridge_code" type="text" required="required" />
         <a href="#" class="delete-fridge"><%= jt(t("data_sources.hcvisit.delete_fridge")) %></a>
       </div>
       <div class="two-column">
@@ -19,7 +19,7 @@
             <ul class="radio">
               <%- [ [ jt(t("yes")), "true" ], [ jt(t("no")), "false" ], [ jt(t("unknown")), "nr" ] ].each do |label,value| -%>
                 <li>
-                  <input class="fridge_status-past_problem" id="fridge_status_${ i }_past_problem_<%= value %>" name="fridge_status-${ i }-past_problem" value="<%= value %>" type="radio" required />
+                  <input class="fridge_status-past_problem" id="fridge_status_${ i }_past_problem_<%= value %>" name="fridge_status-${ i }-past_problem" value="<%= value %>" type="radio" required="required" />
                   <label for="fridge_status_${ i }_past_problem_<%= value %>"><%= label %></label>
                 </li>
               <%- end -%>
@@ -32,7 +32,7 @@
             </div>
             <div>
               <label for="fridge_status_${ i }_temperature"><%= jt(t("visits.health_center_cold_chain.temp_input_prefix")) %></label>
-              <input class="fridge_status-temperature" id="fridge_status_${ i }_temperature" name="fridge_status-${ i }-temperature" type="number" required />
+              <input class="fridge_status-temperature" id="fridge_status_${ i }_temperature" name="fridge_status-${ i }-temperature" type="number" required="required" />
               <span><%= jt(t("visits.health_center_cold_chain.temp_input_suffix")) %></span>
             </div>
           </div>
@@ -46,7 +46,7 @@
             <ul class="radio">
               <%- [ [ jt(t("yes")), "OK" ], [ jt(t("no")), "problem" ], [ jt(t("unknown")), "nr" ] ].each do |label,value| -%>
                 <li>
-                  <input class="fridge_status-state" id="fridge_status_${ i }_state_<%= value %>" name="fridge_status-${ i }-state" value="<%= value %>" type="radio" required />
+                  <input class="fridge_status-state" id="fridge_status_${ i }_state_<%= value %>" name="fridge_status-${ i }-state" value="<%= value %>" type="radio" required="required" />
                   <label for="fridge_status_${ i }_state_<%= value %>"><%= label %></label>
                 </li>
               <%- end -%>
@@ -60,13 +60,13 @@
             <ul class="check-list">
               <%- FridgeStatus.not_ok_status_options.each do |label,value| -%>
                 <label>  
-                  <input class="fridge_status-problem" id="fridge_status_${ i }_problem_<%= value %>" name="fridge_status-${ i }-problem" value="<%= value %>" type="checkbox" required />
+                  <input class="fridge_status-problem" id="fridge_status_${ i }_problem_<%= value %>" name="fridge_status-${ i }-problem" value="<%= value %>" type="checkbox" required="required" />
                   <%= jt(label) %>
                 </label>
               <%- end -%>
             </ul>
             <div id="fridge-other_problem-${ i }" class="fridge-other_problem" style="display: none;">
-              <textarea class="fridge_status-other_problem" id="fridge_status_${ i }_other_problem" name="fridge_status-${ i }-other_problem" required></textarea>
+              <textarea class="fridge_status-other_problem" id="fridge_status_${ i }_other_problem" name="fridge_status-${ i }-other_problem" required="required"></textarea>
             </div>
           </div>
         </div>

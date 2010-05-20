@@ -14,14 +14,14 @@
             <th><%= h type.label %></th>
             <td>
               <%- [ [ t("yes"), "true" ], [ t("no"), "false" ], [ t("NR"), "nr" ] ].each do |label,value| -%>
-              <input required type="radio" value="<%= value %>" name="<%= id %>-present" id="<%= id %>-present-<%= value %>" checked="false">
+              <input required="required" type="radio" value="<%= value %>" name="<%= id %>-present" id="<%= id %>-present-<%= value %>" checked="false">
               <label for="<%= id %>-present"><%= h(label) %></label>
               <%- end -%>
               <!-- <xf:alert><%= h(t("data_sources.hcvisit.errors.select_an_option")) %></xf:alert> -->
             </td>
             <td>
               <%- [ [ t("yes"), "true" ], [ t("no"), "false" ], [ t("NR"), "nr" ] ].each do |label,value| -%>
-              <input required type="radio" value="<%= value %>" name="<%= id %>-working" id="<%= id %>-working-<%= value %>" checked="false">
+              <input required="required" type="radio" value="<%= value %>" name="<%= id %>-working" id="<%= id %>-working-<%= value %>" checked="false">
               <label for="<%= id %>-working"><%= h(label) %></label>
               <%- end -%>
               <!-- <xf:alert><%= h(t("data_sources.hcvisit.errors.select_an_option")) %></xf:alert> -->

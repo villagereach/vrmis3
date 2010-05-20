@@ -27,9 +27,9 @@
                 <%- if package.inventoried_by_type?(type, screen)
                       qty_id = "#{id}-qty"
                       if Inventory.nullable_types.include?(type)
-                        nr_id, required = [ "#{id}-nr", %Q{required_unless_nr="#{id}-nr"} ]
+                        nr_id, required = [ "#{id}-nr", %Q{required="required" data-required="unless_nr=#{id}-nr"} ]
                       else
-                        nr_id, required = [ nil, 'required="true"' ]
+                        nr_id, required = [ nil, 'required="required"' ]
                       end -%>
                   <div class="tally">
                     <div class="value">
