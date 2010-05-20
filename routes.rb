@@ -20,17 +20,18 @@
   #map.pickup_new '/pickups/:delivery_zone/new.:format', :controller => 'pickups', :action => 'pickup_new'
   #map.pickup_edit '/pickups/:delivery_zone/:date/edit', :controller => 'pickups', :action => 'pickup_edit'
   #map.pickup '/pickups/:delivery_zone/:date', :controller => 'pickups', :action => 'pickup'
-  #map.pickups '/pickups/:delivery_zone', :controller => 'pickups', :action => 'pickups'
 
   #map.unload_new '/unloads/:delivery_zone/new', :controller => 'pickups', :action => 'unload_new'
   #map.unload_edit '/unloads/:delivery_zone/:date/edit', :controller => 'pickups', :action => 'unload_edit'
   #map.unload '/unloads/:delivery_zone/:date', :controller => 'pickups', :action => 'unload'
   #map.unloads '/unloads/:delivery_zone', :controller => 'pickups', :action => 'unloads'
   
+  map.pickups '/pickups/:delivery_zone', :controller => 'pickups', :action => 'pickups'
   map.pickup_request '/pickups/:delivery_zone/request.:format', :controller => 'pickups', :action => 'pickup_request', :conditions => { :method => :get }
   map.new_pickup_request '/pickups/:delivery_zone/request/new.:format', :controller => 'pickups', :action => 'pickup_new', :conditions => { :method => :get }
+  map.create_pickup_request '/pickups/:delivery_zone/request.:format', :controller => 'pickups', :action => 'pickup_create', :conditions => { :method => :post }
   map.edit_pickup_request '/pickups/:delivery_zone/request/:date/edit.:format', :controller => 'pickups', :action => 'pickup_edit', :conditions => { :method => :get }
-  map.update_pickup_request '/pickups/:delivery_zone/request.:format', :controller => 'pickups', :action => 'pickup_update', :conditions => { :method => :put }
+  map.update_pickup_request '/pickups/:delivery_zone/request/:date.:format', :controller => 'pickups', :action => 'pickup_update', :conditions => { :method => :put }
 
   map.connect '/set_date_period', :controller=>'dashboard', :action=>'set_date_period'
   map.login   '/login',  :controller => 'login', :action => 'login'

@@ -25,137 +25,133 @@ class PickupsController < OlmisController
     @pickups = Inventory.find_all_by_inventory_type_and_stock_room_id('DeliveryPickup', @zone.warehouse.stock_room, :order => 'date desc', :limit=>6)
   end
   
-  def unloads
-    @zone = DeliveryZone.find_by_code(params[:delivery_zone])
-    @unloads = Inventory.find_all_by_inventory_type_and_stock_room_id('DeliveryReturn', @zone.warehouse.stock_room, :order => 'date desc', :limit=>6)
-  end
-
   def pickup_request
     setup_inventory('DeliveryRequest')
     @amounts = @zone.total_ideal_stock_by_package
     render :inventory_delivery_request
   end
 
-  def pickup
+  def pickup_new
     setup_inventory('DeliveryPickup')
-    @show_date = true
-    @verb_code = 'show'
-    @back_link = helpers.link_to(I18n.t('inventory.back_to_pickups'),pickups_path) 
-    if @inventory.nil?
-      redirect_to :action=>'pickup_new', :date => params[:date], :delivery_zone=>params[:delivery_zone]
-    else
-      #blank column for warehouse print form
-      @comparison_column = I18n.t('inventory.amount_picked_up')
-      @comparisons = {}
-      @comparison_class = "pickup_box not_on_screen"
-      @amounts = @inventory.package_count_quantity_by_package
-      render :inventory_table
-    end
+    @zone.total_ideal_stock_by_package.each{|package,requested| @amounts[package] = { 'DeliveryRequest' => requested, 'DeliveryPickup' => nil } }
   end
-  
-  def unload
-    setup_inventory('DeliveryReturn')
-    @show_date = true
-    @verb_code = 'show'
-    @back_link = helpers.link_to(I18n.t('inventory.back_to_returns'),unloads_path) 
-    if @inventory.nil?
-      redirect_to :action=>'unload_new', :date=>params[:date], :delivery_zone=>params[:delivery_zone]
+
+  def pickup_create
+    setup_inventory('DeliveryPickup')
+    if inventories = save_inventory('DeliveryPickup')
+      redirect_to pickups_url
     else
-      @amounts = @inventory.package_count_quantity_by_package
-      render :inventory_table
+      render :action => 'pickup_new'
     end
   end
 
   def pickup_edit
     setup_inventory('DeliveryPickup')
-    @show_date = true
-    @verb = 'edit'
-    if @inventory.nil?
-      redirect_to :action=>'pickup_new', :date=>params[:date], :delivery_zone=>params[:delivery_zone]
-    else
-      if params[:inventory]
-        @amounts = amounts_from_params
-      else
-        @amounts = {}
-        @zone.total_ideal_stock_by_package.each{|package,requested| @amounts[package] = { 'DeliveryRequest' => requested, 'DeliveryPickup' => nil } }
-      end
-      save_if_post_and_redirect_or_render_form('DeliveryPickup', :pickup)
+    picked_up_inventory_counts = Hash[*@inventory.package_counts.map{|pc| [ pc.package, pc.quantity ] }.flatten]
+    requested_inventory_counts = Hash[*Inventory.find_by_inventory_type_and_stock_room_id_and_date('DeliveryRequest', @zone.warehouse.stock_room, @date).package_counts.map{|pc| [ pc.package, pc.quantity ] }.flatten]
+
+    requested_inventory_counts.keys.each do |package|
+      @amounts[package] = {
+        'DeliveryRequest' => requested_inventory_counts[package],
+        'DeliveryPickup'  => picked_up_inventory_counts[package]
+      }
     end
   end
 
-  def unload_edit
-    setup_inventory('DeliveryReturn')
-    @show_date = true
-    @verb = 'edit'
-    if @inventory.nil?
-      redirect_to :action=>'unload_new', :date=>params[:date], :delivery_zone=>params[:delivery_zone]
-    else
-      if params[:inventory]
-        @amounts = amounts_from_params
-      else
-        @amounts = {}
-        Inventory.find_by_inventory_type_and_stock_room_id_and_date('DeliveryPickup', @zone.warehouse.stock_room, @date).each{|p,v| @amounts[p] = { 'DeliveryPickup' => v, 'DeliveryReturn' => nil } }
-      end
-      save_if_post_and_redirect_or_render_form('DeliveryReturn', :unload)
-    end
-  end
-
-  def pickup_new
+  def pickup_update
     setup_inventory('DeliveryPickup')
-    @zone.total_ideal_stock_by_package.each{|package,requested| @amounts[package] = { 'DeliveryRequest' => requested, 'DeliveryPickup' => nil } }
-    render :inventory_delivery_pickup_form
-  end
-
-  def unload_new
-    setup_inventory('DeliveryReturn')
-    @show_date = true
-    @edit_date = true
-    @verb_code = 'new'
-    if params[:inventory] 
-      @amounts = amounts_from_params 
+    if inventories = save_inventory('DeliveryPickup')
+      redirect_to pickups_url
     else
-      @amounts = {}
-      Inventory.find_by_inventory_type_and_stock_room_id_and_date('DeliveryPickup', @zone.warehouse.stock_room, @date).each{|p,v| @amounts[p] = { 'DeliveryPickup' => v, 'DeliveryReturn' => nil } }
+      render :action => 'pickup_edit'
     end
-    save_if_post_and_redirect_or_render_form('DeliveryReturn', :unload)
   end
 
-  def isa_redirect
-    logger.info " isad1"
-    redirect_to isa_path(params[:delivery_zone],params[:hc])
-    logger.info " isad2"
-  end
+  # def unloads
+  #   @zone = DeliveryZone.find_by_code(params[:delivery_zone])
+  #   @unloads = Inventory.find_all_by_inventory_type_and_stock_room_id('DeliveryReturn', @zone.warehouse.stock_room, :order => 'date desc', :limit=>6)
+  # end
+
+  # def unload
+  #   setup_inventory('DeliveryReturn')
+  #   @show_date = true
+  #   @verb_code = 'show'
+  #   @back_link = helpers.link_to(I18n.t('inventory.back_to_returns'),unloads_path) 
+  #   if @inventory.nil?
+  #     redirect_to :action=>'unload_new', :date=>params[:date], :delivery_zone=>params[:delivery_zone]
+  #   else
+  #     @amounts = @inventory.package_count_quantity_by_package
+  #     render :inventory_table
+  #   end
+  # end
+
+  # def unload_edit
+  #   setup_inventory('DeliveryReturn')
+  #   @show_date = true
+  #   @verb = 'edit'
+  #   if @inventory.nil?
+  #     redirect_to :action=>'unload_new', :date=>params[:date], :delivery_zone=>params[:delivery_zone]
+  #   else
+  #     if params[:inventory]
+  #       @amounts = amounts_from_params
+  #     else
+  #       @amounts = {}
+  #       Inventory.find_by_inventory_type_and_stock_room_id_and_date('DeliveryPickup', @zone.warehouse.stock_room, @date).each{|p,v| @amounts[p] = { 'DeliveryPickup' => v, 'DeliveryReturn' => nil } }
+  #     end
+  #     save_if_post_and_redirect_or_render_form('DeliveryReturn', :unload)
+  #   end
+  # end
+
+  # def unload_new
+  #   setup_inventory('DeliveryReturn')
+  #   @show_date = true
+  #   @edit_date = true
+  #   @verb_code = 'new'
+  #   if params[:inventory] 
+  #     @amounts = amounts_from_params 
+  #   else
+  #     @amounts = {}
+  #     Inventory.find_by_inventory_type_and_stock_room_id_and_date('DeliveryPickup', @zone.warehouse.stock_room, @date).each{|p,v| @amounts[p] = { 'DeliveryPickup' => v, 'DeliveryReturn' => nil } }
+  #   end
+  #   save_if_post_and_redirect_or_render_form('DeliveryReturn', :unload)
+  # end
+
+  # def isa_redirect
+  #   logger.info " isad1"
+  #   redirect_to isa_path(params[:delivery_zone],params[:hc])
+  #   logger.info " isad2"
+  # end
   
-  def isa_edit
-    @zone = DeliveryZone.find_by_code(params[:delivery_zone])
-    @hc = HealthCenter.find_by_code(params[:health_center])
-    @sr = @hc.stock_room
-    @amounts = @sr.package_counts_by_package
+  # def isa_edit
+  #   @zone = DeliveryZone.find_by_code(params[:delivery_zone])
+  #   @hc = HealthCenter.find_by_code(params[:health_center])
+  #   @sr = @hc.stock_room
+  #   @amounts = @sr.package_counts_by_package
 
-    @show_date = false
-    @page_title = I18n.t('inventory.IdealStockAmount.edit', :where => @hc.name)
+  #   @show_date = false
+  #   @page_title = I18n.t('inventory.IdealStockAmount.edit', :where => @hc.name)
 
-    @errors = {}
-    if request.post?
-      begin
-        IdealStockAmount.transaction do
-          params[:inventory][:packages].each do |code, amount|
-            package = Package.find_by_code(code)
-            i = IdealStockAmount.find_or_create_by_package_id_and_stock_room_id(package, @sr)
-            i.quantity = amount
-            if i.valid?
-              i.save
-            else 
-              @errors[code] = i.errors
-            end
-          end
-          redirect_to pickups_path and return if @errors.empty?
-        end
-      rescue ActiveRecord::ActiveRecordError        
-      end
-    end
-    render :inventory_form
-  end
+  #   @errors = {}
+  #   if request.post?
+  #     begin
+  #       IdealStockAmount.transaction do
+  #         params[:inventory][:packages].each do |code, amount|
+  #           package = Package.find_by_code(code)
+  #           i = IdealStockAmount.find_or_create_by_package_id_and_stock_room_id(package, @sr)
+  #           i.quantity = amount
+  #           if i.valid?
+  #             i.save
+  #           else 
+  #             @errors[code] = i.errors
+  #           end
+  #         end
+  #         redirect_to pickups_path and return if @errors.empty?
+  #       end
+  #     rescue ActiveRecord::ActiveRecordError        
+  #     end
+  #   end
+  #   render :inventory_form
+  # end
 
   def warehouse_monthly_visit
     if params[:format] == 'xml'
@@ -174,7 +170,6 @@ class PickupsController < OlmisController
 
   private
 
-
   def setup_inventory(type)    
     @zone = DeliveryZone.find_by_code(params[:delivery_zone])
     @date = Date.parse(params[:date] || params[:inventory].maybe[:date] || Date.today.to_s)
@@ -184,7 +179,7 @@ class PickupsController < OlmisController
     @amounts = {}
     @errors = {}
   end
-  
+
   def amounts_from_params
     types = params[:inventory].keys.select{|k| k =~ /^Delivery/}
     Hash[*Package.active.map{ |p| [ p, types.inject({}) do |hash,key|
@@ -192,7 +187,6 @@ class PickupsController < OlmisController
                                                           hash
                                                         end ] }.flatten]
   end
-
 
   def save_inventory(type)
     begin
@@ -205,8 +199,8 @@ class PickupsController < OlmisController
           inventory.save!
           amounts_from_params.each do |package, amounts|
             pc = PackageCount.find_by_inventory_id_and_package_id(inventory.id, package.id)
-            pc ||= PackageCount.new(:inventory => inventory,:package=>package)
-            pc.quantity = amounts[inventory].to_i
+            pc ||= PackageCount.new(:inventory => inventory, :package => package)
+            pc.quantity = amounts[t].to_i
             if pc.valid?
               pc.save
             else
@@ -225,16 +219,16 @@ class PickupsController < OlmisController
     end
   end    
 
-  def save_if_post_and_redirect_or_render_form(type, success_action)
-    if request.post?  && inventories = save_inventory(type)
-      redirect_to :action => success_action, :params => { :date => inventories.values.first.date.strftime('%Y-%m-%d'), :delivery_zone => @zone.code }
-    else
-      begin
-        render "inventory_#{type.underscore}_form"
-      rescue ActionView::MissingTemplate
-        render :inventory_form
-      end
-    end
-  end
+  # def save_if_post_and_redirect_or_render_form(type, success_action)
+  #   if request.post?  && inventories = save_inventory(type)
+  #     redirect_to :action => success_action, :params => { :date => inventories.values.first.date.strftime('%Y-%m-%d'), :delivery_zone => @zone.code }
+  #   else
+  #     begin
+  #       render "inventory_#{type.underscore}_form"
+  #     rescue ActionView::MissingTemplate
+  #       render :inventory_form
+  #     end
+  #   end
+  # end
   
 end
