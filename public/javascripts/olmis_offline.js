@@ -57,7 +57,7 @@ function get_hash_param(param) {
 function set_hash_param(param, value) {
   var values = window.location.hash.replace(/^#/, '').split('/');
   values[hash_param_slots[param]] = value;
-  window.location.hash = values.join('#');
+  window.location.hash = '#'+values.join('/');
 };
 
 container_hooks.show['hc-selection'] = function() {
