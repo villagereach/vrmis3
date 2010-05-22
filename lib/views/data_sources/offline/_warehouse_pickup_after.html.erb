@@ -44,7 +44,17 @@
           </tbody>
         <%- end -%>
       </table>
-      <button id="save_warehouse_pickup" onclick="show_main_page('fc_home')"><%= h(t("data_sources.hcvisit.warehouse_pickup.save_and_continue")) %></button>
+      <button type="submit"><%= h(t("data_sources.hcvisit.warehouse_pickup.save_and_continue")) %></button>
     </form>
   </div>
 </div>
+
+<% javascript_tag do %>
+  $(function() {
+    $("#warehouse_visit-form").submit(function() {
+      save_warehouse_visit();
+      show_main_page();
+      return false;
+    });
+  });
+<% end %>

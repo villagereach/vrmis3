@@ -71,7 +71,6 @@ container_hooks.hide['warehouse-before'] = function() {
   $('#warehouse_visit-form div.datepicker input').datepicker('destroy');
 };
 container_hooks.hide['warehouse-after'] = function() {
-  serialize_warehouse_visit();
   $('#warehouse_visit-form div.datepicker input').datepicker('destroy');
 };
 
@@ -287,6 +286,14 @@ function find_health_center_by_code(code) {
 
 function find_health_centers_by_attr(attr, value) {
   return $(data_instance.health_centers).filter(function(i) { return this[attr] == value; });
+}
+
+function find_warehouse_by_code(code) {
+  return find_delivery_zones_by_attr('code', code)[0];
+}
+
+function find_delivery_zones_by_attr(attr, value) {
+  return $(data_instance.delivery_zones).filter(function(i) { return this[attr] == value; });
 }
 
 function get_fridge_codes_for_health_center() {
@@ -508,6 +515,10 @@ function set_hc_form_status(key, status) {
   valid_forms[key] = status;
 }
 
+function set_wh_form_status(key, status) {
+  valid_forms[key] = status;
+}
+
 function setup_form_options(local_forms, only_set_monthly_status) {
   var savedVisits = jQuery('#saved-forms-control');
   if (!only_set_monthly_status) savedVisits.empty();
@@ -709,8 +720,9 @@ function setup_saved_visits() {
   var local_forms = [];
 
   forEachLocalStorageKey(function(key) {
-    if (key.match(settings.health_center_key_regex) && valid_forms[key]) {
-      local_forms.push('<li id="' + key.replace('/','_') + '" class="status ' + (valid_forms[key] ? 'complete' : 'todo') + '"><span>' + get_hc_visit_label_for(key) + '</span></li>');
+    var match = key.match(settings.visit_key_regex);
+    if (match && valid_forms[key]) {
+      local_forms.push('<li id="' + key.replace('/','_') + '" class="status ' + (valid_forms[key] ? 'complete' : 'todo') + '"><span>' + get_visit_label_for(match[1], key) + '</span></li>');
     }
   });
 
@@ -768,9 +780,19 @@ function upload(node, do_sync) {
   } );
 }
 
+function get_visit_label_for(type, key) {
+  var f = this['get_'+type+'_visit_label_for'];
+  return (typeof f == 'function') ? f(key) : '- bad type ('+type+') for key ('+key+') -';
+}
+
 function get_hc_visit_label_for(key) {
   var v = key.split('/');
   return find_health_center_by_code(v[2]).name + ', ' + I18n.l(Date.from_date_period(v[0]), { format: 'month_of_year'});
+}
+
+function get_wh_visit_label_for(key) {
+  var v = key.split('/');
+  return find_warehouse_by_code(v[2]).name + ', ' + I18n.l(Date.from_date_period(v[0]), { format: 'month_of_year'});
 }
 
 function upload_all() {
@@ -826,6 +848,12 @@ function _serialize_instance_for(key, instance)
 
 function serialize_visit() {
   _serialize_instance_for(get_health_center_key(), olmis_instance);
+}
+
+function save_warehouse_visit() {
+  serialize_warehouse_visit();
+  set_wh_form_status(get_warehouse_pickup_key(), update_warehouse_pickup_status());
+  localStorage['valid forms'] = JSON.stringify(valid_forms); 
 }
 
 function serialize_warehouse_visit() {
@@ -937,6 +965,13 @@ function set_progress_status_for(element) {
     }
   }
   return valid;
+}
+
+function update_warehouse_pickup_status() {
+  var status = false;
+  var inputs = $('#warehouse-after input.enabled');
+  if (inputs.length > 0) status = inputs.valid();
+  return !!status;
 }
 
 function preinitialize_visit() {
