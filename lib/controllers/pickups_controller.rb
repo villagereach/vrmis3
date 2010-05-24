@@ -38,11 +38,8 @@ class PickupsController < OlmisController
 
   def pickup_create
     setup_inventory('DeliveryPickup')
-    if inventories = save_inventory('DeliveryPickup')
-      redirect_to pickups_url
-    else
-      render :action => 'pickup_new'
-    end
+    handle_submit(pickups_url)
+    render :action => 'pickup_new' unless performed?
   end
 
   def pickup_edit
@@ -60,11 +57,8 @@ class PickupsController < OlmisController
 
   def pickup_update
     setup_inventory('DeliveryPickup')
-    if inventories = save_inventory('DeliveryPickup')
-      redirect_to pickups_url
-    else
-      render :action => 'pickup_edit'
-    end
+    handle_submit(pickups_url)
+    render :action => 'pickup_edit' unless performed?
   end
 
   # def unloads
@@ -154,21 +148,52 @@ class PickupsController < OlmisController
   # end
 
   def warehouse_monthly_visit
-    if params[:format] == 'xml'
-      # TODO: Setup for XML submission
-    elsif params[:format] == 'json'
-      # TODO: Setup for JSON submission
-    else
-      # TODO: Setup for HTML submission
-    end
-
-    # TODO: Process the data
-
-    # FIXME: Until the data is actually processed, return an error
-    render :text => 'error', :status => 400 and return #if %w(xml json).include?(params[:format])
+    # TODO
   end
 
   private
+
+  def handle_submit(redirect_target = {})
+    if params[:format] == 'xml'
+      # TODO: Setup for XML submission
+    elsif params[:format] == 'json'
+      submission = DataSubmission.create(
+        :user => @current_user, 
+        :data_source => DataSource['JsonPickupDataSource'],
+        :remote_ip => request.remote_ip,
+        :content_type => request.headers['CONTENT_TYPE'].to_s,
+        :data => request.raw_post)
+    else
+      submission = DataSubmission.create(
+        :user => @current_user,
+        :data_source => DataSource['WebPickupDataSource'],
+        :remote_ip => request.remote_ip,
+        :content_type => request.headers['CONTENT_TYPE'].to_s,
+        :data => request.raw_post)
+    end
+
+    visit_month = params[:warehouse_visit].maybe[:visit_month] || @date.to_date_period
+
+    WarehouseVisit.transaction do
+      @visit, @errors = submission.process_pickup(@zone.warehouse, visit_month, @current_user)
+    end
+
+    if @errors.none? { |slice, slice_errors| slice_errors.present? }
+      submission.status = 'success'
+      submission.save
+
+      if %w(xml json).include?(params[:format])
+        render :text => 'ok'
+      else
+        redirect_to redirect_target
+      end
+    else
+      submission.status = 'error'
+      submission.save
+
+      render :text => 'error', :status => 400 and return if %w(xml json).include?(params[:format])
+    end
+  end
 
   def setup_inventory(type)    
     @zone = DeliveryZone.find_by_code(params[:delivery_zone])
@@ -180,44 +205,44 @@ class PickupsController < OlmisController
     @errors = {}
   end
 
-  def amounts_from_params
-    types = params[:inventory].keys.select{|k| k =~ /^Delivery/}
-    Hash[*Package.active.map{ |p| [ p, types.inject({}) do |hash,key|
-                                                          hash[key] = params[:inventory][key][p.code]
-                                                          hash
-                                                        end ] }.flatten]
-  end
+  # def amounts_from_params
+  #   types = params[:inventory].keys.select{|k| k =~ /^Delivery/}
+  #   Hash[*Package.active.map{ |p| [ p, types.inject({}) do |hash,key|
+  #                                                         hash[key] = params[:inventory][key][p.code]
+  #                                                         hash
+  #                                                       end ] }.flatten]
+  # end
 
-  def save_inventory(type)
-    begin
-      inventories = { type => nil }
-      inventories['DeliveryRequest'] = nil if type == 'DeliveryPickup'
-      Inventory.transaction do
-        inventories.keys.each do |t|
-          inventory = inventories[t] = Inventory.find_or_initialize_by_stock_room_id_and_date_and_inventory_type(@zone.warehouse.stock_room_id, params[:inventory][:date], t)
-          inventory.user = @current_user
-          inventory.save!
-          amounts_from_params.each do |package, amounts|
-            pc = PackageCount.find_by_inventory_id_and_package_id(inventory.id, package.id)
-            pc ||= PackageCount.new(:inventory => inventory, :package => package)
-            pc.quantity = amounts[t].to_i
-            if pc.valid?
-              pc.save
-            else
-              @errors[t] ||= {}
-              @errors[t][package.code] = pc.errors
-            end
-            pc.save!
-          end
-        end
-        raise "Invalid record(s)" if @errors.any?{|slice, errors| errors.present?}  # abort the transaction
-      end
-      return inventories
-    rescue ActiveRecord::RecordInvalid => e
-      @errors['common'] = e.to_s
-      return nil
-    end
-  end    
+  # def save_inventory(type)
+  #   begin
+  #     inventories = { type => nil }
+  #     inventories['DeliveryRequest'] = nil if type == 'DeliveryPickup'
+  #     Inventory.transaction do
+  #       inventories.keys.each do |t|
+  #         inventory = inventories[t] = Inventory.find_or_initialize_by_stock_room_id_and_date_and_inventory_type(@zone.warehouse.stock_room_id, params[:inventory][:date], t)
+  #         inventory.user = @current_user
+  #         inventory.save!
+  #         amounts_from_params.each do |package, amounts|
+  #           pc = PackageCount.find_by_inventory_id_and_package_id(inventory.id, package.id)
+  #           pc ||= PackageCount.new(:inventory => inventory, :package => package)
+  #           pc.quantity = amounts[t].to_i
+  #           if pc.valid?
+  #             pc.save
+  #           else
+  #             @errors[t] ||= {}
+  #             @errors[t][package.code] = pc.errors
+  #           end
+  #           pc.save!
+  #         end
+  #       end
+  #       raise "Invalid record(s)" if @errors.any?{|slice, errors| errors.present?}  # abort the transaction
+  #     end
+  #     return inventories
+  #   rescue ActiveRecord::RecordInvalid => e
+  #     @errors['common'] = e.to_s
+  #     return nil
+  #   end
+  # end    
 
   # def save_if_post_and_redirect_or_render_form(type, success_action)
   #   if request.post?  && inventories = save_inventory(type)
