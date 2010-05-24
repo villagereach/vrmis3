@@ -78,8 +78,7 @@
     }
 
     function generate_pickup_instance() {
-      return <%= Hash[*Package.active.map {|p| [ p.code, { :DeliveryRequest => '', :DeliveryPickup => '' } ] }.flatten].
-                   merge({ :pickup_date => '' }).to_json %>;
+      return <%= WarehouseVisit.new.to_json %>;
     }
 
     function reset_pickup_bindings() {

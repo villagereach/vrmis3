@@ -323,7 +323,7 @@ function reset_pickup_instance(key) {
     var ideal_stock = data_instance.warehouse_ideal_stock[get_selected_value('delivery_zone')];
     for (var x in ideal_stock) {
       try {
-        if (pickup_instance[x]) pickup_instance[x].DeliveryRequest = ideal_stock[x];
+        if (pickup_instance['DeliveryRequest'][x] !== undefined) pickup_instance['DeliveryRequest'][x] = ideal_stock[x];
       } catch(e) {
         if (console) console.exception(e);
       }

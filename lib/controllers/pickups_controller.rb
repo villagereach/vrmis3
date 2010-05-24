@@ -148,7 +148,8 @@ class PickupsController < OlmisController
   # end
 
   def warehouse_monthly_visit
-    # TODO
+    setup_inventory('DeliveryPickup')
+    handle_submit
   end
 
   private
@@ -195,9 +196,13 @@ class PickupsController < OlmisController
     end
   end
 
-  def setup_inventory(type)    
+  def setup_inventory(type)
     @zone = DeliveryZone.find_by_code(params[:delivery_zone])
-    @date = Date.parse(params[:date] || params[:inventory].maybe[:date] || Date.today.to_s)
+
+    # The date may come in as either a Date or a String
+    date_param = params[:date] || params[:inventory].maybe[:date] || Date.today
+    @date = date_param.is_a?(Date) ? date_param : Date.parse(date_param)
+
     @inventory = Inventory.find_by_inventory_type_and_stock_room_id_and_date(type, @zone.warehouse.stock_room, @date)
     page_title_key = "inventory.#{type}.#{@verb_code || 'show'}"
     @page_title = I18n.t(page_title_key, :where => @zone.name)

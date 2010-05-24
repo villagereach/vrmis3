@@ -25,4 +25,24 @@ class WarehouseVisit < ActiveRecord::Base
   validates_presence_of :pickup_id
 
   named_scope :recent, lambda{|count| { :order => 'updated_at DESC', :limit => count } }
+
+  def request
+    Inventory.find_by_id(request_id)
+  end
+
+  def pickup
+    Inventory.find_by_id(pickup_id)
+  end
+
+  def to_json
+    packages = Package.active
+    visit_request = request || Inventory.new(:inventory_type => 'DeliveryRequest')
+    visit_pickup  = pickup  || Inventory.new(:inventory_type => 'DeliveryPickup')
+    [ visit_request, visit_pickup ].inject({}) do |hash, inventory|
+      hash[inventory.inventory_type] = inventory.new_record? \
+        ? Hash[*packages.map {|p| [ p.code, '' ]}.flatten] \
+        : Hash[*inventory.package_counts.map {|pc| [ pc.package.code, pc.quantity ]}.flatten]
+      hash
+    end.merge({ :date => '' }).to_json
+  end
 end
