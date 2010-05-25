@@ -972,27 +972,28 @@ function update_progress_status(tabs) {
 }
 
 function set_progress_status_for(element) {
-  var valid = false;
   var link = $(element).find('a');
   link.removeClass("complete incomplete todo");
 
   // TODO: Cache results
 
-  if (!$(element).hasClass('ui-state-disabled')) {
-    var div = $($('a', $(element)).attr('href'));
-    var inputs = $('*:input.enabled', div);
-    if (inputs.length > 0) {
-      if (valid = inputs.valid()) {
-        link.addClass("complete");
-      } else {
-        var invalid_count = inputs.map(function() { return $(this).parents('.invalid')[0]; }).length;
-        var   valid_count = inputs.map(function() { return $(this).parents('.valid')[0]; }).length;
-        link.addClass(valid_count > 0 && invalid_count > 0 ? "incomplete" : "todo");
-      }
+  if ($(element).hasClass('ui-state-disabled')) return true;
+
+  var valid = false;
+  var div = $($('a', $(element)).attr('href'));
+  var inputs = $('*:input.enabled', div);
+  if (inputs.length > 0) {
+    if (valid = inputs.valid()) {
+      link.addClass("complete");
     } else {
-      link.addClass("todo");
+      var invalid_count = inputs.map(function() { return $(this).parents('.invalid')[0]; }).length;
+      var   valid_count = inputs.map(function() { return $(this).parents('.valid')[0]; }).length;
+      link.addClass(valid_count > 0 && invalid_count > 0 ? "incomplete" : "todo");
     }
+  } else {
+    link.addClass("todo");
   }
+
   return valid;
 }
 
