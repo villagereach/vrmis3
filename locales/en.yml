@@ -780,6 +780,7 @@ en:
   DataSubmission:
     complete:   "Complete visit entered from {{source}} on {{date}} by {{user}}"
     incomplete: "Incomplete visit entered from {{source}} on {{date}} by {{user}}"
+    pickup:     "Warehouse pickup visit entered from {{source}} on {{date}} by {{user}}"
   # The remainder of this file supplements the (default English) Rails I18n localization
   date:
     formats:

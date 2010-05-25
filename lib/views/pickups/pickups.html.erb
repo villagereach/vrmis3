@@ -4,9 +4,10 @@
 <h3><%=t('inventory.recent_pickups')%></h3>
 
 <ul>
-<%- @pickups.each do |pickup| -%>
-<li><%=link_to(l(pickup.date), edit_pickup_request_url(@zone.code, pickup.date))%></li>
-<%- end -%>
+  <%- @visits.each do |visit| -%>
+    <li><%= link_to(l(Date.from_date_period(visit.visit_month), :format => :short_month_of_year),
+                    edit_pickup_request_url(@zone.code, visit.visit_month)) %></li>
+  <%- end -%>
 </ul>
 
 <%= link_to( t('inventory.new_pickup'), new_pickup_request_path(@zone.code) )%>

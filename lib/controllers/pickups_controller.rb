@@ -22,7 +22,7 @@ class PickupsController < OlmisController
 
   def pickups
     @zone = DeliveryZone.find_by_code(params[:delivery_zone])
-    @pickups = Inventory.find_all_by_inventory_type_and_stock_room_id('DeliveryPickup', @zone.warehouse.stock_room, :order => 'date desc', :limit=>6)
+    @visits = WarehouseVisit.find_all_by_warehouse_id(@zone.warehouse, :order => 'visit_month DESC', :limit => 6)
   end
   
   def pickup_request
@@ -32,20 +32,20 @@ class PickupsController < OlmisController
   end
 
   def pickup_new
-    setup_inventory('DeliveryPickup')
+    setup_visit
     @zone.total_ideal_stock_by_package.each{|package,requested| @amounts[package] = { 'DeliveryRequest' => requested, 'DeliveryPickup' => nil } }
   end
 
   def pickup_create
-    setup_inventory('DeliveryPickup')
+    setup_visit
     handle_submit(pickups_url)
     render :action => 'pickup_new' unless performed?
   end
 
   def pickup_edit
-    setup_inventory('DeliveryPickup')
-    picked_up_inventory_counts = Hash[*@inventory.package_counts.map{|pc| [ pc.package, pc.quantity ] }.flatten]
-    requested_inventory_counts = Hash[*Inventory.find_by_inventory_type_and_stock_room_id_and_date('DeliveryRequest', @zone.warehouse.stock_room, @date).package_counts.map{|pc| [ pc.package, pc.quantity ] }.flatten]
+    setup_visit
+    picked_up_inventory_counts = Hash[*@visit.pickup.package_counts.map{|pc| [ pc.package, pc.quantity ] }.flatten]
+    requested_inventory_counts = Hash[*@visit.request.package_counts.map{|pc| [ pc.package, pc.quantity ] }.flatten]
 
     requested_inventory_counts.keys.each do |package|
       @amounts[package] = {
@@ -56,7 +56,7 @@ class PickupsController < OlmisController
   end
 
   def pickup_update
-    setup_inventory('DeliveryPickup')
+    setup_visit
     handle_submit(pickups_url)
     render :action => 'pickup_edit' unless performed?
   end
@@ -148,7 +148,7 @@ class PickupsController < OlmisController
   # end
 
   def warehouse_monthly_visit
-    setup_inventory('DeliveryPickup')
+    setup_visit
     handle_submit
   end
 
@@ -176,7 +176,7 @@ class PickupsController < OlmisController
     visit_month = params[:warehouse_visit].maybe[:visit_month] || @date.to_date_period
 
     WarehouseVisit.transaction do
-      @visit, @errors = submission.process_pickup(@zone.warehouse, visit_month, @current_user)
+      @visit, @errors = submission.process_pickup(@visit, @current_user)
     end
 
     if @errors.none? { |slice, slice_errors| slice_errors.present? }
@@ -194,6 +194,18 @@ class PickupsController < OlmisController
 
       render :text => 'error', :status => 400 and return if %w(xml json).include?(params[:format])
     end
+  end
+
+  def setup_visit
+    @zone = DeliveryZone.find_by_code(params[:delivery_zone])
+    @visit = WarehouseVisit.find_or_initialize_by_warehouse_id_and_visit_month(@zone.warehouse.id, params[:visit_month] || Date.today.to_date_period)
+
+    # The date may come in as either a Date or a String
+    date_param = params[:date] || params[:inventory].maybe[:date] || Date.today
+    @date = @visit.date || (date_param.is_a?(Date) ? date_param : Date.parse(date_param))
+
+    @amounts = {}
+    @errors = {}
   end
 
   def setup_inventory(type)

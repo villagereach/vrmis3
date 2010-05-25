@@ -21,17 +21,22 @@ class WarehouseVisit < ActiveRecord::Base
   has_and_belongs_to_many :data_submissions, :order => 'created_at desc'
   
   validates_presence_of :warehouse_id
-  validates_presence_of :request_id
-  validates_presence_of :pickup_id
+  validates_presence_of :request, :pickup
 
   named_scope :recent, lambda{|count| { :order => 'updated_at DESC', :limit => count } }
 
+  attr_accessor :request, :pickup
+  
   def request
-    Inventory.find_by_id(request_id)
+    @request ||= Inventory.find_by_id(request_id) || Inventory.new(:inventory_type => 'DeliveryRequest')
   end
 
   def pickup
-    Inventory.find_by_id(pickup_id)
+    @pickup ||= Inventory.find_by_id(pickup_id) || Inventory.new(:inventory_type => 'DeliveryPickup')
+  end
+
+  def date
+    pickup.date
   end
 
   def to_json
@@ -45,4 +50,12 @@ class WarehouseVisit < ActiveRecord::Base
       hash
     end.merge({ :date => '' }).to_json
   end
+
+  protected
+
+  def before_save
+    self.request_id = @request.id
+    self.pickup_id  = @pickup.id
+  end
+
 end

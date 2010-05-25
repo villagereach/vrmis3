@@ -114,66 +114,49 @@ class DataSubmission < ActiveRecord::Base
     return status, visit
   end    
 
-  def process_pickup(warehouse = nil, visit_month = nil, user = nil)
-    params, errors = data_source.data_to_params(self)
-
-    if params['warehouse_visit']
-      warehouse ||= Warehouse.find_by_code(params['warehouse_visit'][:warehouse])
-      visit_month ||= params['warehouse_visit']['visit_month']
-    end
-
+  def process_pickup(visit, user)
+    params, @pickup_errors = data_source.data_to_params(self)
+    @pickup_errors ||= {}
     @current_user = user
-    errors ||= {}
-    visit = WarehouseVisit.find_or_initialize_by_warehouse_id_and_visit_month(warehouse.id, visit_month)
 
-    if params['inventory']
-      inventories, errors = process_inventory_pickup(visit, params)
-      visit.request_id, visit.pickup_id = inventories['DeliveryRequest'].id, inventories['DeliveryPickup'].id if errors.empty?
-    end
+    process_inventory_pickup(visit, params) if params['inventory']
 
     visit.updated_at = Time.now
     visit.save!
 
-    errors['warehouse_visit'] = visit.errors unless visit.errors.empty?
+    @pickup_errors['warehouse_visit'] = visit.errors unless visit.errors.empty?
 
     self.warehouse_visits << visit unless warehouse_visits.include?(visit)
+    self.message = 'pickup'
 
-    return visit, errors
+    return visit, @pickup_errors
   end
 
   def process_inventory_pickup(visit, params)
-    inventories = { 'DeliveryRequest' => nil, 'DeliveryPickup' => nil }
     inventory_counts = Hash[*Package.active.map{|p|
-                              [ p, inventories.keys.inject({}) do |hash, key|
+                              [ p, [ visit.request.inventory_type, visit.pickup.inventory_type].inject({}) do |hash, key|
                                   hash[key] = params[:inventory][key][p.code]
                                   hash
                                 end ] }.flatten]
-    errors = {}
-
     Inventory.transaction do
-      inventories.keys.each do |t|
-        inventory = inventories[t] = Inventory.find_or_initialize_by_stock_room_id_and_date_and_inventory_type(visit.warehouse.stock_room_id, params[:inventory][:date], t)
-        inventory.user = @current_user
-        inventory.save!
+      [ visit.request, visit.pickup ].each do |inventory|
+        inventory.update_attributes!(:user       => @current_user,
+                                     :date       => params[:inventory][:date],
+                                     :stock_room => visit.warehouse.stock_room)
 
         inventory_counts.each do |package, amounts|
-          pc = PackageCount.find_by_inventory_id_and_package_id(inventory.id, package.id)
+          pc = PackageCount.find_by_inventory_id_and_package_id(inventory, package)
           pc ||= PackageCount.new(:inventory => inventory, :package => package)
-          pc.quantity = amounts[t].to_i
-          if pc.valid?
-            pc.save
-          else
-            errors[t] ||= {}
-            errors[t][package.code] = pc.errors
+          pc.quantity = amounts[inventory.inventory_type].to_i
+          unless pc.save
+            @pickup_errors[inventory.inventory_type] ||= {}
+            @pickup_errors[inventory.inventory_type][package.code] = pc.errors
           end
-          pc.save!
         end
       end
-      raise "Invalid record(s)" if errors.any?{|slice, errors| errors.present?}  # abort the transaction
     end
-    return inventories, errors
   rescue ActiveRecord::RecordInvalid => e
-    return nil, { :common => e.to_s }
+    @pickup_errors['common'] = e.to_s
   end
 
   def process_visit(health_center=nil, visit_month=nil, user=nil)

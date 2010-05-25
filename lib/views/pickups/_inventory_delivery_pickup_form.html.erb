@@ -1,10 +1,21 @@
 <%- html ||= nil -%>
 
-<h2><%= h(t("pickups.inventory.page_title", :delivery_zone => @zone.name, :visit_month => I18n.l(@date, :format => :short_month_of_year))) %></h2>
+<h2><%= h(t("pickups.inventory.page_title", :delivery_zone => @zone.name, :visit_month => I18n.l(Date.from_date_period(@visit.visit_month), :format => :short_month_of_year))) %></h2>
 
 <h4><%= h(t("pickups.inventory.after_visit")) %></h4>
 
-<div class="prepend-7 span-16 last">
+<%- unless @visit.new_record? -%>
+  <div class="prepend-1 span-4">
+    <h5><%= t('visits.recent_events') %></h5>
+    <ul class="submission_list">
+      <%- @visit.data_submissions.find(:all, :select => DataSubmission.default_select(true), :limit => 4).each do |event| %>
+        <li class="<%= event.status %>"><%= event.description %></li>
+      <%- end -%>
+    </ul>
+  </div>
+<%- end -%>
+
+<div class="prepend-<%= @visit.new_record? ? 6 : 1 %> span-16 last">
   <%- if @errors['date'] || @errors.any?{|slice, errors| errors.present?} -%>
     <div id="error">
       <ul>
