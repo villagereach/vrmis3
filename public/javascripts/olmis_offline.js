@@ -60,6 +60,10 @@ function set_hash_param(param, value) {
   window.location.hash = '#'+values.join('/');
 };
 
+container_hooks.show['fc-actions'] = function () {
+  set_after_warehouse_link_status();
+};
+
 container_hooks.show['hc-selection'] = function() {
   setup_visits();
 };
@@ -359,14 +363,14 @@ function show_container( container ) {
   var visible = $('body > .container:visible').attr('id')
 
   if (container_hooks.hide[visible])
-    container_hooks.hide[visible].call()
+    container_hooks.hide[visible].call();
 
-  jQuery('body > .container').hide();
-  jQuery('body > #'+container).show();
+  $('body > .container').hide();
+  $('body > #'+container).show();
   
   if (container_hooks.show[container])
-    container_hooks.show[container].call()
-  
+    container_hooks.show[container].call();
+
   set_hash_param('container', container)
 }
 
@@ -399,6 +403,7 @@ function set_context() {
   }
 
   set_selected_value('visit_period_selected', true);
+  set_after_warehouse_link_status();
   show_container(containers['fc_actions']);
 }
 
@@ -449,6 +454,23 @@ function has_forms_ready_for_upload() {
     if (ready) break;
   }
   return ready;
+}
+
+function is_warehouse_form_uploaded_for(visit_month) {
+  return valid_forms[get_warehouse_pickup_key(visit_month)] == 'accept';
+}
+
+function set_after_warehouse_link_status() {
+  var visit_month = get_selected_value('visit_date_period');
+  if (is_warehouse_form_uploaded_for(visit_month)) {
+    $('#after-warehouse_link').addClass('complete');
+    $('#after-warehouse-status').text(I18n.t('data_sources.hcvisit.fc_main.before.warehouse_form_uploaded',
+                                             { visit_month: I18n.l(Date.from_date_period(visit_month),
+                                                                  { format: 'month_of_year'}) }));
+  } else {
+    $('#after-warehouse_link').removeClass('complete');
+    $('#after-warehouse-status').text('');
+  }
 }
 
 function get_context_path_value(ctx, path) {
@@ -509,6 +531,12 @@ function get_hc_form_status(visit_key) {
     status = valid_forms[visit_key];
   }
   return status;
+}
+
+function set_form_status(key, status) {
+  var match = key.match(settings.visit_key_regex);
+  var f = this['set_'+match[1]+'_form_status'];
+  if (typeof f == 'function') f(key, status);
 }
 
 function set_hc_form_status(key, status) {
@@ -764,11 +792,11 @@ function upload(node, do_sync) {
       dataType: 'html',
       type: 'PUT',
       error: function (XMLHttpRequest, textStatus, errorThrown) {      
-        set_hc_form_status(key, 'reject');
+        set_form_status(key, 'reject');
         alert(textStatus);
       },
       success: function(data, textStatus, xhr) {
-        set_hc_form_status(key, 'accept');
+        set_form_status(key, 'accept');
         localStorage.removeItem(key);
         uploaded_list.append(item);
         if (ready_list.children().length == 0) upload_button.parent().hide();
@@ -835,6 +863,7 @@ function ajax_login() {
 }
 
 function finish_upload() {
+  set_after_warehouse_link_status();
   setup_visits();
   $('#upload-uploaded ul').empty();
 }

@@ -668,6 +668,7 @@ en:
           prepare_load:                  "Prepare the load"
           determine_pickups:             "Determine how much to take"
           record_pickups:                "Record warehouse pickup amounts"
+          warehouse_form_uploaded:       "Warehouse pickup form for {{visit_month}} already uploaded."
         during:
           title:                         "During Deliveries"
           collect_at_district:           "Data collection at district"

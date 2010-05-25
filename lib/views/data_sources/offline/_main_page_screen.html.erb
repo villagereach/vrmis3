@@ -74,7 +74,10 @@
                 <dt><%= h(t("data_sources.hcvisit.fc_main.before.title")) %></dt>
                 <dd><%= h(t("data_sources.hcvisit.fc_main.before.prepare_load")) %></dd>
                 <dd><%= link_to_function(h(t("data_sources.hcvisit.fc_main.before.determine_pickups")), "show_warehouse('before')") %></dd>
-                <dd><%= link_to_function(h(t("data_sources.hcvisit.fc_main.before.record_pickups")), "show_warehouse('after')") %></dd>
+                <dd id="after-warehouse_link">
+                  <%= link_to(h(t("data_sources.hcvisit.fc_main.before.record_pickups")), "#") %>
+                  <span id="after-warehouse-status"><%= h(t("done")) %></span>
+                </dd>
 
                 <dt><%= h(t("data_sources.hcvisit.fc_main.during.title")) %></dt>
                 <dd><%= h(t("data_sources.hcvisit.fc_main.during.collect_at_district")) %></dd>
@@ -114,3 +117,12 @@
       </ul>
     </div>
 
+<% javascript_tag do %>
+  $(function() {
+    $("#after-warehouse_link").click(function(e) {
+      if (!$(e.currentTarget).hasClass('complete')) {
+        show_warehouse('after');
+      }
+    });
+  });
+<% end %>

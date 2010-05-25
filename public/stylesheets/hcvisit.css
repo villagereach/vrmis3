@@ -829,6 +829,21 @@ body {
 #upload_link.offline {
   visibility: hidden;
 }
+
+#after-warehouse_link.complete a {
+  color: inherit;
+  cursor: text;
+  text-decoration: none;
+}
+#after-warehouse_link span#after-warehouse-status {
+  display: none;
+  font-size: 90%;
+  font-style: italic;
+  margin-left: 1em;
+}
+#after-warehouse_link.complete span#after-warehouse-status {
+  display: block;
+}
 /* }}} */
 /* lightbox {{{ */
 .lightbox-container { 
