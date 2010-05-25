@@ -27,7 +27,7 @@
   #map.unloads '/unloads/:delivery_zone', :controller => 'pickups', :action => 'unloads'
   
   map.pickups '/pickups/:delivery_zone', :controller => 'pickups', :action => 'pickups'
-  map.pickup_request '/pickups/:delivery_zone/request.:format', :controller => 'pickups', :action => 'pickup_request', :conditions => { :method => :get }
+  map.pickup_request '/requests/:delivery_zone', :controller => 'pickups', :action => 'pickup_request', :conditions => { :method => :get }
   map.new_pickup_request '/pickups/:delivery_zone/request/new.:format', :controller => 'pickups', :action => 'pickup_new', :conditions => { :method => :get }
   map.create_pickup_request '/pickups/:delivery_zone/request.:format', :controller => 'pickups', :action => 'pickup_create', :conditions => { :method => :post }
   map.edit_pickup_request '/pickups/:delivery_zone/request/:date/edit.:format', :controller => 'pickups', :action => 'pickup_edit', :conditions => { :method => :get }
