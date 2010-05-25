@@ -22,7 +22,7 @@ class PickupsController < OlmisController
 
   def pickups
     @zone = DeliveryZone.find_by_code(params[:delivery_zone])
-    @visits = WarehouseVisit.find_all_by_warehouse_id(@zone.warehouse, :order => 'visit_month DESC', :limit => 6)
+    @visits = WarehouseVisit.find_all_by_warehouse_id(@zone.warehouse, :order => 'id DESC', :limit => 6)
   end
   
   def pickup_request
@@ -173,8 +173,6 @@ class PickupsController < OlmisController
         :data => request.raw_post)
     end
 
-    visit_month = params[:warehouse_visit].maybe[:visit_month] || @date.to_date_period
-
     WarehouseVisit.transaction do
       @visit, @errors = submission.process_pickup(@visit, @current_user)
     end
@@ -198,11 +196,13 @@ class PickupsController < OlmisController
 
   def setup_visit
     @zone = DeliveryZone.find_by_code(params[:delivery_zone])
-    @visit = WarehouseVisit.find_or_initialize_by_warehouse_id_and_visit_month(@zone.warehouse.id, params[:visit_month] || Date.today.to_date_period)
+    if params[:visit_id]
+      @visit = WarehouseVisit.find(params[:visit_id])
+    else
+      @visit = WarehouseVisit.new(:warehouse_id => @zone.warehouse_id)
+    end
 
-    # The date may come in as either a Date or a String
-    date_param = params[:date] || params[:inventory].maybe[:date] || Date.today
-    @date = @visit.date || (date_param.is_a?(Date) ? date_param : Date.parse(date_param))
+    @date = @visit.date || Date.today
 
     @amounts = {}
     @errors = {}

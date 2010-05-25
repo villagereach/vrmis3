@@ -5,8 +5,8 @@
 
 <ul>
   <%- @visits.each do |visit| -%>
-    <li><%= link_to(l(Date.from_date_period(visit.visit_month), :format => :short_month_of_year),
-                    edit_pickup_request_url(@zone.code, visit.visit_month)) %></li>
+    <li><%= link_to(l(visit.date),
+                    edit_pickup_request_url(@zone.code, visit.id)) %></li>
   <%- end -%>
 </ul>
 

@@ -1,6 +1,6 @@
 <%- html ||= nil -%>
 
-<h2><%= h(t("pickups.inventory.page_title", :delivery_zone => @zone.name, :visit_month => I18n.l(Date.from_date_period(@visit.visit_month), :format => :short_month_of_year))) %></h2>
+<h2><%= h(t("pickups.inventory.page_title", :delivery_zone => @zone.name)) %></h2>
 
 <h4><%= h(t("pickups.inventory.after_visit")) %></h4>
 
@@ -63,12 +63,12 @@
                 <td><%= h package.label %></td>
                 <td class="amount">
                   <div class="tally <%= 'error' if @errors['DeliveryRequest'].maybe[package.code] %>">
-                    <%= f.text_field package.code, :value => params[:inventory].maybe['DeliveryRequest'].maybe[package.code] || @amounts[package]['DeliveryRequest'], :index => 'DeliveryRequest', :size => 3, :class => "numeric" %>
+                    <%= f.text_field package.code, :value => params[:inventory].maybe['DeliveryRequest'].maybe[package.code] || @amounts[package].maybe['DeliveryRequest'], :index => 'DeliveryRequest', :size => 3, :class => "numeric" %>
                   </div>
                 </td>
                 <td class="amount">
                   <div class="tally <%= 'error' if @errors['DeliveryPickup'].maybe[package.code] %>">
-                    <%= f.text_field package.code, :value => params[:inventory].maybe['DeliveryPickup'].maybe[package.code] || @amounts[package]['DeliveryPickup'], :index => 'DeliveryPickup', :size => 3, :class => "numeric" %>
+                    <%= f.text_field package.code, :value => params[:inventory].maybe['DeliveryPickup'].maybe[package.code] || @amounts[package].maybe['DeliveryPickup'], :index => 'DeliveryPickup', :size => 3, :class => "numeric" %>
                   </div>
                 </td>
               </tr>
@@ -82,13 +82,9 @@
   <%- end -%>
 </div>
 
-<% javascript_tag do
-     first_day = @date.beginning_of_month
-     last_day = [ @date.end_of_month, Date.today ].min %>
+<% javascript_tag do %>
   setup_datepicker('input.datepicker',
                    {
-                     minDate: new Date(<%= [ first_day.year, first_day.month - 1, first_day.day ].join(',') %>),
-                     maxDate: new Date(<%= [  last_day.year,  last_day.month - 1,  last_day.day ].join(',') %>),
                      altField: '#inventory_date',
                      altFormat: $.datepicker.ISO_8601
                    });

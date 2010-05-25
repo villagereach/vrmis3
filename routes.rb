@@ -30,10 +30,9 @@
   map.pickup_request '/requests/:delivery_zone', :controller => 'pickups', :action => 'pickup_request', :conditions => { :method => :get }
   map.new_pickup_request '/pickups/:delivery_zone/request/new.:format', :controller => 'pickups', :action => 'pickup_new', :conditions => { :method => :get }
   map.create_pickup_request '/pickups/:delivery_zone/request.:format', :controller => 'pickups', :action => 'pickup_create', :conditions => { :method => :post }
-  map.edit_pickup_request '/pickups/:delivery_zone/request/:date/edit.:format', :controller => 'pickups', :action => 'pickup_edit', :conditions => { :method => :get }
-  map.update_pickup_request '/pickups/:delivery_zone/request/:date.:format', :controller => 'pickups', :action => 'pickup_update', :conditions => { :method => :put }
+  map.edit_pickup_request '/pickups/:delivery_zone/request/:visit_id/edit.:format', :controller => 'pickups', :action => 'pickup_edit', :conditions => { :method => :get }
+  map.update_pickup_request '/pickups/:delivery_zone/request/:visit_id.:format', :controller => 'pickups', :action => 'pickup_update', :conditions => { :method => :put }
 
-  map.connect '/set_date_period', :controller=>'dashboard', :action=>'set_date_period'
   map.login   '/login',  :controller => 'login', :action => 'login'
   map.logout  '/logout', :controller => 'login', :action => 'logout'
   map.is_logged_in '/logged-in', :controller => 'olmis', :action => 'logged_in'

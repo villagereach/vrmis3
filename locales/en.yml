@@ -543,7 +543,7 @@ en:
       use:  "Used correctly?"
   pickups:
     inventory:
-      page_title:   "Delivery Quantities for {{delivery_zone}}, {{visit_month}}"
+      page_title:   "Delivery Quantities for {{delivery_zone}}"
       province:     "Province: {{name}}"
       before_visit: "Before Warehouse Visit: View amounts to request"
       after_visit:  "After Warehouse Visit: Enter amounts"

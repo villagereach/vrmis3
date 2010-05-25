@@ -122,6 +122,7 @@ class DataSubmission < ActiveRecord::Base
     process_inventory_pickup(visit, params) if params['inventory']
 
     visit.updated_at = Time.now
+    visit.visit_month = visit.date.to_date_period 
     visit.save!
 
     @pickup_errors['warehouse_visit'] = visit.errors unless visit.errors.empty?
