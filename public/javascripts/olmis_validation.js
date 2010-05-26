@@ -13,7 +13,18 @@ function no_nr(element) {
   }
   return true;
 }
-  
+
+function related_checkbox(element) {
+  var required_data = $(element).attr('data-required');
+  if (required_data) {
+    var cb = required_data.split(/\s+/).filter(function(str) { return str.match(/^related_checkbox=/); });
+    if (cb.length == 1) {
+      return $('#'+cb[0].split('=')[1]).attr('checked');
+    }
+  }
+  return false;
+}
+
 function validateRequiredRadio(value, element) {
   var group = get_validation_container_for($(element));
   var btns = $('*[name='+element.name+']', $(group)).filter(function(i) { return this.checked; }); 
@@ -96,6 +107,8 @@ $.extend($.fn, {
     $('*:input:text[required]:not([data-required*="unless_nr="])', this).each(function(i,e) { $(e).rules('add', { required: true }); });
     $('*:input:text[data-required*="unless_nr="]', this).each(function(i,e) { $(e).rules('add', { required: { depends: no_nr } }); });
     $('select[required]',           this).each(function(i,e) { $(e).rules('add', { required: true }); });
+    $('textarea[required]:not([data-required*=""])', this).each(function(i,e) { $(e).rules('add', { required: true }); });
+    $('textarea[data-required*="related_checkbox="]', this).each(function(i,e) { $(e).rules('add', { required: { depends: related_checkbox } }); });
     $('*:input:radio[required]',    this).each(function(i,e) { $(e).rules('add', { required_radio: true }); });
     $('*:input:checkbox[required]', this).each(function(i,e) { $(e).rules('add', { required_checkbox: true }); });
     $('*:number',     this).each(function(i,e) { $(e).rules('add', { digits: { depends: no_nr, param: true } }); });

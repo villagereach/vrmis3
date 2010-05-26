@@ -66,7 +66,7 @@
               <%- end -%>
             </ul>
             <div id="fridge-other_problem-${ i }" class="fridge-other_problem" style="display: none;">
-              <textarea class="fridge_status-other_problem" id="fridge_status_${ i }_other_problem" name="fridge_status-${ i }-other_problem" required="required"></textarea>
+              <textarea class="fridge_status-other_problem" id="fridge_status_${ i }_other_problem" name="fridge_status-${ i }-other_problem" required="required" data-required="related_checkbox=fridge_status_${ i }_problem_OTHER"></textarea>
             </div>
           </div>
         </div>
@@ -89,20 +89,27 @@ function new_fridge(code) {
 }
 
 function fridge_state(ev) {
+  var fridge_problem_div = $(ev.target).parents('.fridge-state').next();
   if (ev.newValue == 'problem') {
-    $(ev.target).parents('.fridge-state').next().show().find('*:input').addClass('enabled');
+    fridge_problem_div.show().find('*:input:checkbox').addClass('enabled');
   } else {
-    $(ev.target).parents('.fridge-state').next().hide().find('*:input').removeClass('enabled');
+    fridge_problem_div.hide().find('*:input:checkbox').removeClass('enabled');
   }
+  <%# NOTE: Because validations on checkboxes only check the first of the group, there's no point validating
+      all checkboxes since the first checkbox would be validated once for each checkbox in the group. %>
+  fridge_problem_div.find('*:input:checkbox').first().valid();
 }
 
 function fridge_problem_other(ev) {
   if ($(ev.target).val() == 'OTHER') {
+    var fridge_problem_div = $(ev.target).parents('ul');
+    var other_reason_div = fridge_problem_div.next();
     if (ev.newValue) {
-      $(ev.target).parents('ul').next().show().find('*:input').addClass('enabled');
+      other_reason_div.show().find('textarea').addClass('enabled');
     } else {
-      $(ev.target).parents('ul').next().hide().find('*:input').removeClass('enabled');
+      other_reason_div.hide().find('textarea').removeClass('enabled');
     }
+    other_reason_div.find('*:input').valid();
   }
 }
     
