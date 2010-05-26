@@ -1018,7 +1018,7 @@ function preinitialize_visit() {
   // Run actions that must be performed *after* visit form is reset but
   // *before* health center bindings are installed
 
-  $('#visit-form *:input').addClass('enabled');
+  $('#visit-form *:input').not('.expression').addClass('enabled');
   
   $('#visit-form').setupValidation();
 
