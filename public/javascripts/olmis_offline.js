@@ -82,6 +82,8 @@ container_hooks.show['form'] = function() {
   reset_olmis_instance(get_health_center_key());
   update_visit_navigation();
   refresh_fridges();
+  update_values_for_calculations();
+  $('#visit-form').init_expression_fields();
   update_progress_status();  // TODO: Retrieve cached values
 };
 
@@ -94,6 +96,10 @@ function fixup_menu_tabs() {
   $('#tab-menu').removeClass('ui-corner-all ui-widget-content');
   $('#tab-menu .ui-tabs-nav li').removeClass('ui-state-default ui-corner-top');
   $('#tab-menu .ui-tabs-panel').removeClass('ui-corner-bottom');
+}
+
+function update_values_for_calculations() {
+  $('#health_center_catchment_population').val(get_population_for_health_center());
 }
 
 function update_visit_navigation() {
@@ -306,6 +312,10 @@ function get_fridge_codes_for_health_center() {
 
 function get_ideal_stock_for_health_center() {
   return find_health_center_by_code(get_selected_value('health_center'))['ideal_stock'];
+}
+
+function get_population_for_health_center() {
+  return find_health_center_by_code(get_selected_value('health_center'))['population'];
 }
 
 function select_visit() {
@@ -1034,8 +1044,6 @@ function initialize_visit() {
 
   $('#visit-form *:input').blur(serialize_visit);
   $('#visit-form').setup_selected_values();
-  
-  $('#visit-form').init_expression_fields();
   
   $('#visit-form div.datepicker').each(function(i, e) {
     var dp = setup_datepicker($('input[type="text"]', $(e))[0],

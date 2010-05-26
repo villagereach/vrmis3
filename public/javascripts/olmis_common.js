@@ -70,7 +70,7 @@ $.fn.init_expression_fields = function() {
     
     fn = update_calculated_field_function(field, expression, suffix)
  
-    $(document).ready(fn);
+    fn;
     
     fields.each(function(i, e) {
       $('#' + e).findInput().change(fn);

@@ -76,6 +76,7 @@ class DataSourcesController < OlmisController
   end
   
   def get_offline
+    @rendering_for_offline_form = true
     render :action => params[:name], :layout => false
   end
 
