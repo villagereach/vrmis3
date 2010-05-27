@@ -1062,7 +1062,7 @@ table.equipment td {
 #screen-cold_chain .fridge-temp span.value {
   display: block;
 }
-#screen-cold_chain .fridge-temp input[type="number"] {
+#screen-cold_chain .fridge-temp input[type="text"], #screen-cold_chain .fridge-temp input[type="number"] {
   margin: 0 2px 0 4px;
   width: 20px;
 }
