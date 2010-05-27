@@ -44,7 +44,7 @@ function update_calculated_field_function(field, expression, suffix) {
       jQuery(field).val(isFinite(v) ? (v.toString() + suffix) : ''); 
       jQuery(field).findInput().change();
     } catch (e) {
-      alert("Failure: " + expression);
+      alert("FAIL: " + expression);
     }
   };
 }
@@ -70,8 +70,8 @@ $.fn.init_expression_fields = function() {
     
     fn = update_calculated_field_function(field, expression, suffix)
  
-    fn;
-    
+    $(document).ready(fn);
+
     fields.each(function(i, e) {
       $('#' + e).findInput().change(fn);
     });
