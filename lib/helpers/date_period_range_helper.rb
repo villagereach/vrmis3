@@ -43,18 +43,10 @@ module DatePeriodRangeHelper
   end
   
   def date_period_range_options
-    options = (2007..Date.today.year).map { |y| [y.to_s, y.to_s] }
-    
-    options += (2008..Date.today.year).map { |y|
-      july = Date.parse("#{y}-07-01")
-      ["#{I18n.l(july - 1.year, :format => :month_of_year)}–#{I18n.l(july - 1.month, :format => :month_of_year)}", 
-        "#{((july - 1.year).to_date_period)}:#{((july - 1.month).to_date_period)}"]       
-    }
-   
-    options += (0..11).to_a.reverse.map { |n| [I18n.l(n.months.ago.to_date, :format => 'short_month_of_year'), n.months.ago.to_date.to_date_period] }
-    options << last_six_months
-    
-    options
+    visit_months = HealthCenterVisit.find_by_sql("select distinct(visit_month) as visit_month from health_center_visits").map(&:visit_month).sort
+        
+    options = (Date.from_date_period(visit_months.first).year..Date.today.year).map { |y| [y.to_s, y.to_s] }  +
+      visit_months.map{|vm| [I18n.l(Date.from_date_period(vm),:format => :short_month_of_year),vm]}
   end
   
   def last_six_months_of_this_year

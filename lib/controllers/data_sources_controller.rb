@@ -8,6 +8,7 @@ class DataSourcesController < OlmisController
   add_breadcrumb 'breadcrumb.data_sources', 'data_sources_path', :except => [ :list_xforms, :submit_xform, :get_xform, :get_offline ]
 
   helper :visits
+  helper :date_period_range
   
   def import
     data_source = DataSource.new(params[:file])

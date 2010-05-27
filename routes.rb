@@ -89,7 +89,7 @@
   map.root :controller => 'dashboard', :action => 'homepage'
 
   map.reports '/reports', :controller => 'reports', :action => 'index'
-  map.report_maps '/reports/:action', :controller => 'reports'
+  map.reports_action '/reports/:action', :controller => 'reports'
 
   map.delivery_zone_selector '/dz', :controller => 'olmis', :action => 'delivery_zone_selector'
   map.district_selector      '/dct', :controller => 'olmis', :action => 'district_selector'

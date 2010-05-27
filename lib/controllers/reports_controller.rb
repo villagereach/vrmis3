@@ -136,8 +136,8 @@ class ReportsController < OlmisController
         Graphs.stockouts_by_product_area_for_date_period_range(graph_params.merge(:area_id => @area.id))
       ]
     ]
-    
-    @graphs = [ [I18n.t('reports.titles.stocked_out_health_centers_by_type_and_date_period', :name => @area.label, :date => label),
+
+    @graphs = [ [I18n.t('reports.titles.stocked_out_health_centers_by_type_and_date_period' + 'woo', :name => @area.label, :date => label),
                 Graphs.stocked_out_health_centers_by_type(graph_params)] ]
                 
 #    if @area.class != District && dates.last > dates.first
