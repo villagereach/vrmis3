@@ -1,6 +1,7 @@
 class ReportsController < OlmisController
-  skip_before_filter :check_logged_in, :set_locale, :only => [ :offline_index, :offline_report, :offline_autoeval ]
-  before_filter :set_locale_without_session, :only => [ :offline_index, :offline_report, :offline_autoeval ]
+  # FIXME: skip_before_filter and before_filter specs for index, coverage, delivery_interval, and visited_health_centers is a quick HACK for offline report testing
+  skip_before_filter :check_logged_in, :set_locale, :only => [ :offline_index, :offline_report, :offline_autoeval, :index, :coverage, :delivery_interval, :visited_health_centers ]
+  before_filter :set_locale_without_session, :only => [ :offline_index, :offline_report, :offline_autoeval, :index, :coverage, :delivery_interval, :visited_health_centers ]
   helper :date_period_range
   add_breadcrumb 'breadcrumb.report', 'reports_path', :except => [ :offline_index, :offline_report, :offline_autoeval ]
   add_breadcrumb 'breadcrumb.report', 'offline_report_index_path(:locale => I18n.locale)', :only => [ :offline_index, :offline_report, :offline_autoeval ]

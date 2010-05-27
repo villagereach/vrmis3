@@ -42,10 +42,15 @@ module DatePeriodRangeHelper
     end
   end
   
-  def date_period_range_options
-    visit_months = HealthCenterVisit.find_by_sql("select distinct(visit_month) as visit_month from health_center_visits").map(&:visit_month).sort
+  def date_period_range_options(options = {})
+    sql = "SELECT DISTINCT(visit_month) AS visit_month FROM health_center_visits"
+    if options[:months]
+      count = options[:months] - 1
+      sql << HealthCenterVisit.send(:sanitize_sql_for_conditions, [ " WHERE visit_month > ?", count.months.ago(Date.today).to_date_period ])
+    end
+    visit_months = HealthCenterVisit.find_by_sql(sql).map(&:visit_month).sort
         
-    options = (Date.from_date_period(visit_months.first).year..Date.today.year).map { |y| [y.to_s, y.to_s] }  +
+    (Date.from_date_period(visit_months.maybe[0] || Date.today.to_date_period).year..Date.today.year).map { |y| [y.to_s, y.to_s] }  +
       visit_months.map{|vm| [I18n.l(Date.from_date_period(vm),:format => :short_month_of_year),vm]}
   end
   
