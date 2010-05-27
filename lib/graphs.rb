@@ -205,7 +205,7 @@ class Graphs
 
     def stockouts_by_product_area_for_date_period_range(params)
       options = parse_params(params)
-      regions = options[:regions]
+
       group_options = regions.first.class.stockout_table_options(options)
 
       {

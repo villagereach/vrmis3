@@ -124,11 +124,11 @@ class ReportsController < OlmisController
     @area = helpers.get_area_from_params    
     
     @product_id = products.map(&:id)
-
     graph_params = params.merge({
       :product_id => @product_id,
       :date_period_range => @date_period_range
     })
+#    debugger
     
     @tables = [
       [
