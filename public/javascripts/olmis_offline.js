@@ -34,7 +34,8 @@ var options = {
 var settings = {
   health_center_key_regex: /^\d{4}-\d{2}\/hc\/[^/]+$/,
   warehouse_key_regex:     /^\d{4}-\d{2}\/wh\/[^/]+$/,
-  visit_key_regex:         /^\d{4}-\d{2}\/(hc|wh)\/[^/]+$/
+  visit_key_regex:         /^\d{4}-\d{2}\/(hc|wh)\/[^/]+$/,
+  update_check_interval:   30 * 1000
 };
 
 function get_health_center_key(month, hc) {
@@ -933,7 +934,7 @@ $(function() {
   setup_visit_search();
 
   if ($('html').attr('manifest')) {
-    window.setInterval(check_update_status, 3 * 1000);
+    window.setInterval(check_update_status, settings.update_check_interval);
   
     //var statuses = ['cached', 'checking', 'downloading', 'error', 'noupdate', 'obsolete', 'progress', 'updateready'];
 
