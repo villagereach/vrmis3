@@ -79,6 +79,8 @@ class VisitsController < OlmisController
       submission.status = 'error'
       submission.save
 
+      logger.error %Q{\n*** Data submission error:\n*** #{@errors.map{|slice,slice_errors| slice_errors.map{|k,v| [k,v.full_messages]}}.delete_if(&:empty?).flatten_once.map{|(field,errors)| "#{field}: #{errors.join(', ')}"}.join("\n*** ")}\n\n}
+
       render :text => 'error', :status => 400 and return if %w(xml json).include?(params[:format])
     end
   end    
