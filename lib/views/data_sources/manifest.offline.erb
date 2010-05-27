@@ -14,15 +14,15 @@ CACHE:
 /images/indicator.gif
 /images/vr-mis-logo-small.png
 
-<%= reports_path(:locale => I18n.locale)%>
+<%= offline_reports_path(:locale => I18n.locale)%>
 
 <%-[ :visited_health_centers, :delivery_interval, :coverage].each do |report| -%>
-<%= reports_action_path(:action=>report, :locale => I18n.locale) %>
+<%= offline_reports_action_path(:report => report, :locale => I18n.locale) %>
   <%- Province.options_for_select.each do |province_label, province_id| 
          District.options_for_select.each do |district_label, district_id|
            unless District.id_strings_without_visit_data.include? district_id
              date_period_range_options(:months => 2).each do |date_label, date_value| -%>
-<%= reports_action_path(:action=>report, :date_period_range=>date_value, :district_id=>district_id, :locale => I18n.locale, :province_id=>province_id).gsub(/amp;/,'') %>                
+<%= offline_reports_action_path(:report => report, :date_period_range => date_value, :district_id => district_id, :locale => I18n.locale, :province_id => province_id).gsub(/amp;/,'') %>                
     <%-      end
           end
         end

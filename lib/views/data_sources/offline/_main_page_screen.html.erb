@@ -86,7 +86,8 @@
                 <dt><%= h(t("data_sources.hcvisit.fc_main.after.title")) %></dt>
                 <dd><%= h(t("data_sources.hcvisit.fc_main.after.return")) %></dd>
                 <dd><%= link_to_function(h(t("data_sources.hcvisit.fc_main.after.input")), "select_location()") %></dd>
-                <dd><%= link_to_function(h(t("data_sources.hcvisit.fc_main.after.review")), "action_not_implemented()") %></dd>
+                <!--dd><%= link_to_function(h(t("data_sources.hcvisit.fc_main.after.review")), "action_not_implemented()") %></dd-->
+                <dd><%= link_to(h(t("data_sources.hcvisit.fc_main.after.review")), offline_reports_path(:locale => I18n.locale)) %></dd>
                 <dd id="upload_link" class="online">
                   <%= link_to(h(t("data_sources.hcvisit.fc_main.after.upload")), "#login", :class => "inline") %>
                   <%= link_to("", "#upload", :class => "inline", :style => "display:none") %>
