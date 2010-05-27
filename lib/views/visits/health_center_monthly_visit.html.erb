@@ -8,12 +8,12 @@
             <%= f.radio_button :visited, true, :checked => @visit.new_record? || (@visit.visited && @current_user == @visit.field_coordinator), :onclick => js_show_hide(:visit_fields, :nonvisit_fields) %>
             <%= f.label :visited_true, h(t(".yes_i_visited")) %>
         </li>
-        <li>
+        <!--li>
           <%= f.radio_button :visited, 'else', :checked => !@visit.new_record? && @visit.visited? && @current_user != @visit.field_coordinator, :onclick => js_show_hide(:visit_fields, :nonvisit_fields) %>
             <%= f.label :visited_else, h(t(".yes_someone_else_visited")) %>:
             <%= f.select :user_id, fc_options_by_delivery_zone(@health_center.delivery_zone, @current_user), {},
             :onclick => js_show_hide(:visit_fields, :nonvisit_fields) + js_set_checked('health_center_visit_visited_else')  %>
-        </li>
+        </li-->
         <li>
             <%= f.radio_button :visited, false, :checked => !@visit.visited, :onclick => js_show_hide(:nonvisit_fields,:visit_fields) %>
             <%= f.label :visited_false, h(t(".no_noone_visited")) %>
@@ -22,9 +22,9 @@
 
     <%- visible_container('visit_fields', @visit.visited, 'dl', 'stacked') do -%>
         <dt><%= f.label :visited_at, h(t(".date")) %></dt>
-        <dd>
+        <dd class="datepicker">
           <%= f.hidden_field :visited_at, :value => (@visit.visited_at || Date.from_date_period(visit_month)).to_s(:db) %>
-          <%= f.text_field :i18n_visited_at, :class => "datepicker", :value => I18n.l(@visit.visited_at || Date.from_date_period(visit_month)) %>
+          <%= f.text_field :i18n_visited_at, :value => I18n.l(@visit.visited_at || Date.from_date_period(visit_month)) %>
         </dd>
 
         <dt><%= f.label :vehicle_code, h(t(".vehicle_code")) %></dt>
@@ -33,18 +33,18 @@
 
     <%- visible_container('nonvisit_fields', !@visit.visited, 'dl', 'stacked') do -%>
         <dt><%= f.label :reason_for_not_visiting, h(t(".reason_for_not_visiting")) %></dt>
-        <dd><%= f.select :reason_for_not_visiting, HealthCenterVisit.unvisited_options, :include_blank => h(t(".select_reason")) %></dd>
+        <dd>
+          <ul id="non_visit_reason" class="radio">
+            <%- HealthCenterVisit.unvisited_options.each do |label,code| -%>
+              <li>
+                <%= f.radio_button :reason_for_not_visiting, code, :checked => !@visit.new_record? && @visit.reason_for_not_visiting == code, :onclick => js_do(code == 'other' ? :show : :hide, :health_center_visit_other_non_visit_reason) %>
+                <%= f.label "reason_for_not_visiting_#{code}", h(label) %>
+              </li>
+            <%- end -%>
+          </ul>
+          <%= f.text_area :other_non_visit_reason, :style => "display:#{@visit.reason_for_not_visiting == 'other' ? 'block' : 'none'}" %>
+        </dd>
     <%- end -%>
-
-    <hr />
-
-    <%#= f.label :epi_data_ready, h(t(".do_you_have_epi_data")) %>
-    <%#= f.select :epi_data_ready, [[h(t("yes")),true],[h(t("no")),false]] %>
-
-    <%#<dl class="stacked">%>
-    <%#    <dt><%= f.label :notes, h(t(".notes")) % ></dt>%>
-    <%#    <dd><%= f.text_area :notes, :rows => 6, :cols => 60 % ></dd>%>
-    <%#</dl>%>
 
     <%= save_and_continue %>
 <%- end -%>
@@ -52,7 +52,7 @@
 <% javascript_tag do
      first_day = Date.from_date_period(visit_month).beginning_of_month
      last_day = [ Date.from_date_period(visit_month).end_of_month, Date.today ].min %>
-  setup_datepicker('input.datepicker',
+  setup_datepicker('.datepicker input[type="text"]',
                    {
                      minDate: new Date(<%= [ first_day.year, first_day.month - 1, first_day.day ].join(',') %>),
                      maxDate: new Date(<%= [  last_day.year,  last_day.month - 1,  last_day.day ].join(',') %>),

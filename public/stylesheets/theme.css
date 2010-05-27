@@ -277,6 +277,9 @@ input.radio {
   border-top : 1px solid #ccc;
   margin-bottom : 0;
 }
+.save_and_continue input[type="submit"] {
+  margin-right: 1em;
+}
 /* inline */
 dl.inline dt {
   text-align : right;
@@ -798,6 +801,12 @@ li.status.complete {
   font-weight: bold;
   text-align: center;
 }
+.pickups h5 {
+  color: #541;
+  font-size: 1.2em;
+  font-weight: normal;
+  margin: 0.5em 0;
+}
 .pickups div.wrapper {
   clear: both;
   width: 30em;
@@ -884,6 +893,186 @@ li.status.complete {
 }
 #ui-datepicker-div table.ui-datepicker-calendar {
   width: 100%;
+}
+/* }}} */
+
+/* HC visit screens {{{ */
+p.note {
+  font-style: italic;
+  font-weight: medium;
+}
+
+table.spreadsheet {
+  width : auto;
+  border: 1px solid gray;
+}
+table.spreadsheet th {
+  font-size: 0.8em;
+}
+table.spreadsheet td {
+  font-size: 0.9em;
+  padding: 2px;
+  text-align: center;
+}
+table.spreadsheet th, table.spreadsheet td {
+  border-right: 1px dotted gray;
+}
+
+table.spreadsheet tr {
+  border-bottom: 1px solid black;
+}
+
+table.spreadsheet div.tally {
+  margin: 0;
+  padding: 2px 2px 12px 2px;
+  position: relative;
+  min-height: 30px;
+  min-width: 65px;
+  text-align: center;
+}
+table.spreadsheet div.date div.tally {
+  min-width: 85px;
+}
+
+table.spreadsheet div.tally div.value {
+  display: table;
+}
+
+table.spreadsheet td[rowspan] {
+  vertical-align: bottom;
+  background: #f9f9f9;
+  padding-bottom: 1em;
+  padding-left: 0.5em;
+}
+table.spreadsheet td[rowspan="1"] {
+  padding-bottom: 0;
+}
+
+
+table.inventory td.amount input[type="text"], table.inventory td.amount input[type="number"],
+table.spreadsheet div.tally input[type="text"], table.spreadsheet div.tally input[type="number"] {
+  border: 1px solid gray;
+  display: block;
+  float: left;
+  margin: 1px 1px 0 1px;
+  padding: 0;
+  text-align: right;
+  width: 40px;
+}
+
+table.spreadsheet input[disabled="disabled"] {
+  border: none;
+  background: none;
+  color: navy;
+  text-align: right;
+  min-width: 40px;
+}
+
+table.spreadsheet div.tally input[data-required*="type=year_month"] {
+  width: 60px;
+  text-align: left;
+}
+
+table.spreadsheet div.tally div.nr {
+  position: absolute;
+  top: 24px;
+  left: 0;
+  padding: 0;
+  margin: 0;
+  font-size: 90%;
+}
+
+table.spreadsheet .notice {
+  margin: 0 0 0 4px;
+}
+table.spreadsheet input[type="radio"] ~ .notice {
+  margin-left: 8px;
+}
+
+table.spreadsheet td.numeric {
+  padding: 0 1em;
+  text-align: right;
+}
+
+table.equipment thead th {
+  text-align: center;
+}
+table.equipment td {
+  padding: 0 0.5em;
+  white-space: nowrap;
+}
+
+#screen-visit textarea {
+  width: 25em;
+  height: 4em;
+  margin: 0;
+}
+#screen-visit label {
+  margin-right: 4px;
+}
+#non_visit_reason {
+  margin-bottom: 0;
+}
+.datepicker input[type="text"], .datepicker input[type="date"] {
+  width: 7em !important;
+  letter-spacing: 1px;
+}
+
+#screen-epi_inventory .inventory thead th:first-child,
+#screen-rdt_inventory .inventory thead th:first-child {
+  text-align: center;
+}
+
+#screen-child_vaccination_tallies tr:first-child th,
+#screen-adult_vaccination_tallies tr:first-child th {
+  border-bottom: 0;
+  text-align: center;
+}
+
+#add-fridge {
+  margin-top: 2em;
+}
+.delete-fridge {
+  font-size: 0.8em;
+  margin-left: 1em;
+}
+
+#screen-cold_chain div.fridge-data {
+  margin: 1em 0;
+}
+#screen-cold_chain div.fridge-data ul.check-list {
+  padding-left: 0;
+}
+#screen-cold_chain div.fridge-data ul.check-list label {
+  display: block;
+}
+
+#screen-cold_chain div.fridge-id {
+  margin: 0 1%;
+  padding: 0;
+}
+#screen-cold_chain div.two-column > div {
+  float: left;
+  margin: 0 1%;
+  width: 48%;
+}
+#screen-cold_chain .fridge-id input[type="text"] {
+  width: 80px;
+}
+#screen-cold_chain .fridge-temp span.value {
+  display: block;
+}
+#screen-cold_chain .fridge-temp input[type="number"] {
+  margin: 0 2px 0 4px;
+  width: 20px;
+}
+#screen-cold_chain textarea {
+  height: 4em;
+  margin-top: -1em;
+  width: 90%;
+}
+#screen-cold_chain label {
+  margin-right: 0.5em;
 }
 /* }}} */
 

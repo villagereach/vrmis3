@@ -13,7 +13,7 @@
 <%- types = Inventory.directly_collected_types.select { |t| packages.any? { |p| p.inventoried_by_type?(t, @screen) } } -%>
 
 <%- fields_for :inventory do |f| -%>
-<table class="inventory">
+<table class="inventory spreadsheet">
   <thead>
     <tr>
       <th><%= h(t("visits.health_center_inventory.#{@screen}.product_header")) %></th>

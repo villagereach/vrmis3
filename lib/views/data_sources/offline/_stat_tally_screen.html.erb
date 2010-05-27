@@ -1,6 +1,6 @@
 <p class="note"><%= h(t("visits.nr_instructions")) %></p>
 <% begin %>
-  <%= render :partial => '/data_sources/offline/' + screen + '.html.erb' %>
+  <%= render :partial => "/data_sources/offline/#{screen}", :locals => { :screen => screen } %>
 <% rescue ActionView::MissingTemplate %>  
 <%= tally_table(klass, lambda { |point|
       node = klass.table_name.singularize + '_' + param_to_jquery(klass.param_name(point))
