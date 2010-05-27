@@ -152,6 +152,10 @@ if 0 != $?.to_i
   exit
 end 
 
+# install a root user as the absoulate bare minimal
+# (in case the user does not want to apply sample Pacific NW config)
+rake 'olmis:db:bootstrap 
+
 if use_git
   git :add => '.'
   git :commit => "-a -m 'Initial OLMIS configuration'"
