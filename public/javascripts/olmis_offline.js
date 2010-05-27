@@ -444,9 +444,10 @@ function show_main_page(landing_page) {
   if (landing_page != 'fc_actions') {
     set_selected_value('visit_period_selected', false);
   }
-  set_selected_value('health_center', '');
   show_or_hide_upload_link();
   show_container(containers[landing_page]);
+
+  set_selected_value('health_center', '');  // Must be after container change
 }
 
 function show_or_hide_upload_link() {
