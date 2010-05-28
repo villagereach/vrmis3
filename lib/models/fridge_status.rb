@@ -43,7 +43,9 @@ class FridgeStatus < ActiveRecord::Base
     user                                                                                     
   end
 
-  validates_presence_of :date, :status_code
+  validates_presence_of :date
+
+  validates_inclusion_of :status_code, :in => Olmis.configuration['fridge_statuses'], :message => :choose_problem, :allow_nil => true
 
   named_scope :health_center, lambda { |hc| 
     { 
@@ -229,14 +231,14 @@ class FridgeStatus < ActiveRecord::Base
         end
         record = FridgeStatus.new(:fridge => f, :stock_room => visit.health_center.stock_room)
       end
-      
+
       db_values = {
         :reported_at   => visit.visited_at,
         :user_id       => visit.user_id,
         :past_problem  => values["past_problem"] == "true" || (values["past_problem"] == "false" ? false : nil),
         :temperature   => values["temperature"].blank? ? nil : values["temperature"].to_i,
         :status_code   => values["state"] == "OK" ? "OK" : values["state"] == "nr" ? nil : [values["problem"]].flatten.compact.join(' '),
-        :other_problem => values["state"] == "problem" && values["problem"].include?("OTHER") ? values["other_problem"] : nil
+        :other_problem => values["state"] == "problem" && values["problem"] && values["problem"].include?("OTHER") ? values["other_problem"] : nil
       }
 
       record.update_attributes(db_values)

@@ -817,7 +817,11 @@ en:
           attributes:
             temperature:
               working_temp_range: "must be between 2 and 8"
+            status_code:
+              choose_problem: "must be selected"
     attributes:
+      fridge_status:
+        status_code: Problem
       _all:
         username: "Username"
         password: "Password"
