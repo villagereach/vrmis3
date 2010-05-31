@@ -260,11 +260,11 @@ class HealthCenterVisit < ActiveRecord::Base
   end
 
   def after_save
-    find_or_create_inventory_records.each(&:save) if visited?
+    find_or_initialize_inventory_records.each(&:save) if visited?
   end
 
   def ideal_stock
-    inventories = find_or_create_inventory_records
+    inventories = find_or_initialize_inventory_records
 
     Hash[*inventories.map { |i| [i.inventory_type, i.package_counts_by_package_code] }.flatten].merge(
       {
@@ -316,6 +316,10 @@ class HealthCenterVisit < ActiveRecord::Base
   end
 
   def find_or_create_inventory_records
+    find_or_initialize_inventory_records.each { |record| record.save if record.new_record? }
+  end
+
+  def find_or_initialize_inventory_records
     @inventory ||= Inventory.types.map { |t|
       Inventory.find_or_initialize_by_date_and_stock_room_id_and_inventory_type(
           self.visited_at ? self.visited_at.to_date : Date.today,
