@@ -6,7 +6,7 @@
       <%- index = idx.to_s
           values = { :past_problem => nil, :temperature => nil, :status_code => nil, :state => nil, :problem => [], :other_problem => nil }
           unless fridge_status.new_record?
-            status_codes = fridge_status.status_code.split
+            status_codes = (default_field_value(params[:fridge_status], index, 'problem', fridge_status.status_code) || "").split
             values.keys.each do |column|
               default_value = default_field_value(params[:fridge_status], index, column.to_s, fridge_status.send(column).to_s) if fridge_status.respond_to?(column)
               case column
@@ -15,7 +15,7 @@
               when :past_problem
                 values[column] = default_value.blank? ? "nr" : default_value
               when :state
-                values[column] = (status_codes.length == 1 && status_codes.first == "OK") ? "OK" : ((status_codes & FridgeStatus.not_ok_status_options.map(&:second)).empty? ? "nr" : "problem")
+                values[column] = params[:fridge_status][index][column] || (status_codes.empty? ? "nr" : (status_codes == ["OK"] ? "OK" : "problem"))
               when :problem
                 values[column] = status_codes.reject{|code| code == "OK"}
               end
