@@ -15,7 +15,7 @@
               when :past_problem
                 values[column] = default_value.blank? ? "nr" : default_value
               when :state
-                values[column] = params[:fridge_status][index][column] || (status_codes.empty? ? "nr" : (status_codes == ["OK"] ? "OK" : "problem"))
+                values[column] = params[:fridge_status].maybe[index].maybe[column] || (status_codes.empty? ? "nr" : (status_codes == ["OK"] ? "OK" : "problem"))
               when :problem
                 values[column] = status_codes.reject{|code| code == "OK"}
               end
