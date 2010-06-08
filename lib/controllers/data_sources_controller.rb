@@ -64,11 +64,12 @@ class DataSourcesController < OlmisController
       files += [ File.join(views_path, 'data_sources', 'hcvisit.html.erb') ]
     end
     files += Dir.glob(File.join(views_path, 'data_sources', params[:format], '*.erb'))
+    files += Dir.glob(File.join(views_path, 'reports', '*.erb'))
     files += Dir.glob(File.join(Rails.root, 'app', 'views', 'data_sources', params[:format], '*.erb'))
     files += [ File.join(views_path, 'javascripts', 'offline_i18n.js.erb'),
                File.join(views_path, 'javascripts', 'offline_autoeval_data.js.erb'),
                File.join(views_path, 'data_sources', "manifest.#{params[:format]}.erb"),
-               File.join(views_path, 'layouts', '_locale.html.erb') ]
+               File.join(views_path, 'layouts', 'offline.html.erb') ]
     files << __FILE__
 
     last_mod_time = (files.map{ |f| File.mtime(f).to_i } << DataSubmission.last_submit_time.to_i).max

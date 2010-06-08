@@ -17,19 +17,8 @@ CACHE:
 <%= offline_reports_path(:locale => I18n.locale)%>
 
 <%- %w(visited_health_centers delivery_interval coverage).each do |report| -%>
-<%=   offline_reports_action_path(:report => report, :locale => I18n.locale) %>
-<%-   District.all.each do |district|
-        unless District.id_strings_without_visit_data.include?(district.id.to_s)
-          date_period_range_options(:months => 2).each do |date_label, date_value| -%>
-<%=         offline_reports_action_path(:report => report,
-                                        :date_period_range => date_value,
-                                        :district_id => district.id,
-                                        :locale => I18n.locale,
-                                        :province_id => district.province.id).gsub(/amp;/,'') %>                
-<%-       end
-        end
-      end
-    end -%>
+  <%= offline_reports_action_path(:report => report, :locale => I18n.locale) %>
+<%- end -%>
 
 /javascripts/olmis_datalink.js
 /javascripts/olmis_offline.js

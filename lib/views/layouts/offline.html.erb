@@ -1,37 +1,29 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml"
-        lang="<%= I18n.locale %>"
-        <%- unless @suppress_manifest -%>
-          manifest="<%= manifest_url(:format => 'offline', :locale => I18n.locale) %>"
-        <%- end -%>
-        >
+<!doctype html>
+<html lang="<%= I18n.locale %>"
+      manifest="<%= manifest_url(:format => 'offline', :locale => I18n.locale) %>">
   <head>
     <title><%= t("health_center_visit") %></title>
-    <script src='/javascripts/jquery-1.4.2.js'       ></script>
-    <script src='/javascripts/olmis_formgrid.js'     ></script>
-    <script src='/javascripts/olmis_date.js'       ></script>
-    <script src='/javascripts/offline_i18n.js'       ></script>
-    <script src='/javascripts/olmis_collapsible_report.js'        ></script>
-    <script src='/javascripts/ui/ui.core.js'        ></script>
-    <script src='/javascripts/ui/ui.accordion.js'        ></script>
-    <script src='/fancybox/jquery.fancybox.js' ></script>
+    <script type="text/javascript" src="/javascripts/jquery-1.4.2.js"></script>
+    <script type="text/javascript" src="/javascripts/olmis_formgrid.js"></script>
+    <script type="text/javascript" src="/javascripts/olmis_date.js"></script>
+    <script type="text/javascript" src="/javascripts/offline_i18n.js"></script>
+    <script type="text/javascript" src="/javascripts/olmis_collapsible_report.js"></script>
+    <script type="text/javascript" src="/javascripts/ui/ui.core.js"></script>
+    <script type="text/javascript" src="/javascripts/ui/ui.accordion.js"></script>
+    <script type="text/javascript" src="/fancybox/jquery.fancybox.js"></script>
     <link rel="stylesheet" href="/stylesheets/blueprint/screen.css" media = "screen, projection" />
     <link rel="stylesheet" href="/stylesheets/theme.css"            media = "screen, projection" />
     <link rel="stylesheet" href="/fancybox/jquery.fancybox.css"     media = "screen, projection" />
     <link rel="stylesheet" href="/stylesheets/collapsible_report.css" />
-    <script src='/javascripts/jquery.treeTable.min.js'></script>
+    <script type="text/javascript" src="/javascripts/jquery.treeTable.min.js"></script>
     <link rel="stylesheet" href="/stylesheets/jquery.treeTable.css" />
-    <link rel="stylesheet" href="/stylesheets/print.css" media="print"/%>
+    <link rel="stylesheet" href="/stylesheets/print.css" media="print" />
   </head>
   <body>
     <div id="header">
       <div id="user_tools">
-        <div id="language" class="content">
-          <%= render :partial => "layouts/locale" %>
-        </div>
-        <div id="login" class="content" style="display:none">
-          <em><%= t("logged_in_as") %></em> <strong></strong>
-          <%= link_to(t("logout"), "javascript:logout()") %>
+        <div id="user" class="content">
+          <%= link_to h(t("data_sources.hcvisit.go_to_main_page")), offline_visit_url(:name => "hcvisit", :locale => I18n.locale, :anchor => "fc-actions") %>
         </div>
       </div>
       <h1><a href="/">Village Reach Prototype vrMIS3</a></h1>
