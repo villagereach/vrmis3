@@ -35,6 +35,7 @@ class HealthCenterVisit < ActiveRecord::Base
   validates_presence_of :visited_at
   #validates_presence_of :vehicle_code, :allow_blank => true
   validates_presence_of :visit_status
+  validates_presence_of :other_non_visit_reason, :message => :describe_reason_for_not_visiting, :if => lambda{|r| r.visit_status == 'other'}
   validates_presence_of :data_status
 
   defaults :visit_status => 'Visited', :data_status => 'pending', 
@@ -57,10 +58,6 @@ class HealthCenterVisit < ActiveRecord::Base
       elsif !@visited_status.blank? && !@unvisited_status.blank?
         errors.add(:visited, 'visited_conflict')
       end
-    end
-    
-    if visit_status == 'other' && notes.blank?
-      errors.add(:notes, 'describe_reason_for_not_visiting')
     end
     
     super

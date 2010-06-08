@@ -806,13 +806,14 @@ en:
     errors:
       models:
         health_center_visit:
-          visited:
-            set_visited:      "must be set to change visit status"
-            visited_conflict: "and unvisited reason conflict"
-          notes:
-            describe_reason_for_not_visiting: "should contain your reason for not visiting"
-          visited_at:
-            no_future_date: "Date cannot be in the future"
+          attributes:
+            visited:
+              set_visited:      "must be set to change visit status"
+              visited_conflict: "and unvisited reason conflict"
+            other_non_visit_reason:
+              describe_reason_for_not_visiting: "should contain your reason for not visiting"
+            visited_at:
+              no_future_date: "Date cannot be in the future"
         fridge_status:
           attributes:
             temperature:
@@ -820,6 +821,8 @@ en:
             status_code:
               choose_problem: "must be selected"
     attributes:
+      health_center_visit:
+        other_non_visit_reason: Other reason
       fridge_status:
         status_code: Problem
       _all:
