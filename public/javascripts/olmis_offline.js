@@ -22,20 +22,18 @@ var roles_screens = {
 };
 var container_hooks = {
   hide: {},
-  show: {},
+  show: {}
 };
 var hash_param_slots = {
-  'container': 0,
+  container: 0
 };
 var options = {
-  months_to_show: 6,
-  autoset_default_visit_date: true
-};
-var settings = {
-  health_center_key_regex: /^\d{4}-\d{2}\/hc\/[^/]+$/,
-  warehouse_key_regex:     /^\d{4}-\d{2}\/wh\/[^/]+$/,
-  visit_key_regex:         /^\d{4}-\d{2}\/(hc|wh)\/[^/]+$/,
-  update_check_interval:   30 * 1000
+  months_to_show:             6,
+  autoset_default_visit_date: true,
+  health_center_key_regex:    /^\d{4}-\d{2}\/hc\/[^/]+$/,
+  warehouse_key_regex:        /^\d{4}-\d{2}\/wh\/[^/]+$/,
+  visit_key_regex:            /^\d{4}-\d{2}\/(hc|wh)\/[^/]+$/,
+  update_check_interval:      30 * 1000
 };
 
 function get_health_center_key(month, hc) {
@@ -134,8 +132,8 @@ function set_equipment_notes_area_size() {
 }
 
 function do_download() {
-  manifest_files['downloaded'] = 0;
-  manifest_files['count'] = jQuery.
+  manifest_files.downloaded = 0;
+  manifest_files.count = $.
     ajax({ type:     'GET',
            url:      document.childNodes[1].getAttribute('manifest').split('?')[0],
            data:     { locale: I18n.locale },
@@ -153,17 +151,17 @@ function do_download() {
 }
 
 function do_progress() {
-  if (manifest_files['downloaded']++ === 0) {
-    jQuery('#status_indicator').removeClass('updated');
-    jQuery('#download_indicator').addClass('active');
+  if (manifest_files.downloaded++ === 0) {
+    $('#status_indicator').removeClass('updated');
+    $('#download_indicator').addClass('active');
   }
   go_online();
 
-  var progress = manifest_files['downloaded'] / manifest_files['count'];
-  var width = jQuery('#download_indicator').innerWidth();
+  var progress = manifest_files.downloaded / manifest_files.count;
+  var width = $('#download_indicator').innerWidth();
   // In case the manifest file count is wrong, don't allow the progress indicator to show > 100%
-  jQuery('#download-progress-bar').width(Math.min((width * progress).toFixed(), width) + "px");
-  jQuery('#download-pct').text(Math.min((100 * progress).toFixed(), 100) + "%");
+  $('#download-progress-bar').width(Math.min((width * progress).toFixed(), width) + "px");
+  $('#download-pct').text(Math.min((100 * progress).toFixed(), 100) + "%");
 }
 
 function do_update() {
@@ -222,7 +220,7 @@ function get_available_visit_date_periods() {
   var year = now.getFullYear();
   var months = [];
 
-  for (var i = 0; i < options['months_to_show']; i++) {
+  for (var i = 0; i < options.months_to_show; i++) {
     var y = year;
     var m = month - i;
     if (m < 0) {
@@ -321,10 +319,10 @@ function get_population_for_health_center() {
 
 function select_visit() {
   var key = $('#saved-forms-control').val();
-  if (key && key.match(settings.health_center_key_regex)) {
+  if (key && key.match(options.health_center_key_regex)) {
     setTimeout(function() {
       set_selected_value('health_center', key.split('/')[2]);
-      show_container(containers['visit']);
+      show_container(containers.visit);
     }, 1);
   }
 }
@@ -400,7 +398,7 @@ function login() {
 function logout() {
   set_selected_value('access_code', '');
   set_selected_value('logged_in',   '');
-  show_container(containers['login']);
+  show_container(containers.login);
   autofocus();
 }
 
@@ -408,14 +406,14 @@ function set_context() {
   var today = Date.today();
   var date = Date.from_date_period(get_selected_value('visit_date_period'));
 
-  if (options['autoset_default_visit_date']) {
+  if (options.autoset_default_visit_date) {
     var default_visit_date = date.getMonth() == today.getMonth() ? today : date.beginning_of_month();
     set_selected_value('default_visit_date', default_visit_date.format('%Y-%m-%d'));
   }
 
   set_selected_value('visit_period_selected', true);
   set_after_warehouse_link_status();
-  show_container(containers['fc_actions']);
+  show_container(containers.fc_actions);
 }
 
 function select_location() {
@@ -424,7 +422,7 @@ function select_location() {
 }
 
 function show_visits() {
-  show_container(containers['hc']);
+  show_container(containers.hc);
   $('input.hasDatepicker').each(function(i, e) {
     $(e).datepicker('destroy');
   });
@@ -462,7 +460,7 @@ function show_or_hide_upload_link() {
 function has_forms_ready_for_upload() {
   var ready = false;
   for (var key in valid_forms) {
-    ready = key.match(settings.visit_key_regex) && valid_forms[key];
+    ready = key.match(options.visit_key_regex) && valid_forms[key];
     if (ready) break;
   }
   return ready;
@@ -546,7 +544,7 @@ function get_hc_form_status(visit_key) {
 }
 
 function set_form_status(key, status) {
-  var match = key.match(settings.visit_key_regex);
+  var match = key.match(options.visit_key_regex);
   var f = this['set_'+match[1]+'_form_status'];
   if (typeof f == 'function') f(key, status);
 }
@@ -760,7 +758,7 @@ function setup_saved_visits() {
   var local_forms = [];
 
   forEachLocalStorageKey(function(key) {
-    var match = key.match(settings.visit_key_regex);
+    var match = key.match(options.visit_key_regex);
     if (match && valid_forms[key]) {
       local_forms.push('<li id="' + key.replace('/','_') + '" class="status ' + (valid_forms[key] ? 'complete' : 'todo') + '"><span>' + get_visit_label_for(match[1], key) + '</span></li>');
     }
@@ -927,14 +925,14 @@ $(function() {
       show_container(screen);
     else
       show_main_page();
+  } else {
+    show_container(containers.login);
   }
-  else    
-    show_container(containers['login']);
-  
+
   setup_visit_search();
 
   if ($('html').attr('manifest')) {
-    window.setInterval(check_update_status, settings.update_check_interval);
+    window.setInterval(check_update_status, options.update_check_interval);
   
     //var statuses = ['cached', 'checking', 'downloading', 'error', 'noupdate', 'obsolete', 'progress', 'updateready'];
 
