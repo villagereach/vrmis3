@@ -642,7 +642,7 @@ body {
   display: block;
 }
 
-#upload-links #forms_to_upload {
+#upload-links #forms_to_upload, #upload-links #upload_status_check {
   font-size: 90%;
   margin-left: 1em;
 }

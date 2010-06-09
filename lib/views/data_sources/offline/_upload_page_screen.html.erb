@@ -1,4 +1,8 @@
 <div id="upload-links">
+  <p id="upload_status">
+    <span class="status"></span>
+    <span id="upload_status_check"><%= link_to_function(h(t("data_sources.hcvisit.upload_main.status.check_again")), "check_online()") %></span>
+  </p>
   <p id="upload_link">
     <span class="ready">
       <span class="online">

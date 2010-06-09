@@ -438,6 +438,7 @@ function show_main_page(landing_page) {
 }
 
 function update_upload_links() {
+  var now = new Date();
   if (online) {
     $("#upload-links .offline").hide();
     $("#upload-links .online").show();
@@ -445,6 +446,8 @@ function update_upload_links() {
     $("#upload-links .online").hide();
     $("#upload-links .offline").show();
   }
+  $("#upload_status .status").html(I18n.t("data_sources.hcvisit.upload_main.status." + (online ? "online" : "offline"),
+                                   { time: I18n.l(now, { time: true, format: "long" }) } ));
   if (has_forms_ready_for_upload()) {
     $("#forms_to_upload").html(I18n.t("data_sources.hcvisit.upload_main.forms_to_upload",
                                       { count: num_forms_ready_for_upload() }));
