@@ -17,7 +17,7 @@ CACHE:
 <%= offline_reports_path(:locale => I18n.locale)%>
 
 <%- %w(visited_health_centers delivery_interval coverage).each do |report| -%>
-  <%= offline_reports_action_path(:report => report, :locale => I18n.locale) %>
+<%= offline_reports_action_path(:report => report, :locale => I18n.locale) %>
 <%- end -%>
 
 /javascripts/olmis_datalink.js
@@ -68,5 +68,6 @@ FALLBACK:
 / /404.html
 
 NETWORK:
+/ping
 /logged-in
 /visits

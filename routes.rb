@@ -36,6 +36,7 @@
   map.login   '/login',  :controller => 'login', :action => 'login'
   map.logout  '/logout', :controller => 'login', :action => 'logout'
   map.is_logged_in '/logged-in', :controller => 'olmis', :action => 'logged_in'
+  map.status_check '/ping', :controller => 'olmis', :action => 'ping'
   
   map.connect '/graph_data/:graph.:format', :controller => 'graph_data', :action => 'graph'
  
