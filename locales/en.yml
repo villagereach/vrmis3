@@ -678,6 +678,8 @@ en:
           upload:                        "Upload data"
       upload_main:
         upload_data:                     "Upload Data"
+        forms_to_upload:                 "{{count}} forms to upload"
+        no_forms_to_upload:              "No forms to upload"
       admin_main:
         page_title:                      "Main Page (Admin)"
         view_reports:                    "View Reports"

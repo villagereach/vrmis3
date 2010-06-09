@@ -446,9 +446,12 @@ function update_upload_links() {
     $("#upload-links .offline").show();
   }
   if (has_forms_ready_for_upload()) {
+    $("#forms_to_upload").html(I18n.t("data_sources.hcvisit.upload_main.forms_to_upload",
+                                      { count: num_forms_ready_for_upload() }));
     $("#upload-links .not_ready").hide();
     $("#upload-links .ready").show();
   } else {
+    $("#forms_to_upload").html(I18n.t("data_sources.hcvisit.upload_main.no_forms_to_upload"));
     $("#upload-links .ready").hide();
     $("#upload-links .not_ready").show();
   }
@@ -461,6 +464,14 @@ function has_forms_ready_for_upload() {
     if (ready) break;
   }
   return ready;
+}
+
+function num_forms_ready_for_upload() {
+  var n = 0;
+  for (var key in valid_forms) {
+    if (key.match(options.visit_key_regex) && valid_forms[key]) n++;
+  }
+  return n;
 }
 
 function is_warehouse_form_uploaded_for(visit_month) {

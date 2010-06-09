@@ -642,6 +642,10 @@ body {
   display: block;
 }
 
+#upload-links #forms_to_upload {
+  font-size: 90%;
+  margin-left: 1em;
+}
 #upload-links .offline a {
   opacity: 0.5;
 }
