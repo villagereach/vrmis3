@@ -242,47 +242,12 @@ function get_available_visit_date_periods() {
   return months;
 }
 
-function setup_visit_date_periods() {
-  xforms.openAction();
-
-  var month_selector = jQuery('#visit-month-selector');
-  var select_control = month_selector.find('select');
-  select_control.empty();
-
-  var months = get_available_visit_date_periods();
-  for (var i = 0, l = months.length; i < l; i++) {
-    var month_value = months[i][0];
-    var month_text  = months[i][1];
-    var is_current_month  = months[i][2];
-
-    var opt = jQuery(document.createElement('option'));
-    opt.attr('text', month_text);
-    opt.attr('value', month_value);
-    // FIXME: Set the default selection. Neither of the following methods work. Why?
-    // NOTE: This isn't terribly important as long as the current month is the first one in the list.
-    //opt.attr('selected', is_current_month);
-    //if (is_current_month) opt.attr('selected', 'selected');
-    select_control.append(opt);
- }                    
-
-  xforms.closeAction();
-}
-
 function set_selected_value(name, value) {
   $(selected_values).attr(name, value.toString());
 }
 
 function get_selected_value(name) {
   return selected_values[name] || ''
-}
-
-function find_province_district_health_center(hc) {
-  var health_center = find_health_center_by_code(hc);
-  var dz            = health_center.delivery_zone;
-  var district      = data_instance.areas_by_area_code[health_center.area_code];
-  var province      = district ? data_instance.areas_by_area_code[district.parent_code] : null;
-
-  return [province.name, district.name, hc, dz, get_selected_value('field_coordinator')];
 }
 
 function find_health_centers_in_delivery_zone(dz) {
@@ -417,7 +382,6 @@ function set_context() {
 }
 
 function select_location() {
-  //populate_warehouse_pickups();
   show_visits();
 }
 
@@ -482,54 +446,6 @@ function set_after_warehouse_link_status() {
     $('#after-warehouse-status').text('');
   }
 }
-
-function get_context_path_value(ctx, path) {
-  //TODO: Implement XPath
-  var doc = [ ctx.xfElement.doc ];
-  var nodes = path.split('/');
-  nodes.unshift(ctx.id);
-  nodes.filter(function(p) { return p != '' }).forEach(function(p, i) {
-    newdoc = []
-    doc.forEach(function(n, ni) {
-      newdoc = newdoc.concat(n.childNodes.filter(function(c) { return c.nodeName == p; }));
-    });
-    doc = newdoc
-  })
-  return doc;
-}
-          
-function update_visit_history(obj) {
-  // this data is to support the offline autoeval report, please see offline_autoeval.js.erb 
-  
-  var health_center = get_selected_value('health_center');
-  var date_period   = get_selected_value('visit_date_period');
-  var history = JSON.parse(localStorage[health_center + '/visit-history'] || '{}');
-  
-  if (!history[date_period])
-    history[date_period] = {};
-  
-  for (key in obj)
-    history[date_period][key] = obj[key];
-
-  localStorage[health_center + '/visit-history'] = JSON.stringify(history);
-}
-
-function inventory_quantities(type) {
-  return get_context_path_value($('olmis'), '/inventory/item').
-    filter(function(e) { return e.getAttributeNS(null, 'type') == type; }).
-    filter(function(e) { return AutoevalData.trackable_package_codes.indexOf(e.getAttributeNS(null, 'for')) >= 0; }).  
-    filter(function(e) { nr = e.getAttributeNS(null, 'nr'); return !nr || nr == '' || nr == 'false'; }).
-    map(   function(e) { q = e.getAttributeNS(null, 'qty'); return q ? [e.getAttributeNS(null, 'for'), q] : null; });
-}
-
-function update_stockouts() {
-  var e = inventory_quantities('ExistingHealthCenterInventory');
-  var d = inventory_quantities('DeliveredHealthCenterInventory');
-  
-  update_visit_history({ 'existing': e, 'delivered': d });
-}
-
-var save_timeouts = {};
 
 function get_hc_form_status(visit_key) {
   var status = 'unknown';
@@ -602,17 +518,6 @@ function setup_form_options(local_forms, only_set_monthly_status) {
   }
 }
 
-function uniq(arr) {
-  var ret = [], found = {};
-  for (var i = 0, l = arr.length; i < l; i++) {
-    if (!found[arr[i]]) {
-      found[arr[i]] = true;
-      ret.push(arr[i]);
-    }
-  }
-  return ret;
-}
-
 function setup_visits() {
   var hcs = find_health_centers_in_delivery_zone(get_selected_value('delivery_zone'));
   var months = get_available_visit_date_periods();
@@ -669,26 +574,6 @@ function setup_visit_search() {
       }
     });
   });
-}
-
-function possiblyEvaluatableValue(val, def) {
-  if (val.evaluate) {
-    var v = val.evaluate();
-    if (v) {
-      if (typeof v == 'string') {
-        return v;
-      } else {
-        // TODO: Not sure how we get here. When using older version of XSLTForms?
-        var n = v[0];
-        if (n) {
-          return (typeof n == 'string' ? n : getValue(n));
-        }
-      }
-    }
-  } else {
-    return val;
-  }
-  return def;
 }
 
 function radioValueFn(val) {
