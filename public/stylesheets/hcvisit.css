@@ -130,6 +130,8 @@ select#saved-forms-control option.reject, #visit-month-menu li.reject {
   right: 0;
 }
 
+p.note { font-weight: medium; font-style: italic; }
+
 thead tr {
   border-left: 1px solid gray;
   border-top: 1px solid gray;
@@ -640,11 +642,8 @@ body {
   display: block;
 }
 
-#upload_link.online {
-  visibility: visible;
-}
-#upload_link.offline {
-  visibility: hidden;
+#upload-links .offline a {
+  opacity: 0.5;
 }
 
 #after-warehouse_link.complete a {

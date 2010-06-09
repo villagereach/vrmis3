@@ -12,6 +12,7 @@ var containers = {
   fc_actions:   'fc-actions',
   hc:           'hc-selection',
   visit:        'form',
+  upload:       'upload-home',
   wh_before:    'warehouse-before',
   wh_after:     'warehouse-after'
 };
@@ -33,7 +34,8 @@ var options = {
   health_center_key_regex:    /^\d{4}-\d{2}\/hc\/[^/]+$/,
   warehouse_key_regex:        /^\d{4}-\d{2}\/wh\/[^/]+$/,
   visit_key_regex:            /^\d{4}-\d{2}\/(hc|wh)\/[^/]+$/,
-  update_check_interval:      30 * 1000
+  update_check_interval:      30 * 1000,
+  ping_timeout:                5 * 1000
 };
 
 function get_health_center_key(month, hc) {
@@ -89,6 +91,10 @@ container_hooks.show['form'] = function() {
 container_hooks.hide['form'] = function() {
   set_hc_form_status(get_health_center_key(), update_progress_status());
   $('#visit-form div.datepicker input').datepicker('destroy');
+};
+
+container_hooks.show['upload-home'] = function() {
+  update_upload_links();
 };
 
 function fixup_menu_tabs() {
@@ -184,14 +190,29 @@ function do_cached() {
 
 function go_online() {
   online = true;
-  jQuery("#online_indicator").addClass("online").removeClass("offline");
-  show_or_hide_upload_link();
+  $("#online_indicator").addClass("online").removeClass("offline");
+  update_upload_links();
 }
 
 function go_offline() {
   online = false;
-  jQuery("#online_indicator").addClass("offline").removeClass("online");
-  jQuery("#upload_link").addClass("offline").removeClass("online");
+  $("#online_indicator").addClass("offline").removeClass("online");
+  update_upload_links();
+}
+
+function check_online() {
+  $.ajax({ async: true,
+           type: 'GET',
+           url: '/ping',
+           dataType: 'text',
+           timeout: settings.ping_timeout,
+           success: function(data, textStatus, xhr) {
+             go_online();
+           },
+           error: function(xhr, textStatus, errorThrown) {
+             go_offline();
+           }
+         });
 }
 
 function check_update_status() {
@@ -333,6 +354,10 @@ function show_warehouse(type) {
   show_container(containers['wh_'+type]);
 }
 
+function show_upload_page() {
+  show_container(containers.upload);
+}
+
 function show_container( container ) {
   var visible = $('body > .container:visible').attr('id')
 
@@ -407,17 +432,25 @@ function show_main_page(landing_page) {
   if (landing_page != 'fc_actions') {
     set_selected_value('visit_period_selected', false);
   }
-  show_or_hide_upload_link();
   show_container(containers[landing_page]);
 
   set_selected_value('health_center', '');  // Must be after container change
 }
 
-function show_or_hide_upload_link() {
-  if (has_forms_ready_for_upload()) {
-    $("#upload_link").addClass("online").removeClass("offline");
+function update_upload_links() {
+  if (online) {
+    $("#upload-links .offline").hide();
+    $("#upload-links .online").show();
   } else {
-    $("#upload_link").removeClass("online").addClass("offline");
+    $("#upload-links .online").hide();
+    $("#upload-links .offline").show();
+  }
+  if (has_forms_ready_for_upload()) {
+    $("#upload-links .not_ready").hide();
+    $("#upload-links .ready").show();
+  } else {
+    $("#upload-links .ready").hide();
+    $("#upload-links .not_ready").show();
   }
 }
 
@@ -831,12 +864,12 @@ $(function() {
     go_offline();
   }
 
-  $('#fc-action-links a[href="#login"]').fancybox( 
+  $('#upload-links a[href="#login"]').fancybox( 
     { 'hideOnContentClick': false,
       'autoScale': false,
       'autoDimension': true,
       'onComplete': check_logged_in });
-  $('#fc-action-links a[href="#upload"]').fancybox( 
+  $('#upload-links a[href="#upload"]').fancybox( 
     { 'hideOnContentClick': false,
       'autoScale': false,
       'autoDimension': true,

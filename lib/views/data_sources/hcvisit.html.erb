@@ -168,6 +168,10 @@
       </div>
     <%- end -%>
 
+    <div id="upload-home" class="container">
+      <%= render :partial => "/data_sources/offline/upload_page_screen" %>
+    </div>
+
     <div id="form" class="container">
       <h3 id="current_hc">
         <span class="selected_health_center_name"></span>,
@@ -232,28 +236,6 @@
       <form action="javascript:return false;">
         <input id="health_center_catchment_population" type="hidden" value="" />
       </form>
-    </div>
-
-    <div id="lightbox-data" style="display: none">
-      <div id="login" class="lightbox-container">
-        <h3><%= h(t(".login_to_server")) %></h3>
-        <form action="javascript:ajax_login()">
-          <label for="login-login"><%= h(t("username")) %></label><input type="text" id="login-login" /><br />
-          <label for="login-password"><%= h(t("password")) %></label><input type="password" id="login-password" /><br />
-          <input id="login-button" type="submit" value="<%= h(t('login.login.submit_button')) %>" />
-        </form>
-      </div>
-      <div id="upload" class="lightbox-container">
-        <h3><%= h(t(".upload.ready")) %></h3>
-        <div id="upload-ready">
-          <p id="upload-empty" style="display:none"><%= h(t(".upload_empty")) %></p>
-          <ul></ul>
-          <p id="upload-button" style="display:none"><input type="button" onclick="upload_all()" value="<%= h(t('.upload_all')) %>" /></p>
-        </div>
-        
-        <h3><%= h(t(".upload.uploaded")) %></h3>
-        <div id="upload-uploaded"><ul></ul></div>
-      </div>
     </div>
 
   </body>
