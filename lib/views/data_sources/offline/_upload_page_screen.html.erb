@@ -18,6 +18,14 @@
     </span>
     <span id="forms_to_upload"></span>
   </p>
+  <p id="update_link">
+    <span class="online">
+      <%= link_to_function(h(t("data_sources.hcvisit.upload_main.update_software")), "update_offline_data()") %>
+    </span>
+    <span class="offline">
+      <%= link_to_function(h(t("data_sources.hcvisit.upload_main.update_software")), "check_online()") %>
+    </span>
+  </p>
 </div>
 
 <div id="lightbox-data" style="display: none">

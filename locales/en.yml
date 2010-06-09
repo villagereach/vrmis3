@@ -682,6 +682,7 @@ en:
           offline:                       "Status: Offline as of {{time}}"
           check_again:                   "(Check again)"
         upload_data:                     "Upload Data"
+        update_software:                 "Update Software"
         forms_to_upload:                 "{{count}} forms to upload"
         no_forms_to_upload:              "No forms to upload"
       admin_main:

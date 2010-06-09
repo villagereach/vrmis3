@@ -31,11 +31,12 @@ var hash_param_slots = {
 var options = {
   months_to_show:             6,
   autoset_default_visit_date: true,
+  auto_reload_after_update:   false,
   health_center_key_regex:    /^\d{4}-\d{2}\/hc\/[^/]+$/,
   warehouse_key_regex:        /^\d{4}-\d{2}\/wh\/[^/]+$/,
   visit_key_regex:            /^\d{4}-\d{2}\/(hc|wh)\/[^/]+$/,
-  update_check_interval:      30 * 1000,
-  ping_timeout:                5 * 1000
+  update_check_interval:      0,
+  ping_timeout:               5000
 };
 
 function get_health_center_key(month, hc) {
@@ -137,6 +138,16 @@ function set_equipment_notes_area_size() {
   ta.height(ta.parents('td').attr('rowspan') * ta.parents('td').prev().height() * 0.7);
 }
 
+function do_error() {
+  options.auto_reload_after_update = false;
+  go_offline();
+}
+
+function do_noupdate() {
+  options.auto_reload_after_update = false;
+  go_online();
+}
+
 function do_download() {
   manifest_files.downloaded = 0;
   manifest_files.count = $.
@@ -170,8 +181,13 @@ function do_progress() {
   $('#download-pct').text(Math.min((100 * progress).toFixed(), 100) + "%");
 }
 
+function update_offline_data() {
+  options.auto_reload_after_update = true;
+  check_update_status();
+}
+
 function do_update() {
-  jQuery('#download_indicator').removeClass('active');
+  $('#download_indicator').removeClass('active');
   go_online();
 
   try {
@@ -181,11 +197,14 @@ function do_update() {
     if (console) console.log("applicationCache.swapCache failed: " + e);
     return;
   }
-  jQuery('#status_indicator').addClass('updated');
+  $('#status_indicator').addClass('updated');
 }
 
 function do_cached() {
-  jQuery('#download_indicator').removeClass('active');
+  $('#download_indicator').removeClass('active');
+  if (options.auto_reload_after_update) {
+    window.location.reload(true);  // FIXME: This isn't working
+  }
 }
 
 function go_online() {
@@ -864,18 +883,22 @@ $(function() {
   setup_visit_search();
 
   if ($('html').attr('manifest')) {
-    window.setInterval(check_update_status, options.update_check_interval);
-  
     //var statuses = ['cached', 'checking', 'downloading', 'error', 'noupdate', 'obsolete', 'progress', 'updateready'];
 
-    applicationCache.addEventListener('error',       go_offline,  true);
-    applicationCache.addEventListener('noupdate',    go_online,   true);
+    applicationCache.addEventListener('error',       do_error,    true);
+    applicationCache.addEventListener('noupdate',    do_noupdate, true);
     applicationCache.addEventListener('downloading', do_download, true);
     applicationCache.addEventListener('progress',    do_progress, true);
     applicationCache.addEventListener('updateready', do_update,   true);
     applicationCache.addEventListener('cached',      do_cached,   true);
 
     go_offline();
+
+    if (options.update_check_interval > 0) {
+      window.setInterval(check_update_status, options.update_check_interval);
+    } else {
+      window.setTimeout(check_update_status, 1);
+    }
   }
 
   $('#upload-links a[href="#login"]').fancybox( 
