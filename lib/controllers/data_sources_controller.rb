@@ -79,7 +79,17 @@ class DataSourcesController < OlmisController
   
   def get_offline
     @rendering_for_offline_form = true
-    render :action => params[:name], :layout => false
+
+    vendor_root = File.expand_path(File.join(File.dirname(__FILE__), '..','..'))
+    files  = Dir.glob(File.join(Rails.root,  'app', 'views', 'data_sources', 'offline', '*.erb'))
+    files += Dir.glob(File.join(vendor_root, 'lib', 'views', 'data_sources', 'offline', '*.erb'))
+    files << File.join(vendor_root, 'lib', 'views', 'data_sources', "#{params[:name]}.html.erb")
+
+    last_mod_time = files.map{ |f| File.mtime(f) }.max
+
+    if stale?(:last_modified => last_mod_time.utc)
+      render :action => params[:name], :layout => false
+    end
   end
 
   def get_xform
