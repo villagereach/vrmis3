@@ -650,7 +650,7 @@ body {
   display: inline !important;
   padding: 4px 8px;
 }
-#upload-links #forms_to_upload, #upload-links #upload_status_check {
+#upload-links #forms_to_upload, #upload-links #upload_status_check, #upload-links #update_status {
   font-size: 90%;
   margin-left: 1em;
 }
@@ -664,6 +664,9 @@ body {
 }
 #upload-links .loading-indicator img {
   margin-left: 0.2em;
+}
+#upload-links #update_status {
+  display: inline;
 }
 
 #after-warehouse_link.complete a {

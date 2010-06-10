@@ -26,6 +26,23 @@
   <p id="update_link">
     <span class="online">
       <%= link_to_function(h(t("data_sources.hcvisit.upload_main.update_software")), "update_offline_data()") %>
+      <div id="update_status">
+        <span id="update_status_check-indicator" class="loading-indicator" style="display:none;">
+          <%= h(t("checking")) %><%= image_tag("indicator-small.gif", :size => "13x10") %>
+        </span>
+        <span id="update_status_download-indicator" class="loading-indicator" style="display:none;">
+          <%= h(t("data_sources.hcvisit.status.downloading")) %> ... <%= image_tag("indicator-small.gif", :size => "13x10") %>
+        </span>
+        <span id="update_status_update-indicator" style="display:none;">
+          <a href="<%= request.url %>"><%= h(t("data_sources.hcvisit.upload_main.status.updated")) %></a>
+        </span>
+        <span id="update_status_no_update-indicator" style="display:none;">
+          <%= h(t("data_sources.hcvisit.upload_main.status.no_update")) %>
+        </span>
+        <span id="update_status_error-indicator" style="display:none;">
+          <%= h(t("data_sources.hcvisit.upload_main.status.error")) %>
+        </span>
+      </div>
     </span>
     <span class="offline">
       <%= link_to_function(h(t("data_sources.hcvisit.upload_main.update_software")), "check_online()") %>

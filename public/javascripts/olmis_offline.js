@@ -31,7 +31,7 @@ var hash_param_slots = {
 var options = {
   months_to_show:             6,
   autoset_default_visit_date: true,
-  auto_reload_after_update:   false,
+  user_initiated_update:      false,
   health_center_key_regex:    /^\d{4}-\d{2}\/hc\/[^/]+$/,
   warehouse_key_regex:        /^\d{4}-\d{2}\/wh\/[^/]+$/,
   visit_key_regex:            /^\d{4}-\d{2}\/(hc|wh)\/[^/]+$/,
@@ -139,12 +139,20 @@ function set_equipment_notes_area_size() {
 }
 
 function do_error() {
-  options.auto_reload_after_update = false;
+  if (options.user_initiated_update) {
+    options.user_initiated_update = false;
+    $('#update_status span').hide();
+    $('#update_status_error-indicator').show();
+  }
   go_offline();
 }
 
 function do_noupdate() {
-  options.auto_reload_after_update = false;
+  if (options.user_initiated_update) {
+    options.user_initiated_update = false;
+    $('#update_status span').hide();
+    $('#update_status_no_update-indicator').show().delay(5000).fadeOut(1000);
+  }
   go_online();
 }
 
@@ -169,25 +177,38 @@ function do_download() {
 
 function do_progress() {
   if (manifest_files.downloaded++ === 0) {
-    $('#status_indicator').removeClass('updated');
-    $('#download_indicator').addClass('active');
+    if (options.user_initiated_update) {
+      $('#update_status span').hide();
+      $('#update_status_download-indicator').show();
+    } else {
+      $('#status_indicator').removeClass('updated');
+      $('#download_indicator').addClass('active');
+    }
   }
   go_online();
 
-  var progress = manifest_files.downloaded / manifest_files.count;
-  var width = $('#download_indicator').innerWidth();
-  // In case the manifest file count is wrong, don't allow the progress indicator to show > 100%
-  $('#download-progress-bar').width(Math.min((width * progress).toFixed(), width) + "px");
-  $('#download-pct').text(Math.min((100 * progress).toFixed(), 100) + "%");
+  if (!options.user_initiated_update) {
+    var progress = manifest_files.downloaded / manifest_files.count;
+    var width = $('#download_indicator').innerWidth();
+    // In case the manifest file count is wrong, don't allow the progress indicator to show > 100%
+    $('#download-progress-bar').width(Math.min((width * progress).toFixed(), width) + "px");
+    $('#download-pct').text(Math.min((100 * progress).toFixed(), 100) + "%");
+  }
 }
 
 function update_offline_data() {
-  options.auto_reload_after_update = true;
+  options.user_initiated_update = true;
+  $('#update_status span').hide();
+  $('#update_status_check-indicator').show();
   check_update_status();
 }
 
 function do_update() {
-  $('#download_indicator').removeClass('active');
+  if (options.user_initiated_update) {
+    $('#update_status span').hide();
+  } else {
+    $('#download_indicator').removeClass('active');
+  }
   go_online();
 
   try {
@@ -197,13 +218,23 @@ function do_update() {
     if (console) console.log("applicationCache.swapCache failed: " + e);
     return;
   }
-  $('#status_indicator').addClass('updated');
+
+  if (options.user_initiated_update) {
+    $('#update_status_update-indicator').show();
+    // Remove the link
+    var link = $('#update_status').prev();
+    link.replaceWith('<span>'+link.html()+'</span>');
+  } else {
+    $('#status_indicator').addClass('updated');
+  }
 }
 
 function do_cached() {
-  $('#download_indicator').removeClass('active');
-  if (options.auto_reload_after_update) {
-    window.location.reload(true);  // FIXME: This isn't working
+  // TODO: Why are these needed? Should have already been handled in do_update()
+  if (options.user_initiated_update) {
+    $('#update_status span').hide();
+  } else {
+    $('#download_indicator').removeClass('active');
   }
 }
 
