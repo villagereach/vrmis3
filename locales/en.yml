@@ -48,6 +48,7 @@ en:
   select_blank:                "Select ..."
   go:                          "Go"
   loading:                     "Loading ..."
+  checking:                    "Checking ..."
   search_button:               "Search"
   reset_button:                "Reset"
   health_center:               "Health Center"

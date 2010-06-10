@@ -1,7 +1,12 @@
 <div id="upload-links">
   <p id="upload_status">
     <span class="status"></span>
-    <span id="upload_status_check"><%= link_to_function(h(t("data_sources.hcvisit.upload_main.status.check_again")), "check_online()") %></span>
+    <span id="upload_status_check">
+      <%= link_to_function(h(t("data_sources.hcvisit.upload_main.status.check_again")), "check_online(this)") %>
+      <span id="upload_status_check-indicator" class="loading-indicator" style="visibility:hidden;">
+        <%= h(t("checking")) %><%= image_tag("indicator-small.gif", :size => "13x10") %>
+      </span>
+    </span>
   </p>
   <p id="upload_link">
     <span class="ready">
@@ -49,4 +54,3 @@
     <div id="upload-uploaded"><ul></ul></div>
   </div>
 </div>
-

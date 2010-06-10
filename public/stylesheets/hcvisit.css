@@ -649,6 +649,14 @@ body {
 #upload-links .offline a {
   opacity: 0.5;
 }
+#upload-links .loading-indicator {
+  color: #2163d6;
+  font: bold 12px "Bitstream Vera Sans", Arial, sans-serif;
+  margin-left: 1em;
+}
+#upload-links .loading-indicator img {
+  margin-left: 0.2em;
+}
 
 #after-warehouse_link.complete a {
   color: inherit;

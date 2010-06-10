@@ -219,7 +219,8 @@ function go_offline() {
   update_upload_links();
 }
 
-function check_online() {
+function check_online(e) {
+  var spinner = e ? $(e).next(".loading-indicator") : null;
   $.ajax({ async: true,
            type: 'GET',
            url: '/ping',
@@ -230,6 +231,12 @@ function check_online() {
            },
            error: function(xhr, textStatus, errorThrown) {
              go_offline();
+           },
+           beforeSend: function(xhr, textStatus) {
+             if (spinner) spinner.css("visibility", "visible");
+           },
+           complete: function(xhr, textStatus) {
+             if (spinner) spinner.css("visibility", "hidden");
            }
          });
 }
