@@ -646,6 +646,10 @@ body {
 #upload-links #upload_status {
   margin-bottom: 2em;
 }
+#upload-links #upload_status span {
+  display: inline !important;
+  padding: 4px 8px;
+}
 #upload-links #forms_to_upload, #upload-links #upload_status_check {
   font-size: 90%;
   margin-left: 1em;
