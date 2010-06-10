@@ -54,6 +54,7 @@ class DataSourcesController < OlmisController
     manifest_data = render_to_string(:action => "manifest.#{params[:format]}", :layout => false)
 
     vendor_root = File.expand_path(File.join(File.dirname(__FILE__), '..', '..'))
+    lib_path    = File.join(vendor_root, 'lib')
     views_path  = File.join(vendor_root, 'lib', 'views')
 
     files = manifest_data.split("\n").map(&:strip).grep(/^\//).map { |f| File.join(Rails.root, 'public', f) }.select { |f| File.exists?(f) } 
@@ -66,6 +67,7 @@ class DataSourcesController < OlmisController
     files += Dir.glob(File.join(views_path, 'data_sources', params[:format], '*.erb'))
     files += Dir.glob(File.join(views_path, 'reports', '*.erb'))
     files += Dir.glob(File.join(Rails.root, 'app', 'views', 'data_sources', params[:format], '*.erb'))
+    files += Dir.glob(File.join(lib_path, '{graphs,reports,queries}.rb'))
     files += [ File.join(views_path, 'javascripts', 'offline_i18n.js.erb'),
                File.join(views_path, 'javascripts', 'offline_autoeval_data.js.erb'),
                File.join(views_path, 'data_sources', "manifest.#{params[:format]}.erb"),

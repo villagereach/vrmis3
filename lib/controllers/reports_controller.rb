@@ -56,7 +56,12 @@ class ReportsController < OlmisController
   def offline_report
     @report = params[:report].downcase.gsub(/[^a-z_]+/, '')
     add_breadcrumb "breadcrumb.offline_report.#{@report}"
-    if stale?(:last_modified => DataSubmission.last_submit_time.utc)
+
+    vendor_root = File.expand_path(File.join(File.dirname(__FILE__), '..','..'))
+    files = Dir.glob(File.join(vendor_root, 'lib', '{graphs,reports,queries}.rb'))
+    last_mod_time = (files.map{ |f| File.mtime(f) } << DataSubmission.last_submit_time).max
+
+    if stale?(:last_modified => last_mod_time.utc)
       render :offline_report, :layout => 'offline'
     end
   end
