@@ -87,9 +87,20 @@ class DataSourcesController < OlmisController
 
     last_mod_time = files.map{ |f| File.mtime(f) }.max
 
-    if stale?(:last_modified => last_mod_time.utc)
-      render :action => params[:name], :layout => false
+    # NOTE: The stale? check doesn't work because a 304 status may result in
+    #       Firefox 3.6 refusing to reload the page because, even though
+    #       other offline manifest components changed, this page did not.
+    #       (Safari 4.x has no such problem; Chrome was not tested.)
+    #       The workaround is to use the controller cache instead.
+    #
+    # if stale?(:last_modified => last_mod_time.utc)
+    #   render :action => params[:name], :layout => false
+    # end
+
+    text = cache("#{params[:action]}-#{params[:name]}-#{I18n.locale}-#{last_mod_time.to_i}") do
+      render_to_string(:action => params[:name], :layout => false)
     end
+    render(:text => text, :layout => false)
   end
 
   def get_xform
@@ -117,7 +128,7 @@ class DataSourcesController < OlmisController
         last_mod_time = files.map{ |f| File.mtime(f) }.max
 
         if_modified_since(last_mod_time) do
-          text = cache("#{params[:name]}-#{I18n.locale}-#{last_mod_time.to_i}") do
+          text = cache("#{params[:action]}-#{params[:name]}-#{I18n.locale}-#{last_mod_time.to_i}") do
             s = render_to_string(:file => "data_sources/#{params[:name]}.xhtml", :layout => false).gsub(/<!\s*(?:--(?:[^\-]|[\r\n]|-[^\-])*--\s*)>/,'')
             xml = Nokogiri::XML(s)
 
