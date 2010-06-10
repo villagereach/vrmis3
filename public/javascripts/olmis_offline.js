@@ -209,13 +209,13 @@ function do_cached() {
 
 function go_online() {
   online = true;
-  $("#online_indicator").addClass("online").removeClass("offline");
+  //$("#online_indicator").addClass("online").removeClass("offline");
   update_upload_links();
 }
 
 function go_offline() {
   online = false;
-  $("#online_indicator").addClass("offline").removeClass("online");
+  //$("#online_indicator").addClass("offline").removeClass("online");
   update_upload_links();
 }
 
@@ -465,6 +465,8 @@ function show_main_page(landing_page) {
 
 function update_upload_links() {
   var now = new Date();
+  var status = online ? "online" : "offline";
+  $("#upload_status .status").removeClass("online offline");
   if (online) {
     $("#upload-links .offline").hide();
     $("#upload-links .online").show();
@@ -472,8 +474,10 @@ function update_upload_links() {
     $("#upload-links .online").hide();
     $("#upload-links .offline").show();
   }
-  $("#upload_status .status").html(I18n.t("data_sources.hcvisit.upload_main.status." + (online ? "online" : "offline"),
-                                   { time: I18n.l(now, { time: true, format: "long" }) } ));
+  $("#upload_status .status").
+    addClass(status).
+    html(I18n.t("data_sources.hcvisit.upload_main.status."+status,
+                { time: I18n.l(now, { time: true, format: "long" }) } ));
   if (has_forms_ready_for_upload()) {
     $("#forms_to_upload").html(I18n.t("data_sources.hcvisit.upload_main.forms_to_upload",
                                       { count: num_forms_ready_for_upload() }));

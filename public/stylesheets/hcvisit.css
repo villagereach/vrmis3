@@ -629,19 +629,23 @@ body {
 #status_footer #online_indicator div {
   display: none;
 }
-#status_footer #online_indicator.online div.online {
+#status_footer #online_indicator.online div.online,
+#upload-links #upload_status span.online {
   background-color: #cfc;
   border: 2px solid green;
   color: green;
   display: block;
 }
-#status_footer #online_indicator.offline div.offline {
+#status_footer #online_indicator.offline div.offline,
+#upload-links #upload_status span.offline {
   background-color: #fcc;
   border: 2px solid red;
   color: red;
   display: block;
 }
-
+#upload-links #upload_status {
+  margin-bottom: 2em;
+}
 #upload-links #forms_to_upload, #upload-links #upload_status_check {
   font-size: 90%;
   margin-left: 1em;
