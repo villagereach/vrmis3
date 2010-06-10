@@ -224,7 +224,7 @@ function check_online() {
            type: 'GET',
            url: '/ping',
            dataType: 'text',
-           timeout: config.ping_timeout,
+           timeout: options.ping_timeout,
            success: function(data, textStatus, xhr) {
              go_online();
            },
