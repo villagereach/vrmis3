@@ -81,10 +81,12 @@ class OlmisController < ActionController::Base
   end
 
   def ping
+    response.content_type = 'text/plain'
     render :text => 'PONG'
   end
 
   def logged_in
+    response.content_type = 'text/plain'
     render :text => 'Yes'
   end
   
