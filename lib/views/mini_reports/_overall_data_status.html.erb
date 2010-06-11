@@ -5,7 +5,7 @@
   progress = progress_calculator
 
   dp_range = date_periods_between((Date.today - 1.year).to_date_period, Date.today.to_date_period) 
-  
+
   oldest_unfinished_visit_by_health_center = hcs.map { |hc| 
     [hc, progress.health_center_status_by_date_periods(hc, dp_range).detect { |dp, st| 
       st != HealthCenterVisit::REPORT_NOT_DONE && 
@@ -15,7 +15,7 @@
   oldest_unfinished_visit_by_fc = 
     oldest_unfinished_visit_by_health_center.map { |hc, dp| [hc.field_coordinator, dp] }.
       group_by(&:first).
-        map { |fc, dps| [fc, dps.map(&:last).min] }
+        map { |fc, dps| [fc, dps.map(&:last).sort_by(&:first).first] }
     
   months_1 = ((Date.today.beginning_of_month) - 1.months).to_date_period
   months_2 = ((Date.today.beginning_of_month) - 2.months).to_date_period
