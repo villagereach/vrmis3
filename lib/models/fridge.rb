@@ -81,6 +81,13 @@ class Fridge < ActiveRecord::Base
     SQL
   }
 
+  # Return fridges with a current status of unknown
+  named_scope :unknown_status,
+  {
+    :include => :current_status,
+    :conditions => 'fridge_statuses.status_code IS NULL AND fridge_statuses.reported_at IS NOT NULL'
+  }
+
   # Return fridges that have a non-OK status over +days+ days old
   named_scope :urgent, lambda{|days|
     {

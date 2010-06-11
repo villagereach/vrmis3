@@ -484,6 +484,9 @@ dl.inline dd.stacked input {
 .fridge_list .prob .code {
   background-image : url( /images/icons/silk/information.png );
 }
+.fridge_list .unknown .code {
+  background-image : url( /images/icons/missing.png );
+}
 .fridge_list .fixed .code {
   background-image : url( /images/icons/silk/accept.png );
 }

@@ -366,6 +366,10 @@ en:
     currently_bad_fridge_list:
       not_ok_fridges:         "Currently broken refrigerators"
       no_fridges_with_status: "No {{status}} refrigerators"
+      no_not_ok_fridges:      "No broken refrigerators"
+      unknown_fridges:        "Current fridges in an unknown state"
+      no_unknown_fridges:     "No refrigerators in an unknown state"
+      location:               "in {{province}} ({{fc}})"
     persistent_problem_fridge_list:
       persistent_problem_fridges: "Persistently broken refrigerators"
     currently_urgent_fridge_list:
