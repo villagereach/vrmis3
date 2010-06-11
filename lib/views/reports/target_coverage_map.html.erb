@@ -1,32 +1,31 @@
-<h2><%= t('reports.index.coverage_map_by_date') %></h2>
+<h2><%= h(t('reports.index.coverage_map_by_date')) %></h2>
 
 <div class="span-8 parameters">
-  <h4><%= t :report_parameters %></h4>
+  <h4><%= h(t('reports.report_parameters')) %></h4>
   <form id="maps_params">
     <p>
-      <label for="target_percentage_id"><%= t('reports.targets') %>:</label>
+      <label for="target_percentage_id"><%= h(t('reports.targets')) %>:</label>
       <%= select_tag(:target_percentage_id, 
-        options_for_select(TargetPercentage.all(:order => 'code asc').map { |t| [t.label, t.id] },
-              @target_percentage.id)) %> 
+                     options_for_select(TargetPercentage.all(:order => 'code asc').map { |t| [t.label, t.id] },
+                     @target_percentage.id)) %> 
     </p>
 
     <p class="date_selector">
-      <label for="date_period_range"><%= t('reports.date_range') %>:</label>
+      <label for="date_period_range"><%= h(t('reports.date_range')) %>:</label>
       <%= select_tag(:date_period_range, options_for_select(date_period_range_options, @date_period_range)) %> 
     </p>
 
     <p class="submit">
-      <%= submit_tag t("reports.update_map"), :disabled => true %>
-      <span id="map_spinner" class="loading-indicator" style="display: none;"><%= t('loading') %><%= image_tag('indicator-small.gif', :size => '13x10') %></span>
+      <%= submit_tag h(t("reports.update_map")), :disabled => true %>
+      <span id="map_spinner" class="loading-indicator" style="display: none;"><%= h(t('loading')) %><%= image_tag('indicator-small.gif', :size => '13x10') %></span>
     </p>
   </form>
 
   <% if @map %>
-    <h4><%= t( 'reports.legend' ) %></h4>
-    <span style="background-color: <%= @map.max_color %>; border: thin solid black;">&nbsp;&nbsp;&nbsp;</span> <%= @map.max %></span><br />
-    <span style="background-color: <%= @map.min_color %>; border: thin solid black;">&nbsp;&nbsp;&nbsp;</span> <%= @map.min %></span><br />
-    <p><%= t( 'reports.circle_size_porportional_to_population') %></p>
-
+    <h4><%= h(t('reports.legend')) %></h4>
+    <span class="map-legend-color-swatch" style="background-color:<%= @map.max_color %>"></span><%= @map.max %></span><br />
+    <span class="map-legend-color-swatch" style="background-color:<%= @map.min_color %>"></span><%= @map.min %></span><br />
+    <p><%= h(t('reports.circle_size_porportional_to_population')) %></p>
   <% end %>
 </div>
 
@@ -39,12 +38,12 @@
 <% end %>
 
 <% javascript_tag do %>
-  jQuery(function() {
-    jQuery('#maps_params select').change(function() {
-      jQuery(this).parents('form').find('input[type=submit]').attr('disabled', false);
+  $(function() {
+    $('#maps_params select').change(function() {
+      $(this).parents('form').find('input[type=submit]').attr('disabled', false);
     });
-    jQuery('#maps_params input[type=submit]').click(function() {
-      jQuery('#map_spinner').show();
+    $('#maps_params input[type=submit]').click(function() {
+      $('#map_spinner').show();
     });
   });
 <% end %>

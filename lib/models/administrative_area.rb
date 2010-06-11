@@ -26,7 +26,13 @@ class AdministrativeArea < ActiveRecord::Base
   belongs_to :parent, :class_name => 'AdministrativeArea'
 
   validates_numericality_of :population, :allow_nil => true, :integer => true
-  
+
+  named_scope :with_location, {
+    :include => :street_address,
+    :conditions => "street_addresses.longitude IS NOT NULL",
+    :order => "population DESC"
+  }
+
   def label
     I18n.t(self.class.name + '.' + code)
   end

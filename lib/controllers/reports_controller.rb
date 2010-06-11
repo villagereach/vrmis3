@@ -1,6 +1,11 @@
 class ReportsController < OlmisController
-  skip_before_filter :check_logged_in, :set_locale, :only => [ :offline_index, :offline_report, :offline_autoeval ]
-  before_filter :set_locale_without_session, :only => [ :offline_index, :offline_report, :offline_autoeval ]
+  # NOTE: #target_coverage_map and #stockouts_map do not require login because of
+  # Google Maps license restrictions that require them to be publicly available.
+  skip_before_filter :check_logged_in, :set_locale, :only => [ :offline_index, :offline_report, :offline_autoeval,
+                                                               :target_coverage_map, :stockouts_map ]
+  before_filter :set_locale_without_session, :only => [ :offline_index, :offline_report, :offline_autoeval,
+                                                        :target_coverage_map, :stockouts_map ]
+  before_filter :current_user, :only => [ :target_coverage_map, :stockouts_map ]
   helper :date_period_range
   add_breadcrumb 'breadcrumb.report', 'reports_path', :except => [ :offline_index, :offline_report, :offline_autoeval ]
   add_breadcrumb 'breadcrumb.report', 'offline_reports_path(:locale => I18n.locale)', :only => [ :offline_index, :offline_report, :offline_autoeval ]
@@ -133,7 +138,6 @@ class ReportsController < OlmisController
       :product_id => @product_id,
       :date_period_range => @date_period_range
     })
-#    debugger
     
     @tables = [
       [

@@ -1077,13 +1077,20 @@ table.equipment td {
 /* }}} */
 
 /* report map {{{ */
-#report_popup 
-{
-	font-family : Georgia,"Times New Roman",serif;
-	text-align : left;
-	font-size : .8em;
-	color : #99f;
-	padding-left: .5em;
+#report_popup {
+  color: #99f;
+  font-family: Georgia,"Times New Roman",serif;
+  font-size: 0.8em;
+  text-align: left;
+  padding-left: 0.5em;
+}
+.map-legend-color-swatch {
+  border: thin solid black;
+  display: inline-block;
+  height: 16px;
+  margin-right: 4px;
+  vertical-align: middle;
+  width: 16px;  
 }
 /* }}} */
 table.report-table colgroup {
