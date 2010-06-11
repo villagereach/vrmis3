@@ -66,7 +66,13 @@ class Fridge < ActiveRecord::Base
   Olmis.area_hierarchy.each do |area|
     named_scope 'in_' + area.tableize.singularize, lambda { |p| Fridge.in_area_health_centers('`' + area.tableize + '`.`id`', p) }
   end
-  
+
+  named_scope :with_status,
+  {
+    :include => :current_status,
+    :conditions => 'fridge_statuses.reported_at IS NOT NULL'
+  }
+
   # Return fridges with a current status that is not OK.
   named_scope :not_ok,
   {
@@ -156,9 +162,12 @@ class Fridge < ActiveRecord::Base
   }
 
   named_scope :status_category, lambda { |category|
-    statuses = FridgeStatus.statuses_in_category(category).map { |s| %Q{'#{s}'} }.join(", ")
-    { :include => :current_status, 
-      :conditions => "coalesce(fridge_statuses.status_code, 'NO STATUS') IN (#{statuses})"
+    {
+      :include => :current_status, 
+      :conditions => [ (<<-SQL).squish, { :statuses => FridgeStatus.statuses_in_category(category) } ]
+        COALESCE(fridge_statuses.status_code, 'NO STATUS') IN (:statuses)
+        AND fridge_statuses.reported_at IS NOT NULL
+      SQL
     }
   }
 

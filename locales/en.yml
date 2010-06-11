@@ -150,9 +150,9 @@ en:
   NR: "NR"
   unknown: "Don't know"
   status_category:
-    red:    "Red"
-    yellow: "Yellow"
-    green:  "Green"
+    green:  "OK"
+    yellow: "Unknown"
+    red:    "Problem"
   age_category:
     '1mo': "< 1 month"
     '2mo': "1 - 2 months"

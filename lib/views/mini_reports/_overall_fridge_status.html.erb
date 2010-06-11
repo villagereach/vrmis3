@@ -1,6 +1,6 @@
 <%-
  fridge_scope = param_scoped_fridges
- all_fridges = fridge_scope.all 
+ all_fridges = fridge_scope.with_status
  count = all_fridges.count 
  fridges_by_category = all_fridges.group_by(&:status_category) 
  fridges_by_age = all_fridges.group_by(&:age_category) 
@@ -11,9 +11,8 @@
 <h4><%= t('.by_status') %></h4>
 <table class="status_graph">
   <tbody>
-    <%- ['green','yellow','red'].zip(colors).each do |c,col|
-      fridges_by_category[c] ||= []
-      -%>
+    <%- %w(green yellow red).zip(colors).each do |c,col|
+          fridges_by_category[c] ||= [] -%>
       <tr class="<%=col%>">
         <th>
           <%= link_to(fridges_by_category[c].length.to_s, :overwrite_params => { :controller => 'fridges', :action => 'index', :status_category_scope => c }) %>

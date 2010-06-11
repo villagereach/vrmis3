@@ -130,17 +130,17 @@ class FridgeStatus < ActiveRecord::Base
   
   def status_category
     case status_code 
-    when 'BROKE' then 'red'
     when 'OK'    then 'green'
-    else              'yellow'
+    when nil     then 'yellow'
+    else              'red'
     end
   end
   
   def self.statuses_in_category(category)
     case category
-    when 'red' then ['BROKE']
-    when 'green' then ['OK']
-    else status_codes - ['BROKE', 'OK'] + ['NO STATUS']
+    when 'green'  then ['OK']
+    when 'yellow' then ['NO STATUS']
+    else               status_codes - ['OK']
     end
   end
   
