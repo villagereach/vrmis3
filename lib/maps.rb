@@ -119,7 +119,7 @@ class Maps
         district_metric_overlays.each do |district, metric, overlay|
           centroid = district.centroid
     
-          scaled_n_gon = n_gon.map { |point| point.map { |l| l * (district.population.to_f / min) ** 0.5 } }.
+          scaled_n_gon = n_gon.map { |point| point.map { |l| 0.666 * l * (district.population.to_f / min) ** 0.5 } }.
             map { |point| point.zip(centroid).map(&:sum) }
 
           color = (metric.present? ? color_code((metric - min_metric) / (max_metric - min_metric)) : '#FFFFFF' rescue raise [max_metric, min_metric, metric].inspect)  
