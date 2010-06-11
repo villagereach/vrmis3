@@ -3,8 +3,8 @@
     <span class="status"></span>
     <span id="upload_status_check">
       <%= link_to_function(h(t("data_sources.hcvisit.upload_main.status.check_again")), "check_online(this)") %>
-      <span id="upload_status_check-indicator" class="loading-indicator" style="visibility:hidden;">
-        <%= h(t("checking")) %><%= image_tag("indicator-small.gif", :size => "13x10") %>
+      <span class="loading-indicator" style="visibility:hidden;">
+        <%= h(t("data_sources.hcvisit.upload_main.status.checking")) %> ... <%= image_tag("indicator-small.gif", :size => "13x10") %>
       </span>
     </span>
   </p>
@@ -15,7 +15,10 @@
         <%= link_to("", "#upload", :class => "inline", :style => "display:none") %>
       </span>
       <span class="offline">
-        <%= link_to_function(h(t("data_sources.hcvisit.upload_main.upload_data")), "check_online()") %>
+        <%= link_to_function(h(t("data_sources.hcvisit.upload_main.upload_data")), "check_online(this)") %>
+        <span class="loading-indicator" style="visibility:hidden;">
+          <%= h(t("data_sources.hcvisit.upload_main.status.checking")) %> ... <%= image_tag("indicator-small.gif", :size => "13x10") %>
+        </span>
       </span>
     </span>
     <span class="not_ready">
@@ -28,7 +31,7 @@
       <%= link_to_function(h(t("data_sources.hcvisit.upload_main.update_software")), "update_offline_data()") %>
       <div id="update_status">
         <span id="update_status_check-indicator" class="loading-indicator" style="display:none;">
-          <%= h(t("checking")) %><%= image_tag("indicator-small.gif", :size => "13x10") %>
+          <%= h(t("data_sources.hcvisit.status.checking")) %> ... <%= image_tag("indicator-small.gif", :size => "13x10") %>
         </span>
         <span id="update_status_download-indicator" class="loading-indicator" style="display:none;">
           <%= h(t("data_sources.hcvisit.status.downloading")) %> ... <%= image_tag("indicator-small.gif", :size => "13x10") %>
@@ -45,7 +48,10 @@
       </div>
     </span>
     <span class="offline">
-      <%= link_to_function(h(t("data_sources.hcvisit.upload_main.update_software")), "check_online()") %>
+      <%= link_to_function(h(t("data_sources.hcvisit.upload_main.update_software")), "check_online(this)") %>
+      <span class="loading-indicator" style="visibility:hidden;">
+        <%= h(t("data_sources.hcvisit.upload_main.status.checking")) %> ... <%= image_tag("indicator-small.gif", :size => "13x10") %>
+      </span>
     </span>
   </p>
 </div>

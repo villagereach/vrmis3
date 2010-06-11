@@ -48,7 +48,6 @@ en:
   select_blank:                "Select ..."
   go:                          "Go"
   loading:                     "Loading ..."
-  checking:                    "Checking ..."
   search_button:               "Search"
   reset_button:                "Reset"
   health_center:               "Health Center"
@@ -685,6 +684,7 @@ en:
           updated:                       "Install updates"
           error:                         "Error downloading updates"
           no_update:                     "No update found"
+          checking:                      "Checking connectivity"
         upload_data:                     "Upload Data"
         update_software:                 "Update Software"
         forms_to_upload:                 "{{count}} forms to upload"
@@ -709,6 +709,7 @@ en:
         login_and_upload: "Login to server and upload forms"
         updated:          "Updated"
         downloading:      "Downloading"
+        checking:         "Checking"
         online:           "Online"
         offline:          "Offline"
       upload:
