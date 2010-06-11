@@ -101,7 +101,7 @@ class OlmisController < ActionController::Base
       end
       return nil
     end
-    @suppress_breadcrumbs = (current_user.role.id == 1)
+    @suppress_breadcrumbs = (current_user.role.code == 'observer')
     session[:return_to] = nil
     return current_user
   end
