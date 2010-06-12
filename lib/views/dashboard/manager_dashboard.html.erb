@@ -14,10 +14,11 @@
   </div>
   
   <div class="cold-chain span-12 last">
-<%#        <h2><%= t('common.cold_chain_title') +|</h2> # RH: this seems redundant with the header in the partial %>
-<%= render :partial => '/mini_reports/overall_fridge_status'   %>
-<%= render :partial => '/mini_reports/currently_urgent_fridge_list'       %>
-<%= render :partial => '/mini_reports/neglected_fridge_list'     %>
+
+<%= render :partial => '/mini_reports/overall_fridge_status' %>
+<%# render :partial => '/mini_reports/currently_urgent_fridge_list' %>
+<%# render :partial => '/mini_reports/neglected_fridge_list' %>
+<%= render :partial => '/mini_reports/recently_fixed_fridge_list' %>
  
 
        
