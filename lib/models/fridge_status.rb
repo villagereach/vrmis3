@@ -125,7 +125,7 @@ class FridgeStatus < ActiveRecord::Base
   end
   
   def i18n_status_code
-    I18n.t("FridgeStatus.#{status_code}", :default => status_code)
+    status_code.present? ? I18n.t("FridgeStatus.#{status_code}", :default => status_code) : I18n.t("unknown")
   end
   
   def status_category
