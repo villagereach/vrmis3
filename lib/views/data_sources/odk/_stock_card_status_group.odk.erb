@@ -10,7 +10,7 @@
     <group>
       <select1 bind="<%= id %>:have" appearance="full" class="radio">
         <label><%= card.label %>, <%= h(t("visits.health_center_stock_cards.have")) %></label>
-        <%- [ [ h(t("yes")), "true" ], [ h(t("no")), "false" ] ].each do |label,value| -%>
+        <%- [ [ h(t("yes")), "true" ], [ h(t("no")), "false" ], [ h(t("NR")), "nr" ] ].each do |label,value| -%>
           <item>
             <label><%= label %></label>
             <value><%= value %></value>
@@ -19,7 +19,7 @@
       </select1>
       <select1 bind="<%= id %>:use" appearance="full" class="radio">
         <label><%= card.label %>, <%= h(t("visits.health_center_stock_cards.use")) %></label>
-        <%- [ [ h(t("yes")), "true" ], [ h(t("no")), "false" ] ].each do |label,value| -%>
+        <%- [ [ h(t("yes")), "true" ], [ h(t("no")), "false" ], [ h(t("NR")), "nr" ] ].each do |label,value| -%>
           <item>
             <label><%= label %></label>
             <value><%= value %></value>
@@ -29,4 +29,3 @@
     </group>
   <%- end -%>
 </group>
-
