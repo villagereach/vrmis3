@@ -743,27 +743,28 @@ en:
         quantity:             "The quantity must be a non-negative integer value"
         select_an_option:     "An option must be selected"
         other_fridge_status:  "Describe the problem"
-      # ODK-specific data
-      visit_intro:
-        label: "Visit Intro"
-        hint:  "Additional text TBD"
-      inventory_intro:
-        label: "Inventory Intro"
-        hint:  "Additional text TBD"
-      general_intro:
-        label: "General Equipment Intro"
-        hint:  "Additional text TBD"
-      cold_chain_intro:
-        label: "Cold Chain Intro"
-        hint:  "Additional text TBD"
-      stock_cards_intro:
-        label: "Stock Cards Intro"
-        hint:  "Additional text TBD"
-      visit_month:       "Visit Month"
-      quantity_error:    "Value must be a non-negative integer or a dash (-)"
-      quantity_hint:     "Enter a dash (-) if the quantity is not available; if there are none, record a zero (0)."
-      temperature_error: "The temperature must be an integer value. A working fridge temperature must be between 2 and 8 °C."
-      temperature_hint:  "Enter a dash (-) if the temperature is not available"
+      odk:
+        # ODK-specific data
+        visit_intro:
+          label: "Visit Intro"
+          hint:  "Additional text TBD"
+        inventory_intro:
+          label: "Inventory Intro"
+          hint:  "Additional text TBD"
+        general_intro:
+          label: "General Equipment Intro"
+          hint:  "Additional text TBD"
+        cold_chain_intro:
+          label: "Cold Chain Intro"
+          hint:  "Additional text TBD"
+        stock_cards_intro:
+          label: "Stock Cards Intro"
+          hint:  "Additional text TBD"
+        visit_month:       "Visit Month"
+        quantity_error:    "Value must be a non-negative integer or a dash (-)"
+        quantity_hint:     "Enter a dash (-) if the quantity is not available; if there are none, record a zero (0)."
+        temperature_error: "The temperature must be an integer value. A working fridge temperature must be between 2 and 8 °C."
+        temperature_hint:  "Enter a dash (-) if the temperature is not available"
     list_xforms:
       visit_all:   "Health Center Visits"
       visit_by_dz: "{{delivery_zone}} Visits"

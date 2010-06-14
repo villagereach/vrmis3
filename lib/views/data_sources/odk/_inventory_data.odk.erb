@@ -1,10 +1,9 @@
-<inventory><intro/><%= 
-Inventory.possible_fields.group_by(&:second).map { |package, fields|          
-  "<item_#{package.code}>" + 
-    fields.map { |type, package, screen|
-      "<#{type}><qty/></#{type}>"
-    }.join("") +
-    "</item_#{package.code}>"
-}.join("") 
-%></inventory>  
+<inventory>
+  <intro/>
+  <%= Inventory.possible_fields.group_by(&:second).map { |package, fields|          
+        "<item_#{package.code}>" + 
+        fields.map { |type, package, screen| "<#{type}><qty/></#{type}>" }.join +
+        "</item_#{package.code}>"
+      }.join("") %>
+</inventory>  
 

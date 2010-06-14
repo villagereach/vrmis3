@@ -2,6 +2,6 @@
 <%- Inventory.possible_fields.each do |type, package, screen|
       id = "inventory_#{package.code}_#{type}"
       node = "/olmis/hcvisit/visit/inventory/item_#{package.code}/#{type}" -%>
-    <bind id="<%= id %>:qty" nodeset="<%= node %>/qty" required="true()" constraint="regex(., '^(?:-|\d+)$')" jr:constraintMsg="<%= t('.quantity_error') %>" />
+    <bind id="<%= id %>:qty" nodeset="<%= node %>/qty" required="true()" constraint="regex(., '^(?:-|\d+)$')" jr:constraintMsg="<%= h(t('data_sources.hcvisit.odk.quantity_error')) %>" />
 <%- end -%>
 
