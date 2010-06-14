@@ -1,0 +1,23 @@
+<% packages = Package.active.select { |p| Inventory.directly_collected_types.any? { |t| p.inventoried_by_type?(t, screen) } }
+   types = Inventory.directly_collected_types.select { |t| packages.any? { |p| p.inventoried_by_type?(t, screen) } } -%>
+<group>
+  <label><%= h(t("visits.health_center_monthly_tasks.inventory")) %></label>
+  <input bind="inventory_intro">
+    <label><%= h(t("data_sources.hcvisit.odk.inventory_intro.label")) %></label>
+    <hint><%= h(t("data_sources.hcvisit.odk.inventory_intro.hint")) %></hint>
+  </input>
+
+  <%- packages.sort.each do |package|
+        types.each do |type|
+          if package.inventoried_by_type?(type, screen)
+            id = "inventory_#{package.code}_#{type}" -%>
+        <input bind="<%= id %>:qty">
+          <label><%= package.label %>, <%= h(t("visits.health_center_inventory.#{type}")) %></label>
+          <%- if Inventory.nullable_types.include?(type) -%>
+            <hint><%= h(t("data_sources.hcvisit.odk.quantity_hint")) %></hint>
+          <%- end -%>
+        </input>
+      <%- end -%>
+    <%- end -%>
+  <%- end -%>
+</group>

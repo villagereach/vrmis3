@@ -35,9 +35,9 @@
             <vehicle_id/>
             <notes/>
             <visit>
-            <% HealthCenterVisit.tables.each do |t| 
+            <% HealthCenterVisit.screens.each do |screen|
                  begin %><%=
-                   render(:partial => "data_sources/odk/#{t.table_name.singularize}_data.odk") %><% 
+                   render(:partial => "/data_sources/odk/#{screen}_data.odk", :locals => { :screen => screen }) %><% 
                  rescue ActionView::MissingTemplate           
                  end 
                end %> 
@@ -58,9 +58,9 @@
 
       <bind nodeset="/olmis/hcvisit/visit" id="visit_data" relevant="../visited != 'false'" />
 
-      <% HealthCenterVisit.tables.each do |t| 
+      <% HealthCenterVisit.screens.each do |screen|
            begin %><%= 
-             render(:partial => "/data_sources/odk/#{t.table_name.singularize}_bind.odk") %><% 
+             render(:partial => "/data_sources/odk/#{screen}_bind.odk", :locals => { :screen => screen }) %><% 
            rescue ActionView::MissingTemplate           
            end 
          end %> 
@@ -134,9 +134,9 @@
       </input>
     </group>
     <group bind="visit_data">    
-      <% HealthCenterVisit.tables.each do |t| 
+      <% HealthCenterVisit.screens.each do |screen|
            begin %><%= 
-             render(:partial => "/data_sources/odk/#{t.table_name.singularize}_group.odk") %><% 
+             render(:partial => "/data_sources/odk/#{screen}_group.odk", :locals => { :screen => screen }) %><% 
            rescue ActionView::MissingTemplate           
            end 
          end %> 

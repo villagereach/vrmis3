@@ -1,0 +1,14 @@
+<% packages = Package.active.select { |p| Inventory.directly_collected_types.any? { |t| p.inventoried_by_type?(t, screen) } }
+   types = Inventory.directly_collected_types.select { |t| packages.any? { |p| p.inventoried_by_type?(t, screen) } } -%>
+<inventory>
+  <intro/>
+  <%- packages.sort.each do |package| -%>
+    <item_<%= package.code %>>
+      <%- types.each do |type| -%>
+        <%- if package.inventoried_by_type?(type, screen) -%>
+          <<%= type %>><qty/></<%= type %>>
+        <%- end -%>
+      <%- end -%>
+    </item_<%= package.code %>>
+  <%- end -%>
+</inventory>  
