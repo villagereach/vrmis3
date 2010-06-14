@@ -2,9 +2,14 @@
 <%-
   locale = I18n.locale
 
-  provinces = Province.all.sort
-  districts = District.all
-  health_centers = HealthCenter.all
+  if params[:dz] and delivery_zone = DeliveryZone.find_by_code(params[:dz])
+    districts = delivery_zone.health_centers.group_by(&:district).keys.sort
+    health_centers = districts.map(&:health_centers).flatten
+  else
+    delivery_zones = DeliveryZone.all
+    districts = District.all
+    health_centers = HealthCenter.all
+  end
 
   def health_center_code(hc)
     "#{hc.code}-#{hc.id}"  # code+ID prevents duplicate HC names from causing grief
@@ -43,6 +48,25 @@
                end %> 
             </visit>
           </hcvisit>
+          <!-- Hackaround for lack of itemset support -->
+          <location>
+            <%- if delivery_zone -%>
+              <delivery_zone><%= delivery_zone.code %></delivery_zone>
+              <distict/>
+            <%- else -%>
+              <delivery_zone/>
+              <district>
+                <%- delivery_zones.each do |dz| -%>
+                  <dz-<%= dz.code %> />
+                <%- end -%>
+              </district>
+            <%- end -%>
+            <health_center>
+              <%- districts.each do |d| -%>
+                <d-<%= d.code %> />
+              <%- end -%>
+            </health_center>
+          </location>
         </olmis>
       </instance>
 
@@ -64,12 +88,55 @@
            rescue ActionView::MissingTemplate           
            end 
          end %> 
+
+      <!-- HACK: JavaRosa doesn't yet support itemsets, so the following is necessary for cascading location selection -->
+      <%- if delivery_zone -%>
+        <bind nodeset="/olmis/location/district" id="district" required="true()" />
+        <%- districts.each do |d| -%>
+          <bind id="d-<%= d.code -%>" nodeset="/olmis/location/health_center/d-<%= d.code %>" required="true()" relevant="../../district = '<%= d.code %>'" />
+          <%- d.health_centers.each do |hc|
+                next if hc.fridges.empty?
+                hc_code = health_center_code(hc) -%>
+            <bind id="hc-<%= hc_code %>" nodeset="/olmis/location/fridges/hc-<%= hc_code %>" required="true()" relevant="../../district = '<%= d.code %>' and ../../health_center/d-<%= d.code %> = '<%= hc_code %>'" />
+            <%- hc.fridges.each do |fridge|
+                  id = "f-#{fridge.id}"
+                  node = "/olmis/location/fridges/hc-#{hc_code}/#{id}" -%>
+              <bind id="<%= id %>:temp" nodeset="<%= node %>/temp" required="true()" />
+              <bind id="<%= id %>:past_problem" nodeset="<%= node %>/past_problem" required="true()" />
+              <bind id="<%= id %>:state" nodeset="<%= node %>/state" required="true()" />
+              <bind id="<%= id %>:problem" nodeset="<%= node %>/problem" required="true()" relevant="../state = 'false'" />
+              <bind id=<%= id %>:other_problem" nodeset="<%= node %>/other_problem" required="true()" relevant="regex(../problem, '\bOTHER\b')" />
+            <%- end -%>
+          <%- end -%>
+        <%- end -%>
+      <%- else -%>
+        <%- delivery_zones.each do |dz| -%>
+          <bind id="dz-<%= dz.code %>" nodeset="/olmis/location/district/dz-<%= dz.code %>" required="true()" relevant="../../delivery_zone = '<%= dz.code %>'" />
+          <%- dz.health_centers.group_by(&:district).keys.sort.each do |d| -%>
+            <bind id="d-<%= d.code %>" nodeset="/olmis/location/health_center/d-<%= d.code %>" required="true()" relevant="../../delivery_zone = <%= dz.code %>' and ../../district/dz-<%= dz.code %> = '<%= d.code %>'" />
+            <%- d.health_centers.each do |hc|
+                  next if hc.fridges.empty?
+                  hc_code = health_center_code(hc) -%>
+              <bind id="hc-<%= hc_code %>" nodeset="/olmis/location/fridges/hc-<%= hc_code %>" required="true()" relevant="../../district = '<%= d.code %>' and ../../health_center/d-<%= d.code %> = '<%= hc_code %>'" />
+              <%- hc.fridges.each do |fridge|
+                    id = "f-#{fridge.id}"
+                    node = "/olmis/location/fridges/hc-#{hc_code}/#{id}" -%>
+                <bind id="<%= id %>:temp" nodeset="<%= node %>/temp" required="true()" />
+                <bind id="<%= id %>:past_problem" nodeset="<%= node %>/past_problem" required="true()" />
+                <bind id="<%= id %>:state" nodeset="<%= node %>/state" required="true()" />
+                <bind id="<%= id %>:problem" nodeset="<%= node %>/problem" required="true()" relevant="../state = 'false'" />
+                <bind id=<%= id %>:other_problem" nodeset="<%= node %>/other_problem" required="true()" relevant="regex(../problem, '\bOTHER\b')" />
+              <%- end -%>
+            <%- end -%>
+          <%- end -%>
+        <%- end -%>
+      <%- end -%>
     </model>
   </h:head>
   <h:body>
     <group>
       <select1 bind="field_coordinator-name">
-        <label><%= t("field_coordinator") %></label>
+        <label><%= h(t("field_coordinator")) %></label>
         <%- User.field_coordinators.reject{|fc| fc.delivery_zone.nil?}.sort.each do |fc| -%>
           <item>
             <label><%= h fc.name %></label>
@@ -78,37 +145,49 @@
         <%- end -%>
       </select1>
     </group>
-    <!-- HACK: Cascading province -> delivery zone -> district -> health center selection -->
-    <group>
-      <select1 bind="province">
-        <label><%= t("province") %></label>
-        <%- provinces.each do |p| -%>
-          <item>
-            <label><%= h p.name %></label>
-            <value><%= h p.code %></value>
-          </item>
-        <%- end -%>
-      </select1>
-    </group>
-    <group>
-      <%- provinces.each do |p|
-            p_code = p.code  -%>
-        <select1 bind="p-<%= p_code %>">
-          <label><%= t("delivery_zone") %></label>
-          <%- p.districts.sort.each do |dz| -%>
+    <%- if delivery_zone -%>
+      <group>
+        <select1 bind="district">
+          <label><%= h(t("district")) %></label>
+          <%- districts.each do |d| -%>
+            <item>
+              <label><%= h d.name %></label>
+              <value><%= h d.code %></value>
+            </item>
+          <%- end -%>
+        </select1>
+      </group>
+    <%- else -%>
+      <!-- HACK: Cascading delivery zone -> district -> health center selection -->
+      <group>
+        <select1 bind="delivery_zone">
+          <label><%= h(t("delivery_zone")) %></label>
+          <%- delivery_zones.each do |dz| -%>
             <item>
               <label><%= h dz.name %></label>
               <value><%= h dz.code %></value>
             </item>
           <%- end -%>
         </select1>
-      <%- end -%>
-    </group>      
+      </group>
+      <group>
+        <%- delivery_zones.each do |dz| -%>
+          <select1 bind="dz-<%= dz.code %>">
+            <label><%= h(t("district")) %></label>
+            <%- dz.health_centers.group_by(&:district).keys.sort.each do |d| -%>
+              <item>
+                <label><%= h d.name %></label>
+                <value><%= h d.code %></value>
+              </item>
+            <%- end -%>
+          </select1>
+        <%- end -%>
+      </group>
+    <%- end -%>
     <group>
-      <%- districts.each do |d|
-            d_code = d.code -%>
-        <select1 bind="d-<%= d_code %>">
-          <label><%= t("health_center") %></label>
+      <%- districts.each do |d| -%>
+        <select1 bind="d-<%= d.code %>">
+          <label><%= h(t("health_center")) %></label>
           <%- d.health_centers.sort.each do |hc| -%>
             <item>
               <label><%= h hc.name %></label>
