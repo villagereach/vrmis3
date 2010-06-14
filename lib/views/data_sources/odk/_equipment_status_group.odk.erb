@@ -1,32 +1,34 @@
-      <group>
-        <label><%= h(t("visits.health_center_monthly_tasks.equipment")) %></label>
-        <input bind="equipment_status_intro">
-          <label><%= h(t("data_sources.hcvisit.odk.equipment_status_intro.label")) %></label>
-          <hint><%= h(t("data_sources.hcvisit.odk.equipment_status_intro.hint")) %></hint>
-        </input>
+<group>
+  <label><%= h(t("visits.health_center_monthly_tasks.equipment")) %></label>
+  <input bind="equipment_status_intro">
+    <label><%= h(t("data_sources.hcvisit.odk.equipment_status_intro.label")) %></label>
+    <hint><%= h(t("data_sources.hcvisit.odk.equipment_status_intro.hint")) %></hint>
+  </input>
 
-        <%- EquipmentType.active.sort.each do |type|
-            id = "equipment_status_#{type.code}" -%>
-          <group>
-            <select1 bind="<%= id %>:present">
-              <label><%= type.label %>, <%= h(t("visits.health_center_equipment.present")) %></label>
-              <%- [ [ h(t("yes")), "true" ], [ h(t("no")), "false" ] ].each do |label,value| -%>
-                <item>
-                  <label><%= label %></label>
-                  <value><%= value %></value>
-                </item>
-              <%- end -%>
-            </select1>
-            <select1 bind="<%= id %>:working">
-              <label><%= type.label %>, <%= h(t("visits.health_center_equipment.working")) %></label>
-              <%- [ [ h(t("yes")), "true" ], [ h(t("no")), "false" ] ].each do |label,value| -%>
-                <item>
-                  <label><%= label %></label>
-                  <value><%= value %></value>
-                </item>
-              <%- end -%>
-            </select1>
-          </group>
+  <%- EquipmentType.active.sort.each do |type|
+      id = "equipment_status_#{type.code}" -%>
+    <group>
+      <select1 bind="<%= id %>:present">
+        <label><%= type.label %>, <%= h(t("visits.health_center_equipment.present")) %></label>
+        <%- [ [ h(t("yes")), "true" ], [ h(t("no")), "false" ], [ h(t("NR")), "nr" ] ].each do |label,value| -%>
+          <item>
+            <label><%= label %></label>
+            <value><%= value %></value>
+          </item>
         <%- end -%>
-      </group>
-
+      </select1>
+      <select1 bind="<%= id %>:working">
+        <label><%= type.label %>, <%= h(t("visits.health_center_equipment.working")) %></label>
+        <%- [ [ h(t("yes")), "true" ], [ h(t("no")), "false" ], [ h(t("NR")), "nr" ] ].each do |label,value| -%>
+          <item>
+            <label><%= label %></label>
+            <value><%= value %></value>
+          </item>
+        <%- end -%>
+      </select1>
+      <input bind="equipment_status_notes">
+        <label><%= h(t("visits.health_center_monthly_visit.notes")) %></label>
+      </input>
+    </group>
+  <%- end -%>
+</group>

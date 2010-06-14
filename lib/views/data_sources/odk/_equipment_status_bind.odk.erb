@@ -6,3 +6,4 @@
   <bind id="<%= id %>:present" nodeset="<%= node %>/present" required="true()" constraint="regex(., '^(?:-|\d+)$')" jr:constraintMsg="<%= h(t('data_sources.hcvisit.odk.quantity_error')) %>" />
   <bind id="<%= id %>:working" nodeset="<%= node %>/status"  required="true()" />
 <%- end -%>
+<bind nodeset="/olmis/hcvisit/visit/equipment_status/notes" id="equipment_status_notes" />
