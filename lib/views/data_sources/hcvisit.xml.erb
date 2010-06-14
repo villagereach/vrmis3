@@ -60,7 +60,7 @@
 
       <% HealthCenterVisit.tables.each do |t| 
            begin %><%= 
-             render(:partial => 'odk/' + t.table_name.singularize + '_bind.odk') %><% 
+             render(:partial => "/data_sources/odk/#{t.table_name.singularize}_bind.odk") %><% 
            rescue ActionView::MissingTemplate           
            end 
          end %> 
@@ -136,7 +136,7 @@
     <group bind="visit_data">    
       <% HealthCenterVisit.tables.each do |t| 
            begin %><%= 
-             render(:partial => 'odk/' + t.table_name.singularize + '_group.odk') %><% 
+             render(:partial => "/data_sources/odk/#{t.table_name.singularize}_group.odk") %><% 
            rescue ActionView::MissingTemplate           
            end 
          end %> 
