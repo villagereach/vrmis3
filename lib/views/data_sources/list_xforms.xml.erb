@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <forms>
   <%- I18n.available_locales.each do |lang| -%>
-    <form url="<%= xform_format_url(:name => :hcvisit, :format => :xml, :locale => lang) %>"><%= t('health_center_visit', :locale => lang) %></form>
+    <form url="<%= xform_url(:name => :hcvisit, :format => :xml, :locale => lang) %>"><%= t('health_center_visit', :locale => lang) %></form>
   <%- end -%>
   <%- DeliveryZone.all.sort.each do |dz| -%>
     <%- I18n.available_locales.each do |lang| -%>
-      <form url="<%= xform_format_url(:name => :hcvisit, :format => :xml, :dz => dz.code, :locale => lang) %>"><%= t('.visit_by_dz', :delivery_zone => dz.name, :locale => lang) %></form>
+      <form url="<%= xform_url(:name => :hcvisit, :format => :xml, :dz => dz.code, :locale => lang) %>"><%= t('.visit_by_dz', :delivery_zone => dz.name, :locale => lang) %></form>
     <%- end -%>
   <%- end -%>
 </forms>
