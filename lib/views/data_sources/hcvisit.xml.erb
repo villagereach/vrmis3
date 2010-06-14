@@ -52,7 +52,7 @@
       <!-- HACK: Set during post-processing due to lack of dynamic selection support (see below) -->
       <!--bind nodeset="/vrmis3/hcvisit/health_center"              id="health_center"              required="true()" /-->
 
-      <bind nodeset="/vrmis3/hcvisit/visited_at"       id="visited_at"      required="true()" relevant="../visited != 'false'" type="date" constraint="date(.) &lt;= today()" jr:preload="date" jr:preloadParams="today" jr:constraintMsg="<%= t('activerecord.errors.models.health_center_visit.visited_at.no_future_date') %>" />
+      <bind nodeset="/vrmis3/hcvisit/visited_at"       id="visited_at"      required="true()" relevant="../visited != 'false'" type="date" constraint="date(.) &lt;= today()" jr:preload="date" jr:preloadParams="today" jr:constraintMsg="<%= t('activerecord.errors.models.health_center_visit.attributes.visited_at.no_future_date') %>" />
       <bind nodeset="/vrmis3/hcvisit/vehicle_id"       id="vehicle_id"       required="true()" relevant="../visited != 'false'" />
       <bind nodeset="/vrmis3/hcvisit/notes"            id="notes" />
 
