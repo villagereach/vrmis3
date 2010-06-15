@@ -750,7 +750,7 @@ en:
           label: "Visit Intro"
           hint:  "Additional text TBD"
         inventory_intro:
-          label: "Inventory Intro"
+          label: "EPI Inventory Intro"
           hint:  "Additional text TBD"
         equipment_status_intro:
           label: "Equipment Intro"
