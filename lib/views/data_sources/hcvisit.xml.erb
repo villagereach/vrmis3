@@ -117,7 +117,7 @@
               <bind id="<%= id %>:temp" nodeset="<%= node %>/temp" required="true()" type="integer" />
               <bind id="<%= id %>:past_problem" nodeset="<%= node %>/past_problem" required="true()" />
               <bind id="<%= id %>:state" nodeset="<%= node %>/state" required="true()" />
-              <bind id="<%= id %>:problem" nodeset="<%= node %>/problem" required="true()" relevant="../state = 'false'" />
+              <bind id="<%= id %>:problem" nodeset="<%= node %>/problem" required="true()" relevant="../state = 'problem'" />
               <bind id="<%= id %>:other_problem" nodeset="<%= node %>/other_problem" required="true()" relevant="regex(../problem, '\bOTHER\b')" />
             <%- end -%>
           <%- end -%>

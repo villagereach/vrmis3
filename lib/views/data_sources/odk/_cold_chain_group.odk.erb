@@ -27,7 +27,7 @@
 
         <select1 bind="<%= id %>:state">
           <label><%= desc %> <%= h(t("visits.health_center_cold_chain.departure_state")) %></label>
-          <%- [ [ h(t("yes")), "true" ], [ h(t("no")), "false"], [ h(t("unknown")), "nr" ] ].each do |label,value| -%>
+          <%- [ [ h(t("yes")), "OK" ], [ h(t("no")), "problem"], [ h(t("unknown")), "nr" ] ].each do |label,value| -%>
             <item>
               <label><%= label %></label>
               <value><%= value %></value>
