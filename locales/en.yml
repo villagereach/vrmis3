@@ -752,8 +752,8 @@ en:
         inventory_intro:
           label: "Inventory Intro"
           hint:  "Additional text TBD"
-        general_intro:
-          label: "General Equipment Intro"
+        equipment_status_intro:
+          label: "Equipment Intro"
           hint:  "Additional text TBD"
         cold_chain_intro:
           label: "Cold Chain Intro"
