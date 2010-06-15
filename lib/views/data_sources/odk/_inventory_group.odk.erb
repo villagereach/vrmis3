@@ -10,8 +10,8 @@
   <%- packages.sort.each do |package|
         types.each do |type|
           if package.inventoried_by_type?(type, screen)
-            id = "inventory_#{package.code}_#{type}" -%>
-        <input bind="<%= id %>:qty">
+            id = "inventory_#{package.code}_#{type}:qty" -%>
+        <input bind="<%= id %>">
           <label><%= package.label %>, <%= h(t("visits.health_center_inventory.#{type}")) %></label>
           <%- if Inventory.nullable_types.include?(type) -%>
             <hint><%= h(t("data_sources.hcvisit.odk.quantity_hint")) %></hint>

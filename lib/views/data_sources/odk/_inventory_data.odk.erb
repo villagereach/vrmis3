@@ -1,0 +1,18 @@
+<%- packages = Inventory.possible_fields.inject({}) do |hash,(type,package,screen)|
+      if Inventory.directly_collected_types.include?(type)
+        hash[package.code] ||= {}
+        hash[package.code][type] ||= []
+        hash[package.code][type].push screen
+      end
+      hash
+    end -%>
+<inventory>
+  <intro/>
+  <%- packages.each do |package, types| -%>
+    <item_<%= package %>>
+      <%- types.each do |type, screens| -%>
+        <<%= type %>><qty/></<%= type %>>
+      <%- end -%>
+    </item_<%= package %>>
+  <%- end -%>
+</inventory>  

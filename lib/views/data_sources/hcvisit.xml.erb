@@ -40,12 +40,16 @@
             <vehicle_id/>
             <notes/>
             <visit>
-            <% HealthCenterVisit.screens.each do |screen|
-                 begin %><%=
-                   render(:partial => "/data_sources/odk/#{screen}_data.odk", :locals => { :screen => screen }) %><% 
-                 rescue ActionView::MissingTemplate           
-                 end 
-               end %> 
+            <%- HealthCenterVisit.tables.each do |table| -%>
+              <%- begin -%>
+                <%= render :partial => "/data_sources/odk/#{table.table_name.singularize}_data.odk" %>
+              <%- rescue ActionView::MissingTemplate -%>
+                <%- begin -%>
+                  <%= render :partial => "/data_sources/odk/#{table.xforms_group_name}_data.odk" %>
+                <%- rescue ActionView::MissingTemplate -%>
+                <%- end -%>
+              <%- end -%>
+            <%- end -%>
             </visit>
           </hcvisit>
           <!-- Hackaround for lack of itemset support -->
@@ -95,12 +99,17 @@
 
       <bind nodeset="/olmis/hcvisit/visit" id="visit_data" relevant="../visited != 'false'" />
 
-      <% HealthCenterVisit.screens.each do |screen|
-           begin %><%= 
-             render(:partial => "/data_sources/odk/#{screen}_bind.odk", :locals => { :screen => screen }) %><% 
-           rescue ActionView::MissingTemplate           
-           end 
-         end %> 
+      <% HealthCenterVisit.screens.each do |screen| -%>
+        <%- begin -%>
+          <%= render :partial => "/data_sources/odk/#{screen}_bind.odk", :locals => { :screen => screen } %>
+        <%- rescue ActionView::MissingTemplate -%>
+          <%- begin %>
+            <%- klass = HealthCenterVisit.klass_by_screen[screen] -%>
+            <%= render :partial => "/data_sources/odk/#{klass.xforms_group_name}_bind.odk", :locals => { :screen => screen } %>
+          <%- rescue ActionView::MissingTemplate -%>
+          <%- end -%>
+        <%- end -%>
+      <%- end -%>
 
       <!-- HACK: JavaRosa doesn't yet support itemsets, so the following is necessary for cascading location selection -->
       <%- if delivery_zone -%>
@@ -226,13 +235,17 @@
       </input>
     </group>
     <group bind="visit_data">    
-      <% HealthCenterVisit.screens.each do |screen|
-           begin %><%= 
-             render(:partial => "/data_sources/odk/#{screen}_group.odk",
-                    :locals => { :screen => screen, :health_centers => health_centers }) %><% 
-           rescue ActionView::MissingTemplate           
-           end 
-         end %> 
+      <% HealthCenterVisit.screens.each do |screen| -%>
+        <%- begin -%>
+          <%= render :partial => "/data_sources/odk/#{screen}_group.odk", :locals => { :screen => screen, :health_centers => health_centers } %>
+        <%- rescue ActionView::MissingTemplate -%>
+          <%- begin %>
+            <%- klass = HealthCenterVisit.klass_by_screen[screen] -%>
+            <%= render :partial => "/data_sources/odk/#{klass.xforms_group_name}_group.odk", :locals => { :screen => screen, :health_centers => health_centers } %>
+          <%- rescue ActionView::MissingTemplate -%>
+          <%- end -%>
+        <%- end -%>
+      <%- end -%>
     </group>
   </h:body>
 </h:html>
