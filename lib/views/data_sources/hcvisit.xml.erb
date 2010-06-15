@@ -2,6 +2,11 @@
 <%-
   locale = I18n.locale
 
+  # FIXME: Temporarily exclude fridge form
+  include_cold_chain = false
+  hc_visit_tables = HealthCenterVisit.tables - [ FridgeStatus ]
+  hc_visit_screens = HealthCenterVisit.screens - [ 'cold_chain' ]
+
   if params[:dz] and delivery_zone = DeliveryZone.find_by_code(params[:dz])
     districts = delivery_zone.health_centers.group_by(&:district).keys.sort
     health_centers = districts.map(&:health_centers).flatten
@@ -40,7 +45,7 @@
             <vehicle_id/>
             <notes/>
             <visit>
-            <%- HealthCenterVisit.tables.each do |table| -%>
+            <%- hc_visit_tables.each do |table| -%>
               <%- begin -%>
                 <%= render :partial => "/data_sources/odk/#{table.table_name.singularize}_data.odk" %>
               <%- rescue ActionView::MissingTemplate -%>
@@ -70,19 +75,21 @@
                 <d-<%= d.code %> />
               <%- end -%>
             </health_center>
-            <fridges>
-              <%- health_centers.each do |hc|
-                    next if hc.fridges.empty?
-                    hc_code = health_center_code(hc) -%>
-                <hc-<%= hc_code -%>>
-                  <%- hc.fridges.each do |fridge| -%>
-                    <f-<%= fridge.id %> code="<%= h fridge.code %>">
-                      <temp/><past_problem/><state/><problem/><other_problem/>
-                    </f-<%= fridge.id %>>
-                  <%- end -%>
-                </hc-<%= hc_code -%>>
-              <%- end -%>
-            </fridges>
+            <%- if include_cold_chain -%>
+              <fridges>
+                <%- health_centers.each do |hc|
+                      next if hc.fridges.empty?
+                      hc_code = health_center_code(hc) -%>
+                  <hc-<%= hc_code -%>>
+                    <%- hc.fridges.each do |fridge| -%>
+                      <f-<%= fridge.id %> code="<%= h fridge.code %>">
+                        <temp/><past_problem/><state/><problem/><other_problem/>
+                      </f-<%= fridge.id %>>
+                    <%- end -%>
+                  </hc-<%= hc_code -%>>
+                <%- end -%>
+              </fridges>
+            <%- end -%>
           </location>
         </olmis>
       </instance>
@@ -99,7 +106,7 @@
 
       <bind nodeset="/olmis/hcvisit/visit" id="visit_data" relevant="../visited != 'false'" />
 
-      <% HealthCenterVisit.screens.each do |screen| -%>
+      <% hc_visit_screens.each do |screen| -%>
         <%- begin -%>
           <%= render :partial => "/data_sources/odk/#{screen}_bind.odk", :locals => { :screen => screen } %>
         <%- rescue ActionView::MissingTemplate -%>
@@ -235,7 +242,7 @@
       </input>
     </group>
     <group bind="visit_data">    
-      <% HealthCenterVisit.screens.each do |screen| -%>
+      <% hc_visit_screens.each do |screen| -%>
         <%- begin -%>
           <%= render :partial => "/data_sources/odk/#{screen}_group.odk", :locals => { :screen => screen, :health_centers => health_centers } %>
         <%- rescue ActionView::MissingTemplate -%>
