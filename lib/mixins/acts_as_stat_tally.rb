@@ -397,7 +397,17 @@ module ActsAsStatTally
     end
     
     def odk_to_params(xml)
-      nil
+      xml.xpath("/olmis/hcvisit/visit/#{table_name.singularize}/*").
+          find_all{|n| n.name.starts_with?('item_')}.
+          inject({}) do |hash, inv|
+        inv.xpath('*').each do |type|
+          quantity = type.xpath('./qty').text
+          key = "#{inv.name[5..-1]}:#{type.name}"
+          hash[key]         = quantity == AndroidOdkVisitDataSource::NR ? nil : quantity
+          hash["#{key}/NR"] = quantity == AndroidOdkVisitDataSource::NR ?   1 : 0
+        end
+        hash
+      end
     end
 
     def xforms_to_params(xml)
