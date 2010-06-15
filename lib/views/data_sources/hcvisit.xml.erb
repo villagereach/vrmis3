@@ -22,7 +22,7 @@
         xmlns:jr="http://openrosa.org/javarosa"
         lang="<%= locale %>">
   <h:head>
-    <h:title><%= t("health_center_visit") %></h:title>
+    <h:title><%= h(t("health_center_visit")) %></h:title>
     <model>
       <instance>
         <olmis>
@@ -71,14 +71,14 @@
       </instance>
 
       <bind nodeset="/olmis/meta/date" type="date" jr:preload="date" jr:preloadParams="today" readonly="true()" />
-      <bind nodeset="/olmis/meta/field_coordinator/phone"       id="field_coordinator-phone" jr:preload="property" jr:preloadParams="phonenumber" />
-      <bind nodeset="/olmis/meta/field_coordinator/name"        id="field_coordinator-name"     required="true()" /><!--relevant="../phone = ''" /-->
+      <bind nodeset="/olmis/meta/field_coordinator/phone" id="field_coordinator-phone" jr:preload="property" jr:preloadParams="phonenumber" />
+      <bind nodeset="/olmis/meta/field_coordinator/name" id="field_coordinator-name" required="true()" /><!--relevant="../phone = ''" /-->
       <!-- HACK: Set during post-processing due to lack of dynamic selection support (see below) -->
-      <!--bind nodeset="/olmis/hcvisit/health_center"              id="health_center"              required="true()" /-->
+      <!--bind nodeset="/olmis/hcvisit/health_center" id="health_center" required="true()" /-->
 
-      <bind nodeset="/olmis/hcvisit/visited_at"       id="visited_at"      required="true()" relevant="../visited != 'false'" type="date" constraint="date(.) &lt;= today()" jr:preload="date" jr:preloadParams="today" jr:constraintMsg="<%= t('activerecord.errors.models.health_center_visit.attributes.visited_at.no_future_date') %>" />
-      <bind nodeset="/olmis/hcvisit/vehicle_id"       id="vehicle_id"       required="true()" relevant="../visited != 'false'" />
-      <bind nodeset="/olmis/hcvisit/notes"            id="notes" />
+      <bind nodeset="/olmis/hcvisit/visited_at" id="visited_at" required="true()" relevant="../visited != 'false'" type="date" constraint="date(.) &lt;= today()" jr:preload="date" jr:preloadParams="today" jr:constraintMsg="<%= h(t('activerecord.errors.models.health_center_visit.attributes.visited_at.no_future_date')) %>" />
+      <bind nodeset="/olmis/hcvisit/vehicle_id" id="vehicle_id" relevant="../visited != 'false'" />
+      <bind nodeset="/olmis/hcvisit/notes" id="notes" />
 
       <bind nodeset="/olmis/hcvisit/visit" id="visit_data" relevant="../visited != 'false'" />
 
@@ -199,17 +199,17 @@
     </group>
     <group>
       <input bind="visited_at">
-        <label><%= t("visits.health_center_monthly_visit.date") %></label>
+        <label><%= h(t("visits.health_center_monthly_visit.date")) %></label>
       </input>
     </group>
     <group>
       <input bind="vehicle_id">
-        <label><%= t("visits.health_center_monthly_visit.vehicle_code") %></label>
+        <label><%= h(t("visits.health_center_monthly_visit.vehicle_code")) %></label>
       </input>
     </group>
     <group>
       <input bind="notes">
-        <label><%= t("visits.health_center_monthly_visit.notes") %></label>
+        <label><%= h(t("visits.health_center_monthly_visit.notes")) %></label>
       </input>
     </group>
     <group bind="visit_data">    
