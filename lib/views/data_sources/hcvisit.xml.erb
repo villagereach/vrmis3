@@ -52,7 +52,7 @@
           <location>
             <%- if delivery_zone -%>
               <delivery_zone><%= delivery_zone.code %></delivery_zone>
-              <distict/>
+              <district/>
             <%- else -%>
               <delivery_zone/>
               <district>
@@ -215,7 +215,8 @@
     <group bind="visit_data">    
       <% HealthCenterVisit.screens.each do |screen|
            begin %><%= 
-             render(:partial => "/data_sources/odk/#{screen}_group.odk", :locals => { :screen => screen }) %><% 
+             render(:partial => "/data_sources/odk/#{screen}_group.odk",
+                    :locals => { :screen => screen, :health_centers => health_centers }) %><% 
            rescue ActionView::MissingTemplate           
            end 
          end %> 

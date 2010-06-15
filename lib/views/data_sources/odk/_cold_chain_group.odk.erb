@@ -5,7 +5,7 @@
     <hint><%= h(t("data_sources.hcvisit.odk.cold_chain_intro.hint")) %></hint>
   </input>
 
-  <%- HealthCenter.all.each do |hc|
+  <%- health_centers.each do |hc|
         next if hc.fridges.empty? -%>
     <group bind="hc-<%= health_center_code(hc) %>">
       <%- hc.fridges.sort.each do |fridge|
