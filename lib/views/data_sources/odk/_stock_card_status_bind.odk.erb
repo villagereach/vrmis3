@@ -4,6 +4,6 @@
       id = "stock_card_#{type_name}"
       node = "/olmis/hcvisit/visit/stock_cards/item_#{type_name}" -%>
   <bind id="<%= id %>:have" nodeset="<%= node %>/have" required="true()" />
-  <bind id="<%= id %>:use"  nodeset="<%= node %>/use"  required="true()" relevant="../have = 'true'" />
+  <bind id="<%= id %>:use"  nodeset="<%= node %>/use"  required="true()" />
 <%- end -%>
 
