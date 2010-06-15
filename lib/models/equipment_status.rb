@@ -52,7 +52,7 @@ class EquipmentStatus < ActiveRecord::Base
 
   def self.odk_to_params(xml)
     Hash[
-    *xml.xpath('/olmis/hcvisit/visit/general/*').find_all{|n| n.name.starts_with?('item_')}.map do |equip|
+    *xml.xpath('/olmis/hcvisit/visit/equipment_status/*').find_all{|n| n.name.starts_with?('item_')}.map do |equip|
         [
           equip.name[5..-1],
           {
