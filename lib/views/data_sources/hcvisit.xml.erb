@@ -114,7 +114,7 @@
             <%- hc.fridges.each do |fridge|
                   id = "f-#{fridge.id}"
                   node = "/olmis/location/fridges/hc-#{hc_code}/#{id}" -%>
-              <bind id="<%= id %>:temp" nodeset="<%= node %>/temp" required="true()" />
+              <bind id="<%= id %>:temp" nodeset="<%= node %>/temp" required="true()" type="integer" />
               <bind id="<%= id %>:past_problem" nodeset="<%= node %>/past_problem" required="true()" />
               <bind id="<%= id %>:state" nodeset="<%= node %>/state" required="true()" />
               <bind id="<%= id %>:problem" nodeset="<%= node %>/problem" required="true()" relevant="../state = 'false'" />
