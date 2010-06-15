@@ -541,6 +541,7 @@ en:
       temp_input_suffix: "°C"
       departure_state: "Was the refrigerator functioning adequately (within 2-8°C) when you left the health center?"
       problem:      "What is the problem(s)?"
+      other_problem: "Describe the problem"
     health_center_stock_cards:
       #name: "Stock Card"
       have: "Present?"
