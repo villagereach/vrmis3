@@ -7,7 +7,7 @@
           id = "inventory_#{package.code}_#{type}"
           node = "/olmis/hcvisit/visit/inventory/item_#{package.code}/#{type}"
           constraint, msg = Inventory.nullable_types.include?(type) \
-                              ? [ "regex(., '^(?:-|\d+)$')", h(t('data_sources.hcvisit.odk.quantity_error')) ] \
+                              ? [ "regex(., '^(?:-|\\d+)$')", h(t('data_sources.hcvisit.odk.quantity_error')) ] \
                               : [ ". &gt;= 0", h(t('activerecord.errors.messages.greater_than_or_equal_to', :count => 0)) ] -%>
       <bind id="<%= id %>:qty" nodeset="<%= node %>/qty" required="true()" constraint="<%= constraint %>" jr:constraintMsg="<%= msg %>" />
     <%- end -%>
