@@ -662,6 +662,12 @@ body {
   font: bold 12px "Bitstream Vera Sans", Arial, sans-serif;
   margin-left: 1em;
 }
+#upload-links .loading-indicator img {
+  margin-bottom: -1px;
+}
+#upload-links #update_status .loading-indicator {
+  margin-left: 0;
+}
 #upload-links #update_status {
   display: inline;
 }
