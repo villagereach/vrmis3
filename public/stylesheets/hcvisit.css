@@ -722,6 +722,33 @@ body {
   background-image: url('../images/indicator.gif');
 }
 /* }}} */
+/* loading-panel {{{ */
+#loading-panel {
+  background-color: #333;
+  border: 6px solid #111;
+  color: #eee;
+  font: normal 28px "Bitstream Vera Sans", Arial, sans-serif;
+  height: 200px;
+  left: -1000px;
+  opacity: 0.9;
+  position: absolute;
+  top: 0;
+  width: 360px;
+  z-index: 1000;
+}
+#loading-panel > div {
+  height: 2em;
+  line-height: 2em;
+  margin-top: -1em;
+  overflow: hidden;
+  position: relative;
+  text-align: center;
+  top: 50%;
+}
+#loading-panel > div img {
+  margin: 0 0 -8px 8px;
+}
+/* }}} */
 
 #tab-menu > div.ui-tabs-panel { 
   background-color: #f6f6f6; 

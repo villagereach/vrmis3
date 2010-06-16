@@ -232,6 +232,10 @@
       </div>
     </div>
 
+    <div id="loading-panel" style="display: none">
+      <div><%= h(t("loading")) %><%= image_tag("indicator-big.gif", :size => "32x32") %></div>
+    </div>
+
     <div id="hidden-data" style="display: none">
       <form action="javascript:return false;">
         <input id="health_center_catchment_population" type="hidden" value="" />

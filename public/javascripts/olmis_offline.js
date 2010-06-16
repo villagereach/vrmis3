@@ -4,6 +4,7 @@ var manifest_files = {
   count:      1,
   downloaded: 0
 };
+var selected_values = {};
 var containers = {
   login:        'login-form',
   admin_home:   'admin-home',
@@ -321,11 +322,12 @@ function get_available_visit_date_periods() {
 }
 
 function set_selected_value(name, value) {
-  $(selected_values).attr(name, value.toString());
+  $(selected_values).attr(name, value);
 }
 
 function get_selected_value(name) {
-  return selected_values[name] || ''
+  var value = selected_values[name];
+  return value !== undefined ? value : ''
 }
 
 function find_health_centers_in_delivery_zone(dz) {
@@ -360,13 +362,24 @@ function get_population_for_health_center() {
   return find_health_center_by_code(get_selected_value('health_center'))['population'];
 }
 
+function show_loading(fn) {
+  var panel = $('#loading-panel');
+  panel.
+    css('top', ($(window).height() - panel.outerHeight())/2 + window.pageYOffset).
+    css('left', ($(window).width() - panel.outerWidth())/2 + window.pageXOffset).
+    fadeIn('slow', function() {
+      fn();
+      panel.fadeOut('slow');
+    });
+}
+
 function select_visit() {
   var key = $('#saved-forms-control').val();
   if (key && key.match(options.health_center_key_regex)) {
-    setTimeout(function() {
+    show_loading(function() {
       set_selected_value('health_center', key.split('/')[2]);
       show_container(containers.visit);
-    }, 1);
+    });
   }
 }
 
@@ -415,7 +428,7 @@ function show_upload_page() {
   show_container(containers.upload);
 }
 
-function show_container( container ) {
+function show_container(container) {
   var visible = $('body > .container:visible').attr('id')
 
   if (container_hooks.hide[visible])
@@ -443,10 +456,27 @@ function login() {
 }
 
 function logout() {
-  set_selected_value('access_code', '');
-  set_selected_value('logged_in',   '');
-  show_container(containers.login);
-  autofocus();
+  var action = function() {
+    set_selected_value('access_code', '');
+    set_selected_value('delivery_zone', '');
+    set_selected_value('health_center', '');
+    set_selected_value('logged_in', false);
+    set_selected_value('visit_date_period', '');
+    set_selected_value('visit_period_selected', false);
+    show_container(containers.login);
+    autofocus();
+  };
+  if (hcvisit_screen_is_active()) {
+    show_loading(function() {
+      action();
+    });
+  } else {
+    action();
+  }
+}
+
+function hcvisit_screen_is_active() {
+  return get_hash_param('container') == containers.visit;
 }
 
 function set_context() {
@@ -468,10 +498,19 @@ function select_location() {
 }
 
 function show_visits() {
-  show_container(containers.hc);
-  $('input.hasDatepicker').each(function(i, e) {
-    $(e).datepicker('destroy');
-  });
+  var action = function() {
+    show_container(containers.hc);
+    $('input.hasDatepicker').each(function(i, e) {
+      $(e).datepicker('destroy');
+    });
+  };
+  if (hcvisit_screen_is_active()) {
+    show_loading(function() {
+      action();
+    });
+  } else {
+    action();
+  }
 }
 
 function show_main_page(landing_page) {
@@ -489,9 +528,19 @@ function show_main_page(landing_page) {
   if (landing_page != 'fc_actions') {
     set_selected_value('visit_period_selected', false);
   }
-  show_container(containers[landing_page]);
 
-  set_selected_value('health_center', '');  // Must be after container change
+  var action = function() {
+    show_container(containers[landing_page]);
+    set_selected_value('health_center', '');  // Must be after container change
+  };
+
+  if (hcvisit_screen_is_active()) {
+    show_loading(function() {
+      action();
+    });
+  } else {
+    action();
+  }
 }
 
 function update_upload_links() {
@@ -892,8 +941,6 @@ function serialize_warehouse_visit() {
   _serialize_instance_for(get_warehouse_pickup_key(), pickup_instance);
 }
 
-var selected_values = {};
-
 $(function() {
   $('#saved-forms-control').change(select_visit);
   
@@ -911,7 +958,7 @@ $(function() {
       sessionStorage[ev.attrName] = ev.newValue;
   });
   
-  if (get_selected_value('logged_in') == "true") {
+  if (get_selected_value('logged_in')) {
     var screen = get_hash_param('container');
 
     if (screen)
