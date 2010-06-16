@@ -744,6 +744,7 @@ en:
         quantity:             "The quantity must be a non-negative integer value"
         select_an_option:     "An option must be selected"
         other_fridge_status:  "Describe the problem"
+      visit_month: "Visit Month"
       odk:
         # ODK-specific data
         visit_intro:
@@ -761,7 +762,6 @@ en:
         stock_cards_intro:
           label: "Stock Cards Intro"
           hint:  "Additional text TBD"
-        visit_month:       "Visit Month"
         quantity_error:    "Value must be a non-negative integer or a dash (-)"
         quantity_hint:     "Enter a dash (-) if the quantity is not available; if there are none, record a zero (0)."
         temperature_error: "The temperature must be an integer value. A working fridge temperature must be between 2 and 8 °C."
