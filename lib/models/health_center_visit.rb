@@ -195,10 +195,14 @@ class HealthCenterVisit < ActiveRecord::Base
   def status_by_screen(screen=nil)
     @status ||= returning ActiveSupport::OrderedHash.new do |h|
       statuses = @counts || HealthCenterVisitPeriodicProgress.new.counts_by_health_center_visit_for_date_period([visit_month], [id])[id]
-      
+
       self.class.screens.each do |s|
-        expected, entries = *statuses[s]
-        h[s] = reporting_status_field(expected, entries)
+        if HealthCenterVisit.klass_by_screen[s].depends_on_visit? && !visited?
+          h[s] = REPORT_NOT_VISITED
+        else
+          expected, entries = *statuses[s]
+          h[s] = reporting_status_field(expected, entries)
+        end
       end
     end
 
