@@ -106,8 +106,8 @@ $.extend($.fn, {
 
     $('*:input:text[required]:not([data-required*="unless_nr="])', this).each(function(i,e) { $(e).rules('add', { required: true }); });
     $('*:input:text[data-required*="unless_nr="]', this).each(function(i,e) { $(e).rules('add', { required: { depends: no_nr } }); });
-    $('select[required]',           this).each(function(i,e) { $(e).rules('add', { required: true }); });
-    $('textarea[required]:not([data-required*=""])', this).each(function(i,e) { $(e).rules('add', { required: true }); });
+    $('select[required]', this).each(function(i,e) { $(e).rules('add', { required: true }); });
+    $('textarea[required]:not([data-required])', this).each(function(i,e) { $(e).rules('add', { required: true }); });
     $('textarea[data-required*="related_checkbox="]', this).each(function(i,e) { $(e).rules('add', { required: { depends: related_checkbox } }); });
     $('*:input:radio[required]',    this).each(function(i,e) { $(e).rules('add', { required_radio: true }); });
     $('*:input:checkbox[required]', this).each(function(i,e) { $(e).rules('add', { required_checkbox: true }); });

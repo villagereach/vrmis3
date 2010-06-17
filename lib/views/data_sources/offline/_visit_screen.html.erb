@@ -31,20 +31,22 @@
     </div>
 
     <div id="unvisited_data">
-      <div id="non_visit_reason_selection">
-        <p class="radio_label"><%= h(t("visits.health_center_monthly_visit.reason_for_not_visiting")) %></p>
+      <div id="non_visit_reason_selection" class="validation-group">
+        <p class="radio_label">
+          <%= h(t("visits.health_center_monthly_visit.reason_for_not_visiting")) %>
+          <span class="notice"></span>
+        </p>
         <ul id="non_visit_reason" class="radio">
           <%- %w(road_problem vehicle_problem health_center_closed other).each do |reason| -%>
             <li>
-              <input type="radio" value="<%= h reason %>" name="health_center_visit-non_visit_reason" id="health_center_visit-non_visit_reason-<%= h reason %>" />
-              <label for="health_center_visit-non_visit_reason-<%= h reason %>"><%= h(t("HealthCenterVisit.#{reason}")) %></label>
+              <input required="required" type="radio" value="<%= reason %>" name="health_center_visit-non_visit_reason" id="health_center_visit-non_visit_reason-<%= reason %>" />
+              <label for="health_center_visit-non_visit_reason-<%= reason %>"><%= h(t("HealthCenterVisit.#{reason}")) %></label>
             </li>
           <%- end -%>
         </ul>
-      </div>
-
-      <div>
-        <textarea required="required" id="other_non_visit_reason"></textarea>
+        <div id="other_non_visit_reason">
+          <textarea id="health_center_visit-other_non_visit_reason" name="health_center_visit-other_non_visit_reason" required="required" data-required="related_checkbox=health_center_visit-non_visit_reason-other"></textarea>
+        </div>
       </div>
     </div>
     

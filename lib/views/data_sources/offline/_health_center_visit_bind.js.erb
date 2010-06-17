@@ -15,7 +15,7 @@ function hcvisit_visited(ev) {
     $('#unvisited_data').show();
     $('#visited_data').hide();
 
-    $('#unvisited_data *:input').addClass('enabled');
+    $('#unvisited_data *:input:radio').addClass('enabled').valid();
     $('#visited_data *:input').removeClass('enabled');
 
     $('#tab-menu').data('disabled.tabs', depends_on_visit_tabs);
@@ -25,20 +25,14 @@ function hcvisit_visited(ev) {
 
 function hcvisit_non_visit_reason_other(ev) {
   if (ev.newValue == 'other') {
-    $('#other_non_visit_reason').show();
-    $('#other_non_visit_reason').addClass('enabled');
+    $('#other_non_visit_reason').show().find('textarea').addClass('enabled').valid();
   } else {
-    $('#other_non_visit_reason').hide();
-    $('#other_non_visit_reason').removeClass('enabled');
+    $('#other_non_visit_reason').hide().find('textarea').removeClass('enabled');
   }
 }
 
 $('#visited input').attrChange('val', hcvisit_visited);
 $('#non_visit_reason').attrChange('val', hcvisit_non_visit_reason_other);
-
-<% %w(other_non_visit_reason vehicle_id notes).each do |field| %>
-  $('#<%= field %>').linkFrom('val', data, '<%= field %>').linkTo('val', data, '<%= field %>');
-<% end %>
 
 <%- %w(true false).each do |val| -%>
   $('#health_center_visit-visited-<%= val %>').linkFrom('checked', data, 'visited', radioValueFn('<%= val %>'));
@@ -50,10 +44,16 @@ $('#non_visit_reason').attrChange('val', hcvisit_non_visit_reason_other);
   $('#health_center_visit-non_visit_reason-<%= reason %>').linkTo('val', data, 'non_visit_reason');
 <%- end -%>
 
+$('#health_center_visit-other_non_visit_reason').linkFrom('val', data, 'other_non_visit_reason');
+$('#health_center_visit-other_non_visit_reason').linkTo('val', data, 'other_non_visit_reason');
+
 $('#visited_at').linkFrom('val', data, 'visited_at', olmis_localize_date);
 $('#visited_at').linkTo('val', data, 'visited_at', olmis_delocalize_date);
 
-$(data).attrChange('visited_at',       function(ev) {
+$('#vehicle_id').linkFrom('val', data, 'vehicle_id');
+$('#vehicle_id').linkTo('val', data, 'vehicle_id');
+
+$(data).attrChange('visited_at', function(ev) {
   update_visit_history({ 'visit': ev.newValue });
 });
 
