@@ -45,8 +45,6 @@ class FridgeStatus < ActiveRecord::Base
 
   validates_presence_of :date
 
-  validates_inclusion_of :status_code, :in => Olmis.configuration['fridge_statuses'], :message => :choose_problem, :allow_nil => true
-
   named_scope :health_center, lambda { |hc| 
     { 
       :include => { :fridge => { :stock_room => :health_center } },
@@ -92,6 +90,14 @@ class FridgeStatus < ActiveRecord::Base
       SQL
     }
   }
+
+  def validate
+    unless status_code.nil? || status_code == 'OK'
+      if status_code.split.any?{|status| !(FridgeStatus.status_codes - ['OK']).include?(status)}
+        errors.add(:status_code, 'choose_problem')
+      end
+    end
+  end
 
   def self.status_codes
     Olmis.configuration['fridge_statuses']
