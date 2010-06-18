@@ -911,7 +911,7 @@ function upload_all() {
 }
 
 function is_logged_in() {
-  $('#fc-action-links a[href="#upload"]').click();
+  $('#upload-links a[href="#upload"]').click();
 }
 
 function check_logged_in() {
