@@ -558,9 +558,9 @@ function update_upload_links() {
     addClass(status).
     html(I18n.t("data_sources.hcvisit.upload_main.status."+status,
                 { time: I18n.l(now, { time: true, format: "long" }) } ));
-  if (has_forms_ready_for_upload()) {
-    $("#forms_to_upload").html(I18n.t("data_sources.hcvisit.upload_main.forms_to_upload",
-                                      { count: num_forms_ready_for_upload() }));
+  var form_count = num_forms_ready_for_upload();
+  if (form_count > 0) {
+    $("#forms_to_upload").html(I18n.t("data_sources.hcvisit.upload_main.forms_to_upload", { count: form_count }));
     $("#upload-links .not_ready").hide();
     $("#upload-links .ready").show();
   } else {
@@ -570,20 +570,11 @@ function update_upload_links() {
   }
 }
 
-function has_forms_ready_for_upload() {
-  var ready = false;
-  for (var key in valid_forms) {
-    ready = key.match(options.visit_key_regex) && valid_forms[key];
-    if (ready) break;
-  }
-  return ready;
-}
-
 function num_forms_ready_for_upload() {
   var n = 0;
-  for (var key in valid_forms) {
+  forEachLocalStorageKey(function(key) {
     if (key.match(options.visit_key_regex) && valid_forms[key]) n++;
-  }
+  });
   return n;
 }
 
@@ -908,6 +899,7 @@ function get_wh_visit_label_for(key) {
 
 function upload_all() {
   $('#upload-ready li.complete').each(function(i,n) { upload(n, false) });
+  update_upload_links();
 }
 
 function is_logged_in() {
