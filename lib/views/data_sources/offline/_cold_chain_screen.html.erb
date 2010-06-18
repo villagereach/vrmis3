@@ -100,16 +100,17 @@ function fridge_state(ev) {
   fridge_problem_div.find('*:input:checkbox').first().valid();
 }
 
-function fridge_problem_other(ev) {
+function fridge_problem(ev) {
+  var fridge_problem_div = $(ev.target).parents('ul');
+  fridge_problem_div.find('*:input:checkbox').first().valid();
+
   if ($(ev.target).val() == 'OTHER') {
-    var fridge_problem_div = $(ev.target).parents('ul');
     var other_reason_div = fridge_problem_div.next();
     if (ev.newValue) {
-      other_reason_div.show().find('textarea').addClass('enabled');
+      other_reason_div.show().find('textarea').addClass('enabled').valid();
     } else {
       other_reason_div.hide().find('textarea').removeClass('enabled');
     }
-    other_reason_div.find('*:input').valid();
   }
 }
     
@@ -126,7 +127,7 @@ function refresh_fridges() {
   }
 
   $(".fridge-state input").attrChange('val', fridge_state);
-  $(".fridge-problem input").attrChange('checked', fridge_problem_other);
+  $(".fridge-problem input").attrChange('checked', fridge_problem);
 
   // bind inputs to the data items
   $(".fridge-data").each(function(i) {
@@ -150,8 +151,12 @@ function refresh_fridges() {
     $(".fridge_status-other_problem", this).linkFrom("val", fridge_status, "other_problem").linkTo("val", fridge_status, "other_problem");
 
     fridge_state({ newValue: fridge_status.state, target: $(this).find('.fridge_status-state') });
-    fridge_problem_other({ newValue: fridge_status.problem.indexOf('OTHER') >= 0, target: $(this).find('.fridge_status-problem') });
+    $(this).find('.fridge_status-problem:checked').each(function() {
+      fridge_problem({ newValue: true, target: $(this) });
+    });
   });
+
+  $('#fridges *:input.enabled').valid();
 }
 
 $(function() {
