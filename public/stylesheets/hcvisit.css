@@ -710,6 +710,11 @@ body {
   font-size : 1em;
   margin : 1em 0 0 11em;
 }
+#failed-login {
+  color: red;
+  font-weight: bold;
+  margin: 2em;
+}
 #upload ul {
   list-style: none;
   margin-left: 1em;

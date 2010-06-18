@@ -64,6 +64,7 @@
       <label for="login-password"><%= h(t("password")) %></label><input type="password" id="login-password" /><br />
       <input id="login-button" type="submit" value="<%= h(t('login.login.submit_button')) %>" />
     </form>
+    <p id="failed-login" style="display: none"><%= h(t("login.invalid_login")) %></p>
   </div>
   <div id="upload" class="lightbox-container">
     <h3><%= h(t("data_sources.hcvisit.upload.ready")) %></h3>

@@ -934,7 +934,11 @@ function ajax_login() {
       url: '/login',
       dataType: 'html',
       type: 'POST',
-      error: function (XMLHttpRequest, textStatus, errorThrown) {      
+      beforeSend: function(xhr, textStatus) {
+        $('#failed-login').hide();
+      },
+      error: function (xhr, textStatus, errorThrown) {
+        $('#failed-login').show();
       },
       success: function(data, textStatus, xhr) {  
         is_logged_in();
