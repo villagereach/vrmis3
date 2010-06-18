@@ -604,6 +604,37 @@ function set_after_warehouse_link_status() {
   }
 }
 
+function update_visit_history(obj) {
+  // this data is to support the offline autoeval report, please see offline_autoeval.js.erb 
+
+  var health_center = get_selected_value('health_center');
+  var date_period   = get_selected_value('visit_date_period');
+  var history = JSON.parse(localStorage[health_center + '/visit-history'] || '{}');
+
+  if (!history[date_period])
+    history[date_period] = {};
+
+  for (key in obj)
+    history[date_period][key] = obj[key];
+
+  localStorage[health_center + '/visit-history'] = JSON.stringify(history);
+}
+
+function inventory_quantities(type) {
+  return get_context_path_value($('olmis'), '/inventory/item').
+    filter(function(e) { return e.getAttributeNS(null, 'type') == type; }).
+    filter(function(e) { return AutoevalData.trackable_package_codes.indexOf(e.getAttributeNS(null, 'for')) >= 0; }).  
+    filter(function(e) { nr = e.getAttributeNS(null, 'nr'); return !nr || nr == '' || nr == 'false'; }).
+    map(   function(e) { q = e.getAttributeNS(null, 'qty'); return q ? [e.getAttributeNS(null, 'for'), q] : null; });
+}
+
+function update_stockouts() {
+  var e = inventory_quantities('ExistingHealthCenterInventory');
+  var d = inventory_quantities('DeliveredHealthCenterInventory');
+
+  update_visit_history({ 'existing': e, 'delivered': d });
+}
+
 function get_hc_form_status(visit_key) {
   var status = 'unknown';
   if (valid_forms[visit_key] === true) {
