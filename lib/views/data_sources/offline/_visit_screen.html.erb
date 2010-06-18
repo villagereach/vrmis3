@@ -33,8 +33,7 @@
     <div id="unvisited_data">
       <div id="non_visit_reason_selection" class="validation-group">
         <p class="radio_label">
-          <%= h(t("visits.health_center_monthly_visit.reason_for_not_visiting")) %>
-          <span class="notice"></span>
+          <%= h(t("visits.health_center_monthly_visit.reason_for_not_visiting")) %><span class="notice"></span>
         </p>
         <ul id="non_visit_reason" class="radio">
           <%- %w(road_problem vehicle_problem health_center_closed other).each do |reason| -%>
