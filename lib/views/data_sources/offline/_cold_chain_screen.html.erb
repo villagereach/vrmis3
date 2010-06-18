@@ -121,7 +121,7 @@ function refresh_fridges() {
   $('#fridges').setupValidation();
 
   if (olmis_instance.fridge_status.length == 1) {
-    $(".delete-fridge").hide(); // Hide the delete action if there's only one fridge because it can't be deleted
+    $(".delete-fridge").hide(); <%# Hide the delete action if there's only one fridge because it can't be deleted %>
   } else {
     $(".delete-fridge").show();
   }
@@ -132,7 +132,10 @@ function refresh_fridges() {
   // bind inputs to the data items
   $(".fridge-data").each(function(i) {
     var fridge_status = olmis_instance.fridge_status[i];
-    $(".delete-fridge", this).click(function() { $.splice(olmis_instance.fridge_status, i, 1); });
+    $(".delete-fridge", this).click(function() {
+      $.splice(olmis_instance.fridge_status, i, 1);
+      serialize_visit();
+    });
 
     $(".fridge_status-fridge_code", this).linkFrom("val", fridge_status, "fridge_code").linkTo("val", fridge_status, "fridge_code");
     $(".fridge_status-past_problem", this).each(function() {
