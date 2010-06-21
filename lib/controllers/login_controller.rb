@@ -16,6 +16,7 @@ class LoginController < OlmisController
     end
 
     if request.post?
+      response.content_type = 'text/plain' if request.xhr?
       session[:user_id] = nil
       if u = User.authenticate(params[:login][:username].downcase, params[:login][:password])
         u.update_attributes(:last_login => Time.now())

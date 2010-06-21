@@ -863,7 +863,7 @@ function upload(node, do_sync) {
       contentType: 'application/json',
       data: localStorage[key],
       url: '/visits/' + key + '.json',
-      dataType: 'html',
+      dataType: 'text',
       type: 'PUT',
       error: function (XMLHttpRequest, textStatus, errorThrown) {      
         set_form_status(key, 'reject');
@@ -911,6 +911,7 @@ function check_logged_in() {
   $.ajax( { 
       async: true,
       url: '/logged-in?',
+      dataType: 'text',
       type: 'GET',
       success: function(data, textStatus, xhr) {  
         is_logged_in();
@@ -924,7 +925,7 @@ function ajax_login() {
       async: true,
       data: { 'login[username]': $('#login-login').attr('value'), 'login[password]': $('#login-password').attr('value') },
       url: '/login',
-      dataType: 'html',
+      dataType: 'text',
       type: 'POST',
       beforeSend: function(xhr, textStatus) {
         $('#failed-login').hide();

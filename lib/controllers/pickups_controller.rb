@@ -177,12 +177,14 @@ class PickupsController < OlmisController
       @visit, @errors = submission.process_pickup(@visit, @current_user)
     end
 
+    response.content_type = 'text/plain' if %w(xml json).include?(params[:format])
+
     if @errors.none? { |slice, slice_errors| slice_errors.present? }
       submission.status = 'success'
       submission.save
 
       if %w(xml json).include?(params[:format])
-        render :text => 'ok'
+        render :text => submission.status
       else
         redirect_to redirect_target
       end
@@ -190,7 +192,9 @@ class PickupsController < OlmisController
       submission.status = 'error'
       submission.save
 
-      render :text => 'error', :status => 400 and return if %w(xml json).include?(params[:format])
+      if %w(xml json).include?(params[:format])
+        render :text => submission.status, :status => 400
+      end
     end
   end
 

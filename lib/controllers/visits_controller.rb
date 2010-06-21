@@ -62,12 +62,14 @@ class VisitsController < OlmisController
       @visit, @errors = submission.process_visit(@health_center, helpers.visit_month, @current_user)
     end    
 
+    response.content_type = 'text/plain' if %w(xml json).include?(params[:format])
+
     if @errors.none? { |slice, slice_errors| slice_errors.present? }
       submission.status = 'success'
       submission.save
 
       if %w(xml json).include?(params[:format])
-        render :text => 'ok'
+        render :text => submission.status
       else
         if params[:save_and_continue] && link = helpers.next_link      
           redirect_to link.last
@@ -81,7 +83,9 @@ class VisitsController < OlmisController
 
       logger.error %Q{\n*** Data submission error:\n*** #{@errors.map{|slice,slice_errors| slice_errors.map{|k,v| [k,v.full_messages]}}.delete_if(&:empty?).flatten_once.map{|(field,errors)| "#{field}: #{errors.join(', ')}"}.join("\n*** ")}\n\n}
 
-      render :text => 'error', :status => 400 and return if %w(xml json).include?(params[:format])
+      if %w(xml json).include?(params[:format])
+        render :text => submission.status, :status => 400
+      end
     end
   end    
 
