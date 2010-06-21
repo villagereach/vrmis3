@@ -9,10 +9,8 @@
                              'olmis_formgrid.js',
                              'olmis_reports.js',
                              'olmis_online.js',
-                             'ui/ui.core.js',
-                             'ui/ui.tabs.js',
-                             'ui/ui.datepicker.js',
-                             'ui/i18n/jquery-ui-i18n.js',
+                             Rails.env == 'development' ? 'jquery-ui.custom.js' : 'jquery-ui.custom.min.js',
+                             'jquery-ui-i18n.js',
                              'jquery.autocomplete.js',
                              'jquery.jqplot.min.js',
                              'plugins/jqplot.categoryAxisRenderer.min.js',
@@ -23,7 +21,7 @@
                              :cache => "cache/js" %>
 
   <%= stylesheet_link_tag "blueprint/screen.css", "jquery.autocomplete.css", :cache => "cache/sp",          :media => "screen, projection"  %>
-  <%= stylesheet_link_tag 'ui/jquery-ui-1.7.2.custom.css', "jquery.jqplot.css", "style", "theme", "visit", "custom",  :cache => "cache/all",   :media => "all"                %>
+  <%= stylesheet_link_tag "ui/jquery-ui.custom.css", "jquery.jqplot.css", "style", "theme", "visit", "custom",  :cache => "cache/all",   :media => "all"                %>
   <%= stylesheet_link_tag "blueprint/print.css", "print",                                                   :cache => "cache/print", :media => "print"              %>
   
   <!--[if IE]>

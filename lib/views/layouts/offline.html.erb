@@ -3,13 +3,12 @@
       manifest="<%= manifest_url(:format => 'offline', :locale => I18n.locale) %>">
   <head>
     <title><%= t("health_center_visit") %></title>
-    <script type="text/javascript" src="/javascripts/jquery-1.4.2.js"></script>
+    <script type="text/javascript" src="/javascripts/<%= Rails.env == 'development' ? 'jquery.js' : 'jquery.min.js' %>"></script>
     <script type="text/javascript" src="/javascripts/olmis_formgrid.js"></script>
     <script type="text/javascript" src="/javascripts/olmis_date.js"></script>
     <script type="text/javascript" src="/javascripts/offline_i18n.js"></script>
     <script type="text/javascript" src="/javascripts/olmis_collapsible_report.js"></script>
-    <script type="text/javascript" src="/javascripts/ui/ui.core.js"></script>
-    <script type="text/javascript" src="/javascripts/ui/ui.accordion.js"></script>
+    <script type="text/javascript" src="/javascripts/<%= Rails.env == 'development' ? 'jquery-ui.custom.js' : 'jquery-ui.custom.min.js' %>"></script>
     <script type="text/javascript" src="/fancybox/jquery.fancybox.js"></script>
     <link rel="stylesheet" href="/stylesheets/blueprint/screen.css" media = "screen, projection" />
     <link rel="stylesheet" href="/stylesheets/theme.css"            media = "screen, projection" />

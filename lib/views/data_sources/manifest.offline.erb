@@ -33,8 +33,9 @@ CACHE:
 /javascripts/offline_i18n.js
 /javascripts/olmis_collapsible_report.js
 
-/javascripts/jquery-1.4.2.js
-/javascripts/ui/ui.accordion.js
+/javascripts/<%= Rails.env == 'development' ? 'jquery.js' : 'jquery.min.js' %>
+/javascripts/<%= Rails.env == 'development' ? 'jquery-ui.custom.js' : 'jquery-ui.custom.min.js' %>
+/javascripts/jquery-ui-i18n.js
 /stylesheets/collapsible_report.css
 /javascripts/jquery.treeTable.min.js
 /stylesheets/jquery.treeTable.css
@@ -43,9 +44,6 @@ CACHE:
 ##/images/toggle-collapse-light.png
 ##/images/toggle-collapse-dark.png 
 
-/javascripts/ui/ui.core.js
-/javascripts/ui/ui.datepicker.js
-/javascripts/ui/ui.tabs.js
 /javascripts/jquery.tmpl.js
 /javascripts/jquery.datalink.js
 /javascripts/jquery-validate/jquery.validate.js
@@ -55,8 +53,7 @@ CACHE:
 <%- end -%>
 /javascripts/html5-pseudo.jquery.js
 /javascripts/date-<%= I18n.locale %>.js
-<%- third_party_files = Dir.glob(File.join(Rails.root, 'public', 'javascripts', 'ui', 'i18n', '*.js')) +
-                        Dir.glob(File.join(Rails.root, 'public', 'stylesheets', 'ui', 'images', '*')) +
+<%- third_party_files = Dir.glob(File.join(Rails.root, 'public', 'stylesheets', 'ui', 'images', '*')) +
                         Dir.glob(File.join(Rails.root, 'public', 'fancybox', '*')) -%>
 <%= third_party_files.reject{|f| File.basename(f) =~ /^[#\.]|~$/}.map{|f| f.sub(File.join(Rails.root, 'public'), '')}.join("\n") %>
 /stylesheets/blueprint/screen.css
@@ -64,7 +61,7 @@ CACHE:
 /stylesheets/hcvisit.css
 /stylesheets/custom.css
 /stylesheets/print.css
-/stylesheets/ui/jquery-ui-1.7.2.custom.css
+/stylesheets/ui/jquery-ui.custom.css
 
 FALLBACK:
 / /404.html

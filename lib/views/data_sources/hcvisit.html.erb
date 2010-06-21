@@ -3,11 +3,9 @@
       manifest="<%= manifest_url(:format => 'offline', :locale => I18n.locale) %>">
   <head>
     <title><%= h(t("health_center_visit")) %></title>
-    <script type="text/javascript" src="/javascripts/jquery-1.4.2.js"></script>
-    <script type="text/javascript" src="/javascripts/ui/ui.core.js" ></script>
-    <script type="text/javascript" src="/javascripts/ui/ui.datepicker.js" ></script>
-    <script type="text/javascript" src="/javascripts/ui/ui.tabs.js" ></script>
-    <script type="text/javascript" src="/javascripts/ui/i18n/jquery-ui-i18n.js" ></script>
+    <script type="text/javascript" src="/javascripts/<%= Rails.env == 'development' ? 'jquery.js' : 'jquery.min.js' %>"></script>
+    <script type="text/javascript" src="/javascripts/<%= Rails.env == 'development' ? 'jquery-ui.custom.js' : 'jquery-ui.custom.min.js' %>" ></script>
+    <script type="text/javascript" src="/javascripts/jquery-ui-i18n.js" ></script>
 
     <script type="text/javascript" src="/javascripts/jquery.tmpl.js" ></script>
     <script type="text/javascript" src="/javascripts/jquery.datalink.js" ></script>
@@ -36,7 +34,7 @@
 
     <script type="text/javascript" src="/fancybox/jquery.fancybox.js" ></script>
     <link rel="stylesheet" href="/fancybox/jquery.fancybox.css" type="text/css" />
-    <link rel="stylesheet" href="/stylesheets/ui/jquery-ui-1.7.2.custom.css" type="text/css" />
+    <link rel="stylesheet" href="/stylesheets/ui/jquery-ui.custom.css" type="text/css" />
     <link rel="stylesheet" href="/stylesheets/blueprint/screen.css" type="text/css" media="screen, projection" />
     <link rel="stylesheet" href="/stylesheets/theme.css" type="text/css" />
     <link rel="stylesheet" href="/stylesheets/hcvisit.css" type="text/css" />
