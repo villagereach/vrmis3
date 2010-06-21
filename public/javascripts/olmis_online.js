@@ -117,6 +117,25 @@ function init_switcher_panes() {
   content_pane.css('min-height', (jQuery('.switcher_pane .switcher_pane_menu').height() - excess)+'px');
 }
 // }}} /switcher panes
+// {{{ /NR checkboxes
+function link_nr_checkboxes() {
+  // Link NR checkboxes to their associated input fields so that checking a NR checkbox clears the
+  // associated input field, and entering a value in an input field clears the associated NR checkbox.
+  $('input[data-required*="unless_nr="]').each(function(i, e) {
+    $('#'+get_nrid(e), $(e).parents('.tally').first()).change(function() {
+      if ($(this).attr('checked')) {
+        $(e).val('').change();
+      }
+    });
+    
+    $(e).change(function() { 
+      if ($(this).val().length > 0) {
+        $('#'+get_nrid(this), $(this).parents('.tally')).attr('checked', false);
+      }
+    });
+  });
+}
+// }}} /NR checkboxes
 
 function call_anchor_method() {  
   // so /visits/2009-11#name loads with the 'name' tab selected
@@ -135,6 +154,7 @@ $(function() {
   init_collapser_lists();
   init_fridge_list();
   init_switcher_panes();
+  link_nr_checkboxes();
   
   call_anchor_method();
 

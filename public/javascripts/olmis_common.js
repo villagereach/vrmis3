@@ -37,6 +37,17 @@ function autofocus() {
   jQuery( '.autofocus' ).focus();
 }
 
+function get_nrid(element) {
+  var required_data = $(element).attr('data-required');
+  if (required_data) {
+    var nr = required_data.split(/\s+/).filter(function(str) { return str.match(/^unless_nr=/); });
+    if (nr.length == 1) {
+      return nr[0].split('=')[1];
+    }
+  }
+  return null;
+}
+
 function update_calculated_field_function(field, expression, suffix) {
   return function() {
     try {

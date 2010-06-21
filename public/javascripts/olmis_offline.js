@@ -1130,26 +1130,7 @@ function initialize_visit() {
     }
   });
 
-  // Link NR checkboxes to their associated input fields so that checking a NR checkbox clears the
-  // associated input field, and entering a value in an input field clears the associated NR checkbox.
-  $('input[data-required*="unless_nr="]', $('#visit-form')).each(function(i, e) {
-    var nrid = get_nrid(e);
-    var nr = $('#'+nrid, $(e).parents('.tally').first())
-    nr.change(function() {
-      if ($(this).attr('checked')) {
-        $(e).val('');
-        $(e).change();
-      }
-      $(e).valid();
-    });
-    
-    $(e).change(function() { 
-      if ($(this).val().length > 0) {
-        var nr = $('#'+get_nrid(this), $(this).parents('.tally'));
-        nr.attr('checked', false);
-      }
-    });
-  });
+  link_nr_checkboxes();
 
   // Show the first (visit) screen rather than the last screen viewed, possibly
   // for a different health center. However, the screen's validations are not
@@ -1159,15 +1140,23 @@ function initialize_visit() {
   $('#tab-menu').tabs('select', 0);
 }
 
-function get_nrid(element) {
-  var required_data = $(element).attr('data-required');
-  if (required_data) {
-    var nr = required_data.split(/\s+/).filter(function(str) { return str.match(/^unless_nr=/); });
-    if (nr.length == 1) {
-      return nr[0].split('=')[1];
-    }
-  }
-  return null;
+function link_nr_checkboxes() {
+  // Link NR checkboxes to their associated input fields so that checking a NR checkbox clears the
+  // associated input field, and entering a value in an input field clears the associated NR checkbox.
+  $('input[data-required*="unless_nr="]', $('#visit-form')).each(function(i, e) {
+    $('#'+get_nrid(e), $(e).parents('.tally').first()).change(function() {
+      if ($(this).attr('checked')) {
+        $(e).val('').change();
+      }
+      $(e).valid();
+    });
+    
+    $(e).change(function() { 
+      if ($(this).val().length > 0) {
+        $('#'+get_nrid(this), $(this).parents('.tally')).attr('checked', false);
+      }
+    });
+  });
 }
 
 function preinitialize_pickup() {
