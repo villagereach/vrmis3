@@ -723,6 +723,7 @@ en:
         empty:    "You have no completed forms available for uploading"
         all:      "Upload all completed forms"
         uploaded: "Uploaded"
+        error:    "Error uploading {{name}}"
       errors:
         select_fc:            "A field coordinator must be selected"
         select_dz:            "A delivery zone must be selected"

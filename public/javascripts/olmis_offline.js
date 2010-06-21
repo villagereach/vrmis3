@@ -822,9 +822,8 @@ function setup_saved_visits() {
   var local_forms = [];
 
   forEachLocalStorageKey(function(key) {
-    var match = key.match(options.visit_key_regex);
-    if (match && valid_forms[key]) {
-      local_forms.push('<li id="' + key.replace('/','_') + '" class="status ' + (valid_forms[key] ? 'complete' : 'todo') + '"><span>' + get_visit_label_for(match[1], key) + '</span></li>');
+    if (valid_forms[key] && key.match(options.visit_key_regex)) {
+      local_forms.push('<li id="' + key.replace('/','_') + '" class="status ' + (valid_forms[key] ? 'complete' : 'todo') + '"><span>' + get_visit_label_for(key) + '</span></li>');
     }
   });
 
@@ -839,50 +838,52 @@ function setup_saved_visits() {
 }
 
 function forEachLocalStorageKey(f) {
-  if (localStorage[0]) {
-    for (var i = 0, l = localStorage.length; i < l; i++)  {
-      f(localStorage[i]);
-    }
-  } else {
-    for (var x in localStorage) {
-      f(x);
-    }
+  for (var i = 0, l = localStorage.length; i < l; i++)  {
+    f(localStorage[i]);
   }
 }
 
 function upload(node, do_sync) {
-  var key = node.id.replace('_','/');
-  var item = jQuery(node);
-  var ready_list = jQuery('#upload-ready ul');
-  var uploaded_list = jQuery('#upload-uploaded ul');
-  var upload_button = jQuery('#upload-button').find('input');
-  upload_button.attr('disabled', true);
-  item.addClass('working');
-  $.ajax( { 
-      async: do_sync,
-      contentType: 'application/json',
-      data: localStorage[key],
-      url: '/visits/' + key + '.json',
-      dataType: 'text',
-      type: 'PUT',
-      error: function (XMLHttpRequest, textStatus, errorThrown) {      
-        set_form_status(key, 'reject');
-        alert(textStatus);
-      },
-      success: function(data, textStatus, xhr) {
-        set_form_status(key, 'accept');
-        localStorage.removeItem(key);
-        uploaded_list.append(item);
-        if (ready_list.children().length == 0) upload_button.parent().hide();
-      },
-      complete: function(xhr, textStatus) {
-        item.removeClass('working');
-        upload_button.attr('disabled', false);
-      }
-  } );
+  if (online) {
+    var key = node.id.replace('_', '/');
+    var item = $(node).addClass('working');
+    var ready_list = $('#upload-ready ul');
+    var uploaded_list = $('#upload-uploaded ul');
+    var upload_button = $('#upload-button').find('input').attr('disabled', true);
+    $.ajax( { 
+        async: do_sync,
+        contentType: 'application/json',
+        data: localStorage[key],
+        url: '/visits/' + key + '.json',
+        dataType: 'text',
+        type: 'PUT',
+        error: function (xhr, textStatus, errorThrown) {
+          xhr.abort();
+        },
+        success: function(data, textStatus, xhr) {
+          if (xhr.status == 200) {
+            set_form_status(key, 'accept');
+            localStorage.removeItem(key);
+            uploaded_list.append(item);
+            if (ready_list.children().length == 0) upload_button.parent().hide();
+          }
+        },
+        complete: function(xhr, textStatus) {
+          if (xhr.status != 200) {
+            check_online();
+            set_form_status(key, 'reject');
+            alert(I18n.t('data_sources.hcvisit.upload.error', { name: get_visit_label_for(key) }));
+          }
+          item.removeClass('working');
+          upload_button.attr('disabled', false);
+        }
+    } );
+  }
 }
 
-function get_visit_label_for(type, key) {
+function get_visit_label_for(key) {
+  var match = key.match(options.visit_key_regex);
+  var type = match[1];
   var f = this['get_'+type+'_visit_label_for'];
   return (typeof f == 'function') ? f(key) : '- bad type ('+type+') for key ('+key+') -';
 }
