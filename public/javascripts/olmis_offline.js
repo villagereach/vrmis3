@@ -259,7 +259,11 @@ function check_online(e) {
            dataType: 'text',
            timeout: options.ping_timeout,
            success: function(data, textStatus, xhr) {
-             go_online();
+             if (data == 'PONG') {
+               go_online();
+             } else {
+               go_offline();
+             }
            },
            error: function(xhr, textStatus, errorThrown) {
              go_offline();
