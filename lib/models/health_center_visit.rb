@@ -269,8 +269,12 @@ class HealthCenterVisit < ActiveRecord::Base
 
     Hash[*inventories.map { |i| [i.inventory_type, i.package_counts_by_package_code] }.flatten].merge(
       {
-        :ideal     => health_center ? IdealStockAmount.all(:conditions => { :stock_room_id => health_center.stock_room.id },
-                                                            :include => :package, :order => 'packages.position').group_by(&:package) : nil,
+        :ideal => health_center \
+                    ? IdealStockAmount.all(
+                        :conditions => { :stock_room_id => health_center.stock_room.id },
+                        :include => :package
+                      ).inject({}){ |h, isa| h[isa.package.code] = isa ; h } \
+                    : nil
       })
   end
 
