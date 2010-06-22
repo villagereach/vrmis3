@@ -160,7 +160,7 @@ module VisitsHelper
   def wastage_field(package_code, open_vials, total_doses)
     # Given a package code and a total-vaccinations cell, inserts a field that calculates the wastage based on the number of doses in the package
     if package = Package.find_by_code(package_code)
-      expression_field("#{package_code}_wastage", "100 * ((#{open_vials}) - ((#{total_doses}) / #{package.quantity})) / (#{open_vials})", "%")
+      expression_field("#{package_code}_wastage", "100 * ((#{open_vials} * #{package.quantity}) - (#{total_doses})) / (#{open_vials} * #{package.quantity})", "%")
     end
   end
 
