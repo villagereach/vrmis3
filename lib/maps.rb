@@ -86,9 +86,9 @@ class Maps
       if centroid = districts.map(&:centroid).inject { |a, b| [a[0] + b[0], a[1] + b[1]] }.maybe.map { |l| l / districts.length }
         map = GMap.new("map_div")
         map.control_init(:large_map => true,:map_type => true)
-        map.center_zoom_init(centroid, 7)
     
         n_gon = polygon(20)
+        map_points = []
     
         min = districts.map(&:population).compact.min
     
@@ -124,10 +124,18 @@ class Maps
 
           color = (metric.present? ? color_code((metric - min_metric) / (max_metric - min_metric)) : '#FFFFFF' rescue raise [max_metric, min_metric, metric].inspect)  
   
+          map_points += scaled_n_gon
+
           map.overlay_init(GPolygon.new(scaled_n_gon, "#000000", 1, 1.0, color, 0.75))
           map.overlay_init(GMarker.new(centroid, :title => district.name, :info_window => overlay.to_s.squish))
         end
         
+        if map_points.empty?
+          map.center_zoom_init(centroid, 7)
+        else
+          map.center_zoom_on_bounds_init(bounding_box(map_points).to_a)
+        end
+
         return OpenStruct.new(
           :map => map, 
           :max => max_metric, 
@@ -138,6 +146,38 @@ class Maps
       end
       nil
     end  
+
+    # Determine the bounding box for the given set of points
+    def bounding_box(points)
+      t = points.transpose
+
+      # north/south extents are simple
+      north, south = t[0].max, t[0].min
+
+      # east/west extents need to account for the international date line
+      hemis = t[1].partition{|lng| lng >= 0.0}
+      hemi_east_min, hemi_east_max = hemis[0].min, hemis[0].max
+      hemi_west_min, hemi_west_max = hemis[1].min, hemis[1].max
+      east, west = if hemi_east_min.nil?
+                     # Completely in western hemisphere
+                     [ hemi_west_max, hemi_west_min ]
+                   elsif hemi_west_min.nil?
+                     # Completely in eastern hemisphere
+                     [ hemi_east_max, hemi_east_min ]
+                   else
+                     # Spanning both eastern and western hemispheres
+                     if hemi_east_max - hemi_west_min < hemi_west_max - hemi_east_min + 360
+                       # Crossing the prime meridian
+                       [ hemi_east_max, hemi_west_min ]
+                     else
+                       # Crossing the anti meridian
+                       [ hemi_west_max, hemi_east_min ]
+                     end
+                   end
+
+      r = 1e3  # Round to 3 decimal places
+      [ [ (south * r).round / r, (west * r).round / r ], [ (north * r).round / r, (east * r).round / r ] ]
+    end
     
     def color_code(n)
       "#%02X%02X%02X" % hsv2rgb(120.0 * n, 1.0, 1.0)
