@@ -36,7 +36,7 @@ module DatePeriodRangeHelper
     elsif date_period_range =~ /^\d{4}$/
       return date_period_range, date_period_range+'-01'..date_period_range+'-12'
     elsif date_period_range =~ /^\d{4}-\d{2}$/
-      return I18n.l(Date.from_date_period(date_period_range), :format => format), [date_period_range, date_period_range]
+      return I18n.l(Date.from_date_period(date_period_range), :format => format), [date_period_range]
     else
       return parse_date_period_range({:date_period_range => default_date_period_range})
     end
