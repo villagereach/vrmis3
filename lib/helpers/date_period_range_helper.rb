@@ -49,7 +49,8 @@ module DatePeriodRangeHelper
       sql << HealthCenterVisit.send(:sanitize_sql_for_conditions, [ " WHERE visit_month > ?", count.months.ago(Date.today).to_date_period ])
     end
     visit_months = HealthCenterVisit.find_by_sql(sql).map(&:visit_month).sort
-        
+
+    [default_date_period_range] +
     (Date.from_date_period(visit_months.maybe[0] || Date.today.to_date_period).year..Date.today.year).map { |y| [y.to_s, y.to_s] }  +
       visit_months.map{|vm| [I18n.l(Date.from_date_period(vm),:format => :short_month_of_year),vm]}
   end
