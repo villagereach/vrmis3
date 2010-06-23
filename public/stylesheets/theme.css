@@ -1107,6 +1107,7 @@ table.report-table {
   margin: 1em auto;
 }
 
+table.report-table caption { font-size: 120%; font-weight: bold; }
 table.report-table thead th { background: #C3D9FF }
 table.report-table tbody th { border-right: 1px solid #9FB8CC }
 table.report-table tbody tr.even td, table.report-table tbody tr.even th { background: #E5ECF9 }
