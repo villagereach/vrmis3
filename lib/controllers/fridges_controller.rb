@@ -42,8 +42,15 @@ class FridgesController < OlmisController
   def create
     begin
       @fridge = Fridge.new(params[:fridge])
-      @fridge.stock_room_id = @fridge_owner.stock_room_id if @fridge_owner
       @fridge.save!
+      # Associate the fridge with a stock room by a dummy FridgeStatus
+      fs = FridgeStatus.new
+      fs.fridge_id = @fridge.id
+      fs.user_id = session[:user_id] 
+      fs.status_code = 'OTHER'
+      fs.stock_room_id = @fridge_owner ? @fridge_owner.stock_room_id : params[:stock_room_id_for_new]
+      fs.created_at = fs.updated_at = fs.reported_at = DateTime.now
+      fs.save!
       redirect_to @fridge
     rescue ActiveRecord::ActiveRecordError
       render :action => 'edit'
