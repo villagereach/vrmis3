@@ -159,7 +159,7 @@ end
 
 # install a root user as the absoulate bare minimal
 # (in case the user does not want to apply sample Pacific NW config)
-rake 'olmis:db:bootstrap 
+rake 'olmis:db:bootstrap' 
 
 if use_git
   git :add => '.'
