@@ -73,6 +73,23 @@ gem "stringex"
 gem "ick"
 gem "nokogiri", :version => '1.4.1'
 
+# NOTE: gems:install must be done before config.load_path changes, 
+# because some, e.g., vendor/olmis/init.rb, requires some of the gems  
+log '', 'Required gems will now be installed with the sudo command.'
+rake 'gems:install', :sudo => true
+
+# ensure gems are properly installed
+gem_list = run("gem list 'mysql|stringex|fastercsv|ick|nokogiri'")
+log gem_list 
+gem_installed = yes?("Are the 5 gems installed: fastercsv, ick, mysql, nokogiri, stringex (y/n)?")
+if not gem_installed 
+  log '', 'FATAL ERROR: Required gems not yet insatlled.'
+  log '', "You can try sudo rake --trace 'gems:install' on command line."
+  log '', 'Install the required gems manually if needed.'
+  log '', 'Abort installation...'
+  exit 
+end 
+
 environment "config.load_paths += ['lib', 'lib/mixins', 'lib/helpers', 'lib/models', 'lib/controllers'].map { |d| Rails.root.join('vendor','plugins', 'olmis', d) }"
 environment "config.plugins = [:all, :olmis]"
 
@@ -122,12 +139,27 @@ run 'cp vendor/plugins/ym4r_gm/gmaps_api_key.yml.sample config/gmaps_api_key.yml
 
 rake 'db:create'
 
-log '', 'Required gems will now be installed with the sudo command.'
-rake 'gems:install', :sudo => true
 
+# minimal config in order to generate olmis_migrations 
+run 'cp vendor/plugins/olmis/sample/olmis_minimal.rb config/olmis.rb'
 generate 'olmis_migrations'
+if 0 != $?.to_i
+  log '', "FATAL: generate olmis_migrations failed. exit code: #{$?.to_i}"
+  log '', 'Abort installation...'
+  exit 
+end 
+
 
 rake 'db:migrate'
+if 0 != $?.to_i
+  log '', "FATAL ERROR rake 'db:migrate' done. exit code: #{$?.to_i}"
+  log '', 'Abort installation...'
+  exit
+end 
+
+# install a root user as the absoulate bare minimal
+# (in case the user does not want to apply sample Pacific NW config)
+rake 'olmis:db:bootstrap 
 
 if use_git
   git :add => '.'
