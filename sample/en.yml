@@ -76,5 +76,16 @@ en:
     doses_distributed: Doses distributed
     loss:              Doses lost
     open_vials:        Open vials
-    expiration:        First expiration date
-  
+    expiration:        First expiration date  
+  visits:
+    health_center_inventory: 
+      inventory:
+        product_header: Product
+    health_center_monthly_tasks:
+      usage_tally: Usage Tally
+      full_vaccination_tally: Full Vaccination Tally
+      child_vaccination_tally: Child Vaccination Tally
+      page_titles:
+        usage_tally: Usage Tally
+        full_vaccination_tally: Full Vaccination Tally
+        child_vaccination_tally: Child Vaccination Tally
