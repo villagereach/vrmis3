@@ -439,7 +439,7 @@ module ActsAsStatTally
             #{table_name}.health_center_id = health_center_visits.health_center_id
             and #{table_name}.date_period = #{previous_date_period_sql('health_center_visits.visit_month')}
         where health_center_visits.visit_month in (#{date_periods})
-        group by health_center_visits.id 
+        group by health_center_visits.id, health_center_visits.visit_month
       TALLY
     end
 

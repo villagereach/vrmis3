@@ -214,7 +214,7 @@ class Inventory < ActiveRecord::Base
         left join packages       on packages.id = package_counts.package_id
       where health_center_visits.visit_month in (#{date_periods})) x
       where screen != ''
-      group by id, screen
+      group by id, date_period, screen
     INV
   end
 end

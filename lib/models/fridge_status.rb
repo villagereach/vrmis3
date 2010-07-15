@@ -277,7 +277,7 @@ class FridgeStatus < ActiveRecord::Base
         left join fridges
           on fridge_statuses.fridge_id = fridges.id
         where health_center_visits.visit_month in (#{date_periods})
-      group by health_center_visits.id 
+      group by health_center_visits.id , health_center_visits.visit_month
     CC
   end
   

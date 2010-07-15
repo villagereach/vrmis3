@@ -110,7 +110,7 @@ class EquipmentStatus < ActiveRecord::Base
       from health_center_visits 
         left join equipment_statuses on equipment_statuses.health_center_visit_id = health_center_visits.id
         where health_center_visits.visit_month in (#{date_periods})
-      group by health_center_visits.id 
+      group by health_center_visits.id, health_center_visits.visit_month 
     EQUIP
   end  
 end
