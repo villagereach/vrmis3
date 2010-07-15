@@ -446,6 +446,7 @@ module ActsAsStatTally
     private
 
     def previous_date_period_sql(dp)
+      #[PSQL-Note] in psql, use: "to_char(to_date(#{dp} || '-01', 'YYYY-MM-DD') - interval '1 month', 'YYYY-mm')"
       "date_format((date(concat(#{dp}, '-01')) - interval 1 month), '%Y-%m')"
     end    
 

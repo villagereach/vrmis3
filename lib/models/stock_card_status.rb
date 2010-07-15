@@ -121,7 +121,7 @@ class StockCardStatus < ActiveRecord::Base
   
   def self.progress_query(date_periods)
     stock_cards = StockCard.active.count
-
+#[PSQL-Note] coalesce does not work in psql, use case statements     left join (select health_center_visit_id, (case have when true then 1 else 0 end) as have, (case used_correctly when true then 1 else 0 end) as used_correctly from stock_card_statuses) stock_card_statuses on 
     <<-TALLY
     select health_center_visits.id as id,
       health_center_visits.visit_month as date_period,

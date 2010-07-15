@@ -28,6 +28,7 @@ class Fridge < ActiveRecord::Base
     self.code <=> other.code
   end  
   
+  #[PSQL-Note] LIMIT 1 clause does not work in psql
   has_one(:current_status,
           :class_name => 'FridgeStatus',
           :conditions => 'fridge_statuses.id = (SELECT fs2.id FROM fridge_statuses fs2 WHERE fs2.fridge_id = fridge_statuses.fridge_id ORDER BY fs2.reported_at DESC, fs2.created_at DESC LIMIT 1)'
@@ -174,6 +175,7 @@ class Fridge < ActiveRecord::Base
   }
 
   named_scope :age_category, lambda { |category|
+    #[PSQL-Note] In PSQL, param of interval needs to be single-quoted, e.g., interval '1 month'
     cond = (case category
             when '1mo' then " > '#{Date.today.strftime("%Y-%m-%d")}' - interval 1 month"
             when '2mo' then " BETWEEN '#{Date.today.strftime("%Y-%m-%d")}' - interval 1 month AND '#{Date.today.strftime("%Y-%m-%d")}' - interval 2 month"
