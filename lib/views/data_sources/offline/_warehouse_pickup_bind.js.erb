@@ -1,0 +1,17 @@
+<%- Package.active.each do |package| -%>
+
+  $('#warehouse_pickup-before-<%= package.code %>-DeliveryRequest').
+    linkFrom('val', data.DeliveryRequest, '<%= package.code %>');
+
+  <%- %w(DeliveryRequest DeliveryPickup).each do |type| -%>
+
+    $('#warehouse_pickup-after-<%= package.code %>-<%= type %>').
+      linkFrom('val', data.<%= type %>, '<%= package.code %>').
+      linkTo('val', data.<%= type %>, '<%= package.code %>');
+
+  <%- end -%>
+<%- end -%>
+
+$('#warehouse_pickup_date').
+  linkFrom('val', data, 'date', olmis_localize_date).
+  linkTo('val', data, 'date', olmis_delocalize_date);

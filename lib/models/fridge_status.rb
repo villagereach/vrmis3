@@ -43,7 +43,7 @@ class FridgeStatus < ActiveRecord::Base
     user                                                                                     
   end
 
-  validates_presence_of :date, :status_code
+  validates_presence_of :date
 
   named_scope :health_center, lambda { |hc| 
     { 
@@ -91,6 +91,14 @@ class FridgeStatus < ActiveRecord::Base
     }
   }
 
+  def validate
+    unless status_code.nil? || status_code == 'OK'
+      if status_code.split.any?{|status| !(FridgeStatus.status_codes - ['OK']).include?(status)}
+        errors.add(:status_code, 'choose_problem')
+      end
+    end
+  end
+
   def self.status_codes
     Olmis.configuration['fridge_statuses']
   end
@@ -123,22 +131,22 @@ class FridgeStatus < ActiveRecord::Base
   end
   
   def i18n_status_code
-    I18n.t("FridgeStatus.#{status_code}", :default => status_code)
+    status_code.present? ? I18n.t("FridgeStatus.#{status_code}", :default => status_code) : I18n.t("unknown")
   end
   
   def status_category
     case status_code 
-    when 'BROKE' then 'red'
     when 'OK'    then 'green'
-    else              'yellow'
+    when nil     then 'yellow'
+    else              'red'
     end
   end
   
   def self.statuses_in_category(category)
     case category
-    when 'red' then ['BROKE']
-    when 'green' then ['OK']
-    else status_codes - ['BROKE', 'OK'] + ['NO STATUS']
+    when 'green'  then ['OK']
+    when 'yellow' then ['NO STATUS']
+    else               status_codes - ['OK']
     end
   end
   
@@ -156,6 +164,33 @@ class FridgeStatus < ActiveRecord::Base
     }
   end    
 
+  def self.visit_json(visit)
+    visit.find_or_initialize_fridge_statuses().sort.map do |fs|
+      { 
+        'fridge_code'   => fs.fridge_code, 
+        'past_problem'  => fs.past_problem,
+        'temperature'   => fs.temperature,
+        'state'         => case fs.status_code
+                           when 'OK', 'nr' then fs.status_code
+                           else                 'problem'
+                           end,
+        'problem'       => case fs.status_code
+                           when 'OK', 'nr' then []
+                           else                 fs.status_code.split /\s+/
+                           end,
+        'other_problem' => fs.other_problem
+      }
+    end
+  end
+  
+  def self.empty_json
+    '[]'
+  end
+  
+  def self.json_to_params(json)
+    json['fridge_status']
+  end
+  
   def self.xforms_to_params(xml)
     xml.xpath('/olmis/cold_chain/fridge').map do |fridge|
       {
@@ -202,14 +237,14 @@ class FridgeStatus < ActiveRecord::Base
         end
         record = FridgeStatus.new(:fridge => f, :stock_room => visit.health_center.stock_room)
       end
-      
+
       db_values = {
         :reported_at   => visit.visited_at,
         :user_id       => visit.user_id,
         :past_problem  => values["past_problem"] == "true" || (values["past_problem"] == "false" ? false : nil),
         :temperature   => values["temperature"].blank? ? nil : values["temperature"].to_i,
         :status_code   => values["state"] == "OK" ? "OK" : values["state"] == "nr" ? nil : [values["problem"]].flatten.compact.join(' '),
-        :other_problem => values["state"] == "problem" && values["problem"].include?("OTHER") ? values["other_problem"] : nil
+        :other_problem => values["state"] == "problem" && values["problem"] && values["problem"].include?("OTHER") ? values["other_problem"] : nil
       }
 
       record.update_attributes(db_values)

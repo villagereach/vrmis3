@@ -42,6 +42,13 @@ class VisitsController < OlmisController
         :remote_ip => request.remote_ip,
         :content_type => request.headers['CONTENT_TYPE'].to_s,
         :data => request.raw_post)
+    elsif params[:format] == 'json'
+      submission = DataSubmission.create(
+        :user => @current_user, 
+        :data_source => DataSource['JsonVisitDataSource'],
+        :remote_ip => request.remote_ip,
+        :content_type => request.headers['CONTENT_TYPE'].to_s,
+        :data => request.raw_post)
     else
       submission = DataSubmission.create(
         :user => @current_user, 
@@ -55,12 +62,14 @@ class VisitsController < OlmisController
       @visit, @errors = submission.process_visit(@health_center, helpers.visit_month, @current_user)
     end    
 
+    response.content_type = 'text/plain' if %w(xml json).include?(params[:format])
+
     if @errors.none? { |slice, slice_errors| slice_errors.present? }
       submission.status = 'success'
       submission.save
 
-      if params[:format] == 'xml'
-        render :text => 'ok'
+      if %w(xml json).include?(params[:format])
+        render :text => submission.status
       else
         if params[:save_and_continue] && link = helpers.next_link      
           redirect_to link.last
@@ -71,6 +80,12 @@ class VisitsController < OlmisController
     else
       submission.status = 'error'
       submission.save
+
+      logger.error %Q{\n*** Data submission error:\n*** #{@errors.map{|slice,slice_errors| slice_errors.map{|k,v| [k,v.full_messages]}}.delete_if(&:empty?).flatten_once.map{|(field,errors)| "#{field}: #{errors.join(', ')}"}.join("\n*** ")}\n\n}
+
+      if %w(xml json).include?(params[:format])
+        render :text => submission.status, :status => 400
+      end
     end
   end    
 
@@ -108,7 +123,7 @@ class VisitsController < OlmisController
   end
 
   def health_center_inventory
-    @inventories = @visit.find_or_create_inventory_records
+    @inventories = @visit.find_or_initialize_inventory_records
     @stock = @visit.ideal_stock 
 
     handle_submit if request.post?

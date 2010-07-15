@@ -63,6 +63,9 @@ plugin "activerecord_i18n_defaults",
 plugin "i18n_label",
   :git => "git://github.com/iain/i18n_label.git",
   :submodule => use_submodules
+plugin "ym4r_gm",
+  :git => "git://github.com/davec/ym4r_gm.git",
+  :submodule => use_submodules
 
 gem "mysql"
 gem "fastercsv"
@@ -114,6 +117,8 @@ gsub_file 'config/database.yml', /^(development|test|production):/mi do |match|
   name = match.split(':',2).first
   "#{match}\n  adapter: mysql\n  encoding: utf8\n  database: #{db_name}_#{name}\n  username: #{db_user}#{pw}"
 end
+
+run 'cp vendor/plugins/ym4r_gm/gmaps_api_key.yml.sample config/gmaps_api_key.yml'
 
 rake 'db:create'
 
@@ -167,3 +172,6 @@ end
 
 log '', '* Start the Rails server and login as "admin" with password "olmis".'
 log '', '* Create field coordinator users and assign them to delivery zones.'
+log '', '* Edit config/gmaps_api_key.yml with your Google Maps API key(s),'
+log '', '  before deploying to production. (The default keys are valid for'
+log '', '  a development environment on localhost.)'

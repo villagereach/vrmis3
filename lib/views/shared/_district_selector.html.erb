@@ -4,6 +4,6 @@
     <%= select_tag :district_id, options_for_select(
         [[t('shared.select_district.select'),'']] + 
           District.options_for_select_by_parent(params[:province_id]),
-            params[:district_id])%>
+            :selected => params[:district_id], :disabled=>District.id_strings_without_visit_data)%>
   <% end %>
 </span>

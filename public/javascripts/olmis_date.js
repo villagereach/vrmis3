@@ -13,6 +13,15 @@ Date.prototype.format = function (string) {
   string = string.replace(/%d/, ('0' + this.getDate()).substr(-2)                   , 'g');
   string = string.replace(/%m/, ('0' + (this.getMonth() + 1)).substr(-2)            , 'g');
   string = string.replace(/%Y/, this.getFullYear()                                  , 'g');
+  string = string.replace(/%H/, ('0' + this.getHours()).substr(-2)                  , 'g');
+  string = string.replace(/%M/, ('0' + this.getMinutes()).substr(-2)                , 'g');
+  string = string.replace(/%S/, ('0' + this.getSeconds()).substr(-2)                , 'g');
+  string = string.replace(/%I/, ('0' + (this.getHours() > 12 ?
+                                          this.getHours() - 12 :
+                                          this.getHours() == 0 ?
+                                            12 :
+                                            this.getHours())).substr(-2)            , 'g');
+  string = string.replace(/%p/, I18n.t('time.'+(this.getHours() < 12) ? 'am' : 'pm'), 'g');
   return string;
 }
 

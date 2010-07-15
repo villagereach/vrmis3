@@ -6,7 +6,7 @@
   <p class="note"><%= h(t("visits.nr_instructions")) %></p>
 
   <% begin %>
-    <%= render :partial => @screen %>
+    <%= render :partial => @screen, :locals => { :screen => @screen } %>
   <% rescue ActionView::MissingTemplate %>  
     <%= tally_table(HealthCenterVisit.klass_by_screen[@screen]) %>
   <% end %>

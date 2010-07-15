@@ -1,0 +1,12 @@
+<%- klass.expected_params().each do |param, value_type|
+      node = param_to_jquery(param)
+      id = klass.table_name.singularize + '_' + param_to_id(param)
+-%>
+<%- if value_type == :date -%>
+$('#<%= id %>'   ).linkFrom('val',     data['<%= node %>'], 'value', olmis_localize_yearmonth).linkTo('val', data['<%= node %>'], 'value', olmis_delocalize_yearmonth);
+<%- else -%>
+$('#<%= id %>'   ).linkFrom('val',     data['<%= node %>'], 'value').linkTo('val',  data['<%= node %>'], 'value');
+<%- end -%>
+$('#<%= id %>-nr').linkFrom('checked', data['<%= node %>'], 'nr').linkTo('checked', data['<%= node %>'], 'nr');
+<%- end -%>
+

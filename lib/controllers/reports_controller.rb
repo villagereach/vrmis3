@@ -1,9 +1,14 @@
 class ReportsController < OlmisController
-  skip_before_filter :check_logged_in, :set_locale, :only => [ :offline_index, :offline_report, :offline_autoeval ]
-  before_filter :set_locale_without_session, :only => [ :offline_index, :offline_report, :offline_autoeval ]
+  # NOTE: #target_coverage_map and #stockouts_map do not require login because of
+  # Google Maps license restrictions that require them to be publicly available.
+  skip_before_filter :check_logged_in, :set_locale, :only => [ :offline_index, :offline_report, :offline_autoeval,
+                                                               :target_coverage_map, :stockouts_map ]
+  before_filter :set_locale_without_session, :only => [ :offline_index, :offline_report, :offline_autoeval,
+                                                        :target_coverage_map, :stockouts_map ]
+  before_filter :current_user, :only => [ :target_coverage_map, :stockouts_map ]
   helper :date_period_range
   add_breadcrumb 'breadcrumb.report', 'reports_path', :except => [ :offline_index, :offline_report, :offline_autoeval ]
-  add_breadcrumb 'breadcrumb.report', 'offline_report_index_path(:locale => I18n.locale)', :only => [ :offline_index, :offline_report, :offline_autoeval ]
+  add_breadcrumb 'breadcrumb.report', 'offline_reports_path(:locale => I18n.locale)', :only => [ :offline_index, :offline_report, :offline_autoeval ]
 
   def table_object(graph)
     @table_count = (@table_count || 0) + 1
@@ -56,7 +61,12 @@ class ReportsController < OlmisController
   def offline_report
     @report = params[:report].downcase.gsub(/[^a-z_]+/, '')
     add_breadcrumb "breadcrumb.offline_report.#{@report}"
-    if stale?(:last_modified => DataSubmission.last_submit_time.utc)
+
+    vendor_root = File.expand_path(File.join(File.dirname(__FILE__), '..','..'))
+    files = Dir.glob(File.join(vendor_root, 'lib', '{graphs,reports,queries}.rb'))
+    last_mod_time = (files.map{ |f| File.mtime(f) } << DataSubmission.last_submit_time).max
+
+    if stale?(:last_modified => last_mod_time.utc)
       render :offline_report, :layout => 'offline'
     end
   end
@@ -124,7 +134,6 @@ class ReportsController < OlmisController
     @area = helpers.get_area_from_params    
     
     @product_id = products.map(&:id)
-
     graph_params = params.merge({
       :product_id => @product_id,
       :date_period_range => @date_period_range
@@ -136,8 +145,8 @@ class ReportsController < OlmisController
         Graphs.stockouts_by_product_area_for_date_period_range(graph_params.merge(:area_id => @area.id))
       ]
     ]
-    
-    @graphs = [ [I18n.t('reports.titles.stocked_out_health_centers_by_type_and_date_period', :name => @area.label, :date => label),
+
+    @graphs = [ [I18n.t('reports.titles.stocked_out_health_centers_by_type_and_date_period' + 'woo', :name => @area.label, :date => label),
                 Graphs.stocked_out_health_centers_by_type(graph_params)] ]
                 
 #    if @area.class != District && dates.last > dates.first

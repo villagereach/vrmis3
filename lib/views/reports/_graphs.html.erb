@@ -5,7 +5,7 @@
 <% if interactive_parameters.empty? %>
 <div class="span-24 last">
   <h4><%= t 'reports.report_parameters' %></h4>
-  <form id="stockouts_params">
+  <form id="report_params">
     <%= render :partial => '/shared/administrative_area_selector' %>
 
     <label for="date_period_range"><%= t('reports.date_range') %>:</label>
@@ -17,7 +17,7 @@
 <% else %>
 <div class="span-6 parameters">
   <h4><%= t 'reports.report_parameters' %></h4>
-  <form id="stockouts_params">
+  <form id="report_params">
     <%= render :partial => '/shared/administrative_area_selector' %>
     <p class="date_selector">
       <label for="date_period_range"><%= t('reports.date_range') %>:</label>
@@ -57,7 +57,7 @@
   <% if tab_graphs %>
     <% @tab_graph_count ||= 0 %>
     <%  tab_graph_id = "tab_graphs_#{ @tab_graph_count += 1 }" %>
-    <%= javascript_tag "jQuery(function(){ jQuery('##{tab_graph_id}').tabs() })" %>
+    <%= javascript_tag "$(function(){ $('##{tab_graph_id}').tabs() })" %>
     <div id="<%= tab_graph_id %>" class="tab_graphs ui-tabs">
       <ul>
         <%- tab_graphs.each do |title, graph| -%>
@@ -70,26 +70,26 @@
           <p class="export_as_csv"><%= link_to t( 'reports.export_as_csv' ), graph[:params].merge({ :controller => 'graph_data', :action => :graph, :format => 'csv' }) %></p>
         </div>
       <%- end -%>
-      <%= javascript_tag "jQuery('##{tab_graph_id}').bind('tabsshow', function(event, ui) { id = jQuery('##{tab_graph_id} > div > div.plot')[ui.index].id; if (jqplots[id]) jqplots[id].redraw(); } )" %>
+      <%= javascript_tag "$('##{tab_graph_id}').bind('tabsshow', function(event, ui) { id = $('##{tab_graph_id} > div > div.plot')[ui.index].id; if (jqplots[id]) jqplots[id].redraw(); } )" %>
       <br clear="both" />
     </div>
   <% end %>
 </div>
 
 <% javascript_tag do %>
-  jQuery(function() {
+  $(function() {
     <% unless interactive_parameters.empty? %>
       plot_options("<%= interactive_parameters.map { |p| %Q{'#{p.singularize}'} }.join(', ') %>");
-      jQuery('#options input[type=checkbox]').click(function() {
+      $('#options input[type=checkbox]').click(function() {
         plot_options("<%= interactive_parameters.map { |p| %Q{'#{p.singularize}'} }.join(', ') %>");
       });
     <% end %>
-    jQuery('#stockouts_params select').change(function() {
-      jQuery(this).parents('form').find('input[type=submit]').attr('disabled', false);
+    $('#report_params select').change(function() {
+      $(this).parents('form').find('input[type=submit]').attr('disabled', false);
     });
-    jQuery('#stockouts_params input[type=submit]').click(function() {
-      jQuery(this).attr('disabled', true);
-      jQuery('#submit_spinner').show();
+    $('#report_params input[type=submit]').click(function() {
+      $(this).attr('disabled', true);
+      $('#submit_spinner').show();
     });
   });
 <% end %>

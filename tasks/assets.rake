@@ -6,7 +6,14 @@ namespace :olmis do
       directory = File.dirname(__FILE__) + "/../"
       destdir = "#{Rails.root}/public"
       mkdir_p destdir
-      sh "rsync -rlvu #{directory}/public/* #{destdir}"
+      sh "rsync -rlvu --exclude 'custom.*' #{directory}/public/* #{destdir}"
+
+      # Copy over 'custom.*' files only if they do not already exist in destdir
+      Dir.chdir("#{directory}/public") do
+        Dir.glob("**/custom.*").each do |file|
+          FileUtils.cp(file, "#{destdir}/#{file}") unless File.exist?("#{destdir}/#{file}")
+        end
+      end
     end
   end
 end

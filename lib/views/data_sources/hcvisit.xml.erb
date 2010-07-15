@@ -2,9 +2,19 @@
 <%-
   locale = I18n.locale
 
-  provinces = Province.all.sort
-  districts = District.all
-  health_centers = HealthCenter.all
+  # FIXME: Temporarily exclude fridge form
+  include_cold_chain = false
+  hc_visit_tables = HealthCenterVisit.tables - [ FridgeStatus ]
+  hc_visit_screens = HealthCenterVisit.screens - [ 'cold_chain' ]
+
+  if params[:dz] and delivery_zone = DeliveryZone.find_by_code(params[:dz])
+    districts = delivery_zone.health_centers.group_by(&:district).keys.sort
+    health_centers = districts.map(&:health_centers).flatten
+  else
+    delivery_zones = DeliveryZone.all
+    districts = District.all
+    health_centers = HealthCenter.all
+  end
 
   def health_center_code(hc)
     "#{hc.code}-#{hc.id}"  # code+ID prevents duplicate HC names from causing grief
@@ -17,10 +27,10 @@
         xmlns:jr="http://openrosa.org/javarosa"
         lang="<%= locale %>">
   <h:head>
-    <h:title><%= t("health_center_visit") %></h:title>
+    <h:title><%= h(t("health_center_visit")) %></h:title>
     <model>
       <instance>
-        <vrmis3>
+        <olmis>
           <meta>
             <date/>
             <field_coordinator>
@@ -35,41 +45,127 @@
             <vehicle_id/>
             <notes/>
             <visit>
-            <% HealthCenterVisit.tables.each do |t| 
-                 begin %><%=
-                   render(:partial => 'odk/' + t.table_name.singularize + '_data.odk') %><% 
-                 rescue ActionView::MissingTemplate           
-                 end 
-               end %> 
+            <%- hc_visit_tables.each do |table| -%>
+              <%- begin -%>
+                <%= render :partial => "/data_sources/odk/#{table.table_name.singularize}_data.odk" %>
+              <%- rescue ActionView::MissingTemplate -%>
+                <%- begin -%>
+                  <%= render :partial => "/data_sources/odk/#{table.xforms_group_name}_data.odk" %>
+                <%- rescue ActionView::MissingTemplate -%>
+                <%- end -%>
+              <%- end -%>
+            <%- end -%>
             </visit>
           </hcvisit>
-        </vrmis3>
+          <!-- Hackaround for lack of itemset support -->
+          <location>
+            <%- if delivery_zone -%>
+              <delivery_zone><%= delivery_zone.code %></delivery_zone>
+              <district/>
+            <%- else -%>
+              <delivery_zone/>
+              <district>
+                <%- delivery_zones.each do |dz| -%>
+                  <dz-<%= dz.code %> />
+                <%- end -%>
+              </district>
+            <%- end -%>
+            <health_center>
+              <%- districts.each do |d| -%>
+                <d-<%= d.code %> />
+              <%- end -%>
+            </health_center>
+            <%- if include_cold_chain -%>
+              <fridges>
+                <%- health_centers.each do |hc|
+                      next if hc.fridges.empty?
+                      hc_code = health_center_code(hc) -%>
+                  <hc-<%= hc_code -%>>
+                    <%- hc.fridges.each do |fridge| -%>
+                      <f-<%= fridge.id %> code="<%= h fridge.code %>">
+                        <temp/><past_problem/><state/><problem/><other_problem/>
+                      </f-<%= fridge.id %>>
+                    <%- end -%>
+                  </hc-<%= hc_code -%>>
+                <%- end -%>
+              </fridges>
+            <%- end -%>
+          </location>
+        </olmis>
       </instance>
 
-      <bind nodeset="/vrmis3/meta/date" type="date" jr:preload="date" jr:preloadParams="today" readonly="true()" />
-      <bind nodeset="/vrmis3/meta/field_coordinator/phone"       id="field_coordinator-phone" jr:preload="property" jr:preloadParams="phonenumber" />
-      <bind nodeset="/vrmis3/meta/field_coordinator/name"        id="field_coordinator-name"     required="true()" /><!--relevant="../phone = ''" /-->
+      <bind nodeset="/olmis/meta/date" type="date" jr:preload="date" jr:preloadParams="today" readonly="true()" />
+      <bind nodeset="/olmis/meta/field_coordinator/phone" id="field_coordinator-phone" jr:preload="property" jr:preloadParams="phonenumber" />
+      <bind nodeset="/olmis/meta/field_coordinator/name" id="field_coordinator-name" required="true()" /><!--relevant="../phone = ''" /-->
       <!-- HACK: Set during post-processing due to lack of dynamic selection support (see below) -->
-      <!--bind nodeset="/vrmis3/hcvisit/health_center"              id="health_center"              required="true()" /-->
+      <!--bind nodeset="/olmis/hcvisit/health_center" id="health_center" required="true()" /-->
 
-      <bind nodeset="/vrmis3/hcvisit/visited_at"       id="visited_at"      required="true()" relevant="../visited != 'false'" type="date" constraint="date(.) &lt;= today()" jr:preload="date" jr:preloadParams="today" jr:constraintMsg="<%= t('activerecord.errors.models.health_center_visit.visited_at.no_future_date') %>" />
-      <bind nodeset="/vrmis3/hcvisit/vehicle_id"       id="vehicle_id"       required="true()" relevant="../visited != 'false'" />
-      <bind nodeset="/vrmis3/hcvisit/notes"            id="notes" />
+      <bind nodeset="/olmis/hcvisit/visited_at" id="visited_at" required="true()" relevant="../visited != 'false'" type="date" constraint="date(.) &lt;= today()" jr:preload="date" jr:preloadParams="today" jr:constraintMsg="<%= h(t('activerecord.errors.models.health_center_visit.attributes.visited_at.no_future_date')) %>" />
+      <bind nodeset="/olmis/hcvisit/vehicle_id" id="vehicle_id" relevant="../visited != 'false'" />
+      <bind nodeset="/olmis/hcvisit/notes" id="notes" />
 
-      <bind nodeset="/vrmis3/hcvisit/visit" id="visit_data" relevant="../visited != 'false'" />
+      <bind nodeset="/olmis/hcvisit/visit" id="visit_data" relevant="../visited != 'false'" />
 
-      <% HealthCenterVisit.tables.each do |t| 
-           begin %><%= 
-             render(:partial => 'odk/' + t.table_name.singularize + '_bind.odk') %><% 
-           rescue ActionView::MissingTemplate           
-           end 
-         end %> 
+      <% hc_visit_screens.each do |screen| -%>
+        <%- begin -%>
+          <%= render :partial => "/data_sources/odk/#{screen}_bind.odk", :locals => { :screen => screen } %>
+        <%- rescue ActionView::MissingTemplate -%>
+          <%- begin %>
+            <%- klass = HealthCenterVisit.klass_by_screen[screen] -%>
+            <%= render :partial => "/data_sources/odk/#{klass.xforms_group_name}_bind.odk", :locals => { :screen => screen } %>
+          <%- rescue ActionView::MissingTemplate -%>
+          <%- end -%>
+        <%- end -%>
+      <%- end -%>
+
+      <!-- HACK: JavaRosa doesn't yet support itemsets, so the following is necessary for cascading location selection -->
+      <%- if delivery_zone -%>
+        <bind nodeset="/olmis/location/district" id="district" required="true()" />
+        <%- districts.each do |d| -%>
+          <bind id="d-<%= d.code -%>" nodeset="/olmis/location/health_center/d-<%= d.code %>" required="true()" relevant="../../district = '<%= d.code %>'" />
+          <%- d.health_centers.each do |hc|
+                next if hc.fridges.empty?
+                hc_code = health_center_code(hc) -%>
+            <bind id="hc-<%= hc_code %>" nodeset="/olmis/location/fridges/hc-<%= hc_code %>" required="true()" relevant="../../district = '<%= d.code %>' and ../../health_center/d-<%= d.code %> = '<%= hc_code %>'" />
+            <%- hc.fridges.each do |fridge|
+                  id = "f-#{fridge.id}"
+                  node = "/olmis/location/fridges/hc-#{hc_code}/#{id}" -%>
+              <bind id="<%= id %>:temp" nodeset="<%= node %>/temp" required="true()" type="integer" />
+              <bind id="<%= id %>:past_problem" nodeset="<%= node %>/past_problem" required="true()" />
+              <bind id="<%= id %>:state" nodeset="<%= node %>/state" required="true()" />
+              <bind id="<%= id %>:problem" nodeset="<%= node %>/problem" required="true()" relevant="../state = 'problem'" />
+              <bind id="<%= id %>:other_problem" nodeset="<%= node %>/other_problem" required="true()" relevant="regex(../problem, '\bOTHER\b')" />
+            <%- end -%>
+          <%- end -%>
+        <%- end -%>
+      <%- else -%>
+        <%- delivery_zones.each do |dz| -%>
+          <bind id="dz-<%= dz.code %>" nodeset="/olmis/location/district/dz-<%= dz.code %>" required="true()" relevant="../../delivery_zone = '<%= dz.code %>'" />
+          <%- dz.health_centers.group_by(&:district).keys.sort.each do |d| -%>
+            <bind id="d-<%= d.code %>" nodeset="/olmis/location/health_center/d-<%= d.code %>" required="true()" relevant="../../delivery_zone = <%= dz.code %>' and ../../district/dz-<%= dz.code %> = '<%= d.code %>'" />
+            <%- d.health_centers.each do |hc|
+                  next if hc.fridges.empty?
+                  hc_code = health_center_code(hc) -%>
+              <bind id="hc-<%= hc_code %>" nodeset="/olmis/location/fridges/hc-<%= hc_code %>" required="true()" relevant="../../district = '<%= d.code %>' and ../../health_center/d-<%= d.code %> = '<%= hc_code %>'" />
+              <%- hc.fridges.each do |fridge|
+                    id = "f-#{fridge.id}"
+                    node = "/olmis/location/fridges/hc-#{hc_code}/#{id}" -%>
+                <bind id="<%= id %>:temp" nodeset="<%= node %>/temp" required="true()" />
+                <bind id="<%= id %>:past_problem" nodeset="<%= node %>/past_problem" required="true()" />
+                <bind id="<%= id %>:state" nodeset="<%= node %>/state" required="true()" />
+                <bind id="<%= id %>:problem" nodeset="<%= node %>/problem" required="true()" relevant="../state = 'false'" />
+                <bind id=<%= id %>:other_problem" nodeset="<%= node %>/other_problem" required="true()" relevant="regex(../problem, '\bOTHER\b')" />
+              <%- end -%>
+            <%- end -%>
+          <%- end -%>
+        <%- end -%>
+      <%- end -%>
     </model>
   </h:head>
   <h:body>
     <group>
       <select1 bind="field_coordinator-name">
-        <label><%= t("field_coordinator") %></label>
+        <label><%= h(t("field_coordinator")) %></label>
         <%- User.field_coordinators.reject{|fc| fc.delivery_zone.nil?}.sort.each do |fc| -%>
           <item>
             <label><%= h fc.name %></label>
@@ -78,37 +174,49 @@
         <%- end -%>
       </select1>
     </group>
-    <!-- HACK: Cascading province -> delivery zone -> district -> health center selection -->
-    <group>
-      <select1 bind="province">
-        <label><%= t("province") %></label>
-        <%- provinces.each do |p| -%>
-          <item>
-            <label><%= h p.name %></label>
-            <value><%= h p.code %></value>
-          </item>
-        <%- end -%>
-      </select1>
-    </group>
-    <group>
-      <%- provinces.each do |p|
-            p_code = p.code  -%>
-        <select1 bind="p-<%= p_code %>">
-          <label><%= t("delivery_zone") %></label>
-          <%- p.districts.sort.each do |dz| -%>
+    <%- if delivery_zone -%>
+      <group>
+        <select1 bind="district">
+          <label><%= h(t("district")) %></label>
+          <%- districts.each do |d| -%>
+            <item>
+              <label><%= h d.name %></label>
+              <value><%= h d.code %></value>
+            </item>
+          <%- end -%>
+        </select1>
+      </group>
+    <%- else -%>
+      <!-- HACK: Cascading delivery zone -> district -> health center selection -->
+      <group>
+        <select1 bind="delivery_zone">
+          <label><%= h(t("delivery_zone")) %></label>
+          <%- delivery_zones.each do |dz| -%>
             <item>
               <label><%= h dz.name %></label>
               <value><%= h dz.code %></value>
             </item>
           <%- end -%>
         </select1>
-      <%- end -%>
-    </group>      
+      </group>
+      <group>
+        <%- delivery_zones.each do |dz| -%>
+          <select1 bind="dz-<%= dz.code %>">
+            <label><%= h(t("district")) %></label>
+            <%- dz.health_centers.group_by(&:district).keys.sort.each do |d| -%>
+              <item>
+                <label><%= h d.name %></label>
+                <value><%= h d.code %></value>
+              </item>
+            <%- end -%>
+          </select1>
+        <%- end -%>
+      </group>
+    <%- end -%>
     <group>
-      <%- districts.each do |d|
-            d_code = d.code -%>
-        <select1 bind="d-<%= d_code %>">
-          <label><%= t("health_center") %></label>
+      <%- districts.each do |d| -%>
+        <select1 bind="d-<%= d.code %>">
+          <label><%= h(t("health_center")) %></label>
           <%- d.health_centers.sort.each do |hc| -%>
             <item>
               <label><%= h hc.name %></label>
@@ -120,26 +228,31 @@
     </group>
     <group>
       <input bind="visited_at">
-        <label><%= t("visits.health_center_monthly_visit.date") %></label>
+        <label><%= h(t("visits.health_center_monthly_visit.date")) %></label>
       </input>
     </group>
     <group>
       <input bind="vehicle_id">
-        <label><%= t("visits.health_center_monthly_visit.vehicle_code") %></label>
+        <label><%= h(t("visits.health_center_monthly_visit.vehicle_code")) %></label>
       </input>
     </group>
     <group>
       <input bind="notes">
-        <label><%= t("visits.health_center_monthly_visit.notes") %></label>
+        <label><%= h(t("visits.health_center_monthly_visit.notes")) %></label>
       </input>
     </group>
     <group bind="visit_data">    
-      <% HealthCenterVisit.tables.each do |t| 
-           begin %><%= 
-             render(:partial => 'odk/' + t.table_name.singularize + '_group.odk') %><% 
-           rescue ActionView::MissingTemplate           
-           end 
-         end %> 
+      <% hc_visit_screens.each do |screen| -%>
+        <%- begin -%>
+          <%= render :partial => "/data_sources/odk/#{screen}_group.odk", :locals => { :screen => screen, :health_centers => health_centers } %>
+        <%- rescue ActionView::MissingTemplate -%>
+          <%- begin %>
+            <%- klass = HealthCenterVisit.klass_by_screen[screen] -%>
+            <%= render :partial => "/data_sources/odk/#{klass.xforms_group_name}_group.odk", :locals => { :screen => screen, :health_centers => health_centers } %>
+          <%- rescue ActionView::MissingTemplate -%>
+          <%- end -%>
+        <%- end -%>
+      <%- end -%>
     </group>
   </h:body>
 </h:html>

@@ -3,27 +3,34 @@
 <h4><%= h(t("pickups.inventory.before_visit")) %></h4>
 
 <div class="prepend-7 span-16 last">
-  <div class="header">
-    <span><%= h(t("pickups.inventory.province", :name => @zone.warehouse.administrative_area.name)) %></span>
-  </div>
+  <div class="wrapper">
+    <div class="header">
+      <!--span><%= h(t("pickups.inventory.province", :name => @zone.warehouse.administrative_area.name)) %></span-->
+    </div>
 
-  <table class="inventory inventory-form">
-    <thead>
-      <tr>
-        <th><%= h(t("pickups.inventory.package")) %></th>
-        <th class="amount"><%= h(t("pickups.inventory.requested")) %></th>
-      </tr>
-    </thead>
-    <tbody>
-      <%- @amounts.keys.map.sort_by{|i| [ i.product, i ]}.each do |package| -%>
-        <tr class="inventory_row">
-          <td><%= package.label %></td>
-          <td class="amount"><%= @amounts[package] %></td>
+    <table class="inventory inventory-form">
+      <thead>
+        <tr>
+          <th class="empty"></th>
+          <th><%= h(t("pickups.inventory.package")) %></th>
+          <th class="amount"><%= h(t("pickups.inventory.requested")) %></th>
         </tr>
+      </thead>
+      <%- Package.active.sort.partition_by{|package| package.product.product_type}.each do |type, stocks| -%>
+        <tbody>
+          <%- stocks.sort.each_with_index do |package, idx| -%>
+            <tr class="inventory_row">
+              <%- if idx == 0 -%>
+                <td class="group_label"><%= h type.label %></td>
+              <%- else -%>
+                <td></td>
+              <%- end -%>
+              <td><%= h package.label %></td>
+              <td class="amount"><%= text_field_tag "warehouse_pickup-#{package.code}", @amounts[package], :readonly => true %></td>
+            </tr>
+          <%- end -%>
+        </tbody>
       <%- end -%>
-    </tbody>
-  </table>
-
+    </table>
+  </div>
 </div>
-
-<%= javascript_tag "jQuery('.pickups table tr:even').addClass('even')" %>

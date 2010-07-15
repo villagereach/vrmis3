@@ -3,11 +3,12 @@ var I18n = {
                   [l, I18n.t("", :locale => l)]
                 }.flatten_once].to_json %>,
   l: function(date, params) {
-    format = this.t('date.formats.' + params.format);
+    var type = params.time ? 'time' : 'date';
+    var format = this.t(type + '.formats.' + params.format);
     return date.format(format);
   },
   t: function(key, params) {
-    nesting = key.split('.');
+    var nesting = key.split('.');
     var str = this.dict[this.locale];
 
     while (nesting.length > 0 && typeof str == 'object')
@@ -25,13 +26,11 @@ var I18n = {
 
 I18n.locale = (function() {
   var re = window.location.search.match(/locale=(..)/); 
-  if (re) { return re[1] }
-  else { 
-    l = (navigator.language || '').substr(0,2);
-    if (I18n.dict[l])
-      return l;
-    else 
-      return 'pt'
+  if (re) {
+    return re[1];
+  } else { 
+    var l = (navigator.language || '').substr(0,2);
+    return I18n.dict[l] ? l : '<%= I18n.default_locale %>';
   }
 })();
 

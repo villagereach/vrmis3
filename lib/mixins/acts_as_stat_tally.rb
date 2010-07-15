@@ -30,7 +30,7 @@ module ActsAsStatTally
     base.send(:acts_as_visit_model)
     base.send :extend, ClassMethods
     base.send :include, InstanceMethods
-    
+
     base.class_eval do
       belongs_to :health_center
       belongs_to :created_by, :class_name => 'User'
@@ -370,6 +370,20 @@ module ActsAsStatTally
       errors
     end
 
+    def visit_json(visit)
+      record_value_hash = records_by_param_names_for_keys(visit.health_center, visit.epi_month)
+      expected_params().inject({}) { |hash, (param, type)|
+        if r = record_value_hash[param]
+          v = r.send(value_field(param))
+          hash[param_to_jquery(param)] = { 'value' => v.to_s, 'nr' => v.nil? ? 'true' : 'false' }
+        else
+          hash[param_to_jquery(param)] = { 'value' => '', 'nr' => '' }
+        end
+
+        hash
+      }
+    end
+
     def xforms_group_name
       'stat_tally'
     end
@@ -383,7 +397,17 @@ module ActsAsStatTally
     end
     
     def odk_to_params(xml)
-      nil
+      xml.xpath("/olmis/hcvisit/visit/#{table_name.singularize}/*").
+          find_all{|n| n.name.starts_with?('item_')}.
+          inject({}) do |hash, inv|
+        inv.xpath('*').each do |type|
+          quantity = type.xpath('./qty').text
+          key = "#{inv.name[5..-1]}:#{type.name}"
+          hash[key]         = quantity == AndroidOdkVisitDataSource::NR ? nil : quantity
+          hash["#{key}/NR"] = quantity == AndroidOdkVisitDataSource::NR ?   1 : 0
+        end
+        hash
+      end
     end
 
     def xforms_to_params(xml)
@@ -391,6 +415,16 @@ module ActsAsStatTally
         [n['for'].to_s, n['val'].to_s] +
           (n['nr'].to_s == "true" ? [n['for'].to_s + '/NR', 1] : [])
       }.flatten]
+    end
+
+    def json_to_params(json)
+      json[table_name.singularize].inject({}) { |hash, (key, value)|
+        fixed_key = param_from_jquery(key)
+
+        hash[fixed_key] = value['value']
+        hash["#{fixed_key}/NR"] = 1 if value['nr'] # NOTE: value['nr'] should come in as a boolean, not a string
+        hash
+      }
     end
 
     def progress_query(date_periods)    
@@ -414,5 +448,19 @@ module ActsAsStatTally
     def previous_date_period_sql(dp)
       "date_format((date(concat(#{dp}, '-01')) - interval 1 month), '%Y-%m')"
     end    
+
+    # NOTE: param_to_jquery and param_from_jquery are copied from OlmisHelper
+    # because the OlmisHelper methods are not accessible from here. Do not change
+    # these methods without also changing them in OlmisHelper.
+
+    # Convert reserved meta characters to safe characters; used when generating data for offline use.
+    def param_to_jquery(str)
+      str.tr(':,', '%-')
+    end
+
+    # Reverse the action of #param_to_jquery; used when parsing data from an offline data submission.
+    def param_from_jquery(str)
+      str.tr('%-', ':,')
+    end
   end
 end

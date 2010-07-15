@@ -51,6 +51,10 @@ class StockCardStatus < ActiveRecord::Base
       end.flatten_once
     ]
   end
+  
+  def self.json_to_params(json)
+    json['stock_card_status']
+  end
 
   def self.odk_to_params(xml)
     Hash[
@@ -74,6 +78,19 @@ class StockCardStatus < ActiveRecord::Base
     'equipment'
   end
 
+  def self.visit_json(visit)
+    stock_card_statuses = visit.find_or_initialize_stock_card_statuses
+
+    Hash[
+      *stock_card_statuses.map { |scs| 
+        [
+          scs.stock_card_code, 
+          { 'have' => scs.have, 'used_correctly' => scs.used_correctly }
+        ]
+      }.flatten
+    ]
+  end
+  
   def self.process_data_submission(visit, params)
     errors = {}
     stock_card_statuses = visit.find_or_initialize_stock_card_statuses

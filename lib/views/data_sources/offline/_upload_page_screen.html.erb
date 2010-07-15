@@ -1,0 +1,80 @@
+<div id="upload-links">
+  <p id="upload_status">
+    <span class="status"></span>
+    <span id="upload_status_check">
+      <%= link_to_function(h(t("data_sources.hcvisit.upload_main.status.check_again")), "check_online(this)") %>
+      <span class="loading-indicator" style="visibility:hidden;">
+        <%= h(t("data_sources.hcvisit.upload_main.status.checking")) %> ... <%= image_tag("indicator-small.gif", :size => "13x10") %>
+      </span>
+    </span>
+  </p>
+  <p id="upload_link">
+    <span class="ready">
+      <span class="online">
+        <%= link_to(h(t("data_sources.hcvisit.upload_main.upload_data")), "#login", :class => "inline") %>
+        <%= link_to("", "#upload", :class => "inline", :style => "display:none") %>
+      </span>
+      <span class="offline">
+        <%= link_to_function(h(t("data_sources.hcvisit.upload_main.upload_data")), "check_online(this)") %>
+        <span class="loading-indicator" style="visibility:hidden;">
+          <%= h(t("data_sources.hcvisit.upload_main.status.checking")) %> ... <%= image_tag("indicator-small.gif", :size => "13x10") %>
+        </span>
+      </span>
+    </span>
+    <span class="not_ready">
+      <%= h(t("data_sources.hcvisit.upload_main.upload_data")) %>
+    </span>
+    <span id="forms_to_upload"></span>
+  </p>
+  <p id="update_link">
+    <span class="online">
+      <%= link_to_function(h(t("data_sources.hcvisit.upload_main.update_software")), "update_offline_data()") %>
+      <div id="update_status">
+        <span id="update_status_check-indicator" class="loading-indicator" style="display:none;">
+          <%= h(t("data_sources.hcvisit.status.checking")) %> ... <%= image_tag("indicator-small.gif", :size => "13x10") %>
+        </span>
+        <span id="update_status_download-indicator" class="loading-indicator" style="display:none;">
+          <%= h(t("data_sources.hcvisit.status.downloading")) %> ... <%= image_tag("indicator-small.gif", :size => "13x10") %>
+        </span>
+        <span id="update_status_update-indicator" style="display:none;">
+          <a href="<%= request.url %>"><%= h(t("data_sources.hcvisit.upload_main.status.updated")) %></a>
+        </span>
+        <span id="update_status_no_update-indicator" style="display:none;">
+          <%= h(t("data_sources.hcvisit.upload_main.status.no_update")) %>
+        </span>
+        <span id="update_status_error-indicator" style="display:none;">
+          <%= h(t("data_sources.hcvisit.upload_main.status.error")) %>
+        </span>
+      </div>
+    </span>
+    <span class="offline">
+      <%= link_to_function(h(t("data_sources.hcvisit.upload_main.update_software")), "check_online(this)") %>
+      <span class="loading-indicator" style="visibility:hidden;">
+        <%= h(t("data_sources.hcvisit.upload_main.status.checking")) %> ... <%= image_tag("indicator-small.gif", :size => "13x10") %>
+      </span>
+    </span>
+  </p>
+</div>
+
+<div id="lightbox-data" style="display: none">
+  <div id="login" class="lightbox-container">
+    <h3><%= h(t("data_sources.hcvisit.upload.login")) %></h3>
+    <form action="javascript:ajax_login()">
+      <label for="login-login"><%= h(t("username")) %></label><input type="text" id="login-login" /><br />
+      <label for="login-password"><%= h(t("password")) %></label><input type="password" id="login-password" /><br />
+      <input id="login-button" type="submit" value="<%= h(t('login.login.submit_button')) %>" />
+    </form>
+    <p id="failed-login" style="display: none"><%= h(t("login.invalid_login")) %></p>
+  </div>
+  <div id="upload" class="lightbox-container">
+    <h3><%= h(t("data_sources.hcvisit.upload.ready")) %></h3>
+    <div id="upload-ready">
+      <p id="upload-empty" style="display:none"><%= h(t("data_sources.hcvisit.upload.empty")) %></p>
+      <ul></ul>
+      <p id="upload-button" style="display:none"><input type="button" onclick="upload_all()" value="<%= h(t('data_sources.hcvisit.upload.all')) %>" /></p>
+    </div>
+    
+    <h3><%= h(t("data_sources.hcvisit.upload.uploaded")) %></h3>
+    <div id="upload-uploaded"><ul></ul></div>
+  </div>
+</div>

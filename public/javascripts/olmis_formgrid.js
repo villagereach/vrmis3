@@ -9,7 +9,7 @@ Element.prototype.parentOfType      = function(t) { var p = this; do { p = p.par
 Element.prototype.nextSiblingOfType = function(t) { var p = this; do { p = p.nextSibling;     } while (!!p && p.nodeName.toLowerCase() != t.toLowerCase()); return p }
 Element.prototype.prevSiblingOfType = function(t) { var p = this; do { p = p.previousSibling; } while (!!p && p.nodeName.toLowerCase() != t.toLowerCase()); return p }
 
-var input_selector = 'input[type="text"]'
+var input_selector = 'input[type="text"],input[type="number"],input[type="yearmonth"]'
 
 function select_input(i, dir) {
   i.focus();
@@ -76,8 +76,8 @@ function moveDown(t) {
     }
 }
 
-function addEvents() {
-  jQuery('table.spreadsheet input').keydown(function(ev) {
+$.fn.addFormGridEvents = function() {
+  $(input_selector, $('table.spreadsheet', this)).keydown(function(ev) {
     switch(ev.which) {
     case 37: moveLeft(this) ; break;
     case 38: moveUp(this)   ; break;
@@ -87,4 +87,5 @@ function addEvents() {
   });
 }
 
-jQuery(document).ready(function() { addEvents(); });
+$(document).ready(function() { $(document).addFormGridEvents() });
+

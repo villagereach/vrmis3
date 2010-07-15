@@ -26,7 +26,13 @@ class AdministrativeArea < ActiveRecord::Base
   belongs_to :parent, :class_name => 'AdministrativeArea'
 
   validates_numericality_of :population, :allow_nil => true, :integer => true
-  
+
+  named_scope :with_location, {
+    :include => :street_address,
+    :conditions => "street_addresses.longitude IS NOT NULL",
+    :order => "population DESC"
+  }
+
   def label
     I18n.t(self.class.name + '.' + code)
   end
@@ -49,9 +55,19 @@ class AdministrativeArea < ActiveRecord::Base
   def self.options_for_select_by_parent(parent)
     all(:conditions => {:parent_id => parent}).map { |p| [p.label, p.id.to_s] }
   end
-
+  
   def self.options_for_select
     all.sort.map { |p| [p.label, p.id.to_s] }
+  end
+
+  def self.id_strings_without_visit_data
+    #for use in :disabled
+    ids_with_data = find_by_sql("
+        select distinct a.id from administrative_areas a 
+          join health_centers hc on (hc.administrative_area_id = a.id) 
+          join health_center_visits hcv on (hc.id = hcv.health_center_id) 
+      ").map(&:id)
+    (all.map(&:id) - ids_with_data).map(&:to_s)
   end
 
   def fridges

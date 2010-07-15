@@ -1,7 +1,7 @@
 <%- form_tag do -%>
   <%= render :partial => 'errors', :locals => { :errors => @errors } %>
 
-  <table class="equipment">
+  <table class="equipment spreadsheet">
     <thead>
       <tr>
         <th></th>
@@ -25,7 +25,7 @@
           <th><%= h status.equipment_type.label %></th>
           <%- [ :present, :working ].each do |column| -%>
             <td>
-              <div class="boolean <%= 'error' if @errors[:equipment_status][index].on(column) rescue nil %>">
+              <div<%= ' class="error"' if @errors[:equipment_status][index].on(column) rescue nil %>">
                 <%- [ [ h(t("yes")), "true" ], [ h(t("no")), "false" ], [ h(t("NR")), "nr" ] ].each do |l,v| -%>
                   <%= radio_button :equipment_status, column, v, :index => index, :checked => values[column] == v %>
                   <%= label :equipment_status, v, l, :for => "equipment_status_#{index}_#{column}_#{v}" %>

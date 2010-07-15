@@ -1,0 +1,19 @@
+<%- Inventory.possible_fields.each do |type, package, screen| -%>
+  if (!data.<%= package.code %>)
+    data.<%= package.code %> = {};
+
+  if (!data.<%= package.code %>.<%= type %>)
+    data.<%= package.code %>.<%= type %> = { nr: false, qty: '' };
+
+  $('#inventory_<%= package.code %>_<%= type %>-qty').
+    linkFrom('val', data.<%= package.code %>.<%= type %>, 'qty').
+    linkTo('val', data.<%= package.code %>.<%= type %>, 'qty');
+  <%- if Inventory.nullable_types.include?(type) -%>
+    $('#inventory_<%= package.code %>_<%= type %>-nr').
+      linkFrom('checked', data.<%= package.code %>.<%= type %>, 'nr').
+      linkTo('checked', data.<%= package.code %>.<%= type %>, 'nr');
+  <%- end -%>
+
+  $('#ideal_stock-<%= package.code %>').linkFrom('val', get_ideal_stock_for_health_center(), '<%= package.code %>');
+<%- end -%>
+

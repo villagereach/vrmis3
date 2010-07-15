@@ -13,7 +13,7 @@
 <%- types = Inventory.directly_collected_types.select { |t| packages.any? { |p| p.inventoried_by_type?(t, @screen) } } -%>
 
 <%- fields_for :inventory do |f| -%>
-<table class="inventory">
+<table class="inventory spreadsheet">
   <thead>
     <tr>
       <th><%= h(t("visits.health_center_inventory.#{@screen}.product_header")) %></th>
@@ -29,7 +29,7 @@
         <%- index = package.code -%>
         <tr>
           <th><%= h package.label %></th>
-          <td class="static"><%= h(number_with_delimiter( @stock[:ideal][index] )) if @stock[:ideal][index] %></td>
+          <td class="static"><%= h(number_with_delimiter( @stock[:ideal][index].quantity )) if @stock[:ideal][index] %></td>
           <%- types.each do |t| -%>
             <td>
               <%- if package.inventoried_by_type?(t, @screen) -%>

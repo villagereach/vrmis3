@@ -50,7 +50,7 @@ class OlmisController < ActionController::Base
   # Scrub sensitive parameters from your log
   filter_parameter_logging :password
 
-  before_filter :check_logged_in, :except => ['manifest', 'nuke_caches']
+  before_filter :check_logged_in, :except => ['manifest', 'nuke_caches', 'ping']
   before_filter :set_current_date_period
   before_filter :set_locale, :set_timezone
   before_filter :set_report_scope
@@ -79,8 +79,14 @@ class OlmisController < ActionController::Base
   def current_user
     @current_user ||= ActiveRecord::Base.current_user = User.find_by_id(session[:user_id]) if session && session[:user_id]
   end
-  
+
+  def ping
+    response.content_type = 'text/plain'
+    render :text => 'PONG'
+  end
+
   def logged_in
+    response.content_type = 'text/plain'
     render :text => 'Yes'
   end
   
@@ -95,7 +101,7 @@ class OlmisController < ActionController::Base
       end
       return nil
     end
-    @suppress_breadcrumbs = (current_user.role.id == 1)
+    @suppress_breadcrumbs = (current_user.role.code == 'observer')
     session[:return_to] = nil
     return current_user
   end

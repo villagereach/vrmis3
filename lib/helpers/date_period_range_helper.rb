@@ -36,25 +36,23 @@ module DatePeriodRangeHelper
     elsif date_period_range =~ /^\d{4}$/
       return date_period_range, date_period_range+'-01'..date_period_range+'-12'
     elsif date_period_range =~ /^\d{4}-\d{2}$/
-      return I18n.l(Date.from_date_period(date_period_range), :format => format), [date_period_range, date_period_range]
+      return I18n.l(Date.from_date_period(date_period_range), :format => format), [date_period_range]
     else
       return parse_date_period_range({:date_period_range => default_date_period_range})
     end
   end
   
-  def date_period_range_options
-    options = (2007..Date.today.year).map { |y| [y.to_s, y.to_s] }
-    
-    options += (2008..Date.today.year).map { |y|
-      july = Date.parse("#{y}-07-01")
-      ["#{I18n.l(july - 1.year, :format => :month_of_year)}–#{I18n.l(july - 1.month, :format => :month_of_year)}", 
-        "#{((july - 1.year).to_date_period)}:#{((july - 1.month).to_date_period)}"]       
-    }
-   
-    options += (0..11).to_a.reverse.map { |n| [I18n.l(n.months.ago.to_date, :format => 'short_month_of_year'), n.months.ago.to_date.to_date_period] }
-    options << last_six_months
-    
-    options
+  def date_period_range_options(options = {})
+    sql = "SELECT DISTINCT(visit_month) AS visit_month FROM health_center_visits"
+    if options[:months]
+      count = options[:months] - 1
+      sql << HealthCenterVisit.send(:sanitize_sql_for_conditions, [ " WHERE visit_month > ?", count.months.ago(Date.today).to_date_period ])
+    end
+    visit_months = HealthCenterVisit.find_by_sql(sql).map(&:visit_month).sort
+
+    [default_date_period_range] +
+    (Date.from_date_period(visit_months.maybe[0] || Date.today.to_date_period).year..Date.today.year).map { |y| [y.to_s, y.to_s] }  +
+      visit_months.map{|vm| [I18n.l(Date.from_date_period(vm),:format => :short_month_of_year),vm]}
   end
   
   def last_six_months_of_this_year

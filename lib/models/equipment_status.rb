@@ -52,7 +52,7 @@ class EquipmentStatus < ActiveRecord::Base
 
   def self.odk_to_params(xml)
     Hash[
-    *xml.xpath('/olmis/hcvisit/visit/general/*').find_all{|n| n.name.starts_with?('item_')}.map do |equip|
+    *xml.xpath('/olmis/hcvisit/visit/equipment_status/*').find_all{|n| n.name.starts_with?('item_')}.map do |equip|
         [
           equip.name[5..-1],
           {
@@ -89,6 +89,15 @@ class EquipmentStatus < ActiveRecord::Base
     
     errors
   end
+  
+  def self.visit_json(visit)
+    statuses = visit.find_or_initialize_equipment_statuses
+    statuses.inject({ 'notes' => visit.equipment_notes.to_s }) { |hash, status|
+      hash[status.equipment_type_code] =
+        { 'present' => status.present.to_s, 'working' => status.working.to_s }
+      hash
+    } 
+  end    
   
   def self.progress_query(date_periods)
     types = EquipmentType.count

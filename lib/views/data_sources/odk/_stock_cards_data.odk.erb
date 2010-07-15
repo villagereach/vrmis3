@@ -1,0 +1,5 @@
+<stock_cards>
+  <intro/>
+  <%= StockCard.active.sort.map(&:code).map { |code| "<item_#{code}><have /><use /></item_#{code}>" }.join %>
+</stock_cards>
+

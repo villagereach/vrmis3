@@ -1,13 +1,14 @@
 class DataSourcesController < OlmisController
-  skip_before_filter :check_logged_in, :only => [ :list_xforms, :submit_xform, :get_xform ]
-  skip_before_filter :set_locale,      :only => [ :manifest, :get_xform ]
-  before_filter :set_locale_without_session, :only => [ :manifest, :get_xform ]
+  skip_before_filter :check_logged_in, :only => [ :list_xforms, :submit_xform, :get_xform, :get_offline ]
+  skip_before_filter :set_locale,      :only => [ :manifest, :get_xform, :get_offline ]
+  before_filter :set_locale_without_session, :only => [ :manifest, :get_xform, :get_offline ]
 
   protect_from_forgery :except => :submit_xform
 
-  add_breadcrumb 'breadcrumb.data_sources', 'data_sources_path', :except => [ :list_xforms, :submit_xform, :get_xform ]
+  add_breadcrumb 'breadcrumb.data_sources', 'data_sources_path', :except => [ :list_xforms, :submit_xform, :get_xform, :get_offline ]
 
   helper :visits
+  helper :date_period_range
   
   def import
     data_source = DataSource.new(params[:file])
@@ -50,19 +51,27 @@ class DataSourcesController < OlmisController
   end
 
   def manifest
-    manifest_data = render_to_string(:action => 'manifest.txt', :layout => false)
+    manifest_data = render_to_string(:action => "manifest.#{params[:format]}", :layout => false)
 
     vendor_root = File.expand_path(File.join(File.dirname(__FILE__), '..', '..'))
+    lib_path    = File.join(vendor_root, 'lib')
     views_path  = File.join(vendor_root, 'lib', 'views')
 
     files = manifest_data.split("\n").map(&:strip).grep(/^\//).map { |f| File.join(Rails.root, 'public', f) }.select { |f| File.exists?(f) } 
-    files += Dir.glob(File.join(views_path, 'data_sources', '*.xml'))
-    files += Dir.glob(File.join(views_path, 'data_sources', '*.erb'))
-    files += Dir.glob(File.join(views_path, 'data_sources', 'xforms', '*.xforms.erb'))
-    files += Dir.glob(File.join(Rails.root, 'app', 'views', 'data_sources', 'xforms', '*.xforms.erb'))
+    if params[:format] == "xforms"
+      files += [ File.join(views_path, 'data_sources', 'hcvisit.xhtml.erb') ]
+      files += Dir.glob(File.join(views_path, 'data_sources', '*.xml'))
+    else
+      files += [ File.join(views_path, 'data_sources', 'hcvisit.html.erb') ]
+    end
+    files += Dir.glob(File.join(views_path, 'data_sources', params[:format], '*.erb'))
+    files += Dir.glob(File.join(views_path, 'reports', '*.erb'))
+    files += Dir.glob(File.join(Rails.root, 'app', 'views', 'data_sources', params[:format], '*.erb'))
+    files += Dir.glob(File.join(lib_path, '{graphs,reports,queries}.rb'))
     files += [ File.join(views_path, 'javascripts', 'offline_i18n.js.erb'),
                File.join(views_path, 'javascripts', 'offline_autoeval_data.js.erb'),
-               File.join(views_path, 'layouts', '_locale.html.erb') ]
+               File.join(views_path, 'data_sources', "manifest.#{params[:format]}.erb"),
+               File.join(views_path, 'layouts', 'offline.html.erb') ]
     files << __FILE__
 
     last_mod_time = (files.map{ |f| File.mtime(f).to_i } << DataSubmission.last_submit_time.to_i).max
@@ -70,6 +79,32 @@ class DataSourcesController < OlmisController
     send_data(manifest_data.gsub('# version', "# version: #{last_mod_time}"), :type => 'text/cache-manifest')
   end
   
+  def get_offline
+    @rendering_for_offline_form = true
+
+    vendor_root = File.expand_path(File.join(File.dirname(__FILE__), '..','..'))
+    files  = Dir.glob(File.join(Rails.root,  'app', 'views', 'data_sources', 'offline', '*.erb'))
+    files += Dir.glob(File.join(vendor_root, 'lib', 'views', 'data_sources', 'offline', '*.erb'))
+    files << File.join(vendor_root, 'lib', 'views', 'data_sources', "#{params[:name]}.html.erb")
+
+    last_mod_time = files.map{ |f| File.mtime(f) }.max
+
+    # NOTE: The stale? check doesn't work because a 304 status may result in
+    #       Firefox 3.6 refusing to reload the page because, even though
+    #       other offline manifest components changed, this page did not.
+    #       (Safari 4.x has no such problem; Chrome was not tested.)
+    #       The workaround is to use the controller cache instead.
+    #
+    # if stale?(:last_modified => last_mod_time.utc)
+    #   render :action => params[:name], :layout => false
+    # end
+
+    text = cache("#{params[:action]}-#{params[:name]}-#{I18n.locale}-#{last_mod_time.to_i}") do
+      render_to_string(:action => params[:name], :layout => false)
+    end
+    render(:text => text, :layout => false)
+  end
+
   def get_xform
     respond_to do |format|
       format.xml {
@@ -81,7 +116,7 @@ class DataSourcesController < OlmisController
         send_data(text, :type => 'text/xml', :disposition => 'inline')
       }
       format.html {
-        vendor_root = File.expand_path(File.join(File.dirname(__FILE__), '..', '..'))
+        vendor_root = File.expand_path(File.join(File.dirname(__FILE__), '..','..'))
 
         file     = File.join(vendor_root, 'lib', 'views', 'data_sources', "#{params[:name]}.xhtml.erb")
         jsfile   = File.join(Rails.root, 'public', 'xforms', 'xsltforms', 'xsltforms.js')
@@ -91,11 +126,11 @@ class DataSourcesController < OlmisController
         files  = Dir.glob(File.join(Rails.root,  'app', 'views', 'data_sources', 'xforms', '*.xforms.erb'))
         files += Dir.glob(File.join(vendor_root, 'lib', 'views', 'data_sources', 'xforms', '*.xforms.erb'))
         files += [ file, jsfile, cssfile, xsltfile, __FILE__ ]
-        
+
         last_mod_time = files.map{ |f| File.mtime(f) }.max
 
         if_modified_since(last_mod_time) do
-          text = cache("#{params[:name]}-#{I18n.locale}-#{last_mod_time.to_i}") do
+          text = cache("#{params[:action]}-#{params[:name]}-#{I18n.locale}-#{last_mod_time.to_i}") do
             s = render_to_string(:file => "data_sources/#{params[:name]}.xhtml", :layout => false).gsub(/<!\s*(?:--(?:[^\-]|[\r\n]|-[^\-])*--\s*)>/,'')
             xml = Nokogiri::XML(s)
 
@@ -111,8 +146,8 @@ class DataSourcesController < OlmisController
             # default in some versions of XSLTForms).
             output_node['method'] = 'html'
 
-            # Because nokogiri/libxml2/libxslt can't generate a HTML5 DOCTYPE, we need to prevent a
-            # DOCTYPE from being generated by discarding the doctype values in the xsl:output element
+            # Because nokogiri/libxml2/libxslt can't generate a HTML5 DOCTYPE,we need to prevent a
+            # DOCTYPE from being generated by discarding the doctype values inthe xsl:output element
             # and then inserting a HTML5 DOCTYPE in the output (below).
             output_node.attribute_nodes.each do |attr|
               output_node.delete(attr.name) if attr.name.starts_with?('doctype')

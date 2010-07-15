@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="<%= I18n.locale %>"
+      manifest="<%= manifest_url(:format => 'offline', :locale => I18n.locale) %>">
+  <head>
+    <title><%= h(t("health_center_visit")) %></title>
+    <script type="text/javascript" src="/javascripts/<%= Rails.env == 'development' ? 'jquery.js' : 'jquery.min.js' %>"></script>
+    <script type="text/javascript" src="/javascripts/<%= Rails.env == 'development' ? 'jquery-ui.custom.js' : 'jquery-ui.custom.min.js' %>" ></script>
+    <script type="text/javascript" src="/javascripts/jquery-ui-i18n.js" ></script>
+
+    <script type="text/javascript" src="/javascripts/jquery.tmpl.js" ></script>
+    <script type="text/javascript" src="/javascripts/jquery.datalink.js" ></script>
+
+    <script type="text/javascript" src="/javascripts/jquery-validate/jquery.validate.js" ></script>
+    <script type="text/javascript" src="/javascripts/html5-pseudo.jquery.js" ></script>
+
+    <%- jqvl = "/javascripts/jquery-validate/localization/messages_#{I18n.locale}.js"
+        if File.size?(File.join(Rails.root, 'public', jqvl)) -%>
+      <script type="text/javascript" src="<%= jqvl %>"></script>
+    <%- end -%>
+
+    <script type="text/javascript" src="/javascripts/olmis_datalink.js" ></script>
+    
+    <script type="text/javascript" src="/javascripts/offline_i18n.js" ></script>
+    <script type="text/javascript" src="/javascripts/offline_autoeval_data.js" ></script>
+
+    <script type="text/javascript" src="/javascripts/date-<%= I18n.locale %>.js" ></script>
+    
+    <script type="text/javascript" src="/javascripts/olmis_date.js" ></script>
+    <script type="text/javascript" src="/javascripts/olmis_common.js" ></script>
+    <script type="text/javascript" src="/javascripts/olmis_offline.js" ></script>
+    <script type="text/javascript" src="/javascripts/olmis_formgrid.js" ></script>
+
+    <script type="text/javascript" src="/javascripts/olmis_validation.js" ></script>
+
+    <script type="text/javascript" src="/fancybox/jquery.fancybox.js" ></script>
+    <link rel="stylesheet" href="/fancybox/jquery.fancybox.css" type="text/css" />
+    <link rel="stylesheet" href="/stylesheets/ui/jquery-ui.custom.css" type="text/css" />
+    <link rel="stylesheet" href="/stylesheets/blueprint/screen.css" type="text/css" media="screen, projection" />
+    <link rel="stylesheet" href="/stylesheets/theme.css" type="text/css" />
+    <link rel="stylesheet" href="/stylesheets/hcvisit.css" type="text/css" />
+    <link rel="stylesheet" href="/stylesheets/custom.css" type="text/css" />
+    
+    <script type="text/javascript">
+
+    function generate_olmis_instance() {
+      return <%= HealthCenterVisit.new.to_json %>;
+    }
+
+    function reset_olmis_bindings() {
+      var h = $('#visit-form').html();
+      $('#visit-form').html(h);
+
+      preinitialize_visit();
+      
+      <%- ([HealthCenterVisit] + HealthCenterVisit.tables).each do |t| -%>
+        if (!olmis_instance.<%= t.table_name.singularize %>)
+          olmis_instance.<%= t.table_name.singularize %> = <%= t.empty_json %>; 
+
+        <%- begin
+          bind = render(:partial => '/data_sources/offline/' + t.xforms_group_name + '_bind.js', :locals => { :klass => t } )
+        rescue ActionView::MissingTemplate
+          bind = '';
+        end -%>
+        (function(data) { 
+          try { 
+            eval(<%= bind.to_json() %>); 
+          } catch (e) {
+            if (console)
+              console.exception(e);
+          }
+        })(olmis_instance.<%= t.table_name.singularize %>);
+
+     <%- end -%>
+
+     initialize_visit();
+    }
+
+    function generate_pickup_instance() {
+      return <%= WarehouseVisit.new.to_json %>;
+    }
+
+    function reset_pickup_bindings() {
+      var h = $('#warehouse_visit-form').html();
+      $('#warehouse_visit-form').html(h);
+
+      preinitialize_pickup();
+
+      (function(data) { 
+        try {
+          eval(<%= render(:partial => '/data_sources/offline/warehouse_pickup_bind.js').to_json() %>);
+        } catch(e) {
+          if (console) console.exception(e);
+        }
+      })(pickup_instance);
+
+      initialize_pickup();
+    }
+    
+    </script>
+    
+    <script type="text/html" id="selector_tmpl">
+      <option />
+      {{each(i,dz) data}}
+        <option value="${ dz.code }">${ dz.name }</option>
+      {{/each}}
+    </script>
+  </head>
+  <body>
+    <h1><a href="/">Village Reach Prototype olmis</a></h1>
+
+    <div id="login-form" class="container login inline">
+      <h2><%= h(t("login.login.login_to", :name => "VR MIS3")) %></h2>
+      <form onsubmit="login(); return false;">
+        <div>
+          <label for="access_code"><%= h(t(".login.access_code")) %></label>
+          <input type="password" id="access_code" class="autofocus" ref="selected_values.access_code">
+          <button><%= h(t("login.login.submit_button")) %></button>
+        </div>
+      </form>
+    </div>
+
+    <div id="user_tools">
+      <div id="language" class="content" show_unless_selected="logged_in">
+        <em><%= h(t("layouts.locale.select_language")) %></em>
+        <%- I18n.available_locales.each do |locale| -%>
+          <%- if I18n.locale.to_s == locale.to_s -%>
+            <strong><%= h Languages.native_languages[locale] %></strong>
+          <%- else -%>
+            <%= link_to(h(Languages.native_languages[locale]), url_for({ :overwrite_params => { :locale => locale } })) %>
+          <%- end -%>
+        <%- end -%>
+      </div>
+      <div id="user" class="content" show_if_selected="logged_in" style="display: none;">
+        <a href="#" onclick="logout()" ><%= h(t("logout")) %></a>
+        <%= link_to_function h(t(".go_to_main_page")), 'show_main_page()' %>
+      </div>
+    </div>
+
+    <%= render :partial => "/data_sources/offline/main_page_screen" %>
+
+    <div id="hc-selection" class="container">
+      <h3>
+        <!-- HACK: Evil, ugly hack to get at the raw translation. -->
+        <%= (I18n.backend.send(:lookup, I18n.locale, "data_sources.hcvisit.hc.page_title") || '').
+          sub("{{delivery_zone}}",%Q{<span class="output selected_delivery_zone_name"></span>}).
+          sub("{{visit_month}}",%Q{<span class="output selected_visit_date_period_name"></span>}) %>
+      </h3>
+
+      <div>
+        <h4><%= h(t(".hc.choose")) %></h4>
+
+        <div id="saved-forms">
+          <div id="saved-forms-search">
+            <label><%= h(t("search_button")) %></label>
+            <input type="text" id="saved-forms-filter">
+            <button id="saved-forms-search-reset" onclick="javascript:reset_saved_forms_search(); return false;"><%= h(t("reset_button")) %></button>
+          </div>
+          <select size="10" id="saved-forms-control"></select>
+        </div>
+      </div>
+    </div><!-- id="location-selector" -->
+
+    <%- %w(before after).each do |screen| -%>
+      <div id="warehouse-<%= screen %>" class="container">
+        <%= render :partial => "/data_sources/offline/warehouse_pickup_#{screen}" %>
+      </div>
+    <%- end -%>
+
+    <div id="upload-home" class="container">
+      <%= render :partial => "/data_sources/offline/upload_page_screen" %>
+    </div>
+
+    <div id="form" class="container">
+      <h3 id="current_hc">
+        <span class="selected_health_center_name"></span>,
+        <span class="selected_visit_date_period_name"></span>
+
+        <%= link_to_function h(t(".go_to_hc_selection")), "show_visits()" %>
+      </h3>
+      
+      <form id="visit-form" onsubmit="serialize_visit(); return false;">
+      <div>
+        <div id="tab-menu" class="tab_graphs ui-tabs">
+          <ul>
+            <% (['visit'] + HealthCenterVisit.screens).each do |screen| %>
+              <li id="tab-<%= screen %>">
+                <a href="#screen-<%= screen %>">
+                  <%= h(t("visits.health_center_monthly_tasks.#{ screen }")) %>
+                </a>
+              </li>
+            <%- end -%>
+          </ul>
+          <% (['visit'] + HealthCenterVisit.screens).each do |screen| %>
+             <% klass = HealthCenterVisit.klass_by_screen[screen]
+               layout = "/data_sources/offline/screen"
+               begin %>
+                 <%= render(:partial => "/data_sources/offline/#{screen}_screen", :layout => layout, :locals => { :screen => screen }) %><%
+               rescue ActionView::MissingTemplate
+                 begin %>
+               <%= render(:partial => "/data_sources/offline/#{klass.xforms_group_name}_screen", :layout => layout, :locals => { :klass => klass, :screen => screen } ) %><%
+                 rescue ActionView::MissingTemplate
+                   raise "Can't find _#{klass.xforms_group_name}_screen"
+                 end
+               end %>
+          <%- end -%>
+          <br clear="both" />
+        </div>
+      </div>
+      </form>
+    </div>
+    
+    <div id="status_footer">
+      <div show_if_selected="logged_in">
+        <div id="online_indicator">
+          <div class="online"><%= h(t(".status.online")) %></div>
+          <div class="offline"><%= h(t(".status.offline")) %></div>
+        </div>
+      </div>
+
+      <div id="status_indicator">
+        <div>
+          <a href="<%= request.url %>"><%= h(t(".status.updated")) %></a>
+        </div>
+      </div>
+      <div id="download_indicator">
+        <div>
+          <p><%= h(t(".status.downloading")) %> ... <span id="download-pct"></span></p>
+          <em id="download-progress-bar" style="width: 0"></em>
+        </div>
+      </div>
+    </div>
+
+    <div id="loading-panel" style="display: none">
+      <div><%= h(t("loading")) %><%= image_tag("indicator-big.gif", :size => "32x32") %></div>
+    </div>
+
+    <div id="hidden-data" style="display: none">
+      <form action="javascript:return false;">
+        <input id="health_center_catchment_population" type="hidden" value="" />
+      </form>
+    </div>
+
+  </body>
+</html>

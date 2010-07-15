@@ -46,9 +46,9 @@ class Queries
 
       health_centers = Province.find(province_id).health_centers.map(&:id)
 
-      queries = targets.map { |t| 'LEFT JOIN ('+t.tally_subquery(health_centers, date_periods)+') as `'+t.name+'` ON `'+t.name+'`.health_center_id = health_centers.id AND `'+t.name+'`.date_period=months.date_period' }.join("\n")
-      values  = targets.map { |t| "sum(`#{t.name}`.value) as `#{t.name}`" }.join(",\n ")
-      selects = targets.map { |t| "100.0 * `#{t.name}` / (scaled_population * #{t.percentage / 100.0}) as `#{t.name}`" }.join(", ")
+      queries = targets.map { |t| "LEFT JOIN (#{t.tally_subquery(health_centers, date_periods)}) as `#{t.code}` ON `#{t.code}`.health_center_id = health_centers.id AND `#{t.code}`.date_period=months.date_period" }.join("\n")
+      values  = targets.map { |t| "sum(`#{t.code}`.value) as `#{t.code}`" }.join(",\n ")
+      selects = targets.map { |t| "100.0 * `#{t.code}` / (scaled_population * #{t.percentage / 100.0}) as `#{t.code}`" }.join(", ")
       months  = date_period_range.map { |d| "SELECT '#{(Date.from_date_period(d) - 1.date_period).to_date_period}' AS date_period, '#{d}' AS visit_month" }.uniq.join("\n UNION ALL ")
 
 
@@ -253,7 +253,7 @@ class Queries
 
       health_centers = areas.map(&:health_centers).flatten.map(&:id)
 
-      queries = targets.map { |t| 'LEFT JOIN ('+t.tally_subquery(health_centers, date_periods)+') as `'+t.code+'` ON `'+t.code+'`.health_center_id = health_centers.id AND `'+t.code+'`.date_period=months.date_period' }.join("\n")
+      queries = targets.map { |t| "LEFT JOIN (#{t.tally_subquery(health_centers, date_periods)}) as `#{t.code}` ON `#{t.code}`.health_center_id = health_centers.id AND `#{t.code}`.date_period=months.date_period" }.join("\n")
       values  = targets.map { |t| "sum(`#{t.code}`.value) as `#{t.code}`" }.join(",\n ")
       selects = targets.map { |t| "`#{t.code}`" }.join(", ")
       months  = date_period_range.map { |d| "SELECT '#{(Date.from_date_period(d) - 1.date_period).to_date_period}' AS date_period, '#{d}' AS visit_month" }.uniq.join("\n UNION ALL ")

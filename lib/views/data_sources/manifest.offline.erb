@@ -1,0 +1,72 @@
+CACHE MANIFEST
+# version <%# version added by controller %>
+
+CACHE:
+/offline/hcvisit?locale=<%= I18n.locale %>
+/images/icons/silk/accept.png
+/images/icons/silk/exclamation.png
+/images/icons/silk/arrow_right.png
+/images/icons/silk/calendar_view_month.png
+/images/icons/exclamation_yellow.png
+/images/icons/exclamation_green.png
+/images/icons/silk/exclamation.png
+/images/icons/silk/cancel.png
+/images/indicator.gif
+/images/indicator-big.gif
+/images/indicator-small.gif
+/images/vr-mis-logo-small.png
+
+<%= offline_reports_path(:locale => I18n.locale)%>
+
+<%- %w(visited_health_centers delivery_interval coverage).each do |report| -%>
+<%= offline_reports_action_path(:report => report, :locale => I18n.locale) %>
+<%- end -%>
+
+/javascripts/olmis_datalink.js
+/javascripts/olmis_offline.js
+/javascripts/olmis_offline_autoeval.js
+/javascripts/olmis_common.js
+/javascripts/olmis_formgrid.js
+/javascripts/olmis_date.js
+/javascripts/olmis_validation.js
+/javascripts/offline_autoeval_data.js
+/javascripts/offline_i18n.js
+/javascripts/olmis_collapsible_report.js
+
+/javascripts/<%= Rails.env == 'development' ? 'jquery.js' : 'jquery.min.js' %>
+/javascripts/<%= Rails.env == 'development' ? 'jquery-ui.custom.js' : 'jquery-ui.custom.min.js' %>
+/javascripts/jquery-ui-i18n.js
+/stylesheets/collapsible_report.css
+/javascripts/jquery.treeTable.min.js
+/stylesheets/jquery.treeTable.css
+##/images/toggle-expand-light.png
+##/images/toggle-expand-dark.png 
+##/images/toggle-collapse-light.png
+##/images/toggle-collapse-dark.png 
+
+/javascripts/jquery.tmpl.js
+/javascripts/jquery.datalink.js
+/javascripts/jquery-validate/jquery.validate.js
+<%- f = "/javascripts/jquery-validate/localization/messages_#{I18n.locale}.js"
+    if File.size?(File.join(Rails.root, 'public', f)) -%>
+<%= f %>
+<%- end -%>
+/javascripts/html5-pseudo.jquery.js
+/javascripts/date-<%= I18n.locale %>.js
+<%- third_party_files = Dir.glob(File.join(Rails.root, 'public', 'stylesheets', 'ui', 'images', '*')) +
+                        Dir.glob(File.join(Rails.root, 'public', 'fancybox', '*')) -%>
+<%= third_party_files.reject{|f| File.basename(f) =~ /^[#\.]|~$/}.map{|f| f.sub(File.join(Rails.root, 'public'), '')}.join("\n") %>
+/stylesheets/blueprint/screen.css
+/stylesheets/theme.css
+/stylesheets/hcvisit.css
+/stylesheets/custom.css
+/stylesheets/print.css
+/stylesheets/ui/jquery-ui.custom.css
+
+FALLBACK:
+/ /404.html
+
+NETWORK:
+/ping
+/logged-in
+/visits

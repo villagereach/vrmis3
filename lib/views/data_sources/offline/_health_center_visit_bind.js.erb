@@ -1,0 +1,66 @@
+function hcvisit_visited(ev) {
+  var depends_on_visit_tabs = <%= (1...HealthCenterVisit.screens.length).select { |i|
+      HealthCenterVisit.klass_by_screen[HealthCenterVisit.screens[i-1]].depends_on_visit?
+    }.to_json %>;
+
+  if (ev.newValue == 'true') {
+    $('#unvisited_data').hide();
+    $('#visited_data').show();
+
+    $('#unvisited_data *:input').removeClass('enabled');
+    $('#visited_data *:input').addClass('enabled');
+
+    $('#tab-menu').data('disabled.tabs', []);
+  } else {
+    $('#unvisited_data').show();
+    $('#visited_data').hide();
+
+    $('#unvisited_data *:input:radio').addClass('enabled').valid();
+    $('#visited_data *:input').removeClass('enabled');
+
+    $('#tab-menu').data('disabled.tabs', depends_on_visit_tabs);
+  }
+  update_progress_status(depends_on_visit_tabs);
+}
+
+function hcvisit_non_visit_reason_other(ev) {
+  if (ev.newValue == 'other') {
+    $('#other_non_visit_reason').show().find('textarea').addClass('enabled').valid();
+  } else {
+    $('#other_non_visit_reason').hide().find('textarea').removeClass('enabled');
+  }
+}
+
+$('#visited input').attrChange('val', hcvisit_visited);
+$('#non_visit_reason').attrChange('val', hcvisit_non_visit_reason_other);
+
+<%- %w(true false).each do |val| -%>
+  $('#health_center_visit-visited-<%= val %>').linkFrom('checked', data, 'visited', radioValueFn('<%= val %>'));
+  $('#health_center_visit-visited-<%= val %>').linkTo('val', data, 'visited');
+<%- end -%>
+
+<%- %w(road_problem vehicle_problem health_center_closed other).each do |reason| -%>
+  $('#health_center_visit-non_visit_reason-<%= reason %>').linkFrom('checked', data, 'non_visit_reason', radioValueFn('<%= reason %>'));
+  $('#health_center_visit-non_visit_reason-<%= reason %>').linkTo('val', data, 'non_visit_reason');
+<%- end -%>
+
+$('#health_center_visit-other_non_visit_reason').linkFrom('val', data, 'other_non_visit_reason');
+$('#health_center_visit-other_non_visit_reason').linkTo('val', data, 'other_non_visit_reason');
+
+$('#visited_at').linkFrom('val', data, 'visited_at', olmis_localize_date);
+$('#visited_at').linkTo('val', data, 'visited_at', olmis_delocalize_date);
+
+$('#vehicle_id').linkFrom('val', data, 'vehicle_id');
+$('#vehicle_id').linkTo('val', data, 'vehicle_id');
+
+$(data).attrChange('visited_at', function(ev) {
+  update_visit_history({ 'visit': ev.newValue });
+});
+
+$(data).attrChange('non_visit_reason', function(ev) {
+  update_visit_history({ 'visit': ev.newValue });
+});
+
+hcvisit_visited({ newValue: data.visited });
+hcvisit_non_visit_reason_other({ newValue: data.non_visit_reason });
+

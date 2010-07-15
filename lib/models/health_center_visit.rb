@@ -35,9 +35,11 @@ class HealthCenterVisit < ActiveRecord::Base
   validates_presence_of :visited_at
   #validates_presence_of :vehicle_code, :allow_blank => true
   validates_presence_of :visit_status
+  validates_presence_of :other_non_visit_reason, :message => :describe_reason_for_not_visiting, :if => lambda{|r| r.visit_status == 'other'}
   validates_presence_of :data_status
 
-  defaults :visit_status => 'Visited', :data_status => 'pending', :vehicle_code => lambda { |r| r.field_coordinator.try(&:default_vehicle_code) }
+  defaults :visit_status => 'Visited', :data_status => 'pending', 
+    :vehicle_code => lambda { |r| r.field_coordinator ? r.field_coordinator.default_vehicle_code : '' }
 
   named_scope :recent, lambda{|count| { :order => 'updated_at DESC', :limit => count } }
 
@@ -56,10 +58,6 @@ class HealthCenterVisit < ActiveRecord::Base
       elsif !@visited_status.blank? && !@unvisited_status.blank?
         errors.add(:visited, 'visited_conflict')
       end
-    end
-    
-    if visit_status == 'other' && notes.blank?
-      errors.add(:notes, 'describe_reason_for_not_visiting')
     end
     
     super
@@ -177,11 +175,19 @@ class HealthCenterVisit < ActiveRecord::Base
   def self.tables
     Olmis.tally_klasses + [Inventory, EquipmentStatus, FridgeStatus, StockCardStatus] + Olmis.additional_visit_klasses
   end
-  
+
   def self.screens
     Olmis.configuration['visit_screens']
   end
-  
+
+  def self.empty_json
+    '{}'
+  end
+
+  def self.xforms_group_name
+    'health_center_visit'
+  end
+
   def entry_counts=(c)
     @counts = c
   end
@@ -189,10 +195,14 @@ class HealthCenterVisit < ActiveRecord::Base
   def status_by_screen(screen=nil)
     @status ||= returning ActiveSupport::OrderedHash.new do |h|
       statuses = @counts || HealthCenterVisitPeriodicProgress.new.counts_by_health_center_visit_for_date_period([visit_month], [id])[id]
-      
+
       self.class.screens.each do |s|
-        expected, entries = *statuses[s]
-        h[s] = reporting_status_field(expected, entries)
+        if HealthCenterVisit.klass_by_screen[s].depends_on_visit? && !visited?
+          h[s] = REPORT_NOT_VISITED
+        else
+          expected, entries = *statuses[s]
+          h[s] = reporting_status_field(expected, entries)
+        end
       end
     end
 
@@ -232,6 +242,13 @@ class HealthCenterVisit < ActiveRecord::Base
 
   public
   
+  def to_json
+    ([self.class] + self.class.tables).inject({}) { |hash, table| 
+      hash[table.table_name.singularize] = table.visit_json(self)
+      hash
+    }.to_json
+  end
+  
   def epi_month
     if !visit_month.blank?
       year, month = visit_month.split('-', 2)
@@ -244,16 +261,20 @@ class HealthCenterVisit < ActiveRecord::Base
   end
 
   def after_save
-    find_or_create_inventory_records.each(&:save) if visited?
+    find_or_initialize_inventory_records.each(&:save) if visited?
   end
 
   def ideal_stock
-    inventories = find_or_create_inventory_records
+    inventories = find_or_initialize_inventory_records
 
     Hash[*inventories.map { |i| [i.inventory_type, i.package_counts_by_package_code] }.flatten].merge(
       {
-        :ideal     => health_center ? IdealStockAmount.all(:conditions => { :stock_room_id => health_center.stock_room.id },
-                                                            :include => :package, :order => 'packages.position').group_by(&:package) : nil,
+        :ideal => health_center \
+                    ? IdealStockAmount.all(
+                        :conditions => { :stock_room_id => health_center.stock_room.id },
+                        :include => :package
+                      ).inject({}){ |h, isa| h[isa.package.code] = isa ; h } \
+                    : nil
       })
   end
 
@@ -287,20 +308,38 @@ class HealthCenterVisit < ActiveRecord::Base
   end    
   
   def find_or_initialize_stock_card_statuses
-    stock_cards = StockCard.active.sort
-    stock_card_statuses = stock_cards.collect{|stock_card|
-      StockCardStatus.find_or_initialize_by_stock_card_id_and_stock_room_id_and_health_center_visit_id(
-        stock_card.id,
-        self.health_center ? self.health_center.stock_room.id : nil,
-        self.id) }
+    @stock_card_statuses ||= begin
+      scs = self.stock_card_statuses
+      extra = StockCard.active.sort - scs.map(&:stock_card)
+      scs + extra.collect{ |stock_card|
+        StockCardStatus.new(
+          :stock_card => stock_card,
+          :stock_room => self.health_center ? self.health_center.stock_room : nil,
+          :health_center_visit => self) 
+        }
+    end
   end
 
   def find_or_create_inventory_records
+    find_or_initialize_inventory_records.each { |record| record.save if record.new_record? }
+  end
+
+  def find_or_initialize_inventory_records
     @inventory ||= Inventory.types.map { |t|
       Inventory.find_or_initialize_by_date_and_stock_room_id_and_inventory_type(
           self.visited_at ? self.visited_at.to_date : Date.today,
           self.health_center ? self.health_center.stock_room.id : nil,
           t).tap { |i| i.user_id ||= self.user_id }
+    }
+  end
+  
+  def self.visit_json(visit)
+    { 'visited'                => visit.visited.to_s, 
+      'non_visit_reason'       => visit.reason_for_not_visiting || 'other',
+      'visited_at'             => visit.visited_at ? visit.visited_at.strftime("%Y-%m-%d") : '',
+      'notes'                  => visit.notes || '',
+      'other_non_visit_reason' => visit.other_non_visit_reason || '',
+      'vehicle_id'             => visit.vehicle_code || '',
     }
   end
 end

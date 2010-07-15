@@ -108,6 +108,19 @@ class Inventory < ActiveRecord::Base
     params
   end
 
+  def self.json_to_params(json)
+    params = {}
+
+    json['inventory'].each do |inv,val|
+      params[inv] ||= {}
+      val.each do |k,v|
+        params[inv][k] = v['qty'].to_s
+        params[inv]["#{k}/NR"] = v['nr'].to_s == 'true' ? 1 : 0
+      end
+    end
+    params
+  end
+
   def self.process_data_submission(visit, params)
     errors = {}
     
@@ -140,6 +153,20 @@ class Inventory < ActiveRecord::Base
     
     errors
   end    
+
+  def self.visit_json(visit)
+    ideal = visit.ideal_stock.except(:ideal)
+    
+    Inventory.possible_fields.inject({}) { |hash,(type,package,screen)|
+      h = ideal[type][package.code] && !ideal[type][package.code].new_record? ?
+          { 'qty' => ideal[type][package.code].quantity.to_s, 'nr' => ideal[type][package.code].quantity.nil?.to_s } :
+          { 'qty' => '', 'nr' => '' }
+        
+      hash[package.code] ||= {}
+      hash[package.code][type] = h
+      hash
+    }
+  end
   
   def self.visit_navigation_category
     'inventory'

@@ -1,0 +1,21 @@
+<%- EquipmentType.active.map(&:code).each do |type| -%>
+  if (!data.<%= type %>) 
+    data.<%= type %> = { working: '', present: '' };
+  <%- ['nr', 'true', 'false'].each do |val| -%>
+  <%-# 
+     # radioValueFn accepts 'val' and returns a function that returns 'checked' if the new value is equal to 'val',
+     # but otherwise returns false. This leaves radio buttons unchecked if the source value is not the same as the radio 
+     # value, checked if it is.  However, when the 'checked' attribute on a radio button changes, this does not trigger 
+     # an attribute-change event.  Fortunately, the attribute-change event on 'val' only occurs when the radio button is 
+     # checked, but not when it is cleared.
+  -%>
+  $('#equipment_status-<%= type %>-working-<%= val %>').linkFrom('checked', data.<%= type %>, 'working', radioValueFn('<%= val %>'));
+  $('#equipment_status-<%= type %>-present-<%= val %>').linkFrom('checked', data.<%= type %>, 'present', radioValueFn('<%= val %>'));
+
+  $('#equipment_status-<%= type %>-working-<%= val %>').linkTo('val', data.<%= type %>, 'working');
+  $('#equipment_status-<%= type %>-present-<%= val %>').linkTo('val', data.<%= type %>, 'present');
+  <% end %>
+<%- end -%>
+
+$('#equipment-notes').linkFrom('val', data, 'notes').linkTo('val', data, 'notes');
+

@@ -1,0 +1,51 @@
+<% packages = Package.active.select { |p| Inventory.directly_collected_types.any? { |t| p.inventoried_by_type?(t, screen) } }
+   types = Inventory.directly_collected_types.select { |t| packages.any? { |p| p.inventoried_by_type?(t, screen) } } -%>
+    <p class="note"><%= h(t("visits.nr_instructions")) %></p>
+
+    <table class="inventory spreadsheet">
+      <thead>
+        <tr>
+          <th><%= h(t("visits.health_center_inventory.#{screen}.product_header")) %></th>
+          <th><%= h(t("visits.health_center_inventory.ideal_quantity")) %></th>
+          <%- types.each do |t| -%>
+            <th><%= h(t("visits.health_center_inventory.#{t}")) %></th>
+          <%- end -%>
+        </tr>
+      </thead>
+      <tbody>
+        <%- packages.sort.each do |package| -%>
+          <tr>
+            <th><%= h package.label %></th>
+            <td>
+              <div class="calculated">
+                <input id="ideal_stock-<%= package.code %>" type="text" size="3" disabled="disabled" />
+              </div>
+            </td>
+            <%- types.each do |type|
+                  id = "inventory_#{package.code}_#{type}" -%>
+              <td>
+                <%- if package.inventoried_by_type?(type, screen)
+                      qty_id = "#{id}-qty"
+                      if Inventory.nullable_types.include?(type)
+                        nr_id, required = [ "#{id}-nr", %Q{required="required" data-required="unless_nr=#{id}-nr"} ]
+                      else
+                        nr_id, required = [ nil, 'required="required"' ]
+                      end -%>
+                  <div class="tally">
+                    <div class="value">
+                      <input <%= required %> type="number" size="4" min="0" id="<%= qty_id %>" name="<%= qty_id %>" />
+                    </div>
+                    <%- if nr_id -%>
+                      <div class="nr">
+                        <input type="checkbox" id="<%= nr_id %>" name="<%= nr_id %>" />
+                        <label for="<%= nr_id %>"><%= h(t("NR")) %></label>
+                      </div>
+                    <%- end -%>
+                  </div>
+                <%- end -%>
+              </td>
+            <%- end -%>
+          </tr>
+        <%- end -%>
+      </tbody>
+    </table>

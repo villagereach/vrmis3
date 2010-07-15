@@ -8,7 +8,8 @@ module VisitsHelper
   end
 
   def epi_month(p=params)
-    (Date.parse(visit_month(p) + '-01') - 1.month).to_date_period
+    return '' unless vm = visit_month(p)
+    (Date.parse(vm + '-01') - 1.month).to_date_period
   end
   
   def hcv_label_with_month(visit)
@@ -140,8 +141,12 @@ module VisitsHelper
     # for the target percentage identified by the first argument.
 
     if target = TargetPercentage.find_by_code(code)
-      size = (@health_center.catchment_population * target.percentage / Date.date_periods_per_year / 100).to_i
-      text_field_tag(code + '_target', size, :disabled => 'disabled', :size => [3, size.to_s.length + 1].max )
+      if @rendering_for_offline_form
+        expression_field("#{code}_target", "health_center_catchment_population * #{target.percentage} / #{Date.date_periods_per_year} / 100")
+      else
+        size = @health_center.nil? || @health_center.catchment_population.nil? ? '' : (@health_center.catchment_population * target.percentage / Date.date_periods_per_year / 100).to_i
+        text_field_tag("#{code}_target", size, :disabled => 'disabled', :size => [3, size.to_s.length + 1].max )
+      end
     end
   end
 
@@ -155,13 +160,19 @@ module VisitsHelper
   def wastage_field(package_code, open_vials, total_doses)
     # Given a package code and a total-vaccinations cell, inserts a field that calculates the wastage based on the number of doses in the package
     if package = Package.find_by_code(package_code)
-      expression_field("#{package_code}_wastage", "100 * ((#{open_vials}) - ((#{total_doses}) / #{package.quantity})) / (#{open_vials})", "%")
+      expression_field("#{package_code}_wastage", "100 * ((#{open_vials} * #{package.quantity}) - (#{total_doses})) / (#{open_vials} * #{package.quantity})", "%")
     end
   end
 
   def inventory_field(f, inventory_type, package_code)
-    inv = @visit.ideal_stock[inventory_type][package_code]
-    nr_field(f, inventory_type, package_code, inv.quantity, inv.new_record? ? false : inv.quantity.nil?,
+    qty, nr =
+      if @visit
+        [@visit.ideal_stock[inventory_type][package_code].quantity, 
+         !@visit.ideal_stock[inventory_type][package_code].new_record? && 
+           !@visit.ideal_stock[inventory_type][package_code].quantity.nil?]
+      end
+
+    nr_field(f, inventory_type, package_code, qty, nr,
       (@errors[package_code][inventory_type].on(:quantity) rescue nil),
       !Inventory.nullable_types.include?(inventory_type))
   end
@@ -176,7 +187,12 @@ module VisitsHelper
     # If the resulting value is NaN, the field will appear blank. Otherwise, the value will be truncated
     # to an integer and the value of the third argument, if any, will be appended.
 
-    output = '<div style="text-align: center">' + text_field_tag(nil, '', :suffix => suffix, :expression => expression, :disabled => 'disabled', :size => 3, :id => name, :class => 'expression') + '</div>'
+    output = '<div class="calculated">' + text_field_tag(nil, '', :suffix => suffix, :expression => expression, :disabled => 'disabled', :size => 3, :id => name, :class => 'expression') + '</div>'
+  end
+
+  # Convert a parameter to a format acceptable for use in a DOM ID
+  def param_to_id(str)
+    str.gsub(/[,:\/]/,'-')
   end
 
   def tally_form_field(type, name, options)
@@ -192,24 +208,44 @@ module VisitsHelper
     value = (params.has_key?(slice) ? params[slice][name] : nil) || 
       @record_value_hash[slice][name].maybe.send(field)
     
-      nr_checked = @record_value_hash[slice].has_key?(name) && @record_value_hash[slice][name].send(field).nil?
-      
-    tf = case type.fields_hash[field.to_sym]
-         when :date
-           o = options.merge({ :value => value, :size => 8, :class => "datepicker" })
-           ActionView::Helpers::InstanceTag.new(slice, name, self).to_input_field_tag("date", o)
-         else
-           o = options.merge({ :value => value.to_s, :size => 4, :min => '0', :step => '1', :id => slice + '_' + name.gsub(/[,:\]]/,'-') })
-           ActionView::Helpers::InstanceTag.new(slice, name, self).to_input_field_tag("number", o)
-         end
+    nr_checked = @record_value_hash[slice].has_key?(name) && @record_value_hash[slice][name].send(field).nil?
+
+    id = "#{slice}_#{param_to_id(name.downcase)}"
+    nrid = "#{id}-nr"
+
+    options = case type.fields_hash[field.to_sym]
+              when :date
+                {
+                  :type => 'date',
+                  :value => value,
+                  :size => 8,
+                  :class => "datepicker"
+                }
+              else
+               {
+                 :type => 'number',
+                 :value => value.to_s,
+                 :size => 4,
+                 :min => '0',
+                 :step => '1',
+               }
+              end.merge({ :id => id, :required => 'required' }).merge(options)
+    if options[:'data-required']
+      options[:'data-required'] << " unless_nr=#{nrid}"
+    else
+      options[:'data-required'] = "unless_nr=#{nrid}"
+    end
+
+    tf = ActionView::Helpers::InstanceTag.new(slice, name, self).
+      to_input_field_tag(options[:type], options)
 
     content_tag(:div,
-      tf +
-        content_tag(:div,
-          check_box(slice, name + '/NR', :checked => nr_checked) +
-            label(slice, name + '/NR', t('NR')),
-          :class => 'nr'),
-      :class => 'tally', :id => name.gsub(/[,:]/,'-'))
+      content_tag(:div, tf, :class => 'value') +
+      content_tag(:div,
+        check_box(slice, "#{name}/NR", :id => nrid, :checked => nr_checked) +
+          content_tag(:label, t('NR'), :for => nrid),
+        :class => 'nr'),
+      :class => 'tally')
   end
     
   def tally_form_erb(type, name, options)
@@ -243,17 +279,30 @@ module VisitsHelper
   end
 
   def nr_field(builder, name, index, value, nr_checked, error, suppress_nr = false)
+    base_name = builder.object_name.to_s + '_' + index + '_' + name
+    nrid = "#{base_name}-nr"
+    text_field_options = {
+      :id => base_name + '-qty',
+      :index => index,
+      :value => value,
+      :type => 'number',
+      :min => '0',
+      :step => 1,
+      :required => 'required'
+    }
+    text_field_options[:'data-required'] = "unless_nr=#{nrid}" unless suppress_nr
     content_tag(:div,
-      builder.text_field(name, :index => index, :value => value, :type => 'number', :min => '0', :step => 1 ) +
+      content_tag(:div, builder.text_field(name, text_field_options), :class => 'value') +
+
         (suppress_nr ? '' : content_tag(:div,
-          builder.check_box("#{name}/NR", :checked => nr_checked, :index => index) +
-          builder.label("#{name}/NR", t("NR"), :index => index),
+          builder.check_box("#{name}/NR", :id => nrid, :checked => nr_checked, :index => index) +
+          builder.label("#{nrid}", t("NR"), :index => index),
           :class => 'nr')),
-      :class => ['tally', error ? 'error' : ''].reject(&:blank?).join(" "))
+      :class => ['tally', error ? 'error' : nil].compact.join(" "))
   end
   
   def xforms_tally_field(input_type, node, tally, msg_key, incr='', suppress_nr=false)
-    id="#{node}:#{tally}".gsub(/[,:]/,'-')
+    id = param_to_id("#{node}:#{tally}")
     
     xf = <<-XFORMS
       <xf:input id="#{id}" bind="#{node}:#{tally}" #{incr}>

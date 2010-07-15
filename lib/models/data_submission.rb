@@ -23,6 +23,7 @@ class DataSubmission < ActiveRecord::Base
   belongs_to :user
   belongs_to :data_source
   has_and_belongs_to_many :health_center_visits
+  has_and_belongs_to_many :warehouse_visits
   
   columns_on_demand :data
   
@@ -112,7 +113,53 @@ class DataSubmission < ActiveRecord::Base
     
     return status, visit
   end    
-  
+
+  def process_pickup(visit, user)
+    params, @pickup_errors = data_source.data_to_params(self)
+    @pickup_errors ||= {}
+    @current_user = user
+
+    process_inventory_pickup(visit, params) if params['inventory']
+
+    visit.updated_at = Time.now
+    visit.visit_month = visit.date.to_date_period 
+    visit.save!
+
+    @pickup_errors['warehouse_visit'] = visit.errors unless visit.errors.empty?
+
+    self.warehouse_visits << visit unless warehouse_visits.include?(visit)
+    self.message = 'pickup'
+
+    return visit, @pickup_errors
+  end
+
+  def process_inventory_pickup(visit, params)
+    inventory_counts = Hash[*Package.active.map{|p|
+                              [ p, [ visit.request.inventory_type, visit.pickup.inventory_type].inject({}) do |hash, key|
+                                  hash[key] = params[:inventory][key][p.code]
+                                  hash
+                                end ] }.flatten]
+    Inventory.transaction do
+      [ visit.request, visit.pickup ].each do |inventory|
+        inventory.update_attributes!(:user       => @current_user,
+                                     :date       => params[:inventory][:date],
+                                     :stock_room => visit.warehouse.stock_room)
+
+        inventory_counts.each do |package, amounts|
+          pc = PackageCount.find_by_inventory_id_and_package_id(inventory, package)
+          pc ||= PackageCount.new(:inventory => inventory, :package => package)
+          pc.quantity = amounts[inventory.inventory_type].to_i
+          unless pc.save
+            @pickup_errors[inventory.inventory_type] ||= {}
+            @pickup_errors[inventory.inventory_type][package.code] = pc.errors
+          end
+        end
+      end
+    end
+  rescue ActiveRecord::RecordInvalid => e
+    @pickup_errors['common'] = e.to_s
+  end
+
   def process_visit(health_center=nil, visit_month=nil, user=nil)
     @params, @visit_errors = data_source.data_to_params(self)
 
@@ -123,6 +170,8 @@ class DataSubmission < ActiveRecord::Base
       if (!visit_month && @params['health_center_visit']['epi_month'])
         visit_month = (Date.parse(@params['health_center_visit']['epi_month'] + '-01') + 1.month).strftime("%Y-%m")
         @params['health_center_visit']['visited_at'] ||= visit_month + '-01'
+      elsif (@params['health_center_visit']['visited_at'].empty? && visit_month)
+        @params['health_center_visit']['visited_at'] = visit_month + '-01'
       end
       
       @params['health_center_visit']['vehicle_code'] ||= ''    
@@ -167,6 +216,9 @@ class DataSubmission < ActiveRecord::Base
   def process_health_center_visit
     #temporary hiding of epi_data_ready; remove it later if it stays hidden
     @visit.epi_data_ready = true
+
+    # Discard localized visit date
+    @params['health_center_visit'].delete('i18n_visited_at')
 
     visited = @params['health_center_visit'].delete('visited')
 

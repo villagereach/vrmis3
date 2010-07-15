@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="<%= I18n.locale %>"
+      manifest="<%= manifest_url(:format => 'offline', :locale => I18n.locale) %>">
+  <head>
+    <title><%= t("health_center_visit") %></title>
+    <script type="text/javascript" src="/javascripts/<%= Rails.env == 'development' ? 'jquery.js' : 'jquery.min.js' %>"></script>
+    <script type="text/javascript" src="/javascripts/olmis_formgrid.js"></script>
+    <script type="text/javascript" src="/javascripts/olmis_date.js"></script>
+    <script type="text/javascript" src="/javascripts/offline_i18n.js"></script>
+    <script type="text/javascript" src="/javascripts/olmis_collapsible_report.js"></script>
+    <script type="text/javascript" src="/javascripts/<%= Rails.env == 'development' ? 'jquery-ui.custom.js' : 'jquery-ui.custom.min.js' %>"></script>
+    <script type="text/javascript" src="/fancybox/jquery.fancybox.js"></script>
+    <link rel="stylesheet" href="/stylesheets/blueprint/screen.css" media = "screen, projection" />
+    <link rel="stylesheet" href="/stylesheets/theme.css"            media = "screen, projection" />
+    <link rel="stylesheet" href="/fancybox/jquery.fancybox.css"     media = "screen, projection" />
+    <link rel="stylesheet" href="/stylesheets/collapsible_report.css" />
+    <script type="text/javascript" src="/javascripts/jquery.treeTable.min.js"></script>
+    <link rel="stylesheet" href="/stylesheets/jquery.treeTable.css" />
+    <link rel="stylesheet" href="/stylesheets/print.css" media="print" />
+  </head>
+  <body>
+    <div id="header">
+      <div id="user_tools">
+        <div id="user" class="content">
+          <%= link_to h(t("data_sources.hcvisit.go_to_main_page")), offline_visit_url(:name => "hcvisit", :locale => I18n.locale, :anchor => "fc-actions") %>
+        </div>
+      </div>
+      <h1><a href="/">Village Reach Prototype vrMIS3</a></h1>
+    </div>
+    <div id="offline-reports" class="container">
+      <% if @breadcrumbs && @breadcrumbs.present? && !@suppress_breadcrumbs%>
+        <p id="breadcrumbs">
+          <label><%= t('you_are_here') %></label>
+          <% @breadcrumbs[1..-2].each do |txt, path| %>
+            <%= link_to(h(breadcrumb_string(txt)), path) %>
+            <img src="/images/icons/silk/arrow_right.png" width="16px" height="16px" alt="next" />
+          <% end %>
+          <strong><%= h breadcrumb_string(@breadcrumbs.last.first) %></strong>
+        </p>
+      <% end %>
+
+      <%= yield %>
+    </div>
+  </body>
+</html>

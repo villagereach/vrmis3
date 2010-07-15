@@ -4,15 +4,13 @@
   <meta http-equiv="content-type" content="text/html;charset=UTF-8" />
   <title>Village Reach Prototype vrMIS3</title>
 
-  <%= javascript_include_tag ENV['RAILS_ENV'] == 'development' ? 'jquery.js' : 'jquery.min.js',
+  <%= javascript_include_tag Rails.env == 'development' ? 'jquery.js' : 'jquery.min.js',
                              'olmis_common.js',
                              'olmis_formgrid.js',
                              'olmis_reports.js',
                              'olmis_online.js',
-                             'ui/ui.core.js',
-                             'ui/ui.tabs.js',
-                             'ui/ui.datepicker.js',
-                             'ui/i18n/jquery-ui-i18n.js',
+                             Rails.env == 'development' ? 'jquery-ui.custom.js' : 'jquery-ui.custom.min.js',
+                             'jquery-ui-i18n.js',
                              'jquery.autocomplete.js',
                              'jquery.jqplot.min.js',
                              'plugins/jqplot.categoryAxisRenderer.min.js',
@@ -23,7 +21,7 @@
                              :cache => "cache/js" %>
 
   <%= stylesheet_link_tag "blueprint/screen.css", "jquery.autocomplete.css", :cache => "cache/sp",          :media => "screen, projection"  %>
-  <%= stylesheet_link_tag 'ui/jquery-ui-1.7.2.custom.css', "jquery.jqplot.css", "style", "theme", "visit",  :cache => "cache/all",   :media => "all"                %>
+  <%= stylesheet_link_tag "ui/jquery-ui.custom.css", "jquery.jqplot.css", "style", "theme", "visit", "custom",  :cache => "cache/all",   :media => "all"                %>
   <%= stylesheet_link_tag "blueprint/print.css", "print",                                                   :cache => "cache/print", :media => "print"              %>
   
   <!--[if IE]>
@@ -45,9 +43,9 @@
     <% if @current_user %>
       <% user_display_name = @current_user.name.blank? ? @current_user.username : @current_user.name %>
       <p id="login">
-        <em><%= t("logged_in_as") %></em> <strong><%= user_display_name %></strong>
-        <%= link_to(t("my_profile"), profile_user_path(@current_user)) %>
-        <%= link_to(t("logout"), :controller => 'login', :action => 'logout') %>
+        <em><%= h(t("logged_in_as")) %></em> <strong><%= h user_display_name %></strong>
+        <%= link_to(h(t("my_profile")), profile_user_path(@current_user)) %>
+        <%= link_to(h(t("logout")), logout_url) %>
       </p>
     <% end %>
   </div>
@@ -65,18 +63,18 @@
                 tab_classes.push("current") if current_tab?(path)
                 tab_classes.push("first") if index == 0
                 tab_classes.push("last") if index == nav_length - 1 -%>
-            <li class="<%= tab_classes.join(' ') %>"><%= link_to t(label), path %></li>
+            <li class="<%= tab_classes.join(' ') %>"><%= link_to h(t(label)), path %></li>
           <%- end -%>
         </ul>
       </div>
     <% end %>
-    
-    <% if @breadcrumbs && @breadcrumbs.present? && !@suppress_breadcrumbs%>
+
+    <% if @breadcrumbs.present? && !@suppress_breadcrumbs %>
       <p id="breadcrumbs">
-        <label><%= t('you_are_here') %></label>
+        <label><%= h(t("you_are_here")) %></label>
         <% @breadcrumbs[0..-2].each do |txt, path| %>
           <%= link_to(h(breadcrumb_string(txt)), path) %>
-          <img src="/images/icons/silk/arrow_right.png" width="16px" height="16px" alt="next" />
+          <img src="/images/icons/silk/arrow_right.png" width="16px" height="16px" alt="&gt;" />
         <% end %>
         <strong><%= h breadcrumb_string(@breadcrumbs.last.first) %></strong>
       </p>
@@ -92,7 +90,7 @@
 <div id="footer" class="container clear">
   <div class="content">
     <p class="copyright"><%= t("copyright") %></p>
-    <p class="tools"><%= t( 'documentation_link_short' ) %> | <%=link_to "clear cache", nuke_caches_path%></p>
+    <p class="tools"><%= t("documentation_link_short") %><% if Rails.env == 'development' %> | <%= link_to "clear cache", nuke_caches_path %><% end %></p>
   </div>
 </div>
 

@@ -1,42 +1,57 @@
-<%- format ||= report_format_for_current_user_role
-params.merge!(@params) if @params 
-fridges_by_code = {}
-param_scoped_fridges.
-  not_ok.
-    find(:all, :order => 'fridge_statuses.reported_at').
-      group_by{ |fridge| fridge.current_status.status_code }.
-        each do |code,fridges| 
-          fridges_by_code[code] = fridges.group_by{|fridge|
-            raise [fridge, fridge.current_status].inspect if fridge.current_status.stock_room.nil?
-            [fridge.current_status.stock_room.place.name,
-              fridge.current_status.stock_room.place.delivery_zone.field_coordinator.try(:name)||t("missing_fc")]
+<%-
+  format ||= report_format_for_current_user_role
+  show_fc = format != 'fc'
+  params.merge!(@params) if @params 
+  not_ok_fridges =
+    param_scoped_fridges.
+      not_ok.
+        all(:order => 'fridge_statuses.reported_at').
+          group_by{|fridge|
+            [ fridge.current_status.stock_room.place.name,
+              fridge.current_status.stock_room.place.delivery_zone.field_coordinator.try(:name) || h(t("missing_fc")) ]
           }
-end
-
-
-
+  unknown_fridges =
+    param_scoped_fridges.
+      unknown_status.
+        all(:order => 'fridge_statuses.reported_at').
+          group_by{|fridge|
+            [ fridge.current_status.stock_room.place.name,
+              fridge.current_status.stock_room.place.delivery_zone.field_coordinator.try(:name) || h(t("missing_fc")) ]
+          }
 -%>
 
-<div class="fridge_list broken">
-  <%- FridgeStatus.not_ok_status_options.each do |status, code| -%>
-   <div>
-    <%- fridges_by_fc = fridges_by_code[code] -%>
-    <%- unless fridges_by_fc.blank? -%>
-      <h4><%=status%></h4>
-      <%- show_fc = (format != 'fc') %>
-      <% fridges_by_fc.each do |province_fc, fridges| %>
-        <% if show_fc -%>
-          <h5>in <%= province_fc.first %> (<%=province_fc.last%>)</h5>
-        <%- end -%>
-        <table class="<%= code.downcase %>"> 
-          <tbody>
-            <%= render :partial=>'mini_reports/fridge_status_details', :collection => fridges, :as => :fridge, :locals => {:format => format } %>
-          </tbody>
-        </table>
+<div class="fridge_list not_ok">
+  <%- if not_ok_fridges.present? -%>
+    <h4><%= h(t(".not_ok_fridges")) %></h4>
+    <%- not_ok_fridges.each do |province_fc, fridges| -%>
+      <%- if show_fc -%>
+        <h5><%= h(t(".location", :province => province_fc.first, :fc => province_fc.last)) %></h5>
       <%- end -%>
-    <%- else -%>
-      <h4><%= t(".no_fridges_with_status", :status=>status) %></h4>
+      <table class="broke">
+        <tbody>
+          <%= render :partial => 'mini_reports/fridge_status_details', :collection => fridges, :as => :fridge, :locals => { :format => format } %>
+        </tbody>
+      </table>
     <%- end -%>
-   </div>
+  <%- else -%>
+    <h4><%= h(t(".no_not_ok_fridges")) %></h4>
+  <%- end -%>
+</div>
+
+<div class="fridge_list unknown">
+  <%- if unknown_fridges.present? -%>
+    <h4><%= h(t(".unknown_fridges")) %></h4>
+    <%- unknown_fridges.each do |province_fc, fridges| -%>
+      <%- if show_fc -%>
+        <h5><%= h(t(".location", :province => province_fc.first, :fc => province_fc.last)) %></h5>
+      <%- end -%>
+      <table class="unknown">
+        <tbody>
+          <%= render :partial => 'mini_reports/fridge_status_details', :collection => fridges, :as => :fridge, :locals => { :format => format } %>
+        </tbody>
+      </table>
+    <%- end -%>
+  <%- else -%>
+    <h4><%= h(t(".no_unknown_fridges")) %></h4>
   <%- end -%>
 </div>

@@ -1,0 +1,91 @@
+<%- html ||= nil -%>
+
+<h2><%= h(t("pickups.inventory.page_title", :delivery_zone => @zone.name)) %></h2>
+
+<h4><%= h(t("pickups.inventory.after_visit")) %></h4>
+
+<%- unless @visit.new_record? -%>
+  <div class="prepend-1 span-4">
+    <h5><%= t('visits.recent_events') %></h5>
+    <ul class="submission_list">
+      <%- @visit.data_submissions.find(:all, :select => DataSubmission.default_select(true), :limit => 4).each do |event| %>
+        <li class="<%= event.status %>"><%= event.description %></li>
+      <%- end -%>
+    </ul>
+  </div>
+<%- end -%>
+
+<div class="prepend-<%= @visit.new_record? ? 6 : 1 %> span-16 last">
+  <%- if @errors['date'] || @errors.any?{|slice, errors| errors.present?} -%>
+    <div id="error">
+      <ul>
+        <%- if @errors['common'] -%>
+          <li><%= @errors.delete('common') %></li>
+        <%- end -%>
+        <%- @errors.select{|slice, errors| errors.present?}.each do |slice, errors| -%>
+          <%- errors.each do |code, error| -%>
+            <li><%= link_to("#{Package.find_by_code(code).label}: #{error.full_messages.to_s}", "#inventory_#{slice}_#{code}") %></li>
+          <%- end -%>
+        <%- end -%>
+      </ul>
+    </div>
+  <%- end -%>
+
+  <%- form_for :inventory, :url => url, :html => html do |f| -%>
+    <div class="wrapper">
+      <div class="header">
+        <!--span><%= h(t("pickups.inventory.province", :name => @zone.warehouse.administrative_area.name)) %></span-->
+        <div class="datepicker">
+          <%= f.label :date, h(t("headers.date")) %>
+          <%= f.hidden_field :date, :value => @date.to_s(:db) %>
+          <%= f.text_field :i18n_date, :class => "datepicker", :value => I18n.l(@date) %>
+        </div>
+      </div>
+
+      <table class="inventory inventory-form">
+        <thead>
+          <tr>
+            <th class="empty"></th>
+            <th><%= h(t("pickups.inventory.package")) %></th>
+            <th class="amount"><%= h(t("pickups.inventory.requested")) %></th>
+            <th class="amount"><%= h(t("pickups.inventory.furnished")) %></th>
+          </tr>
+        </thead>
+        <%- Package.active.sort.partition_by{|package| package.product.product_type}.each do |type, stocks| -%>
+          <tbody>
+            <%- stocks.sort.each_with_index do |package, idx| -%>
+              <tr class="inventory_row">
+                <%- if idx == 0 -%>
+                  <td class="group_label"><%= h type.label %></td>
+                <%- else -%>
+                  <td></td>
+                <%- end -%>
+                <td><%= h package.label %></td>
+                <td class="amount">
+                  <div class="tally <%= 'error' if @errors['DeliveryRequest'].maybe[package.code] %>">
+                    <%= f.text_field package.code, :value => params[:inventory].maybe['DeliveryRequest'].maybe[package.code] || @amounts[package].maybe['DeliveryRequest'], :index => 'DeliveryRequest', :size => 3, :class => "numeric" %>
+                  </div>
+                </td>
+                <td class="amount">
+                  <div class="tally <%= 'error' if @errors['DeliveryPickup'].maybe[package.code] %>">
+                    <%= f.text_field package.code, :value => params[:inventory].maybe['DeliveryPickup'].maybe[package.code] || @amounts[package].maybe['DeliveryPickup'], :index => 'DeliveryPickup', :size => 3, :class => "numeric" %>
+                  </div>
+                </td>
+              </tr>
+            <%- end -%>
+          </tbody>
+        <%- end -%>
+      </table>
+
+      <p class="submit"><%= f.submit h(t('save')) %></p>
+    </div>
+  <%- end -%>
+</div>
+
+<% javascript_tag do %>
+  setup_datepicker('input.datepicker',
+                   {
+                     altField: '#inventory_date',
+                     altFormat: $.datepicker.ISO_8601
+                   });
+<% end %>

@@ -1,0 +1,54 @@
+<group>
+  <label><%= h(t("visits.health_center_monthly_tasks.cold_chain")) %></label>
+  <input bind="cold_chain_intro">
+    <label><%= h(t("data_sources.hcvisit.odk.cold_chain_intro.label")) %></label>
+    <hint><%= h(t("data_sources.hcvisit.odk.cold_chain_intro.hint")) %></hint>
+  </input>
+
+  <%- health_centers.each do |hc|
+        next if hc.fridges.empty? -%>
+    <group bind="hc-<%= health_center_code(hc) %>">
+      <%- hc.fridges.sort.each do |fridge|
+            id = "f-#{fridge.id}"
+            desc = "(#{h fridge.code})" -%>
+        <select1 bind="<%= id %>:past_problem">
+          <label><%= desc %> <%= h(t("visits.health_center_cold_chain.past_problem")) %></label>
+          <%- [ [ h(t("yes")), "true" ], [ h(t("no")), "false" ], [ h(t("unknown")), "nr" ] ].each do |label,value| -%>
+            <item>
+              <label><%= label %></label>
+              <value><%= value %></value>
+            </item>
+          <%- end -%>
+        </select1>
+
+        <input bind="<%= id %>:temp">
+          <label><%= desc %> <%= h(t("visits.health_center_cold_chain.arrival_temp")) %></label>
+        </input>
+
+        <select1 bind="<%= id %>:state">
+          <label><%= desc %> <%= h(t("visits.health_center_cold_chain.departure_state")) %></label>
+          <%- [ [ h(t("yes")), "OK" ], [ h(t("no")), "problem"], [ h(t("unknown")), "nr" ] ].each do |label,value| -%>
+            <item>
+              <label><%= label %></label>
+              <value><%= value %></value>
+            </item>
+          <%- end -%>
+        </select1>
+
+        <select bind="<%= id %>:problem">
+          <label><%= desc %> <%= h(t("visits.health_center_cold_chain.problem")) %></label>
+          <%- FridgeStatus.not_ok_status_options.each do |label,value| -%>
+            <item>
+              <label><%= label %></label>
+              <value><%= value %></value>
+            </item>
+          <%- end -%>
+        </select>
+
+        <input bind="<%= id %>:other_problem">
+          <label><%= desc %> <%= h(t("visits.health_center_cold_chain.other_problem")) %></label>
+        </input>
+      <%- end -%>
+    </group>
+  <%- end -%>
+</group>
