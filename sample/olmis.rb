@@ -199,7 +199,10 @@
     'full'    => { 'tally' => 'FullVaccinationTally',  'percentage' => 4.0, 'values' => ['sex:m', 'sex:f', 'strategy:hc', 'strategy:mb'] },
   },
  
-  'visit_screens' => %w(cold_chain epi_inventory equipment_status stock_cards usage_tallies full_vaccination_tallies child_vaccination_tallies),
+   # small tweak to make jquery-branch work:  
+   # 1.  _tallies to _tally
+   # 2. epi_inventory to inventory (map the table names)
+  'visit_screens' => %w(cold_chain inventory equipment_status stock_cards usage_tally full_vaccination_tally child_vaccination_tally),
   
   'tallies' => {
     'ChildVaccinationTally' => {

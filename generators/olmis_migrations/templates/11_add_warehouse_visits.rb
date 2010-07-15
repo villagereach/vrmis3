@@ -1,4 +1,4 @@
-class AddWarehouseVisits < ActiveRecord::Migration
+class OlmisAddWarehouseVisits < ActiveRecord::Migration
   def self.up
     create_table :warehouse_visits do |t|
       t.references :warehouses, :null => false

@@ -34,7 +34,9 @@ class Fridge < ActiveRecord::Base
           )
 
   def self.health_center(hc) 
-    stock_room(hc.stock_room)
+    # fridge-not-belong-to-HC refactorization ramification:
+    # this method now takes in an id, rather than a HealthCenter object 
+    stock_room(hc)
   end
 
   named_scope :stock_room, lambda { |sc| 
