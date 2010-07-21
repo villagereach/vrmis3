@@ -198,10 +198,14 @@ function do_progress() {
 }
 
 function update_offline_data() {
-  options.user_initiated_update = true;
-  $('#update_status span').hide();
-  $('#update_status_check-indicator').show();
-  check_update_status();
+  if (navigator.onLine) {
+    options.user_initiated_update = true;
+    $('#update_status span').hide();
+    $('#update_status_check-indicator').show();
+    check_update_status();
+  } else {
+    go_offline();
+  }
 }
 
 function do_update() {
@@ -252,6 +256,10 @@ function go_offline() {
 }
 
 function check_online(e) {
+  if (!navigator.onLine) {
+    go_offline();
+    return;
+  }
   var spinner = e ? $(e).next(".loading-indicator") : null;
   $.ajax({ async: true,
            type: 'GET',
