@@ -993,11 +993,11 @@ $(function() {
   }
   
   for (var i = 0, l = sessionStorage.length; i < l; i++) {
-    $(selected_values).attr(sessionStorage[i], sessionStorage[sessionStorage[i]]);
+    $(selected_values).attr(sessionStorage[i], JSON.parse(sessionStorage[sessionStorage[i]]));
   }
 
   $(selected_values).attrChange(function(ev) {
-      sessionStorage[ev.attrName] = ev.newValue;
+    sessionStorage[ev.attrName] = JSON.stringify(ev.newValue);
   });
   
   if (get_selected_value('logged_in')) {
