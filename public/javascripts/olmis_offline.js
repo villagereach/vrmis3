@@ -919,18 +919,18 @@ function is_logged_in() {
   $('#upload-links a[href="#upload"]').click();
 }
 
-function check_logged_in() {
-  $('#login-login').focus();
-  $.ajax( { 
-      async: true,
-      url: '/logged-in?',
-      dataType: 'text',
-      type: 'GET',
-      success: function(data, textStatus, xhr) {  
-        is_logged_in();
-      }
-  } );
-}
+// function check_logged_in() {
+//   $('#login-login').focus();
+//   $.ajax( { 
+//       async: true,
+//       url: '/logged-in?',
+//       dataType: 'text',
+//       type: 'GET',
+//       success: function(data, textStatus, xhr) {  
+//         is_logged_in();
+//       }
+//   } );
+// }
 
 function ajax_login() {
   $('#login-button').attr('disabled', true);
@@ -950,6 +950,7 @@ function ajax_login() {
         is_logged_in();
       },
       complete: function(xhr, textStatus) {
+        $('#login-password').attr('value', '');
         $('#login-button').attr('disabled', false);
       }
   } );
@@ -1034,8 +1035,7 @@ $(function() {
   $('#upload-links a[href="#login"]').fancybox( 
     { 'hideOnContentClick': false,
       'autoScale': false,
-      'autoDimension': true,
-      'onComplete': check_logged_in });
+      'autoDimension': true });
   $('#upload-links a[href="#upload"]').fancybox( 
     { 'hideOnContentClick': false,
       'autoScale': false,
