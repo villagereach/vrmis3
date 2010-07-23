@@ -779,6 +779,8 @@ body {
 
 #tab-menu > ul.ui-tabs-nav > li {
   background: none !important;
+  top: 0 !important;
+  white-space: inherit !important;
   display: block;
   float: none;
   margin: 0;
@@ -796,7 +798,6 @@ body {
   border-left: 1px solid green !important;
 }
 #tab-menu > ul.ui-tabs-nav > li.ui-tabs-selected a {
-
   color: black;
 }
 #tab-menu > ul.ui-tabs-nav > li > a {
@@ -805,6 +806,9 @@ body {
   font-size: 80%;
   float: none;
   display: block;
+}
+#tab-menu > ul.ui-tabs-nav > li > a:focus {
+  outline: none;
 }
 #tab-menu > ul.ui-tabs-nav > li > a.complete {
   background-image: url( /images/icons/silk/accept.png );
