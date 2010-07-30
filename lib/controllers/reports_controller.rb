@@ -66,9 +66,10 @@ class ReportsController < OlmisController
     files = Dir.glob(File.join(vendor_root, 'lib', '{graphs,reports,queries}.rb'))
     last_mod_time = (files.map{ |f| File.mtime(f) } << DataSubmission.last_submit_time).max
 
-    if stale?(:last_modified => last_mod_time.utc)
-      render :offline_report, :layout => 'offline'
+    text = cache("#{params[:action]}-#{@report}-#{I18n.locale}-#{last_mod_time.to_i}") do
+      render_to_string(:action => 'offline_report', :layout => 'offline')
     end
+    render(:text => text, :layout => false)
   end
   
   def delivery_interval
