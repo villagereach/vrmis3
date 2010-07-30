@@ -390,7 +390,7 @@ class Queries
       SQL
     end
 
-    def percent_of_health_centers_visited_for_area_date_period_range(areas, date_period_range, group_by_month = true)
+    def health_centers_visited_for_area_date_period_range(areas, date_period_range, group_by_month = true)
       areas = [areas].flatten
       return if areas.empty?
 

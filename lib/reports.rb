@@ -211,7 +211,7 @@ class Reports
     end
 
     def visits(areas, date_period_range, group_by_date_period, range_name, range)
-      data = Queries.percent_of_health_centers_visited_for_area_date_period_range(areas, date_period_range, group_by_date_period)
+      data = Queries.health_centers_visited_for_area_date_period_range(areas, date_period_range, group_by_date_period)
 
       total_data  = Hash[*data.map { |d| [d[range_name], d['total_health_centers']] }.flatten]
       visit_data  = Hash[*data.map { |d| [d[range_name], 100.0 * d['visited_health_centers'].to_f / d['total_health_centers'].to_f] }.flatten]
