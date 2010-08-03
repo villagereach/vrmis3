@@ -147,13 +147,13 @@ class Queries
               inner join health_centers on health_centers.id = health_center_id
               inner join #{RegionJoin}
               inner join stock_rooms on stock_rooms.id = stock_room_id
-              left join fridges on fridges.stock_room_id = stock_rooms.id
+              left join fridge_statuses on fridge_statuses.stock_room_id = stock_rooms.id
               left join (select stock_room_id, reported_at from fridge_statuses
                        inner join fridges problem_fridges
                          on fridge_statuses.fridge_id = problem_fridges.id
                            and fridge_statuses.status_code <> 'OK') problem_fridge_statuses
                      on problem_fridge_statuses.stock_room_id = stock_rooms.id
-                     and reported_at between #{start_of_date_period_sql('visit_month')} and #{end_of_date_period_sql('visit_month')}
+                     and fridge_statuses.reported_at between #{start_of_date_period_sql('visit_month')} and #{end_of_date_period_sql('visit_month')}
             where visit_month between ? and ?
             and provinces.id = ?
             group by #{RollupGroup} with rollup) x
@@ -363,7 +363,7 @@ class Queries
       "CONCAT(#{date_period}, '-01')"
     end
 
-    def percent_of_health_centers_having_fridge_problems_by_date_period_for_area_date_period_range(area, date_period_range)
+    def health_centers_having_fridge_problems_by_date_period_for_area_date_period_range(area, date_period_range)
       id_name = area.class.name.tableize + '.id'
 
       connection.select_all(
@@ -377,13 +377,13 @@ class Queries
           inner join health_centers on health_centers.id = health_center_id
           inner join #{RegionJoin}
           inner join stock_rooms on stock_rooms.id = stock_room_id
-          left join fridges on fridges.stock_room_id = stock_rooms.id
+          left join fridge_statuses on fridge_statuses.stock_room_id = stock_rooms.id
           left join (select stock_room_id, reported_at from fridge_statuses
                      inner join fridges problem_fridges
                        on fridge_statuses.fridge_id = problem_fridges.id
                          and fridge_statuses.status_code <> 'OK') problem_fridge_statuses
                    on problem_fridge_statuses.stock_room_id = stock_rooms.id
-                   and reported_at between #{start_of_date_period_sql('visit_month')} and #{end_of_date_period_sql('visit_month')}
+                   and fridge_statuses.reported_at between #{start_of_date_period_sql('visit_month')} and #{end_of_date_period_sql('visit_month')}
         where visit_month between ? and ?
         and #{id_name} = ?
         group by visit_month
