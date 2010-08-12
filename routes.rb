@@ -52,8 +52,8 @@
 
   map.manifest     '/:format/manifest.txt', :controller => 'data_sources', :action => 'manifest',  :conditions => { :method => :get }
 
-  map.offline_reports '/offline/reports', :controller => 'reports', :action => 'offline_index'
-  map.offline_reports_action '/offline/reports/:report', :controller => 'reports', :action => 'offline_report'
+  map.offline_reports '/offline/reports', :controller => 'reports', :action => 'offline_index', :conditions => { :method => :get }
+  map.offline_reports_action '/offline/reports/:report', :controller => 'reports', :action => 'offline_report', :conditions => { :method => :get }
 
   map.offline_visit '/offline/:name', :controller => 'data_sources', :action => 'get_offline', :conditions => { :method => :get }
 

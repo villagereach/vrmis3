@@ -67,6 +67,7 @@ class DataSourcesController < OlmisController
     files += Dir.glob(File.join(views_path, 'data_sources', params[:format], '*.erb'))
     files += Dir.glob(File.join(views_path, 'reports', '*.erb'))
     files += Dir.glob(File.join(Rails.root, 'app', 'views', 'data_sources', params[:format], '*.erb'))
+    files += Dir.glob(File.join(Rails.root, 'app', 'views', 'reports', params[:format], '*.erb'))
     files += Dir.glob(File.join(lib_path, '{graphs,reports,queries}.rb'))
     files += [ File.join(views_path, 'javascripts', 'offline_i18n.js.erb'),
                File.join(views_path, 'javascripts', 'offline_autoeval_data.js.erb'),

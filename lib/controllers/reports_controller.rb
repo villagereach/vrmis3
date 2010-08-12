@@ -44,6 +44,10 @@ class ReportsController < OlmisController
     @district = params[:district_id] ? District.find(params[:district_id]) : current_user.districts.first
     @autoeval ||= Autoeval.new(current_user, @district.health_centers)
   end
+
+  def self.offline_reports
+    %w(visited_health_centers delivery_interval coverage)
+  end
   
   def offline_index
     @suppress_breadcrumbs = true
