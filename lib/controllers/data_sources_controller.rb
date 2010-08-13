@@ -72,8 +72,12 @@ class DataSourcesController < OlmisController
     files += [ File.join(views_path, 'javascripts', 'offline_i18n.js.erb'),
                File.join(views_path, 'javascripts', 'offline_autoeval_data.js.erb'),
                File.join(views_path, 'data_sources', "manifest.#{params[:format]}.erb"),
-               File.join(views_path, 'layouts', 'offline.html.erb') ]
-    files << __FILE__
+               File.join(views_path, 'layouts', 'offline.html.erb'),
+               File.join(lib_path, 'controllers', 'reports_controller.rb'),
+               __FILE__ ]
+    if File.exist?(custom_reports = File.join(Rails.root, 'app', 'controllers', 'reports_controller.rb'))
+      files << custom_reports
+    end
 
     last_mod_time = (files.map{ |f| File.mtime(f).to_i } << DataSubmission.last_submit_time.to_i).max
 
