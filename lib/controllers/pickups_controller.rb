@@ -174,7 +174,7 @@ class PickupsController < OlmisController
     end
 
     WarehouseVisit.transaction do
-      @visit, @errors = submission.process_pickup(@visit, @current_user)
+      @visit, @errors = submission.process_pickup(@visit, @zone, @current_user)
     end
 
     response.content_type = 'text/plain' if %w(xml json).include?(params[:format])

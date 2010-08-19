@@ -114,12 +114,12 @@ class DataSubmission < ActiveRecord::Base
     return status, visit
   end    
 
-  def process_pickup(visit, user)
+  def process_pickup(visit, delivery_zone, user)
     params, @pickup_errors = data_source.data_to_params(self)
     @pickup_errors ||= {}
     
     #force connection to FC for the DZone
-    user = visit.health_center.delivery_zone.field_coordinator
+    user = delivery_zone.field_coordinator
     process_inventory_pickup(visit, params, user) if params['inventory']
 
     visit.updated_at = Time.now
