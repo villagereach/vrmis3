@@ -655,6 +655,7 @@ en:
       navigation:
         next_screen:                     "Next >>"
         prev_screen:                     "<< Previous"
+        finish:                          "Finish"
       fc_main:
         page_title:                      "Main Page"
         choose_subtitle:                 "Choose Zone and Month"

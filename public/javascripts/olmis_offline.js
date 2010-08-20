@@ -121,12 +121,12 @@ function update_visit_navigation() {
                     parseInt($("#tab-menu > div.ui-tabs-panel").css("padding-bottom"));
   $("#tab-menu > div.ui-tabs-panel").css("min-height", (tabs_height - panel_vpadd)+'px');
 
-  // Hide the previous link on the first screen and the next link on the last screen
+  // Hide the "Previous" link on the first screen and change the "Next" link on the last screen to a "Finish" link
   var visible_tabs = $("#tab-menu > ul > li:visible");
   var first_screen = visible_tabs.first()[0].id.replace('tab-', 'screen-');
   var last_screen  = visible_tabs.last()[0].id.replace('tab-', 'screen-');
   $("#" + first_screen + " .nav-links a:first").hide();
-  $("#" + last_screen + " .nav-links a:last").hide();
+  $("#" + last_screen + " .nav-links a:last").text(I18n.t("data_sources.hcvisit.navigation.finish")).click(function() { finish_visit_entry(); });
 }
 
 function go_to_next_screen(this_screen) {
@@ -509,6 +509,11 @@ function set_context() {
   set_selected_value('visit_period_selected', true);
   set_after_warehouse_link_status();
   show_container(containers.fc_actions);
+}
+
+function finish_visit_entry() {
+  // TODO: Go to the first incomplete entry screen, if one exists
+  show_visits();
 }
 
 function select_location() {
