@@ -111,7 +111,7 @@ $.extend($.fn, {
     $('textarea[data-required*="related_checkbox="]', this).each(function(i,e) { $(e).rules('add', { required: { depends: related_checkbox } }); });
     $('*:input:radio[required]',    this).each(function(i,e) { $(e).rules('add', { required_radio: true }); });
     $('*:input:checkbox[required]', this).each(function(i,e) { $(e).rules('add', { required_checkbox: true }); });
-    $('*:number',     this).each(function(i,e) { $(e).rules('add', { digits: { depends: no_nr, param: true } }); });
+    $('*:number',     this).each(function(i,e) { $(e).rules('add', { number: { depends: no_nr, param: true } }); });
     $('*:input:date', this).each(function(i,e) { $(e).rules('add', { date:   { depends: no_nr, param: true } }); });
     $('*:input:min',  this).each(function(i,e) { $(e).rules('add', { min:    { depends: no_nr, param: e.getAttribute('min') } }); });
     $('*:input:max',  this).each(function(i,e) { $(e).rules('add', { max:    { depends: no_nr, param: e.getAttribute('max') } }); });
