@@ -22,6 +22,11 @@ var roles_screens = {
   manager: 'manager_home',
   admin:   'admin_home'
 };
+var users_roles = {
+  vacina:  'fc',
+  manager: 'manager',
+  admin:   'admin'
+};
 var container_hooks = {
   hide: {},
   show: {}
@@ -457,8 +462,9 @@ function show_container(container) {
 
 function login() {
   // NOTE: Only checking for a valid role
-  var landing_page = roles_screens[get_selected_value('access_code')];
-  if (landing_page) {
+  var role = users_roles[get_selected_value('access_code')];
+  var landing_page = role ? roles_screens[role] : null;
+  if (role && landing_page) {
     set_selected_value('logged_in', true)
     show_main_page(landing_page);
   } else {
@@ -526,11 +532,11 @@ function show_visits() {
 }
 
 function show_main_page(landing_page) {
-  var code = get_selected_value('access_code');
+  var role = users_roles[get_selected_value('access_code')];
   if (!landing_page) {
     // For a FC, return to the fc-actions page if a visit period has already been selected,
     // e.g., the user is on the HC selection page or a visit or warehouse pickup form.
-    if (code == 'fc' && get_selected_value('visit_period_selected')) {
+    if (role == 'fc' && get_selected_value('visit_period_selected')) {
       landing_page = 'fc_actions';
     } else {
       landing_page = roles_screens[code];
