@@ -1,0 +1,6 @@
+<%- offline_fcs = OfflineAccessCode.role('field_coordinator')
+    codes = offline_fcs.map(&:code)
+    codes = ['fc'] if codes.empty?  # Default if none defined
+    codes.each do |code| -%>
+users_roles['<%= code %>'] = 'field_coordinator';
+<%- end -%>
