@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="<%= I18n.locale %>"
-      manifest="<%= manifest_url(:format => 'offline', :locale => I18n.locale) %>">
+      manifest="<%= manifest_url(:format => 'offline', :province => params[:province], :locale => I18n.locale) %>">
   <head>
     <title><%= t("health_center_visit") %></title>
     <script type="text/javascript" src="/javascripts/<%= Rails.env == 'development' ? 'jquery.js' : 'jquery.min.js' %>"></script>
@@ -23,7 +23,7 @@
     <div id="header">
       <div id="user_tools">
         <div id="user" class="content">
-          <%= link_to h(t("data_sources.hcvisit.go_to_main_page")), offline_visit_url(:name => "hcvisit", :locale => I18n.locale, :anchor => "fc-actions") %>
+          <%= link_to h(t("data_sources.hcvisit.go_to_main_page")), offline_visit_url(:province => params[:province], :name => "hcvisit", :locale => I18n.locale, :anchor => "fc-actions") %>
         </div>
       </div>
       <h1><a href="/">Village Reach Prototype vrMIS3</a></h1>

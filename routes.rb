@@ -50,12 +50,12 @@
   map.data_sources        '/upload',        :controller => 'data_sources', :action => 'index',        :conditions => { :method => :get }
   map.data_sources_import '/upload',        :controller => 'data_sources', :action => 'submit_xform', :conditions => { :method => :post }
 
-  map.manifest     '/:format/manifest.txt', :controller => 'data_sources', :action => 'manifest',  :conditions => { :method => :get }
+  map.manifest     '/:format/manifest.:province.txt', :controller => 'data_sources', :action => 'manifest',  :conditions => { :method => :get }
 
-  map.offline_reports '/offline/reports', :controller => 'reports', :action => 'offline_index', :conditions => { :method => :get }
-  map.offline_reports_action '/offline/reports/:report', :controller => 'reports', :action => 'offline_report', :conditions => { :method => :get }
+  map.offline_reports '/offline/reports/:province', :controller => 'reports', :action => 'offline_index', :conditions => { :method => :get }
+  map.offline_reports_action '/offline/reports/:province/:report', :controller => 'reports', :action => 'offline_report', :conditions => { :method => :get }
 
-  map.offline_visit '/offline/:name', :controller => 'data_sources', :action => 'get_offline', :conditions => { :method => :get }
+  map.offline_visit '/offline/:name/:province', :controller => 'data_sources', :action => 'get_offline', :conditions => { :method => :get }
 
   map.javascript '/javascripts/:action.js', :controller => 'javascripts', :format => 'js'
 

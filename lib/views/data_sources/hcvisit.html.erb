@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="<%= I18n.locale %>"
-      manifest="<%= manifest_url(:format => 'offline', :locale => I18n.locale) %>">
+      manifest="<%= manifest_url(:format => 'offline', :province => params[:province], :locale => I18n.locale) %>">
   <head>
     <title><%= h(t("health_center_visit")) %></title>
     <script type="text/javascript" src="/javascripts/<%= Rails.env == 'development' ? 'jquery.js' : 'jquery.min.js' %>"></script>
@@ -21,7 +21,7 @@
     <script type="text/javascript" src="/javascripts/olmis_datalink.js" ></script>
     
     <script type="text/javascript" src="/javascripts/offline_i18n.js" ></script>
-    <script type="text/javascript" src="/javascripts/offline_autoeval_data.js" ></script>
+    <script type="text/javascript" src="/javascripts/offline_autoeval_data.js?province=<%= params[:province] %>" ></script>
 
     <script type="text/javascript" src="/javascripts/date-<%= I18n.locale %>.js" ></script>
     

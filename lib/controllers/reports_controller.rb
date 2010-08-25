@@ -8,7 +8,7 @@ class ReportsController < OlmisController
   before_filter :current_user, :only => [ :target_coverage_map, :stockouts_map ]
   helper :date_period_range
   add_breadcrumb 'breadcrumb.report', 'reports_path', :except => [ :offline_index, :offline_report, :offline_autoeval ]
-  add_breadcrumb 'breadcrumb.report', 'offline_reports_path(:locale => I18n.locale)', :only => [ :offline_index, :offline_report, :offline_autoeval ]
+  add_breadcrumb 'breadcrumb.report', 'offline_reports_path(:province => params[:province], :locale => I18n.locale)', :only => [ :offline_index, :offline_report, :offline_autoeval ]
 
   def table_object(graph)
     @table_count = (@table_count || 0) + 1

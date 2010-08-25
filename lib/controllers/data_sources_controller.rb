@@ -104,7 +104,7 @@ class DataSourcesController < OlmisController
     #   render :action => params[:name], :layout => false
     # end
 
-    text = cache("#{params[:action]}-#{params[:name]}-#{I18n.locale}-#{last_mod_time.to_i}") do
+    text = cache("#{params[:action]}-#{params[:name]}-#{params[:province]}-#{I18n.locale}-#{last_mod_time.to_i}") do
       render_to_string(:action => params[:name], :layout => false)
     end
     render(:text => text, :layout => false)

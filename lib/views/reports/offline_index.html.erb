@@ -1,21 +1,21 @@
   <h2><%= t('reports.index.report_front_title') %></h2>
   <ul class="reports">
     <!--li>
-      <h5><%= link_to t('reports.index.autoeval'), offline_reports_action_url(:report => :autoeval, :locale => I18n.locale) %></h5>
+      <h5><%= link_to t('reports.index.autoeval'), offline_reports_action_url(:report => :autoeval, :province => params[:province], :locale => I18n.locale) %></h5>
     </li-->
     <!--li>
-      <h5><%= link_to t('reports.index.stockouts_by_date'), offline_reports_action_url(:report => :stockouts, :locale => I18n.locale) %></h5>
+      <h5><%= link_to t('reports.index.stockouts_by_date'), offline_reports_action_url(:report => :stockouts, :province => params[:province], :locale => I18n.locale) %></h5>
     </li-->
     <!--li>
-      <h5><%= link_to t('reports.index.cold_chain_report'), offline_reports_action_url(:report => :fridge_issues, :locale => I18n.locale) %></h5>
+      <h5><%= link_to t('reports.index.cold_chain_report'), offline_reports_action_url(:report => :fridge_issues, :province => params[:province], :locale => I18n.locale) %></h5>
     </li-->
     <li>
-      <h5><%= link_to t('reports.index.visited_health_centers'), offline_reports_action_url(:report => :visited_health_centers, :locale => I18n.locale) %></h5>
+      <h5><%= link_to t('reports.index.visited_health_centers'), offline_reports_action_url(:report => :visited_health_centers, :province => params[:province], :locale => I18n.locale) %></h5>
     </li>
     <li>
-      <h5><%= link_to t('reports.index.delivery_interval'), offline_reports_action_url(:report => :delivery_interval, :locale => I18n.locale) %></h5>
+      <h5><%= link_to t('reports.index.delivery_interval'), offline_reports_action_url(:report => :delivery_interval, :province => params[:province], :locale => I18n.locale) %></h5>
     </li>
     <li>
-      <h5><%= link_to t('reports.index.coverage_rates'), offline_reports_action_url(:report => :coverage, :locale => I18n.locale) %></h5>
+      <h5><%= link_to t('reports.index.coverage_rates'), offline_reports_action_url(:report => :coverage, :province => params[:province], :locale => I18n.locale) %></h5>
     </li>
   </ul>

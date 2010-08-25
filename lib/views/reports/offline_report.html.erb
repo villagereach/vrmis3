@@ -1,10 +1,15 @@
 <div class="collapsible-table">
   <h3><%= t(".#{@report}") %></h3>
 
-  <% provinces = Province.all.sort %>
-  <% default = Province.default.id %>
-  <%= label_tag 'table-selector', t('shared.select_province.select') %>:
-  <%= select_tag 'table-selector', options_for_select(provinces.map { |pr| [pr.label, pr.id] }, default) %>
+  <%- if params[:province] -%>
+    <%- provinces = [ Province.find_by_code(params[:province]) ] -%>
+    <%- default = provinces.first.id -%>
+  <%- else -%>
+    <%- provinces = Province.all.sort -%>
+    <%- default = Province.default.id -%>
+    <%= label_tag 'table-selector', t('shared.select_province.select') %>:
+    <%= select_tag 'table-selector', options_for_select(provinces.map { |pr| [pr.label, pr.id] }, default) %>
+  <%- end -%>
   <% javascript_tag do %>
     jQuery(document).ready(function() { 
       jQuery(".collapsible-table .table-container").hide();
