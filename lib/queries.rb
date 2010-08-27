@@ -301,7 +301,7 @@ class Queries
           visit_month as date_period,
           count(distinct health_center_visit_id) as visits,
           sum(case when existing_quantity = 0 and expected_delivery_quantity > 0 then 1 else 0 end) as stockouts,
-          sum(case when delivered_quantity >= expected_delivery_quantity then 1 else 0 end) as full_deliveries
+          sum(case when existing_quantity + delivered_quantity >= expected_delivery_quantity then 1 else 0 end) as full_deliveries
         from
           (select product_id,
               visit_month,
