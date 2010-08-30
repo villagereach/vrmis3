@@ -14,8 +14,9 @@
   map.fc_visits_by_month '/fcs/:visit_month',     :controller => 'field_coordinators', :action => 'index', :conditions => { :method => :get }
   map.fc                 '/fcs/:id/:visit_month', :controller => 'field_coordinators', :action => 'show',  :conditions => { :method => :get }
 
-  #map.isa '/pickups/:delivery_zone/isa/:health_center', :controller => 'pickups', :action => 'isa_edit'
-  #map.isa_redirect '/pickups/:delivery_zone/isa_redirect', :controller=>'pickups', :action => 'isa_redirect'
+  map.isa_redirect '/pickups/:delivery_zone/isa_redirect', :controller=>'pickups', :action => 'isa_redirect', :conditions => { :method => :get }
+  map.isa '/pickups/:delivery_zone/isa/:health_center', :controller => 'pickups', :action => 'isa_edit', :conditions => { :method => :get }
+  map.update_isa '/pickups/:delivery_zone/isa/:health_center', :controller => 'pickups', :action => 'isa_update', :conditions => { :method => :put }
 
   #map.pickup_new '/pickups/:delivery_zone/new.:format', :controller => 'pickups', :action => 'pickup_new'
   #map.pickup_edit '/pickups/:delivery_zone/:date/edit', :controller => 'pickups', :action => 'pickup_edit'

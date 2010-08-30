@@ -32,5 +32,15 @@
         </tbody>
       <%- end -%>
     </table>
+
+    <div id="isa">
+      <form method="get" action="<%= isa_redirect_path %>" >
+
+        <%= link_to_function( t('inventory.change_isa'), js_show_hide('change_isa_fields','change_isa_link'), :id=>'change_isa_link') %>
+        <span id='change_isa_fields' style='display: none'>
+          <%= t('inventory.change_isa_for') %>:  <%=select_tag(:hc, options_from_collection_for_select(@zone.health_centers, 'code', 'name')) %> <%= submit_tag t('go') %>
+        </span>
+      </form>
+    </div>
   </div>
 </div>

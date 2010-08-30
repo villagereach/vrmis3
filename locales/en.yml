@@ -140,6 +140,8 @@ en:
     epi_visit_month:           "{{visit_month}} Visit ({{epi_month}} EPI)"
     field_coordinators:        "Field coordinators"
     report_delivery_intervals: "Delivery intervals"
+    before_warehouse_visit:    "Before Warehouse Visit"
+    after_warehouse_visit:     "After Warehouse Visit"
     offline_report:
       stockouts:              "Stockouts Report"
       fridge_issues:          "Fridge Issues"

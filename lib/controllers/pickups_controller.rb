@@ -1,10 +1,15 @@
 class PickupsController < OlmisController
+  add_breadcrumb(lambda { |c| I18n.t('breadcrumb.before_warehouse_visit', :name => c.delivery_zone.name) }, 'pickup_request_path',
+                 :only => ['pickup_request', 'isa_edit'])
+  add_breadcrumb(lambda { |c| I18n.t('breadcrumb.after_warehouse_visit', :name => c.delivery_zone.name) }, 'pickups_path',
+                 :only => ['pickups','pickup_new','pickup_edit'])
+
   # add_breadcrumb(lambda { |c| I18n.t('breadcrumb.pickups', :name => c.delivery_zone.name) }, 'pickups_path', 
   #                :only => ['pickups', 'pickup', 'pickup_new', 'pickup_edit', 'isa', 'isa_edit'])
-  # add_breadcrumb(lambda { |c| I18n.l(Date.parse(c.param_date), :format => :default) }, 'pickup_path',
-  #                :only => ['pickup','pickup_edit'])
-  # add_breadcrumb(lambda { |c| I18n.t('breadcrumb.new_pickup', :name => c.delivery_zone.name) }, '',
-  #                :only => ['pickup_new', 'pickup_request'])
+  # add_breadcrumb(lambda { |c| I18n.l(Date.parse(c.param_date), :format => :default) }, '',
+  #                :only => ['pickup_edit'])
+  add_breadcrumb(lambda { |c| I18n.t('breadcrumb.new_pickup', :name => c.delivery_zone.name) }, '',
+                 :only => ['pickup_new','pickup_edit'])
 
   # add_breadcrumb(lambda { |c| I18n.t('breadcrumb.unloads', :name => c.delivery_zone.name) }, 'unloads_path', 
   #                :only => ['unloads', 'unload', 'unload_new', 'unload_edit' ])
@@ -16,8 +21,8 @@ class PickupsController < OlmisController
   # add_breadcrumb('breadcrumb.edit', '',
   #                :only => ['pickup_edit','unload_edit'])
 
-  # add_breadcrumb(lambda { |c| I18n.t('breadcrumb.edit_ideal_stock', :name => c.health_center.name) }, '',
-  #                :only => 'isa_edit')
+  add_breadcrumb(lambda { |c| I18n.t('breadcrumb.edit_ideal_stock', :name => c.health_center.name) }, '',
+                 :only => 'isa_edit')
 
 
   def pickups
@@ -110,42 +115,52 @@ class PickupsController < OlmisController
   #   save_if_post_and_redirect_or_render_form('DeliveryReturn', :unload)
   # end
 
-  # def isa_redirect
-  #   logger.info " isad1"
-  #   redirect_to isa_path(params[:delivery_zone],params[:hc])
-  #   logger.info " isad2"
-  # end
+  def isa_redirect
+    redirect_to isa_path(params[:delivery_zone], params[:hc])
+  end
   
-  # def isa_edit
-  #   @zone = DeliveryZone.find_by_code(params[:delivery_zone])
-  #   @hc = HealthCenter.find_by_code(params[:health_center])
-  #   @sr = @hc.stock_room
-  #   @amounts = @sr.package_counts_by_package
+  def isa_edit
+    @zone = DeliveryZone.find_by_code(params[:delivery_zone])
+    @hc = HealthCenter.find_by_code(params[:health_center])
+    @sr = @hc.stock_room
+    @amounts = @sr.package_counts_by_package
 
-  #   @show_date = false
-  #   @page_title = I18n.t('inventory.IdealStockAmount.edit', :where => @hc.name)
+    @show_date = false
+    @page_title = I18n.t('inventory.IdealStockAmount.edit', :where => @hc.name)
 
-  #   @errors = {}
-  #   if request.post?
-  #     begin
-  #       IdealStockAmount.transaction do
-  #         params[:inventory][:packages].each do |code, amount|
-  #           package = Package.find_by_code(code)
-  #           i = IdealStockAmount.find_or_create_by_package_id_and_stock_room_id(package, @sr)
-  #           i.quantity = amount
-  #           if i.valid?
-  #             i.save
-  #           else 
-  #             @errors[code] = i.errors
-  #           end
-  #         end
-  #         redirect_to pickups_path and return if @errors.empty?
-  #       end
-  #     rescue ActiveRecord::ActiveRecordError        
-  #     end
-  #   end
-  #   render :inventory_form
-  # end
+    @errors = {}
+    #add_breadcrumb t('breadcrumb.edit_ideal_stock', :name => @hc.name), ''
+    render :inventory_form
+  end
+  
+  def isa_update
+    @zone = DeliveryZone.find_by_code(params[:delivery_zone])
+    @hc = HealthCenter.find_by_code(params[:health_center])
+    @sr = @hc.stock_room
+    @amounts = @sr.package_counts_by_package
+
+    @show_date = false
+    @page_title = I18n.t('inventory.IdealStockAmount.edit', :where => @hc.name)
+
+    @errors = {}
+    begin
+      IdealStockAmount.transaction do
+        params[:inventory][:packages].each do |code, amount|
+          package = Package.find_by_code(code)
+          i = IdealStockAmount.find_or_create_by_package_id_and_stock_room_id(package, @sr)
+          i.quantity = amount
+          if i.valid?
+            i.save
+          else 
+            @errors[code] = i.errors
+          end
+        end
+        redirect_to pickup_request_path and return if @errors.empty?
+      end
+    rescue ActiveRecord::ActiveRecordError        
+    end
+    render :inventory_form
+  end
 
   def warehouse_monthly_visit
     setup_visit
