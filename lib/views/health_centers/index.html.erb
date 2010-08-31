@@ -5,14 +5,14 @@
   <%- end -%>
   <span id="report-scope-loading-indicator" class="loading-indicator" style="visibility: hidden;"><%= t('loading') %><%= image_tag('indicator-small.gif', :size => '13x10') %></span>
 </div>
-<%= link_to t('new'), [:new_health_center] %>
+<%#= link_to t('new'), [:new_health_center] %>
 <%= render :partial => '/mini_reports/health_center_list', :locals => { :scope => @scope, :limit => 20 } %>
 
 <% javascript_tag do %>
-  jQuery(function() {
-    jQuery('#set_report_scope_form select').change(function() {
-      jQuery('#report-scope-loading-indicator').css('visibility', 'visible');
-      jQuery('#set_report_scope_form').submit();
+  $(function() {
+    $('#set_report_scope_form select').change(function() {
+      $('#report-scope-loading-indicator').css('visibility', 'visible');
+      $('#set_report_scope_form').submit();
     });
   });
 <% end %>

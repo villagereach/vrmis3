@@ -1152,4 +1152,6 @@ table.report-table td.pct.nil:after { text-align: right; }
 table.report-table td.int.nil:after { text-align: right; }
 table.report-table td.float.nil:after { text-align: right; }
 
-
+.disabled {
+  color: #999;
+}

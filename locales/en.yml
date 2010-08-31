@@ -164,10 +164,12 @@ en:
     name:  "Name"
     phone: "Phone"
   street_address:
-    address1:    "Address line 1"
-    address2:    "Address line 2"
+    name:        "Name"
+    phone:       "Phone"
+    address1:    "Address (line 1)"
+    address2:    "Address (line 2)"
     city:        "City"
-    postal_code: "Postal"
+    postal_code: "Postal Code"
     latitude:    "Latitude"
     longitude:   "Longitude"
   geo_contained_by: "in"
@@ -427,10 +429,13 @@ en:
     delivery_zone:           "Delivery zone"
     field_coordinator_name:  "Field coordinator"
     field_coordinator_phone: "Field coordinator phone"
+    catchment_population:    "Catchment population"
+    recalculate_population:  "Recalculate district and provincial population values"
     edit:                    "Update Health Center {{name}}"
     new:                     "Create Health Center"
     show:
       new_fridge: "Create new fridge"
+      edit:       "Edit health center"
   field_coordinators:
     index:
       title:       "Field Coordinators"

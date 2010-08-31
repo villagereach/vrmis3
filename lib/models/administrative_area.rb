@@ -82,6 +82,11 @@ class AdministrativeArea < ActiveRecord::Base
     health_centers.map(&:delivery_zone).uniq
   end
 
+  def update_population(old_value, new_value, update_parent = false)
+    update_attributes!(:population => population + new_value - old_value)
+    parent.update_population(old_value, new_value, true) if update_parent && parent
+  end
+
   if Olmis.configured?
     Olmis.area_hierarchy.each do |h|
       define_method h.underscore do

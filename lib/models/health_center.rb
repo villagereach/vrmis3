@@ -141,7 +141,7 @@ class HealthCenter < ActiveRecord::Base
   end
 
   def population
-    administrative_area.population
+    catchment_population
   end
 
   def primary_contact_name
