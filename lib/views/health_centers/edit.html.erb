@@ -9,7 +9,7 @@
 
     <dt><%= f.label :catchment_population, t('health_centers.catchment_population') %></dt>
     <dd><%= f.text_field :catchment_population %></dd>
-    <dd class="disabled"><%= check_box_tag 'recalculate_population', 1, false, :disabled => true %> <%= t('health_centers.recalculate_population') %></dd>
+    <dd><%= check_box_tag 'recalculate_population', 1, false %> <%= t('health_centers.recalculate_population') %></dd>
 
     <dt class="section">Primary Contact</dt>
     <%- fields_for @health_center.street_address do |ff| -%>
@@ -22,12 +22,4 @@
     <%- end -%>
   </dl>
   <%= f.submit %>
-<%- end -%>
-
-<%- javascript_tag do -%>
-  $(function() {
-    $("#health_center_catchment_population").change(function() {
-      $("#recalculate_population").attr("disabled", false).parent().removeClass("disabled");
-    });
-  });
 <%- end -%>
