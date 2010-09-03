@@ -356,6 +356,7 @@ en:
       more:          "({{num}} more)"
       more_previous: "<< Previous {{num}}"
       more_next:     "Next {{num}} >>"
+      range:         "Showing {{start}} – {{end}} of {{total}}"
     overall_fridge_status:
       overall_fridge_status: "Overall Cold Chain Status"
       by_status:             "Working Condition"
