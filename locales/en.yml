@@ -82,6 +82,7 @@ en:
     fridges:                   "Refrigerators"
     fridge_code:               "Code"
     health_center:             "HC"
+    catchment_population:      "Catchment population"
     district:                  "District"
     status:                    "Status"
     temperature:               "Temp"
