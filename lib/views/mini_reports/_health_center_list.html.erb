@@ -5,7 +5,7 @@
       scope = scope.scoped_by_delivery_zone_id(params[:options][:delivery_zone]) if params[:options][:delivery_zone].present?
    end -%>   
 <%- columns = [:name, :catchment_population, :district, :delivery_zone, :fridges, :primary_contact_name, :primary_contact_phone, :address] %>
-<%- columns << :update_link if HealthCenter.new.authorized_for_update? -%>
+<%- # columns << :update_link if HealthCenter.new.authorized_for_update? -%>
 <%= render :partial => '/mini_reports/table', 
   :locals => { 
     :data => scope,
