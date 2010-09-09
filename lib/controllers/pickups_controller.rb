@@ -219,6 +219,7 @@ class PickupsController < OlmisController
       @visit = WarehouseVisit.find(params[:visit_id])
     else
       @visit = WarehouseVisit.new(:warehouse_id => @zone.warehouse_id)
+      @visit.date = params[:date]
     end
 
     @date = @visit.date || Date.today

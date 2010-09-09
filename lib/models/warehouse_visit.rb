@@ -25,25 +25,23 @@ class WarehouseVisit < ActiveRecord::Base
 
   named_scope :recent, lambda{|count| { :order => 'updated_at DESC', :limit => count } }
 
-  attr_accessor :request, :pickup
+  attr_accessor :request, :pickup, :date
   
   def request
-    @request ||= Inventory.find_by_id(request_id) || Inventory.new(:inventory_type => 'DeliveryRequest')
+    @request ||= find_or_initialize_inventory(request_id, 'DeliveryRequest')
   end
 
   def pickup
-    @pickup ||= Inventory.find_by_id(pickup_id) || Inventory.new(:inventory_type => 'DeliveryPickup')
+    @pickup ||= find_or_initialize_inventory(pickup_id, 'DeliveryPickup')
   end
 
   def date
-    pickup.date
+    @date ||= pickup.date
   end
 
   def to_json
     packages = Package.active
-    visit_request = request || Inventory.new(:inventory_type => 'DeliveryRequest')
-    visit_pickup  = pickup  || Inventory.new(:inventory_type => 'DeliveryPickup')
-    [ visit_request, visit_pickup ].inject({}) do |hash, inventory|
+    [ request, pickup ].inject({}) do |hash, inventory|
       hash[inventory.inventory_type] = inventory.new_record? \
         ? Hash[*packages.map {|p| [ p.code, '' ]}.flatten] \
         : Hash[*inventory.package_counts.map {|pc| [ pc.package.code, pc.quantity ]}.flatten]
@@ -56,6 +54,14 @@ class WarehouseVisit < ActiveRecord::Base
   def before_save
     self.request_id = @request.id
     self.pickup_id  = @pickup.id
+  end
+
+  private
+
+  def find_or_initialize_inventory(id, type)
+    Inventory.find_by_id(id) ||
+      Inventory.find_or_initialize_by_date_and_stock_room_id_and_inventory_type(
+        @date, self.warehouse ? self.warehouse.stock_room.id : nil, type)
   end
 
 end
