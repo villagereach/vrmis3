@@ -57,7 +57,9 @@ class HealthCenterVisit < ActiveRecord::Base
   def self.recent_visit_months(options = {})
     sql_opts = { :select => "DISTINCT(visit_month)",:limit => options[:count], :order => "visit_month DESC" }
     sql_opts[:conditions] = [ "visit_month > ?", options[:months].months.ago(Date.today).to_date_period ] if options[:months]
-    find(:all, sql_opts).map(&:visit_month)
+    visit_months = find(:all, sql_opts).map(&:visit_month)
+    visit_months = [Date.today.to_date_period] if visit_months.empty?
+    return visit_months
   end
 
   def date_period
