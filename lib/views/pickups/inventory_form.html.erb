@@ -53,7 +53,7 @@
             </td>
             <td class="amount" >
               <div class="tally <%= @errors[package.code] ? 'error' : '' %>">
-                <%= f.text_field package.code, :value => params[:inventory].maybe[:packages].maybe[package.code] || @amounts[package], :index => 'packages', :size => 3, :class => "numeric" %>
+                <%= f.text_field package.code, :value => params[:inventory].maybe[:packages].maybe[package.code] || @amounts[package], :index => "packages", :class => "numeric", :readonly => !package.primary_package %>
               </div>
             </td>
             <%- unless @comparison_column.blank? -%>

@@ -36,8 +36,9 @@
                 <%- end -%>
                 <td><%= h package.label %></td>
                 <%- %w(DeliveryRequest DeliveryPickup).each do |type|
+                      options = type == 'DeliveryRequest' && !package.primary_package ? 'readonly="readonly"' : 'required="required"'
                       node = "warehouse_pickup-after-#{package.code}-#{type}" -%>
-                  <td class="amount"><input type="number" min="0" id="<%= node %>" name="<%= node %>" required="required" /></td>
+                  <td class="amount"><input type="number" min="0" id="<%= node %>" name="<%= node %>" <%= options %> /></td>
                 <%- end -%>
               </tr>
             <%- end -%>

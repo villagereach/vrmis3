@@ -63,12 +63,12 @@
                 <td><%= h package.label %></td>
                 <td class="amount">
                   <div class="tally <%= 'error' if @errors['DeliveryRequest'].maybe[package.code] %>">
-                    <%= f.text_field package.code, :value => params[:inventory].maybe['DeliveryRequest'].maybe[package.code] || @amounts[package].maybe['DeliveryRequest'], :index => 'DeliveryRequest', :size => 3, :class => "numeric" %>
+                    <%= f.text_field package.code, :value => params[:inventory].maybe['DeliveryRequest'].maybe[package.code] || @amounts[package].maybe['DeliveryRequest'], :index => 'DeliveryRequest', :class => "numeric", :readonly => !package.primary_package %>
                   </div>
                 </td>
                 <td class="amount">
                   <div class="tally <%= 'error' if @errors['DeliveryPickup'].maybe[package.code] %>">
-                    <%= f.text_field package.code, :value => params[:inventory].maybe['DeliveryPickup'].maybe[package.code] || @amounts[package].maybe['DeliveryPickup'], :index => 'DeliveryPickup', :size => 3, :class => "numeric" %>
+                    <%= f.text_field package.code, :value => params[:inventory].maybe['DeliveryPickup'].maybe[package.code] || @amounts[package].maybe['DeliveryPickup'], :index => 'DeliveryPickup', :class => "numeric" %>
                   </div>
                 </td>
               </tr>

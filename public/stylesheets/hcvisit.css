@@ -506,6 +506,10 @@ h4 {
   float: right;
   margin-right: 0.5em;
 }
+#warehouse_visit-form table.inventory td.amount input[readonly] {
+  float: left;
+  margin-right: 0;
+}
 .pickups .datepicker input[type="date"] {
   padding: 1px;
 }
