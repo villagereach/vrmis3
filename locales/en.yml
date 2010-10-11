@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# OpenLMIS localization file for English
+# openLMIS localization file for English
 en:
   previous_six_months:         "Previous six months"
   OUT:                         "OUT"
@@ -53,8 +53,8 @@ en:
   health_center:               "Health Center"
   health_center_contact:       "Health Center Contact"
   health_center_visit:         "Health Center Visit"
-  copyright:                   'Copyright <a href="http://villagereach.org/">Village Reach</a>'
-  documentation_link_short:    '<a href="http://openlmis.org/">OpenLMIS documentation</a>'
+  copyright:                   'Copyright <a href="http://villagereach.org/">VillageReach</a>'
+  documentation_link_short:    '<a href="http://openlmis.org/">openLMIS documentation</a>'
   save:                        "Save changes"
   done:                        "Done"
   edit:                        "Edit"
