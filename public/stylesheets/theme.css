@@ -960,9 +960,11 @@ table.spreadsheet div.tally input[type="text"], table.spreadsheet div.tally inpu
   margin: 1px 1px 0 1px;
   padding: 0;
   text-align: right;
+  width: 40px;
+}
+table.inventory td.amount input[type="text"], table.inventory td.amount input[type="number"] {
   width: 4em;
 }
-
 table.inventory td.amount input[readonly] {
   background-color: #ddd;
   color: #444;
