@@ -8,7 +8,7 @@ class ReportsController < OlmisController
   before_filter :current_user, :only => [ :target_coverage_map, :stockouts_map ]
   helper :date_period_range
   add_breadcrumb 'breadcrumb.report', 'reports_path', :except => [ :offline_index, :offline_report, :offline_autoeval ]
-  add_breadcrumb 'breadcrumb.report', 'offline_reports_path(:locale => I18n.locale)', :only => [ :offline_index, :offline_report, :offline_autoeval ]
+  add_breadcrumb 'breadcrumb.report', 'offline_reports_path(:province => params[:province], :locale => I18n.locale)', :only => [ :offline_index, :offline_report, :offline_autoeval ]
 
   def table_object(graph)
     @table_count = (@table_count || 0) + 1
@@ -44,6 +44,10 @@ class ReportsController < OlmisController
     @district = params[:district_id] ? District.find(params[:district_id]) : current_user.districts.first
     @autoeval ||= Autoeval.new(current_user, @district.health_centers)
   end
+
+  def self.offline_reports
+    %w(visited_health_centers delivery_interval coverage)
+  end
   
   def offline_index
     @suppress_breadcrumbs = true
@@ -66,9 +70,10 @@ class ReportsController < OlmisController
     files = Dir.glob(File.join(vendor_root, 'lib', '{graphs,reports,queries}.rb'))
     last_mod_time = (files.map{ |f| File.mtime(f) } << DataSubmission.last_submit_time).max
 
-    if stale?(:last_modified => last_mod_time.utc)
-      render :offline_report, :layout => 'offline'
+    text = cache("#{params[:action]}-#{@report}-#{I18n.locale}-#{last_mod_time.to_i}") do
+      render_to_string(:action => 'offline_report', :layout => 'offline')
     end
+    render(:text => text, :layout => false)
   end
   
   def delivery_interval

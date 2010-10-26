@@ -1,0 +1,7 @@
+<%- offline_fcs = OfflineAccessCode.role('field_coordinator')
+    offline_fcs = offline_fcs.in_area(Province.find_by_code(params[:province])) if params[:province]
+    codes = offline_fcs.map(&:code)
+    codes = ['fc'] if codes.empty?  # Default if none defined
+    codes.each do |code| -%>
+users_roles['<%= code %>'] = 'field_coordinator';
+<%- end -%>

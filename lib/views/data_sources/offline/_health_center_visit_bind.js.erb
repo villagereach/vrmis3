@@ -10,7 +10,7 @@ function hcvisit_visited(ev) {
     $('#unvisited_data *:input').removeClass('enabled');
     $('#visited_data *:input').addClass('enabled');
 
-    $('#tab-menu').data('disabled.tabs', []);
+    $('#tab-menu').tabs('option', 'disabled', []);
   } else {
     $('#unvisited_data').show();
     $('#visited_data').hide();
@@ -18,7 +18,7 @@ function hcvisit_visited(ev) {
     $('#unvisited_data *:input:radio').addClass('enabled').valid();
     $('#visited_data *:input').removeClass('enabled');
 
-    $('#tab-menu').data('disabled.tabs', depends_on_visit_tabs);
+    $('#tab-menu').tabs('option', 'disabled', depends_on_visit_tabs);
   }
   update_progress_status(depends_on_visit_tabs);
 }

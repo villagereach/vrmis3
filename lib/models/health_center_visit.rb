@@ -46,7 +46,22 @@ class HealthCenterVisit < ActiveRecord::Base
   named_scope :by_user, lambda{|user| { :conditions => { :user_id => user } } }
 
   ExcusableNonVisitReasons = ['health_center_closed'] 
-  
+
+  # Get recent visit months (in descending order).
+  #
+  # The following options are recognized:
+  # * <tt>:months</tt> - specifies the number of months for which visits will be checked
+  # * <tt>:count</tt> - specifies the max number of visits to return
+  # If both <tt>:months</tt> and <tt>:count</tt> are specified, the number of visit months returned
+  # will not exceed the value of <tt>:months</tt>
+  def self.recent_visit_months(options = {})
+    sql_opts = { :select => "DISTINCT(visit_month)",:limit => options[:count], :order => "visit_month DESC" }
+    sql_opts[:conditions] = [ "visit_month > ?", options[:months].months.ago(Date.today).to_date_period ] if options[:months]
+    visit_months = find(:all, sql_opts).map(&:visit_month)
+    visit_months = [Date.today.to_date_period] if visit_months.empty?
+    return visit_months
+  end
+
   def date_period
     visit_month
   end

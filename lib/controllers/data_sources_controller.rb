@@ -67,12 +67,17 @@ class DataSourcesController < OlmisController
     files += Dir.glob(File.join(views_path, 'data_sources', params[:format], '*.erb'))
     files += Dir.glob(File.join(views_path, 'reports', '*.erb'))
     files += Dir.glob(File.join(Rails.root, 'app', 'views', 'data_sources', params[:format], '*.erb'))
+    files += Dir.glob(File.join(Rails.root, 'app', 'views', 'reports', params[:format], '*.erb'))
     files += Dir.glob(File.join(lib_path, '{graphs,reports,queries}.rb'))
     files += [ File.join(views_path, 'javascripts', 'offline_i18n.js.erb'),
                File.join(views_path, 'javascripts', 'offline_autoeval_data.js.erb'),
                File.join(views_path, 'data_sources', "manifest.#{params[:format]}.erb"),
-               File.join(views_path, 'layouts', 'offline.html.erb') ]
-    files << __FILE__
+               File.join(views_path, 'layouts', 'offline.html.erb'),
+               File.join(lib_path, 'controllers', 'reports_controller.rb'),
+               __FILE__ ]
+    if File.exist?(custom_reports = File.join(Rails.root, 'app', 'controllers', 'reports_controller.rb'))
+      files << custom_reports
+    end
 
     last_mod_time = (files.map{ |f| File.mtime(f).to_i } << DataSubmission.last_submit_time.to_i).max
 
@@ -99,7 +104,7 @@ class DataSourcesController < OlmisController
     #   render :action => params[:name], :layout => false
     # end
 
-    text = cache("#{params[:action]}-#{params[:name]}-#{I18n.locale}-#{last_mod_time.to_i}") do
+    text = cache("#{params[:action]}-#{params[:name]}-#{params[:province]}-#{I18n.locale}-#{last_mod_time.to_i}") do
       render_to_string(:action => params[:name], :layout => false)
     end
     render(:text => text, :layout => false)

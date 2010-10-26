@@ -1,4 +1,5 @@
-<% %w(address1 address2 city postal_code latitude longitude).each do |a| %>
+<% fields ||= %w(address1 address2 city postal_code latitude longitude) %>
+<% fields.each do |a| %>
 <dt><%= form.label a, t("street_address.#{a}") %></dt>
 <dd><%= form.text_field a %></dd>
 <% end %>

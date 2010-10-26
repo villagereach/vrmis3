@@ -2,7 +2,7 @@ CACHE MANIFEST
 # version <%# version added by controller %>
 
 CACHE:
-/offline/hcvisit?locale=<%= I18n.locale %>
+<%= offline_visit_path(:province => params[:province], :name => 'hcvisit', :locale => I18n.locale) %>
 /images/icons/silk/accept.png
 /images/icons/silk/exclamation.png
 /images/icons/silk/arrow_right.png
@@ -16,10 +16,10 @@ CACHE:
 /images/indicator-small.gif
 /images/vr-mis-logo-small.png
 
-<%= offline_reports_path(:locale => I18n.locale)%>
+<%= offline_reports_path(:province => params[:province], :locale => I18n.locale)%>
 
-<%- %w(visited_health_centers delivery_interval coverage).each do |report| -%>
-<%= offline_reports_action_path(:report => report, :locale => I18n.locale) %>
+<%- ReportsController.offline_reports.each do |report| -%>
+<%= offline_reports_action_path(:province => params[:province], :report => report, :locale => I18n.locale) %>
 <%- end -%>
 
 /javascripts/olmis_datalink.js
@@ -29,7 +29,7 @@ CACHE:
 /javascripts/olmis_formgrid.js
 /javascripts/olmis_date.js
 /javascripts/olmis_validation.js
-/javascripts/offline_autoeval_data.js
+/javascripts/offline_autoeval_data.js?province=<%= params[:province] %>
 /javascripts/offline_i18n.js
 /javascripts/olmis_collapsible_report.js
 

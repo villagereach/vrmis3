@@ -24,6 +24,7 @@ class HealthCentersController < OlmisController
   end
   
   def edit
+    session[:hc_index_path] = request.referer
     @health_center = HealthCenter.find(params[:id])
     add_breadcrumb t('breadcrumb.edit_health_center', :name => @health_center.name), health_center_path(@health_center)
   end
@@ -31,7 +32,7 @@ class HealthCentersController < OlmisController
   def update
     @health_center = HealthCenter.find(params[:id])
     begin
-      HealthCenter.transaction do 
+      HealthCenter.transaction do
         @health_center.attributes = params[:health_center]
 
         if params[:street_address]
@@ -40,22 +41,18 @@ class HealthCentersController < OlmisController
           address.attributes = (params[:street_address])
         end
         
-        if params[:user]
-          if params[:user][:name] != @health_center.primary_contact.name 
-            @health_center.build_primary_contact()
-          end
-          @health_center.primary_contact.attributes = (params[:user])
+        if params[:recalculate_population] == '1' && @health_center.catchment_population_changed?
+          @health_center.administrative_area.update_population(@health_center.catchment_population_was, @health_center.catchment_population, true)
         end
-        
-        if params[:health_center_catchment]
-          @health_center.administrative_area.attributes = (params[:health_center_catchment])
-        end
-
         @health_center.street_address.save!
-        @health_center.primary_contact.save!
-        @health_center.administrative_area.save!
         @health_center.save!
-        redirect_to @health_center
+        if session[:hc_index_path]
+          return_path = session[:hc_index_path]
+          session[:hc_index_path] = nil
+          redirect_to return_path
+        else
+          redirect_to health_centers_path unless session[:hc_index_path]
+        end
       end
     rescue ActiveRecord::ActiveRecordError
       render :action => 'edit'

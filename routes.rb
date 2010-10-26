@@ -14,8 +14,9 @@
   map.fc_visits_by_month '/fcs/:visit_month',     :controller => 'field_coordinators', :action => 'index', :conditions => { :method => :get }
   map.fc                 '/fcs/:id/:visit_month', :controller => 'field_coordinators', :action => 'show',  :conditions => { :method => :get }
 
-  #map.isa '/pickups/:delivery_zone/isa/:health_center', :controller => 'pickups', :action => 'isa_edit'
-  #map.isa_redirect '/pickups/:delivery_zone/isa_redirect', :controller=>'pickups', :action => 'isa_redirect'
+  map.isa_redirect '/pickups/:delivery_zone/isa_redirect', :controller=>'pickups', :action => 'isa_redirect', :conditions => { :method => :get }
+  map.isa '/pickups/:delivery_zone/isa/:health_center', :controller => 'pickups', :action => 'isa_edit', :conditions => { :method => :get }
+  map.update_isa '/pickups/:delivery_zone/isa/:health_center', :controller => 'pickups', :action => 'isa_update', :conditions => { :method => :put }
 
   #map.pickup_new '/pickups/:delivery_zone/new.:format', :controller => 'pickups', :action => 'pickup_new'
   #map.pickup_edit '/pickups/:delivery_zone/:date/edit', :controller => 'pickups', :action => 'pickup_edit'
@@ -50,12 +51,12 @@
   map.data_sources        '/upload',        :controller => 'data_sources', :action => 'index',        :conditions => { :method => :get }
   map.data_sources_import '/upload',        :controller => 'data_sources', :action => 'submit_xform', :conditions => { :method => :post }
 
-  map.manifest     '/:format/manifest.txt', :controller => 'data_sources', :action => 'manifest',  :conditions => { :method => :get }
+  map.manifest     '/:format/manifest.:province.txt', :controller => 'data_sources', :action => 'manifest',  :conditions => { :method => :get }
 
-  map.offline_reports '/offline/reports', :controller => 'reports', :action => 'offline_index'
-  map.offline_reports_action '/offline/reports/:report', :controller => 'reports', :action => 'offline_report'
+  map.offline_reports '/offline/reports/:province', :controller => 'reports', :action => 'offline_index', :conditions => { :method => :get }
+  map.offline_reports_action '/offline/reports/:province/:report', :controller => 'reports', :action => 'offline_report', :conditions => { :method => :get }
 
-  map.offline_visit '/offline/:name', :controller => 'data_sources', :action => 'get_offline', :conditions => { :method => :get }
+  map.offline_visit '/offline/:name/:province', :controller => 'data_sources', :action => 'get_offline', :conditions => { :method => :get }
 
   map.javascript '/javascripts/:action.js', :controller => 'javascripts', :format => 'js'
 

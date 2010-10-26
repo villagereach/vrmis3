@@ -127,13 +127,14 @@ class Olmis
       end
     end
 
-    def name_to_code(name, klass=nil, code=nil)
-      code ||= name.to_url
+    def name_to_code(name, klass=nil, options={})
+      code = options[:code] || (options[:area] ? "#{name}-#{options[:area]}" : name).to_url
 
       if klass
+        key = "#{klass}.#{code}"
         @codes_by_key ||= {}
-        return @codes_by_key["#{klass}.#{name}"] if @codes_by_key.has_key?("#{klass}.#{name}")
-        @codes_by_key["#{klass}.#{name}"] = code
+        return @codes_by_key[key] if @codes_by_key.has_key?(key)
+        @codes_by_key[key] = code
         @translations.each do |lc, hash|
           hash[lc] ||= {}
           hash[lc][klass] ||= {}
@@ -186,7 +187,7 @@ class Olmis
         a = AdministrativeArea.find_by_code(aa_code)
 
         begin
-          hc_code = name_to_code(name, 'HealthCenter')
+          hc_code = name_to_code(name, 'HealthCenter', :area => data[area])
           h = a.health_centers.find_or_initialize_by_code(hc_code)
         rescue
           raise aa_code
@@ -221,7 +222,7 @@ class Olmis
 
       if areas
         areas.each do |name, subhierarchy|
-          code = name_to_code(name, class_name, subhierarchy['code'])
+          code = name_to_code(name, class_name, :code => subhierarchy['code'])
           area = klass.find_or_initialize_by_code(code)
           area.update_attributes!(:parent => parent, :code => code, :population => subhierarchy['population'])
 

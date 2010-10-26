@@ -114,12 +114,13 @@ class DataSubmission < ActiveRecord::Base
     return status, visit
   end    
 
-  def process_pickup(visit, user)
+  def process_pickup(visit, delivery_zone, user)
     params, @pickup_errors = data_source.data_to_params(self)
     @pickup_errors ||= {}
-    @current_user = user
-
-    process_inventory_pickup(visit, params) if params['inventory']
+    
+    #force connection to FC for the DZone
+    user = delivery_zone.field_coordinator
+    process_inventory_pickup(visit, params, user) if params['inventory']
 
     visit.updated_at = Time.now
     visit.visit_month = visit.date.to_date_period 
@@ -133,7 +134,7 @@ class DataSubmission < ActiveRecord::Base
     return visit, @pickup_errors
   end
 
-  def process_inventory_pickup(visit, params)
+  def process_inventory_pickup(visit, params, user)
     inventory_counts = Hash[*Package.active.map{|p|
                               [ p, [ visit.request.inventory_type, visit.pickup.inventory_type].inject({}) do |hash, key|
                                   hash[key] = params[:inventory][key][p.code]
@@ -141,7 +142,7 @@ class DataSubmission < ActiveRecord::Base
                                 end ] }.flatten]
     Inventory.transaction do
       [ visit.request, visit.pickup ].each do |inventory|
-        inventory.update_attributes!(:user       => @current_user,
+        inventory.update_attributes!(:user       => user,
                                      :date       => params[:inventory][:date],
                                      :stock_room => visit.warehouse.stock_room)
 
@@ -170,7 +171,7 @@ class DataSubmission < ActiveRecord::Base
       if (!visit_month && @params['health_center_visit']['epi_month'])
         visit_month = (Date.parse(@params['health_center_visit']['epi_month'] + '-01') + 1.month).strftime("%Y-%m")
         @params['health_center_visit']['visited_at'] ||= visit_month + '-01'
-      elsif (@params['health_center_visit']['visited_at'].empty? && visit_month)
+      elsif (@params['health_center_visit']['visited_at'].blank? && visit_month)
         @params['health_center_visit']['visited_at'] = visit_month + '-01'
       end
       
@@ -180,13 +181,13 @@ class DataSubmission < ActiveRecord::Base
       @params['health_center_visit'].delete('epi_month')
     end
     
-    @current_user = user
     @visit_errors ||= { }
     @visit = HealthCenterVisit.find_or_initialize_by_health_center_id_and_visit_month(health_center.id, visit_month)
     
     process_health_center_visit if @params['health_center_visit'] 
 
-    @visit.field_coordinator ||= @current_user
+    #force connection to FC for the DZone
+    @visit.field_coordinator = @visit.health_center.delivery_zone.field_coordinator
     @visit.updated_at = Time.now
     @visit.save!
     

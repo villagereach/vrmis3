@@ -1,27 +1,25 @@
 <h3><%= t("health_centers.#{params[:action]}", :name => @health_center.name) %></h3>
 
-<% form_for @health_center do |f| %>
-<%= f.error_messages %>
-<dl class="detail-page">
-  <dt><%= f.label :name, t('health_centers.name') %></dt>
-  <dd><%= f.text_field :name %></dd>
+<%- form_for @health_center do |f| -%>
+  <%= f.error_messages %>
 
-  <dt class="section">Primary Contact</dt>
-  
-  <% fields_for @health_center.primary_contact || @health_center.create_primary_contact do |ff| %>
-  <%= render :partial => '/users/edit_fields', :locals => { :form => ff } %>
-  <% end %>
+  <dl class="detail-page">
+    <dt><%= f.label :name, t('health_centers.name') %></dt>
+    <dd><%= f.text_field :name, :disabled => true %></dd>
 
-  <dt class="section">Location</dt>
-  
-  <% fields_for @health_center.street_address || @health_center.create_street_address do |ff| %>
-  <%= render :partial => '/street_addresses/edit_fields', :locals => { :form => ff } %>
-  <% end %>
+    <dt><%= f.label :catchment_population, t('health_centers.catchment_population') %></dt>
+    <dd><%= f.text_field :catchment_population %></dd>
+    <dd><%= check_box_tag 'recalculate_population', 1, false %> <%= t('health_centers.recalculate_population') %></dd>
 
-  <% fields_for @health_center.administrative_area do |ff| %>
-    <dt><%= ff.label :population %></dt>
-    <dd><%= ff.text_field :population %></dd>
-  <% end %>
-</dl>
-<%= f.submit %>
-<% end %>
+    <dt class="section">Primary Contact</dt>
+    <%- fields_for @health_center.street_address do |ff| -%>
+      <%= render :partial => '/street_addresses/edit_fields', :locals => { :form => ff, :fields => %w(name phone) } %>
+    <%- end -%>
+
+    <dt class="section">Location</dt>
+    <%- fields_for @health_center.street_address do |ff| -%>
+      <%= render :partial => '/street_addresses/edit_fields', :locals => { :form => ff } %>
+    <%- end -%>
+  </dl>
+  <%= f.submit %>
+<%- end -%>

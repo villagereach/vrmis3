@@ -18,9 +18,13 @@ var containers = {
   wh_after:     'warehouse-after'
 };
 var roles_screens = {
-  fc:      'fc_home',
+  field_coordinator: 'fc_home',
   manager: 'manager_home',
   admin:   'admin_home'
+};
+var users_roles = {
+  manager: 'manager',
+  admin:   'admin'
 };
 var container_hooks = {
   hide: {},
@@ -116,12 +120,12 @@ function update_visit_navigation() {
                     parseInt($("#tab-menu > div.ui-tabs-panel").css("padding-bottom"));
   $("#tab-menu > div.ui-tabs-panel").css("min-height", (tabs_height - panel_vpadd)+'px');
 
-  // Hide the previous link on the first screen and the next link on the last screen
+  // Hide the "Previous" link on the first screen and change the "Next" link on the last screen to a "Finish" link
   var visible_tabs = $("#tab-menu > ul > li:visible");
   var first_screen = visible_tabs.first()[0].id.replace('tab-', 'screen-');
   var last_screen  = visible_tabs.last()[0].id.replace('tab-', 'screen-');
   $("#" + first_screen + " .nav-links a:first").hide();
-  $("#" + last_screen + " .nav-links a:last").hide();
+  $("#" + last_screen + " .nav-links a:last").text(I18n.t("data_sources.hcvisit.navigation.finish")).click(function() { finish_visit_entry(); });
 }
 
 function go_to_next_screen(this_screen) {
@@ -198,10 +202,14 @@ function do_progress() {
 }
 
 function update_offline_data() {
-  options.user_initiated_update = true;
-  $('#update_status span').hide();
-  $('#update_status_check-indicator').show();
-  check_update_status();
+  if (navigator.onLine) {
+    options.user_initiated_update = true;
+    $('#update_status span').hide();
+    $('#update_status_check-indicator').show();
+    check_update_status();
+  } else {
+    go_offline();
+  }
 }
 
 function do_update() {
@@ -252,6 +260,10 @@ function go_offline() {
 }
 
 function check_online(e) {
+  if (!navigator.onLine) {
+    go_offline();
+    return;
+  }
   var spinner = e ? $(e).next(".loading-indicator") : null;
   $.ajax({ async: true,
            type: 'GET',
@@ -449,8 +461,9 @@ function show_container(container) {
 
 function login() {
   // NOTE: Only checking for a valid role
-  var landing_page = roles_screens[get_selected_value('access_code')];
-  if (landing_page) {
+  var role = users_roles[get_selected_value('access_code')];
+  var landing_page = role ? roles_screens[role] : null;
+  if (role && landing_page) {
     set_selected_value('logged_in', true)
     show_main_page(landing_page);
   } else {
@@ -497,6 +510,11 @@ function set_context() {
   show_container(containers.fc_actions);
 }
 
+function finish_visit_entry() {
+  // TODO: Go to the first incomplete entry screen, if one exists
+  show_visits();
+}
+
 function select_location() {
   show_visits();
 }
@@ -518,14 +536,14 @@ function show_visits() {
 }
 
 function show_main_page(landing_page) {
-  var code = get_selected_value('access_code');
   if (!landing_page) {
+    var role = users_roles[get_selected_value('access_code')];
     // For a FC, return to the fc-actions page if a visit period has already been selected,
     // e.g., the user is on the HC selection page or a visit or warehouse pickup form.
-    if (code == 'fc' && get_selected_value('visit_period_selected')) {
+    if (role == 'field_coordinator' && get_selected_value('visit_period_selected')) {
       landing_page = 'fc_actions';
     } else {
-      landing_page = roles_screens[code];
+      landing_page = roles_screens[role];
     }
   }
 
@@ -911,18 +929,18 @@ function is_logged_in() {
   $('#upload-links a[href="#upload"]').click();
 }
 
-function check_logged_in() {
-  $('#login-login').focus();
-  $.ajax( { 
-      async: true,
-      url: '/logged-in?',
-      dataType: 'text',
-      type: 'GET',
-      success: function(data, textStatus, xhr) {  
-        is_logged_in();
-      }
-  } );
-}
+// function check_logged_in() {
+//   $('#login-login').focus();
+//   $.ajax( { 
+//       async: true,
+//       url: '/logged-in?',
+//       dataType: 'text',
+//       type: 'GET',
+//       success: function(data, textStatus, xhr) {  
+//         is_logged_in();
+//       }
+//   } );
+// }
 
 function ajax_login() {
   $('#login-button').attr('disabled', true);
@@ -942,6 +960,7 @@ function ajax_login() {
         is_logged_in();
       },
       complete: function(xhr, textStatus) {
+        $('#login-password').attr('value', '');
         $('#login-button').attr('disabled', false);
       }
   } );
@@ -984,11 +1003,11 @@ $(function() {
   }
   
   for (var i = 0, l = sessionStorage.length; i < l; i++) {
-    $(selected_values).attr(sessionStorage[i], sessionStorage[sessionStorage[i]]);
+    $(selected_values).attr(sessionStorage[i], JSON.parse(sessionStorage[sessionStorage[i]]));
   }
 
   $(selected_values).attrChange(function(ev) {
-      sessionStorage[ev.attrName] = ev.newValue;
+    sessionStorage[ev.attrName] = JSON.stringify(ev.newValue);
   });
   
   if (get_selected_value('logged_in')) {
@@ -1026,8 +1045,7 @@ $(function() {
   $('#upload-links a[href="#login"]').fancybox( 
     { 'hideOnContentClick': false,
       'autoScale': false,
-      'autoDimension': true,
-      'onComplete': check_logged_in });
+      'autoDimension': true });
   $('#upload-links a[href="#upload"]').fancybox( 
     { 'hideOnContentClick': false,
       'autoScale': false,

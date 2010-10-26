@@ -9,6 +9,7 @@
   <% sql_options[:limit] = limit if limit %>
   <% sql_options[:offset] = offset if offset %>
   <% sort_by ||= nil %>
+  <span class="pagination-range"><%= t('.range', :start => offset+1, :end => [offset+limit,rows].min, :total => rows) %></span>
   <%= ReportTable.new(
         columns, 
         data,
@@ -23,6 +24,7 @@
         :link_proc => lambda { |text, url| jquery_link_to_remote(text, :update => "#{identifier}", :method => :get, :url => url ) } )          
       %>
   <p>
+     <span class="pagination-range"><%= t('.range', :start => offset+1, :end => [offset+limit,rows].min, :total => rows) %></span><br />
      <% if offset > 0 %>
        <span class="pagination-link previous">
          <%= jquery_link_to_remote(t('.more_previous', :num => [ offset, limit ].min),

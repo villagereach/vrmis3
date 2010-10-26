@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# OpenLMIS localization file for English
+# openLMIS localization file for English
 en:
   previous_six_months:         "Previous six months"
   OUT:                         "OUT"
@@ -53,8 +53,8 @@ en:
   health_center:               "Health Center"
   health_center_contact:       "Health Center Contact"
   health_center_visit:         "Health Center Visit"
-  copyright:                   'Copyright <a href="http://villagereach.org/">Village Reach</a>'
-  documentation_link_short:    '<a href="http://openlmis.org/">OpenLMIS documentation</a>'
+  copyright:                   'Copyright <a href="http://villagereach.org/">VillageReach</a>'
+  documentation_link_short:    '<a href="http://openlmis.org/">openLMIS documentation</a>'
   save:                        "Save changes"
   done:                        "Done"
   edit:                        "Edit"
@@ -67,8 +67,8 @@ en:
   choose_delivery_zone:        "Delivery zone:"
   missing_fc:                  "(none)"
   num_fridges:
-    one:   "1 fridge"
-    other: "{{count}} fridges"
+    one:   "1 refrigerator"
+    other: "{{count}} refrigerators"
   epi:
     adult: "Adult"
     child: "Child"
@@ -82,6 +82,7 @@ en:
     fridges:                   "Refrigerators"
     fridge_code:               "Code"
     health_center:             "HC"
+    catchment_population:      "Catchment population"
     district:                  "District"
     status:                    "Status"
     temperature:               "Temp"
@@ -123,7 +124,7 @@ en:
     equipment:                 "Equipment"
     stock_cards:               "Stock Cards"
     epi:                       "EPI"
-    fridges:                   "Fridges"
+    fridges:                   "Refrigerators"
     pickups:                   "Pickups for {{name}}"
     new_pickup:                "Warehouse pickup for {{name}}"
     unloads:                   "Returns for {{name}}"
@@ -140,9 +141,11 @@ en:
     epi_visit_month:           "{{visit_month}} Visit ({{epi_month}} EPI)"
     field_coordinators:        "Field coordinators"
     report_delivery_intervals: "Delivery intervals"
+    before_warehouse_visit:    "Before Warehouse Visit"
+    after_warehouse_visit:     "After Warehouse Visit"
     offline_report:
       stockouts:              "Stockouts Report"
-      fridge_issues:          "Fridge Issues"
+      fridge_issues:          "Refrigerator Issues"
       visited_health_centers: "Visited Health Centers"
       delivery_interval:      "Delivery Interval"
       coverage:               "Coverage"
@@ -162,10 +165,12 @@ en:
     name:  "Name"
     phone: "Phone"
   street_address:
-    address1:    "Address line 1"
-    address2:    "Address line 2"
+    name:        "Name"
+    phone:       "Phone"
+    address1:    "Address (line 1)"
+    address2:    "Address (line 2)"
     city:        "City"
-    postal_code: "Postal"
+    postal_code: "Postal Code"
     latitude:    "Latitude"
     longitude:   "Longitude"
   geo_contained_by: "in"
@@ -197,7 +202,7 @@ en:
       visit_data_entry: "Health Center Visits: Data Entry"
       recent_updates:   "Recent Updates"
       monthly_progress: "Monthly Progress"
-      fridge_status:    "Fridge Status"
+      fridge_status:    "Refrigerator Status"
       fridge_issues:    "Reported Refrigerator Issues"
   inventory:
     DeliveryPickup:
@@ -228,12 +233,12 @@ en:
   fridge_statuses:
     reported_by:       "Reported by"
     reported_by_short: "by"
-    enter_new:         "Update Fridge Status"
+    enter_new:         "Update Refrigerator Status"
     create:
-      ok:      "'{{status}}' status was recorded for fridge {{fridge}} at {{hc}}"
-      no_temp: "'{{status}}' status was recorded for fridge {{fridge}} at {{hc}}, but temperature '{{temp}}' was ignored"
+      ok:      "'{{status}}' status was recorded for refrigerator {{fridge}} at {{hc}}"
+      no_temp: "'{{status}}' status was recorded for refrigerator {{fridge}} at {{hc}}, but temperature '{{temp}}' was ignored"
       problem: "A problem was detected with your status entry: {{reason}}"
-      error:   "Unrecognized fridge status"
+      error:   "Unrecognized refrigerator status"
     short_form:
       new_status: "New status"
       new_temp:   "New temperature"
@@ -263,7 +268,7 @@ en:
       stockouts_by_date:                  "Stockouts by date"
       stocked_out_health_centers_by_date: "% of health centers experiencing a stockout, by date"
       cold_chain_report:                  "Cold Chain Report"
-      fridge_issues_by_date:              "Fridge issues by date"
+      fridge_issues_by_date:              "Refrigerator issues by date"
       mapping:                            "Mapping"
       coverage_map_by_date:               "Map of coverage rates by date range"
       stockouts_map_by_date:              "Map of stockout events by date range"
@@ -333,7 +338,7 @@ en:
         percent_acceptable:   "% visits ≤ {{num}} days from previous"
     offline_report:
       stockouts:              "Stockouts Report"
-      fridge_issues:          "Fridge Issues"
+      fridge_issues:          "Refrigerator Issues"
       visited_health_centers: "Visited Health Centers"
       delivery_interval:      "Delivery Interval"
       coverage:               "Coverage"
@@ -351,6 +356,7 @@ en:
       more:          "({{num}} more)"
       more_previous: "<< Previous {{num}}"
       more_next:     "Next {{num}} >>"
+      range:         "Showing {{start}} – {{end}} of {{total}}"
     overall_fridge_status:
       overall_fridge_status: "Overall Cold Chain Status"
       by_status:             "Working Condition"
@@ -367,7 +373,7 @@ en:
       not_ok_fridges:         "Currently broken refrigerators"
       no_fridges_with_status: "No {{status}} refrigerators"
       no_not_ok_fridges:      "No broken refrigerators"
-      unknown_fridges:        "Current fridges in an unknown state"
+      unknown_fridges:        "Current refrigerators in an unknown state"
       no_unknown_fridges:     "No refrigerators in an unknown state"
       location:               "in {{province}} ({{fc}})"
     persistent_problem_fridge_list:
@@ -392,17 +398,17 @@ en:
       cold_chain_title: "Cold Chain"
   fridges:
     index:
-      new: "Add new fridge"
+      new: "Add new refrigerator"
     show:
       about_fridge: "About this refrigerator"
       about_hc:     "About <strong>{{name}}</strong> health center"
     fridge:
-      details:                       "Fridge Details for {{name}}"
-      update:                        "Fridge Details for {{name}}"
-      edit:                          "Fridge Details for {{name}}"
-      new:                           "New Fridge Details"
+      details:                       "Refrigerator Details for {{name}}"
+      update:                        "Refrigerator Details for {{name}}"
+      edit:                          "Refrigerator Details for {{name}}"
+      new:                           "New Refrigerator Details"
       health_center:                 "Health Center"
-      health_center_related_fridges: "Other Fridges at {{name}}"
+      health_center_related_fridges: "Other Refrigerators at {{name}}"
       district:                      "District"
       delivery_zone:                 "Delivery Zone"
       province:                      "Province"
@@ -425,10 +431,13 @@ en:
     delivery_zone:           "Delivery zone"
     field_coordinator_name:  "Field coordinator"
     field_coordinator_phone: "Field coordinator phone"
+    catchment_population:    "Catchment population"
+    recalculate_population:  "Recalculate district and provincial population values"
     edit:                    "Update Health Center {{name}}"
     new:                     "Create Health Center"
     show:
-      new_fridge: "Create new fridge"
+      new_fridge: "Create new refrigerator"
+      edit:       "Edit health center"
   field_coordinators:
     index:
       title:       "Field Coordinators"
@@ -645,8 +654,8 @@ en:
       tab_title_child_vaccination_tally: "Child Vaccinations"
       tab_title_full_vaccination_tally:  "Fully Vaccinated Children"
       tab_title_epi_usage_tally:         "EPI Stock"
-      add_fridge:                        "Add new fridge"
-      delete_fridge:                     "Delete fridge"
+      add_fridge:                        "Add new refrigerator"
+      delete_fridge:                     "Delete refrigerator"
       submit_failed:                     "Form submission failed"
       logout:                            "Logout"
       login:
@@ -655,6 +664,7 @@ en:
       navigation:
         next_screen:                     "Next >>"
         prev_screen:                     "<< Previous"
+        finish:                          "Finish"
       fc_main:
         page_title:                      "Main Page"
         choose_subtitle:                 "Choose Zone and Month"
@@ -740,8 +750,8 @@ en:
         select_non_visit:     "A reason for not visiting must be selected"
         non_visit_reason:     "Specify the reason for not visiting"
         select_status:        "A status must be selected"
-        fridge_code:          "A fridge code must be entered"
-        temperature:          "The temperature must be an integer value. A working fridge temperature must be between 2 and 8 °C."
+        fridge_code:          "A refrigerator code must be entered"
+        temperature:          "The temperature must be an integer value. A working refrigerator temperature must be between 2 and 8 °C."
         quantity:             "The quantity must be a non-negative integer value"
         select_an_option:     "An option must be selected"
         other_fridge_status:  "Describe the problem"
@@ -765,7 +775,7 @@ en:
           hint:  "Additional text TBD"
         quantity_error:    "Value must be a non-negative integer or a dash (-)"
         quantity_hint:     "Enter a dash (-) if the quantity is not available; if there are none, record a zero (0)."
-        temperature_error: "The temperature must be an integer value. A working fridge temperature must be between 2 and 8 °C."
+        temperature_error: "The temperature must be an integer value. A working refrigerator temperature must be between 2 and 8 °C."
         temperature_hint:  "Enter a dash (-) if the temperature is not available"
     list_xforms:
       visit_all:   "Health Center Visits"

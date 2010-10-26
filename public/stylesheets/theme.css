@@ -962,6 +962,13 @@ table.spreadsheet div.tally input[type="text"], table.spreadsheet div.tally inpu
   text-align: right;
   width: 40px;
 }
+table.inventory td.amount input[type="text"], table.inventory td.amount input[type="number"] {
+  width: 4em;
+}
+table.inventory td.amount input[readonly] {
+  background-color: #ddd;
+  color: #444;
+}
 
 table.spreadsheet input[disabled="disabled"] {
   border: none;
@@ -1152,4 +1159,6 @@ table.report-table td.pct.nil:after { text-align: right; }
 table.report-table td.int.nil:after { text-align: right; }
 table.report-table td.float.nil:after { text-align: right; }
 
-
+.disabled {
+  color: #999;
+}

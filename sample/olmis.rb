@@ -49,13 +49,13 @@
     },
   },
 
-  'health_centers' => {
-    'Downtown Portland Health Center'  => { 'District' => 'Portland',  'DeliveryZone' => 'Western Oregon', 'population' => 10000 },
-    'North Portland Health Center'     => { 'District' => 'Portland',  'DeliveryZone' => 'Western Oregon', 'population' => 10000 },
-    'Seattle Health Center'            => { 'District' => 'Seattle',   'DeliveryZone' => 'Puget Sound', 'population' => 10000 },
-    'Hermiston Health Center'          => { 'District' => 'Hermiston', 'DeliveryZone' => 'Eastern Oregon', 'population' => 10000 },
-    'Yakima Health Centeer'            => { 'District' => 'Yakima',    'DeliveryZone' => 'Tri-Cities', 'population' => 10000 }
-  },
+  'health_centers' => [
+    [ 'Downtown Portland Health Center', { 'District' => 'Portland',  'DeliveryZone' => 'Western Oregon', 'population' => 10000 } ],
+    [ 'North Portland Health Center',    { 'District' => 'Portland',  'DeliveryZone' => 'Western Oregon', 'population' => 10000 } ],
+    [ 'Seattle Health Center',           { 'District' => 'Seattle',   'DeliveryZone' => 'Puget Sound',    'population' => 10000 } ],
+    [ 'Hermiston Health Center',         { 'District' => 'Hermiston', 'DeliveryZone' => 'Eastern Oregon', 'population' => 10000 } ],
+    [ 'Yakima Health Center',            { 'District' => 'Yakima',    'DeliveryZone' => 'Tri-Cities',     'population' => 10000 } ]
+  ],
 
   'warehouses' => {
     'Oregon Warehouse' => {

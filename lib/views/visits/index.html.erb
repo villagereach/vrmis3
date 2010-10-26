@@ -16,6 +16,6 @@
 
 <div id="outstanding_forms" class="span-8 last">
   <h3><%= h(t("visits.offline_forms")) %></h3>
-  <%= link_to(h(t("visits.go_to_offline_data_entry")), offline_visit_url(:name => "hcvisit", :locale => I18n.locale)) %>
+  <%= link_to(h(t("visits.go_to_offline_data_entry")), offline_visit_url(:province => @current_user.delivery_zone.warehouse.stock_room.province.code, :name => "hcvisit", :locale => I18n.locale)) %>
 </div>
 <%= js_show_or_hide_offline_forms_div("outstanding_forms") %>

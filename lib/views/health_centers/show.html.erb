@@ -3,6 +3,7 @@
 <dl class="detail-page">
   <%= show_pair('health_centers.name',                    @health_center.name) %>
   <%= show_pair('health_centers.address',                 @health_center.street_address.to_label) if @health_center.street_address %>
+  <%= show_pair('health_centers.catchment_population',    @health_center.catchment_population) %>
   <%= show_pair('health_centers.delivery_zone',           @health_center.delivery_zone.name) %>
   <%= show_pair('health_centers.district',                @health_center.district.name) %>
   <%= show_pair('health_centers.province',                @health_center.province.name) %>
@@ -12,10 +13,15 @@
   <%= show_pair('health_centers.field_coordinator_phone', @health_center.delivery_zone.field_coordinator.try(:phone) || t("missing_fc")) %>
 </dl>
 
+<%
+=begin
+%>
 <%= link_to t('.new_fridge'), [:new, @health_center, :fridge] %>
 <%= render :partial => '/mini_reports/filtered_fridge_list', :locals => { :limit => 20 } %>
 <%= render :partial => '/mini_reports/fridge_status_list',   :locals => { :limit => 10 } %>
 <%= render :partial => '/mini_reports/equipment_list',       :locals => { :limit => 10 } %>
 <%#= render :partial => '/mini_reports/recently_existing_inventory',  :locals => { :limit => 10 } %>
 <%= render :partial => '/mini_reports/recently_delivered_inventory', :locals => { :limit => 10 } %>
-
+<%
+=end
+%>
