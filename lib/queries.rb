@@ -253,12 +253,17 @@ class Queries
 
       health_centers = areas.map(&:health_centers).flatten.map(&:id)
 
-      queries = targets.map { |t| "LEFT JOIN (#{t.tally_subquery(health_centers, date_periods)}) as `#{t.code}` ON `#{t.code}`.health_center_id = health_centers.id AND `#{t.code}`.date_period=months.date_period" }.join("\n")
-      values  = targets.map { |t| "sum(`#{t.code}`.value) as `#{t.code}`" }.join(",\n ")
-      selects = targets.map { |t| "`#{t.code}`" }.join(", ")
+        
+      # [PSQL] [MySQL] alias: MySQL uses backtick to quote but PSQL does not
+      # PSQL doest not accepet - in alias 
+      queries = targets.map { |t| "LEFT JOIN (#{t.tally_subquery(health_centers, date_periods)}) as #{sql_sanitize_alias(t.code)} ON #{sql_sanitize_alias(t.code)}.health_center_id = health_centers.id AND #{sql_sanitize_alias(t.code)}.date_period=months.date_period" }.join("\n")
+      values  = targets.map { |t| "sum(#{sql_sanitize_alias(t.code)}.value) as #{sql_sanitize_alias(t.code)}" }.join(",\n ")
+      selects = targets.map { |t| "#{sql_sanitize_alias(t.code)}" }.join(", ")
       months  = date_period_range.map { |d| "SELECT '#{(Date.from_date_period(d) - 1.date_period).to_date_period}' AS date_period, '#{d}' AS visit_month" }.uniq.join("\n UNION ALL ")
 
       pop = param_name == 'health_center_id' ? 'health_centers.catchment_population' : "coalesce(sum(health_centers.catchment_population), #{table}.population)"
+
+      pop_group_by = param_name == 'health_center_id' ? nil : "#{table}.population"
 
       connection.select_all(
         HealthCenterVisit.sanitize_sql_for_conditions([<<-SQL]))
@@ -277,7 +282,7 @@ class Queries
             where #{id_name} in (#{area_ids})
             group by #{id_name}) x
             inner join
-            (select #{id_name} as #{param_name}, #{pop} as population from health_centers inner join #{RegionJoin} group by #{id_name}) y
+            (select #{id_name} as #{param_name}, #{pop} as population from health_centers inner join #{RegionJoin} group by #{id_name} #{pop_group_by.nil? ? '' : ', ' + pop_group_by}) y
             on x.#{param_name} = y.#{param_name}
         SQL
     end
@@ -289,8 +294,6 @@ class Queries
       return [] if area_ids.empty? || ids.empty?
       id_name = areas.first.class.name.tableize + '.id'
       param_name = areas.first.class.param_name
-
-      group_by = group_by_month ? "product_id, visit_month, #{id_name}" : "product_id, #{id_name}"
 
       connection.select_all(
         HealthCenterVisit.sanitize_sql_for_conditions([<<-SQL.squish, date_period_range.first, date_period_range.last]))
@@ -314,14 +317,19 @@ class Queries
               inner join health_center_visits v on vig.health_center_visit_id = v.id
               inner join packages pkg on pkg.id = package_id
               where product_id in (#{ids}) and visit_month between ? and ?
-            group by product_id, health_center_visit_id, visit_month) x
+            group by product_id, health_center_visit_id, health_center_id, visit_month) x
           inner join health_centers on health_centers.id = health_center_id
           inner join #{RegionJoin}
           inner join products pdt on pdt.id = product_id
         where #{id_name} in (#{area_ids})
-        group by #{group_by}
+        group by product_id, pdt.id, #{id_name}, visit_month 
       SQL
     end
+
+    def sql_sanitize_alias(cur_alias)
+      # Note: PSQL-specific 
+      cur_alias.gsub('-', '_')
+    end   
 
     def stockouts_by_product_date_period_range(areas, product, date_period_range)
       ids = areas.map(&:id).map(&:to_s).join(",")
@@ -440,7 +448,7 @@ class Queries
                       case when sum(stocked_out) = 0 then 0 else 1 end as any_stockouts
                 from (select health_center_visit_id,
                               product_id,
-                              sum(existing_quantity = 0 and expected_delivery_quantity > 0) as stocked_out
+                              sum(case when existing_quantity = 0 and expected_delivery_quantity > 0 then 1 else 0 end) as stocked_out
                         from health_center_visit_inventory_groups
                               inner join packages on packages.id = package_id
                         where existing_quantity is not null
