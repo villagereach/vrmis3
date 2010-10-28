@@ -24,6 +24,7 @@ class Package < ActiveRecord::Base
 
   named_scope :trackable, { :include => { :product => :product_type }, :conditions => { 'product_types.trackable' => true } }
   named_scope :active, { :conditions => { 'active' => true } }
+  named_scope :primary, { :conditions => { 'primary_package' => true } }
   
   include Comparable
   def <=>(other)
