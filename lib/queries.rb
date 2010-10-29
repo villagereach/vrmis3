@@ -432,7 +432,7 @@ class Queries
         select
            #{id_name} as id,
            visit_month as date_period,
-           product_type as product_type,
+           product_type as code,
            count(distinct health_center_visit_id) as visits,
            sum(any_stockouts) as stockouts
         from (select health_center_visit_id,
