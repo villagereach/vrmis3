@@ -54,8 +54,10 @@ class Olmis
         end
 
         definition['product_types'].each_with_index do |p, i|
+          attrs = { :active => true, :position => i }
+          attrs.merge!(:trackable => p['trackable']) if p.has_key?('trackable')
           pt_by_code[p['code']] = ProductType.find_or_initialize_by_code(p['code'])
-          pt_by_code[p['code']].update_attributes!( :active => true, :position => i )
+          pt_by_code[p['code']].update_attributes!(attrs)
         end
 
         definition['products'].each_with_index do |p,i|
@@ -64,7 +66,9 @@ class Olmis
         end
 
         definition['packages'].each_with_index do |p,i|
-          Package.find_or_initialize_by_code(p['code']).update_attributes!( :active => true, :product_id => pd_by_code[p['product']].id, :quantity => p['quantity'], :position => i)
+          attrs = { :active => true, :product_id => pd_by_code[p['product']].id, :quantity => p['quantity'], :position => i }
+          attrs.merge!(:primary_package => p['primary_package']) if p.has_key?('primary_package')
+          Package.find_or_initialize_by_code(p['code']).update_attributes!(attrs)
         end
 
         definition['equipment'].each_with_index do |e,i|
