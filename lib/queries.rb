@@ -263,7 +263,7 @@ class Queries
 
       pop = param_name == 'health_center_id' ? 'health_centers.catchment_population' : "coalesce(sum(health_centers.catchment_population), #{table}.population)"
 
-      pop_group_by = param_name == 'health_center_id' ? nil : "#{table}.population"
+      pop_group_by = param_name == 'health_center_id' ? 'health_centers.catchment_population' : "#{table}.population"
 
       connection.select_all(
         HealthCenterVisit.sanitize_sql_for_conditions([<<-SQL]))
