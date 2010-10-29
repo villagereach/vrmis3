@@ -262,7 +262,7 @@ class Graphs
         :title => I18n.t('reports.titles.stocked_out_health_centers_by_type_and_date_period', :name => options[:area].label, :date => options[:label]),
         :groups => [
           {
-            :type => :line,
+            :type   => options[:date_period_range].to_a.length > 1 ? :line : :bar,
             :max    => 100.0,
             :min    => 0.0,
             :step   => 20.0,
