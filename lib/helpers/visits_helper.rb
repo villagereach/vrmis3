@@ -35,7 +35,7 @@ module VisitsHelper
 
     screens_by_category.map { |category, screens|
       [ I18n.t("visits.health_center_monthly_tasks.#{category}"), 
-        screens.map { |s| [s, [I18n.t("visits.health_center_monthly_tasks.#{s}"), named_route_for_screen(s, {}) ]] } ]
+        screens.map { |s| [s, [I18n.t("visits.health_center_monthly_tasks.#{s}"), named_route_for_screen(s, { :health_center => @controller.current_visit.health_center.code, :visit_month => @controller.current_visit.visit_month}) ]] } ]
     }
   end
   
