@@ -24,8 +24,9 @@ end
 class Maps
   class << self
     def districts_by_target_percentage_for_date_period_range(target_percentage, date_period_range)
+      date_periods = date_period_range.map { |d| (Date.from_date_period(d) - 1.date_period).to_date_period }
       show_map(District.with_location) do |district|
-        coverage, total, population = target_percentage.coverage_and_total(district, date_period_range)
+        coverage, total, population = target_percentage.coverage_and_total(district, date_periods)
         population ||= district.population
 
         [Percentage.new(coverage), <<-INFO]
