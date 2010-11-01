@@ -297,9 +297,10 @@ module OlmisHelper
     else
       fc = '-'
     end
-    
-    controller.expire_fragment(/^..#{cache_key_prefix_for_fc_month(fc, month, nil)}/)
-    controller.expire_fragment(/^..#{cache_key_prefix_for_hcvisit( hc.id, month, nil)}/)
+
+    locale_pattern = "(#{I18n.available_locales.join('|')})"
+    controller.expire_fragment(/#{locale_pattern}#{cache_key_prefix_for_fc_month(fc, month, nil)}/)
+    controller.expire_fragment(/#{locale_pattern}#{cache_key_prefix_for_hcvisit( hc.id, month, nil)}/)
   end
   
   def nuke_all_caches
