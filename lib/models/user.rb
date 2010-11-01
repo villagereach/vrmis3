@@ -79,14 +79,18 @@ class User < ActiveRecord::Base
     all(:order => 'name').map { |f| [f.name, f.id] }
   end
 
-  def responsible_for?(area)
-    maybe(delivery_zone) { |dz| dz.health_center_catchments.include?(area) } ||
-      provinces.include?(area.province)
-  end
+  # UNUSED
+  # def responsible_for?(area)
+  #   maybe(delivery_zone) { |dz| dz.health_center_catchments.include?(area) } ||
+  #     provinces.include?(area.province)
+  # end
 
   def responsible_health_centers(*args)
     if field_coordinator?
       delivery_zone.maybe.health_centers(*args)
+    elsif manager?
+      delivery_zones = DeliveryZone.all unless delivery_zones.present?
+      delivery_zones.map(&:health_centers).flatten
     else 
       []
     end
