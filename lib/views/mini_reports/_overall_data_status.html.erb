@@ -1,24 +1,30 @@
 <%- 
   field_coordinators = User.field_coordinators.reject{|fc| fc.delivery_zone.nil?}
-  
   hcs = HealthCenter.all 
   progress = progress_calculator
 
-  dp_range = date_periods_between((Date.today - 1.year).to_date_period, Date.today.to_date_period) 
+  # Evaluate status from 1 year ago or the first month for which a HC visit has been recorded,
+  # whichever is later. We don't want to report stats for periods for which there is no data.
+  first_visit_month = HealthCenterVisit.first(:order => 'visit_month').try(:visit_month) || (Date.today - 1.month).to_date_period
+  first_date_period = [ first_visit_month, (Date.today - 1.year).to_date_period ].max
+  dp_range = date_periods_between(first_date_period, (Date.today - 1.month).to_date_period) 
 
-  oldest_unfinished_visit_by_health_center = hcs.map { |hc| 
-    [hc, progress.health_center_status_by_date_periods(hc, dp_range).detect { |dp, st| 
-      st != HealthCenterVisit::REPORT_NOT_DONE && 
-        st != HealthCenterVisit::REPORT_COMPLETE && 
-          st != HealthCenterVisit::REPORT_IRRELEVANT } || ['1900-01', HealthCenterVisit::REPORT_NOT_DONE] ] }
+  oldest_unfinished_visit_by_health_center = hcs.map { |hc|
+    [
+      hc,
+      progress.health_center_status_by_date_periods(hc, dp_range).detect { |dp, st|
+        ![ HealthCenterVisit::REPORT_COMPLETE, HealthCenterVisit::REPORT_IRRELEVANT ].include?(st)
+      }
+    ]
+  }.reject{ |r| r[1].nil? }
 
   oldest_unfinished_visit_by_fc = 
     oldest_unfinished_visit_by_health_center.map { |hc, dp| [hc.field_coordinator, dp] }.
       group_by(&:first).
         map { |fc, dps| [fc, dps.map(&:last).sort_by(&:first).first] }
     
-  months_1 = ((Date.today.beginning_of_month) - 1.months).to_date_period
-  months_2 = ((Date.today.beginning_of_month) - 2.months).to_date_period
+  months_1 = ((Date.today.beginning_of_month) - 2.months).to_date_period
+  months_2 = ((Date.today.beginning_of_month) - 3.months).to_date_period
   
   by_date = lambda { |x, visit|
       if visit.first < months_2
