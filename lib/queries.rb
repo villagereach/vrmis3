@@ -467,12 +467,14 @@ class Queries
     end
 
     def delivery_interval_month_subquery(date_period_range)
+      # [MySQL] for calculation of day_interval, use datediff() function instead of minus
+      #   datediff(current.visit_date, previous.visit_date) as day_interval
       date_period_range.to_a.uniq.map { |d| <<-MINISQL }.join(" UNION ALL ")
         select health_centers.id as health_center_id,
                 '#{d}' as visit_month,
                 current.visit_date as current_visit_date,
                 previous.visit_date as previous_visit_date,
-                datediff(current.visit_date, previous.visit_date) as day_interval
+                current.visit_date - previous.visit_date as day_interval
         from health_centers
         left join (select health_center_id, max(visited_at) as visit_date
                        from health_center_visits
