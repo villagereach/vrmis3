@@ -17,8 +17,8 @@ class VisitsController < OlmisController
 
   def search
     @health_centers = HealthCenter.all(:include => :health_center_visits,
-                                       :conditions => [ 'health_centers.name LIKE ? AND health_centers.delivery_zone_id = ?', "#{params[:health_center][:name]}%", @current_user.delivery_zone ],
-                                       :order => 'health_centers.name')
+                                       :conditions => [ 'health_centers.code LIKE lower(?) AND health_centers.delivery_zone_id = ?', "#{params[:health_center][:name]}%", @current_user.delivery_zone ],
+                                       :order => 'health_centers.code')
   end
   
   def by_month

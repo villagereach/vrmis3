@@ -1,5 +1,5 @@
 <div>
-  <% form_tag(visits_search_path, :id => "visit_search_form") do %>
+  <% form_tag(visits_search_path, :id => "visit_search_form", :method => :get) do %>
   <%= text_field :health_center, :name, { :autocomplete => "off" } %>
   <%= javascript_tag(%Q{
         jQuery(document).ready(function() {
