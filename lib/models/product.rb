@@ -36,7 +36,8 @@ class Product < ActiveRecord::Base
   
   named_scope :trackable, { :include => :product_type, :conditions => { 'product_types.trackable' => true } }
   named_scope :active, { :conditions => { 'active' => true } }
-
+  named_scope :tests, { :include => :product_type, :conditions => { 'product_types.code' => 'test' } }
+  
   include Comparable
   def <=>(other)
     [product_type, position] <=> [other.product_type, other.position]

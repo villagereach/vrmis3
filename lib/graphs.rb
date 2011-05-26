@@ -47,6 +47,20 @@ class Graphs
         ]
       }
     end
+    
+    def rdt_consumption_by_area_date_period_range(params)
+      options = parse_params(params)
+      products = Product.test
+      {
+        :params => params.merge(:graph => 'rdt_consumption_by_area_date_period_range'),
+        :x_axis => I18n.t('reports.axes.'+options[:regions].first.class.name.tableize.singularize),
+        :area => options[:regions].first.class.name.underscore,
+        :title => I18n.t('reports.titles.rdt_consumption', :name => options[:area].label, :date => options[:label]),
+        :groups => [
+          :series => Reports.rdt_consumption_by_area_date_period_range(products, options[:regions], options[:date_period_range])
+        ]
+      }
+    end
 
     def usage_by_area_date_period_range(params)
       options = parse_params(params)
@@ -79,6 +93,41 @@ class Graphs
       }
     end
 
+    def rdt_consumption_by_health_center_per_region_by_date_period_range(params)
+      options = parse_params(params)
+      total, visited, not_visited, not_reported = *Reports.percent_of_health_centers_visited_for_region(options[:regions], options[:date_period_range])
+
+      # if Reports.base_region?(options[:regions].first) && Reports.one_period?(options[:date_period_range])
+      #   method = lambda { |data, column|
+      #     if !data[column.index].nil?
+      #       [:span, (data[column.index].to_i == 0 ? I18n.t('reports.series.not_visited') : I18n.t('reports.series.visited')),
+      #         { :class => (data[column.index].to_i == 0 ? 'bad visited' : 'ok visited') }]
+      #     end
+      #   }
+      #   series = [[I18n.t('reports.series.visited'), visited.second, { :data_type => :content_tag, :method => method }]]
+      # else
+        series = [[I18n.t('reports.series.total_clinic_visits'), total.second],
+                  [I18n.t('reports.series.reported'), not_reported.second.zip(total.second).map { |a,b| ((100 - a.to_f) * b.to_f/100 + 0.5).to_i }],
+                  [visited.first, visited.second.zip(total.second).map { |a,b| (a.to_f * b.to_f/100 + 0.5).to_i }],
+                  [I18n.t('reports.series.percent_visited'), visited.second, { :data_type => :pct }]]
+      # end
+
+      {
+        :params => params.merge(:graph => 'rdt_consumption_by_health_center_per_region_by_date_period_range'),
+        :area => options[:regions].first.class.name.underscore,
+        :title => I18n.t('reports.titles.health_centers_visited', :name => options[:area].label, :date => options[:label]),
+        :x_dimension => 'region',
+        :series_dimension => 'visit_counts',
+        :x_labels => options[:regions].map(&:label),
+        :groups => [
+          {
+            :data_type => :int,
+            :series => series
+          }
+        ]
+      }
+    end
+    
     def visit_counts_health_centers_per_region_by_area_date_period_range(params)
       options = parse_params(params)
       total, visited, not_visited, not_reported = *Reports.percent_of_health_centers_visited_for_region(options[:regions], options[:date_period_range])

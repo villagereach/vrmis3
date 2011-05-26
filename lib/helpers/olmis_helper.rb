@@ -15,6 +15,7 @@ module OlmisHelper
       end
     end
     
+    RAILS_DEFAULT_LOGGER.debug "AREAS: #{area.inspect}"
     area
   end    
   

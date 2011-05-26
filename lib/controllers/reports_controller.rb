@@ -96,7 +96,6 @@ class ReportsController < OlmisController
     @date_period_range = helpers.get_date_period_range
     label, dates = helpers.parse_date_period_range
     @area = helpers.get_area_from_params
-
     @tables = [
       [I18n.t('breadcrumb.report_visited_health_centers'),
         Graphs.visit_counts_health_centers_per_region_by_area_date_period_range(params.merge({
@@ -106,16 +105,10 @@ class ReportsController < OlmisController
 
     @graphs = []
 
-    if dates.last > dates.first
-      @graphs << [I18n.t('breadcrumb.report_visited_health_centers'),
-        Graphs.visited_health_centers_per_date_period_by_area_date_period_range(params.merge({
-          :date_period_range => @date_period_range }))]
-    end
-
     if (dates.last > dates.first) || @area.class != District
-      @graphs <<
+      @graphs << 
         [I18n.t('breadcrumb.report_visited_health_centers'),
-         Graphs.visited_health_centers_per_region_by_area_date_period_range(params.merge({
+        Graphs.visited_health_centers_per_region_by_area_date_period_range(params.merge({
             :date_period_range => @date_period_range }))]
     end
   end
@@ -127,6 +120,34 @@ class ReportsController < OlmisController
       [I18n.t('breadcrumb.report_fridge_issues'),
         Graphs.fridge_issues_per_region_by_area_date_period_range(params.merge({:date_period_range => @date_period_range}))]
     ]
+  end
+  
+  def provincial_summary
+    add_breadcrumb 'breadcrumb.report_provincial_summary', url_for(:graph => 'provincial_summary')
+    @date_period_range = helpers.get_date_period_range
+    label, dates = helpers.parse_date_period_range
+    
+    products  = params[:product_id]  ? Product.trackable.find_all_by_id(params[:product_id]) : Product.trackable
+
+    @area = helpers.get_area_from_params    
+    
+    @product_id = products.map(&:id)
+    graph_params = params.merge({
+      :product_id => @product_id,
+      :date_period_range => @date_period_range
+    })
+    
+    @tables = [
+      [
+      @area.label,
+        Graphs.stockouts_by_product_area_for_date_period_range(graph_params.merge(:area_id => @area.id))
+      ]
+    ]  
+  end
+  
+  def fridge_problems
+    add_breadcrumb 'breadcrumb.report_stockouts', url_for(:graph => 'stockouts')
+    
   end
   
   def stockouts
@@ -171,18 +192,32 @@ class ReportsController < OlmisController
     @target_percentages = (params[:target_percentage_id] || TargetPercentage.all.sort.map(&:id)).map(&:to_i)
 
     @area = helpers.get_area_from_params
-
     graph_params = params.merge({
       :target_percentage_id => @target_percentages,
       :date_period_range => @date_period_range
     })
     @graphs = []
-    @tables = [ 
+    @tables = [
       ['', Graphs.target_coverage_by_area_date_period_range(graph_params) ],
-#      ['', Graphs.usage_by_area_date_period_range(graph_params) ],                 
+#      ['', Graphs.usage_by_area_date_period_range(graph_params) ],
     ]
   end
 
+  def rdt_consumption
+    add_breadcrumb 'breadcrumb.report_rdt_consumption', url_for(:graph => 'rdt_consumption')
+    
+    @date_period_range = helpers.get_date_period_range
+    @area = helpers.get_area_from_params
+    @tables = [
+      [I18n.t('breadcrumb.report_rdt_consumption'),
+        Graphs.rdt_consumption_by_area_date_period_range(params.merge({
+          :date_period_range => @date_period_range }))
+      ]
+    ]
+
+    @graphs = []
+  end
+  
   def target_coverage_map
     add_breadcrumb 'breadcrumb.report_maps', url_for(:graph => 'maps')
     @date_period_range = helpers.get_date_period_range
