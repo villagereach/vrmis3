@@ -99,9 +99,7 @@ class Reports
         
       TargetPercentage.all.sort.each do |target|
         target_size = data['scaled_population'].map { |s| s.nil? ? nil : s.to_i * target.percentage / 100.0 }
-        #PSQL-specific help, sanitize target.code to the alias in SQL query. 
-        # see similar logic in queries.rb#target_coverage_by_area_date_period_range
-        coverage = target_size.zip(data[target.code.gsub('-', '_')]).map { |z, n| z.nil?  || z.zero? ? nil : 100 * n.to_f / z.to_i } 
+        coverage = target_size.zip(data[target.code]).map { |z, n| z.nil?  || z.zero? ? nil : 100 * n.to_f / z.to_i }
         series << [ I18n.t('reports.series.target_group_size'),   target_size,      { :column_group => target.label, :data_type => :int }]
         series << [ I18n.t('reports.series.target_vaccinations'), data[target.code],{ :column_group => target.label, :data_type => :int }]
         series << [ I18n.t('reports.series.target_coverage'),     coverage,         { :column_group => target.label, :data_type => :pct }]

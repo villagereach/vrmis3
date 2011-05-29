@@ -28,14 +28,16 @@ class Fridge < ActiveRecord::Base
     self.code <=> other.code
   end  
   
-  #[MySQL] add LIMIT 1 clause 
+  #[PSQL-Note] LIMIT 1 clause does not work in psql
   has_one(:current_status,
           :class_name => 'FridgeStatus',
-          :conditions => 'fridge_statuses.id = (SELECT fs2.id FROM fridge_statuses fs2 WHERE fs2.fridge_id = fridge_statuses.fridge_id ORDER BY fs2.reported_at DESC, fs2.created_at DESC)'
+          :conditions => 'fridge_statuses.id = (SELECT fs2.id FROM fridge_statuses fs2 WHERE fs2.fridge_id = fridge_statuses.fridge_id ORDER BY fs2.reported_at DESC, fs2.created_at DESC LIMIT 1)'
           )
 
   def self.health_center(hc) 
-    stock_room(hc.stock_room)
+    # fridge-not-belong-to-HC refactorization ramification:
+    # this method now takes in an id, rather than a HealthCenter object 
+    stock_room(hc)
   end
 
   named_scope :stock_room, lambda { |sc| 
@@ -173,11 +175,11 @@ class Fridge < ActiveRecord::Base
   }
 
   named_scope :age_category, lambda { |category|
-    #[MySQL] In MySQL, param of interval does not need to be single-quoted, e.g., interval 1 month
+    #[PSQL-Note] In PSQL, param of interval needs to be single-quoted, e.g., interval '1 month'
     cond = (case category
-            when '1mo' then " > '#{Date.today.strftime("%Y-%m-%d")}' - interval '1 month'"
-            when '2mo' then " BETWEEN '#{Date.today.strftime("%Y-%m-%d")}' - interval 1 month AND '#{Date.today.strftime("%Y-%m-%d")}' - interval '2 month'"
-            when '3mo' then " < '#{Date.today.strftime("%Y-%m-%d")}' - interval '3 month'"
+            when '1mo' then " > '#{Date.today.strftime("%Y-%m-%d")}' - interval 1 month"
+            when '2mo' then " BETWEEN '#{Date.today.strftime("%Y-%m-%d")}' - interval 1 month AND '#{Date.today.strftime("%Y-%m-%d")}' - interval 2 month"
+            when '3mo' then " < '#{Date.today.strftime("%Y-%m-%d")}' - interval 2 month"
             end)
 
     { :include => :current_status, 

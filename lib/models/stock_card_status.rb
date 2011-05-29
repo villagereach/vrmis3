@@ -121,7 +121,7 @@ class StockCardStatus < ActiveRecord::Base
   
   def self.progress_query(date_periods)
     stock_cards = StockCard.active.count
-#[MySQL] Use: left join (select health_center_visit_id, coalesce(have,0) as have, coalesce(used_correctly,0) as used_correctly from stock_card_statuses) stock_card_statuses on 
+    #[PSQL-Note] coalesce does not work in psql, use case statements     left join (select health_center_visit_id, (case have when true then 1 else 0 end) as have, (case used_correctly when true then 1 else 0 end) as used_correctly from stock_card_statuses) stock_card_statuses on
     <<-TALLY
     select health_center_visits.id as id,
       health_center_visits.visit_month as date_period,
@@ -129,10 +129,10 @@ class StockCardStatus < ActiveRecord::Base
       #{stock_cards}                                                        + sum(case when stock_card_statuses.have = 1 then 1 else 0 end) as expected_entries,
       sum(case when stock_card_statuses.have IS NOT NULL then 1 else 0 end) + sum(case when stock_card_statuses.have = 1 AND stock_card_statuses.used_correctly IS NOT NULL then 1 else 0 end) as entries
     from health_center_visits
-    left join (select health_center_visit_id, (case have when true then 1 else 0 end) as have, (case used_correctly when true then 1 else 0 end) as used_correctly from stock_card_statuses) stock_card_statuses on 
+    left join (select health_center_visit_id, coalesce(have,0) as have, coalesce(used_correctly,0) as used_correctly from stock_card_statuses) stock_card_statuses on
       stock_card_statuses.health_center_visit_id = health_center_visits.id
     where health_center_visits.visit_month in (#{date_periods})
-    group by health_center_visits.id, health_center_visits.visit_month
+    group by health_center_visits.id
     TALLY
   end
 
