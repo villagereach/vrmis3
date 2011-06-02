@@ -292,12 +292,12 @@ class Queries
       param_name = areas.first.class.param_name
 
       group_by = group_by_month ? "product_id, visit_month, #{id_name}" : "product_id, #{id_name}"
-      
+      RAILS_DEFAULT_LOGGER.debug "STOCKOUTS SUMMARY QUERY"
       connection.select_all(
         HealthCenterVisit.sanitize_sql_for_conditions([<<-SQL.squish, date_period_range.first, date_period_range.last]))
         select
           product_id,
-          pdt.id as id,
+          health_centers.id as health_center_id,
           #{id_name} as #{param_name},
           visit_month as date_period,
           count(distinct health_center_visit_id) as visits,
