@@ -4,18 +4,20 @@
 module OlmisHelper
 
   def get_area_from_params(ps = params)
+    RAILS_DEFAULT_LOGGER.debug "get_area_from_params: called"
     hierarchy = Olmis.area_hierarchy.map(&:constantize)
     
     area = hierarchy.first.default
     
     hierarchy[1..-1].each do |h|
       if ps[h.param_name].present?
+        RAILS_DEFAULT_LOGGER.debug "get_area_from_params: found in hierarchy. #{h.param_name}=#{ps[h.param_name]}"
         a = h.find_by_id(ps[h.param_name])
         area = a if a.parent == area
       end
     end
     
-    RAILS_DEFAULT_LOGGER.debug "AREAS: #{area.inspect}"
+    RAILS_DEFAULT_LOGGER.debug "get_area_from_params: area=#{area.inspect}"
     area
   end    
   

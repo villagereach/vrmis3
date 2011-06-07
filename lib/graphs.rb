@@ -50,10 +50,13 @@ class Graphs
     
     def rdt_consumption_by_area_date_period_range(params)
       options = parse_params(params)
+      options[:regions] = params[:district_id] ? District.find(params[:district_id]).regions : options[:regions].collect!{|d| d.regions}.flatten!
       products = Product.test
+      RAILS_DEFAULT_LOGGER.debug "     ********* rdt_consumption_by_area_date_period_range: date_period_range=#{options[:date_period_range]}"
       {
         :params => params.merge(:graph => 'rdt_consumption_by_area_date_period_range'),
-        :x_axis => I18n.t('reports.axes.'+options[:regions].first.class.name.tableize.singularize),
+        # :x_axis => I18n.t('reports.axes.'+options[:regions].first.class.name.tableize.singularize),
+        # :x_labels => options[:regions].map(&:label),
         :area => options[:regions].first.class.name.underscore,
         :title => I18n.t('reports.titles.rdt_consumption', :name => options[:area].label, :date => options[:label]),
         :groups => [

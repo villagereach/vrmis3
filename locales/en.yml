@@ -328,6 +328,10 @@ en:
       target_vaccinations: "Vaccinations"
       distributed:         "Total doses applied"
       usage:               "Doses used"
+      usage_last_month:    "Usage Last Month"
+      existing_stock:      "Existing Stock"
+      distributed:         "Distributed"
+      results_positive:    "Results (% Positive)"
       loss_rate:           "Loss (%)"
       target_coverage:     "Target coverage (%)"
       delivery_interval:

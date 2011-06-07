@@ -253,7 +253,7 @@ module GraphsHelper
   
   def parse_params(params)
     options = {}
-    params[:date_period_range] ||= default_date_period_range
+    params[:date_period_range] ||= Date.today.to_date_period
     options[:label], options[:date_period_range] = parse_date_period_range(params)
     options[:area]              = get_area_from_params(params)
     options[:products]          = Product.trackable.find_all_by_id(params[:product_id]).sort

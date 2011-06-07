@@ -104,18 +104,27 @@ class Reports
         series << [ I18n.t('reports.series.target_vaccinations'), data[target.code],{ :column_group => target.label, :data_type => :int }]
         series << [ I18n.t('reports.series.target_coverage'),     coverage,         { :column_group => target.label, :data_type => :pct }]
       end
-
       series
     end
 
     def rdt_consumption_by_area_date_period_range(products, areas, date_period_range, group_by_month=true)
-      data = MzQueries.rdt_results_by_area_date_period_range(products, areas, date_period_range, group_by_month)
+      RAILS_DEFAULT_LOGGER.debug date_period_range.inspect
+      data = MzQueries.rdt_consumption_by_area_date_period_range(products, areas, date_period_range, group_by_month)
+      RAILS_DEFAULT_LOGGER.debug data.inspect
+      
+      hcs = data.collect{|d| d['id'].to_i}
+      hc_labels = areas.select{|area| hcs.include?(area.id) }.map(&:label)
       series = 
         [
-          [ I18n.t('reports.axes.'+areas.first.class.name.tableize.singularize), areas.map(&:label), { :data_type => :text, :th => true }],
-          [ I18n.t('reports.series.population'), data['population'], { :data_type => :int }],
+          [ I18n.t('reports.axes.'+areas.first.class.name.tableize.singularize), hc_labels, { :data_type => :text, :th => true }],
         ]
         
+      Product.active.test.each do |test|
+        series << [ I18n.t('reports.series.usage_last_month'),  Array.new(hc_labels.size - 1), { :column_group => test.label, :data_type => :int }]
+        series << [ I18n.t('reports.series.existing_stock'),    Array.new(hc_labels.size - 1),  { :column_group => test.label, :data_type => :int }]
+        series << [ I18n.t('reports.series.distributed'),       Array.new(hc_labels.size - 1),  { :column_group => test.label, :data_type => :int }]
+        series << [ I18n.t('reports.series.results_positive'),  Array.new(hc_labels.size - 1),  { :column_group => test.label, :data_type => :pct }]
+      end
       series
     end
     
