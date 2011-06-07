@@ -112,7 +112,7 @@ class Reports
       RAILS_DEFAULT_LOGGER.debug data.inspect
       
       if data.empty?
-        [ [ I18n.t('reports.axes.'+regions.first.class.name.tableize.singularize), areas.map(&:label), { :data_type => :text }], ]
+        [ [ I18n.t('reports.axes.'+areas.first.class.name.tableize.singularize), areas.map(&:label), { :data_type => :text }], ]
       else
         hcs = data.collect{|d| d['id'].to_i}
         hc_labels = areas.select{|area| hcs.include?(area.id) }.map(&:label)
