@@ -299,6 +299,7 @@ en:
       usage:                                "Vaccine usage, {{name}}, {{date}}"
       regional_target_coverage:             "Regional target coverage, {{name}}, {{date}}"
       delivery_interval:                    "Delivery intervals, {{name}}, {{date}}"
+      rdt_consumption:                      "RDT Consumption"
     axes:
       date_period:            "Date period"
       stockouts:              "% of health center visits observing a stockout"

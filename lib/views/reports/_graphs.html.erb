@@ -36,7 +36,7 @@
 </div>
 <div class="span-18 last">
 <% end %>
-<% if tables %>
+<% if tables.any? %>
     <div class="tables">
     <% tables.each do |title, g|  %>
       <%= @controller.table_object( g ) %>
@@ -45,7 +45,7 @@
     </div>
   <% end %>
 
-  <% if graphs %>
+  <% if graphs.any? %>
     <div class="graphs">
     <% graphs.each do |title, g|  %>
       <%= @controller.chart_object( 600, 300, g ) %>
@@ -78,7 +78,7 @@
 
 <% javascript_tag do %>
   $(function() {
-    <% unless interactive_parameters.empty? %>
+    <% unless interactive_parameters.blank? %>
       plot_options("<%= interactive_parameters.map { |p| %Q{'#{p.singularize}'} }.join(', ') %>");
       $('#options input[type=checkbox]').click(function() {
         plot_options("<%= interactive_parameters.map { |p| %Q{'#{p.singularize}'} }.join(', ') %>");
