@@ -114,18 +114,44 @@ class Reports
       if data.empty?
         series = [ [ I18n.t('reports.axes.'+areas.first.class.name.tableize.singularize), areas.map(&:label), { :data_type => :text }], ]
       else
-        hcs = data.collect{|d| d['id'].to_i}
+        hcs = data.collect{|d| d['id'].to_i}.uniq
         hc_labels = areas.select{|area| hcs.include?(area.id) }.map(&:label)
         series = 
           [
             [ I18n.t('reports.axes.'+areas.first.class.name.tableize.singularize), hc_labels, { :data_type => :text, :th => true }],
           ]
         
+        test_data = {}
         Product.active.test.each do |test|
-          series << [ I18n.t('reports.series.usage_last_month'),  Array.new(hc_labels.size - 1), { :column_group => test.label, :data_type => :int }]
-          series << [ I18n.t('reports.series.existing_stock'),    Array.new(hc_labels.size - 1),  { :column_group => test.label, :data_type => :int }]
-          series << [ I18n.t('reports.series.distributed'),       Array.new(hc_labels.size - 1),  { :column_group => test.label, :data_type => :int }]
-          series << [ I18n.t('reports.series.results_positive'),  Array.new(hc_labels.size - 1),  { :column_group => test.label, :data_type => :pct }]
+          test_data = data.select{|d| d['test_id'].to_i == test.id }
+          usage_data = test_data.collect{|v| [v['id'].to_i, v['previous_month']]}
+          usage = []
+          hcs.each do |hc|
+            usage.push(usage_data.select{|u| u[0] == hc}.inject(0){|sum, pair| sum + pair[1].to_i})
+          end
+          series << [ I18n.t('reports.series.usage_last_month'),  usage, { :column_group => test.label, :data_type => :int }]
+          
+          existing_data = test_data.collect{|v| [v['id'].to_i, v['existing']]}
+          existing = []
+          hcs.each do |hc|
+            existing.push(existing_data.select{|u| u[0] == hc}.inject(0){|sum, pair| sum + pair[1].to_i})
+          end
+          series << [ I18n.t('reports.series.existing_stock'),    existing,  { :column_group => test.label, :data_type => :int }]
+          
+          distributed_data = test_data.collect{|v| [v['id'].to_i, v['distributed']]}
+          distributed = []
+          hcs.each do |hc|
+            distributed.push(distributed_data.select{|u| u[0] == hc}.inject(0){|sum, pair| sum + pair[1].to_i})
+          end
+          series << [ I18n.t('reports.series.distributed'),       distributed,  { :column_group => test.label, :data_type => :int }]
+          
+          results_data = test_data.collect{|v| [v['id'].to_i, v['distributed']]}
+          results = []
+          total = distributed.size
+          hcs.each do |hc|
+            results.push(100 * (results_data.select{|u| u[0] == hc}.inject(0){|sum, pair| pair[1] == 'positive' ? (sum + 1) : 0}) / total)
+          end
+          series << [ I18n.t('reports.series.results_positive'),  results,  { :column_group => test.label, :data_type => :pct }]
         end
       end
       series
