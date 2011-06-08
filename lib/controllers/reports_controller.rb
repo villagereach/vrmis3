@@ -207,8 +207,12 @@ class ReportsController < OlmisController
     add_breadcrumb 'breadcrumb.report_rdt_consumption', url_for(:graph => 'rdt_consumption')
     
     @date_period_range = helpers.get_date_period_range
-    RAILS_DEFAULT_LOGGER.debug "  ***** rdt_consumption: date_period_range=#{@date_period_range}"
-    @area = params[:province_id] ? District.default : helpers.get_area_from_params
+    @area = if params[:province_id]
+      params[:district_id] ||= District.default.id
+      District.default
+    else
+      helpers.get_area_from_params
+    end
     
     @tables = [
       [I18n.t('breadcrumb.report_rdt_consumption'),
