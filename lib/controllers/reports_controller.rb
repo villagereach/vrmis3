@@ -46,7 +46,7 @@ class ReportsController < OlmisController
   end
 
   def self.offline_reports
-    %w(visited_health_centers delivery_interval coverage)
+    %w(visited_health_centers delivery_interval coverage rdt_consumption)
   end
   
   def offline_index

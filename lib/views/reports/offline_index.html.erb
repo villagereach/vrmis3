@@ -18,4 +18,7 @@
     <li>
       <h5><%= link_to t('reports.index.coverage_rates'), offline_reports_action_url(:report => :coverage, :province => params[:province], :locale => I18n.locale) %></h5>
     </li>
+    <li>
+      <h5><%= link_to t('reports.index.rdt_consumption'), offline_reports_action_url(:report => :rdt_consumption, :province => params[:province], :locale => I18n.locale) %></h5>
+    </li>
   </ul>

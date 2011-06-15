@@ -152,6 +152,7 @@ en:
       delivery_interval:      "Delivery Interval"
       coverage:               "Coverage"
       autoeval:               "Autoevaluation"
+      rdt_consumption:        "RDT Consumption"
   NR: "NR"
   unknown: "Don't know"
   status_category:
@@ -352,6 +353,7 @@ en:
       visited_health_centers: "Visited Health Centers"
       delivery_interval:      "Delivery Interval"
       coverage:               "Coverage"
+      rdt_consumption:        "RDT Consumption"
     autoeval:
       header:               "Autoevaluation for {{name}}"
       choose_district:      "Choose another district:"
