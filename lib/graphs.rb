@@ -54,7 +54,7 @@ class Graphs
     
     def rdt_consumption_by_area_date_period_range(params)
       options = parse_params(params)
-      options[:regions] = params[:district_id] ? District.find(params[:district_id]).regions : options[:regions].collect!{|d| d.regions}.flatten!
+      options[:regions] = params[:district_id] ? District.find(params[:district_id]).regions : options[:regions].collect!{|d| d.regions}.flatten
       products = Product.test
       RAILS_DEFAULT_LOGGER.debug "     ********* rdt_consumption_by_area_date_period_range: date_period_range=#{options[:date_period_range]}"
       {
