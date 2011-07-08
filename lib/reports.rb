@@ -123,7 +123,7 @@ class Reports
         
         test_data = {}
         Product.active.test.each do |test|
-          test_data = data.select{|d| d['test_id'].to_i == test.id }
+          test_data = data.select{ |d| d['test_id'].to_i == test.id && d['result'] == 'total' }
           
           usage_data = test_data.collect{|v| [v['id'].to_i, v['previous_month']]}
           usage = []
