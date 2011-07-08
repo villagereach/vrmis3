@@ -125,24 +125,21 @@ class Reports
         Product.active.test.each do |test|
           test_data = data.select{ |d| d['test_id'].to_i == test.id && d['result'] == 'total' }
           
-          usage_data = test_data.collect{|v| [v['id'].to_i, v['previous_month']]}
           usage = []
           hcs.each do |hc|
-            usage.push(usage_data.select{|u| u[0] == hc}.inject(0){|sum, pair| sum + pair[1].to_i})
+            usage.push(test_data.select{|u| u['id'].to_i == hc }[0]['previous_month'])
           end
           series << [ I18n.t('reports.series.usage_last_month'), usage, { :column_group => test.label, :data_type => :int }]
           
-          existing_data = test_data.collect{|v| [v['id'].to_i, v['existing']]}
           existing = []
           hcs.each do |hc|
-            existing.push(existing_data.select{|u| u[0] == hc}.inject(0){|sum, pair| sum + pair[1].to_i})
+            existing.push(test_data.select{|e| e['id'].to_i == hc}[0]['existing'])
           end
           series << [ I18n.t('reports.series.existing_stock'), existing,  { :column_group => test.label, :data_type => :int }]
           
-          distributed_data = test_data.collect{|v| [v['id'].to_i, v['value']]}
           distributed = []
           hcs.each do |hc|
-            distributed.push(distributed_data.select{|u| u[0] == hc}.inject(0){|sum, pair| sum + pair[1].to_i})
+            distributed.push(test_data.select{|v| v['id'].to_i == hc}[0]['value'])
           end
           series << [ I18n.t('reports.series.distributed'), distributed,  { :column_group => test.label, :data_type => :int }]
           
@@ -150,7 +147,8 @@ class Reports
           results = []
           total = distributed.size
           hcs.each do |hc|
-            results.push(100 * (results_data.select{|u| u[0] == hc}.inject(0){|sum, pair| pair[1] == 'positive' ? (sum + 1) : 0}) / total)
+            field = test_data.detect{|d| d['id'].to_i == hc}
+            results.push(!field['positive'].nil? && !field['value'].nil? ? 100 * (field['positive'].to_i / field['value'].to_i) : 0)
           end
           series << [ I18n.t('reports.series.results_positive'),  results,  { :column_group => test.label, :data_type => :pct }]
         end
