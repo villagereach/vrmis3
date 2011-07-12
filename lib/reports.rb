@@ -109,7 +109,6 @@ class Reports
 
     def rdt_consumption_by_area_date_period_range(products, areas, date_period_range, group_by_month=true)
       data = MzQueries.rdt_consumption_by_area_date_period_range(products, areas, date_period_range, group_by_month)
-      RAILS_DEFAULT_LOGGER.debug data.inspect
       
       if data.empty?
         series = [ [ I18n.t('reports.axes.'+areas.first.class.name.tableize.singularize), areas.map(&:label), { :data_type => :text }], ]
@@ -121,10 +120,9 @@ class Reports
             [ I18n.t('reports.axes.'+areas.first.class.name.tableize.singularize), hc_labels, { :data_type => :text, :th => true }],
           ]
         
-        test_data = {}
         Product.active.test.each do |test|
-          test_data = data.select{ |d| d['test_id'].to_i == test.id && d['result'] == 'total' }
-          
+          test_data = data.select{ |d| d['test_id'].to_i == test.id }
+
           usage = []
           hcs.each do |hc|
             usage.push(test_data.select{|u| u['id'].to_i == hc }[0]['previous_month'])
@@ -142,14 +140,14 @@ class Reports
             distributed.push(test_data.select{|v| v['id'].to_i == hc}[0]['value'])
           end
           series << [ I18n.t('reports.series.distributed'), distributed,  { :column_group => test.label, :data_type => :int }]
-          
-          results_data = test_data.collect{|v| [v['id'].to_i, v['results']]}
           results = []
-          total = distributed.size
+          
           hcs.each do |hc|
-            field = test_data.detect{|d| d['id'].to_i == hc}
-            results.push(!field['positive'].nil? && !field['value'].nil? ? 100 * (field['positive'].to_i / field['value'].to_i) : 0)
+            total = test_data.detect{|d| d['id'].to_i == hc && d['result'] == 'total'}['value']
+            positive = test_data.detect{|d| d['id'].to_i == hc && d['result'] == 'positive'}['value']
+            results.push((!total.nil? && total.to_i != 0 && !positive.nil?) ? 100 * (positive.to_i / total.to_i.to_f) : 0)
           end
+          RAILS_DEFAULT_LOGGER.debug "#{results.inspect}"
           series << [ I18n.t('reports.series.results_positive'),  results,  { :column_group => test.label, :data_type => :pct }]
         end
       end
