@@ -139,7 +139,7 @@ class Reports
           hcs.each do |hc|
             distributed.push(test_data.select{|v| v['id'].to_i == hc}[0]['value'])
           end
-          series << [ I18n.t('reports.series.distributed'), distributed,  { :column_group => test.label, :data_type => :int }]
+          series << [ I18n.t('reports.series.total_doses'), distributed,  { :column_group => test.label, :data_type => :int }]
           results = []
           
           hcs.each do |hc|
