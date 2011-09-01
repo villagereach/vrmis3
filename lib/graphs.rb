@@ -34,6 +34,10 @@ class Graphs
     def offline_rdt_consumption(params)
       rollup('rolled_up_stockouts_by_province_date_period_range', params)
     end
+    
+    def offline_provincial_summary(params)
+      rollup('rolled_up_stockouts_by_province_date_period_range', params)
+    end
 
     def offline_fridge_issues(params)
       rollup('rolled_up_fridge_issues_by_province_date_period_range', params)
