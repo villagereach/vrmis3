@@ -107,6 +107,11 @@ class Reports
       series
     end
 
+    def rolled_up_rdt_consumption_by_area_date_period_range(province_id, date_period_range, params)
+      areas = Province.find(province_id).regions.sort
+      rdt_consumption_by_area_date_period_range(Product.test, areas, date_period_range, group_by_month=true)
+    end
+    
     def rdt_consumption_by_area_date_period_range(products, areas, date_period_range, group_by_month=true)
       data = MzQueries.rdt_consumption_by_area_date_period_range(products, areas, date_period_range, group_by_month)
       

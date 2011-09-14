@@ -4,6 +4,10 @@ class Graphs
 
     def rollup(name, params, *args)
       options = parse_params(params)
+      RAILS_DEFAULT_LOGGER.debug "ROLLUP OPTIONS:"
+      RAILS_DEFAULT_LOGGER.debug "     : #{name}"
+      RAILS_DEFAULT_LOGGER.debug "     : #{params[:province_id]}"
+      RAILS_DEFAULT_LOGGER.debug "     : #{options[:date_period_range].inspect}"
       {
         :params => params.merge(:graph => name),
         :never_sort => true,
@@ -32,7 +36,7 @@ class Graphs
     end
     
     def offline_rdt_consumption(params)
-      rollup('rolled_up_stockouts_by_province_date_period_range', params)
+      rollup('rolled_up_rdt_consumption_by_area_date_period_range', params, params)
     end
     
     def offline_provincial_summary(params)
@@ -108,21 +112,10 @@ class Graphs
       options = parse_params(params)
       total, visited, not_visited, not_reported = *Reports.percent_of_health_centers_visited_for_region(options[:regions], options[:date_period_range])
 
-      # if Reports.base_region?(options[:regions].first) && Reports.one_period?(options[:date_period_range])
-      #   method = lambda { |data, column|
-      #     if !data[column.index].nil?
-      #       [:span, (data[column.index].to_i == 0 ? I18n.t('reports.series.not_visited') : I18n.t('reports.series.visited')),
-      #         { :class => (data[column.index].to_i == 0 ? 'bad visited' : 'ok visited') }]
-      #     end
-      #   }
-      #   series = [[I18n.t('reports.series.visited'), visited.second, { :data_type => :content_tag, :method => method }]]
-      # else
-        series = [[I18n.t('reports.series.total_clinic_visits'), total.second],
-                  [I18n.t('reports.series.reported'), not_reported.second.zip(total.second).map { |a,b| ((100 - a.to_f) * b.to_f/100 + 0.5).to_i }],
-                  [visited.first, visited.second.zip(total.second).map { |a,b| (a.to_f * b.to_f/100 + 0.5).to_i }],
-                  [I18n.t('reports.series.percent_visited'), visited.second, { :data_type => :pct }]]
-      # end
-
+      series = [[I18n.t('reports.series.total_clinic_visits'), total.second],
+                [I18n.t('reports.series.reported'), not_reported.second.zip(total.second).map { |a,b| ((100 - a.to_f) * b.to_f/100 + 0.5).to_i }],
+                [visited.first, visited.second.zip(total.second).map { |a,b| (a.to_f * b.to_f/100 + 0.5).to_i }],
+                [I18n.t('reports.series.percent_visited'), visited.second, { :data_type => :pct }]]
       {
         :params => params.merge(:graph => 'rdt_consumption_by_health_center_per_region_by_date_period_range'),
         :area => options[:regions].first.class.name.underscore,

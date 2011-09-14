@@ -174,16 +174,6 @@ class ReportsController < OlmisController
 
     @graphs = [ [I18n.t('reports.titles.stocked_out_health_centers_by_type_and_date_period' + 'woo', :name => @area.label, :date => label),
                 Graphs.stocked_out_health_centers_by_type(graph_params)] ]
-                
-#    if @area.class != District && dates.last > dates.first
-#      @tab_graph_dimension = 'product'
-#      @tab_graphs = products.sort.map { |p| 
-#        [
-#          p.label,
-#          Graphs.stockouts_per_province_date_period_by_product_date_period_range(graph_params.merge(:product_id => p.id))            
-#        ]
-#      }
-#    end
   end
 
   def coverage

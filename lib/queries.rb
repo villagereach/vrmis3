@@ -41,9 +41,7 @@ class Queries
 
     def rolled_up_target_coverage_by_province_date_period_range(province_id, date_period_range)
       targets = TargetPercentage.all.sort
-
       date_periods = date_period_range.map { |d| (Date.from_date_period(d) - 1.date_period).to_date_period }
-
       health_centers = Province.find(province_id).health_centers.map(&:id)
 
       queries = targets.map { |t| "LEFT JOIN (#{t.tally_subquery(health_centers, date_periods)}) as `#{t.code}` ON `#{t.code}`.health_center_id = health_centers.id AND `#{t.code}`.date_period=months.date_period" }.join("\n")
@@ -73,6 +71,44 @@ class Queries
         SQL
     end
 
+    def target_coverage_by_area_date_period_range(areas, date_period_range)
+      areas = [areas].flatten
+      area_ids = areas.map(&:id).map(&:to_s).join(",")
+      return [] if area_ids.empty?
+      table = areas.first.class.name.tableize
+      id_name = table + '.id'
+      param_name = areas.first.class.param_name
+      targets = TargetPercentage.all.sort
+      date_periods = date_period_range.map { |d| (Date.from_date_period(d) - 1.date_period).to_date_period }
+      health_centers = areas.map(&:health_centers).flatten.map(&:id)
+
+      queries = targets.map { |t| "LEFT JOIN (#{t.tally_subquery(health_centers, date_periods)}) as `#{t.code}` ON `#{t.code}`.health_center_id = health_centers.id AND `#{t.code}`.date_period=months.date_period" }.join("\n")
+      values  = targets.map { |t| "sum(`#{t.code}`.value) as `#{t.code}`" }.join(",\n ")
+      selects = targets.map { |t| "`#{t.code}`" }.join(", ")
+      months  = date_period_range.map { |d| "SELECT '#{(Date.from_date_period(d) - 1.date_period).to_date_period}' AS date_period, '#{d}' AS visit_month" }.uniq.join("\n UNION ALL ")
+
+      pop = param_name == 'health_center_id' ? 'health_centers.catchment_population' : "coalesce(sum(health_centers.catchment_population), #{table}.population)"
+      connection.select_all(
+        HealthCenterVisit.sanitize_sql_for_conditions([<<-SQL]))
+          select
+            x.#{param_name} as area_id,
+            #{ date_period_range.to_a.length } * population / #{ Date.date_periods_per_year } as scaled_population,
+            population,
+            #{selects}
+          from (
+              select #{id_name} as #{param_name},
+              #{values}
+            from (#{months}) as months
+              cross join health_centers
+              inner join #{RegionJoin}
+              #{ queries }
+            where #{id_name} in (#{area_ids})
+            group by #{id_name}) x
+            inner join
+            (select #{id_name} as #{param_name}, #{pop} as population from health_centers inner join #{RegionJoin} group by #{id_name}) y
+            on x.#{param_name} = y.#{param_name}
+        SQL
+    end
 
     def rolled_up_delivery_intervals_by_province_date_period_range(province_id, date_period_range, acceptable_interval)
       months = delivery_interval_month_subquery(date_period_range)
@@ -207,19 +243,14 @@ class Queries
     def usage_by_area_date_period_range(areas, date_period_range)
       areas = [areas].flatten
       area_ids = areas.map(&:id).map(&:to_s).join(",")
-
       return [] if area_ids.empty?
-
       table = areas.first.class.name.tableize
       id_name = table + '.id'
       param_name = areas.first.class.param_name
-
       services = Product.vaccine.all.sort
       selects = services.map { |s| "sum(case when vaccine_id=#{s.id} then doses_distributed end) as `#{s.id}_distributed`,"+
                                    "sum(case when vaccine_id=#{s.id} then loss end) as `#{s.id}_loss`" }.join(", ")
-
       pop = param_name == 'health_center_id' ? 'health_centers.catchment_population' : "coalesce(sum(health_centers.catchment_population), #{table}.population)"
-
       connection.select_all(
         HealthCenterVisit.sanitize_sql_for_conditions([<<-SQL, date_period_range.first, date_period_range.last]))
           select y.population, x.* from (
@@ -234,52 +265,6 @@ class Queries
             inner join
             (select #{id_name} as #{param_name}, #{pop} as population from health_centers inner join #{RegionJoin} group by #{id_name}) y
             on x.area_id = y.#{param_name}
-        SQL
-    end
-
-    def target_coverage_by_area_date_period_range(areas, date_period_range)
-      areas = [areas].flatten
-      area_ids = areas.map(&:id).map(&:to_s).join(",")
-
-      return [] if area_ids.empty?
-
-      table = areas.first.class.name.tableize
-      id_name = table + '.id'
-      param_name = areas.first.class.param_name
-
-      targets = TargetPercentage.all.sort
-
-      date_periods = date_period_range.map { |d| (Date.from_date_period(d) - 1.date_period).to_date_period }
-
-      health_centers = areas.map(&:health_centers).flatten.map(&:id)
-
-        
-      queries = targets.map { |t| "LEFT JOIN (#{t.tally_subquery(health_centers, date_periods)}) as `#{t.code}` ON `#{t.code}`.health_center_id = health_centers.id AND `#{t.code}`.date_period=months.date_period" }.join("\n")
-      values  = targets.map { |t| "sum(`#{t.code}`.value) as `#{t.code}`" }.join(",\n ")
-      selects = targets.map { |t| "`#{t.code}`" }.join(", ")
-      months  = date_period_range.map { |d| "SELECT '#{(Date.from_date_period(d) - 1.date_period).to_date_period}' AS date_period, '#{d}' AS visit_month" }.uniq.join("\n UNION ALL ")
-
-      pop = param_name == 'health_center_id' ? 'health_centers.catchment_population' : "coalesce(sum(health_centers.catchment_population), #{table}.population)"
-
-      connection.select_all(
-        HealthCenterVisit.sanitize_sql_for_conditions([<<-SQL]))
-          select
-            x.#{param_name} as area_id,
-            #{ date_period_range.to_a.length } * population / #{ Date.date_periods_per_year } as scaled_population,
-            population,
-            #{selects}
-          from (
-              select #{id_name} as #{param_name},
-              #{values}
-            from (#{months}) as months
-              cross join health_centers
-              inner join #{RegionJoin}
-              #{ queries }
-            where #{id_name} in (#{area_ids})
-            group by #{id_name}) x
-            inner join
-            (select #{id_name} as #{param_name}, #{pop} as population from health_centers inner join #{RegionJoin} group by #{id_name}) y
-            on x.#{param_name} = y.#{param_name}
         SQL
     end
 
