@@ -156,7 +156,6 @@ class ReportsController < OlmisController
     label, dates = helpers.parse_date_period_range
     
     products  = params[:product_id]  ? Product.trackable.find_all_by_id(params[:product_id]) : Product.trackable
-
     @area = helpers.get_area_from_params    
     
     @product_id = products.map(&:id)
@@ -164,7 +163,6 @@ class ReportsController < OlmisController
       :product_id => @product_id,
       :date_period_range => @date_period_range
     })
-    
     @tables = [
       [
       @area.label,
@@ -203,14 +201,12 @@ class ReportsController < OlmisController
     else
       helpers.get_area_from_params
     end
-    
     @tables = [
       [I18n.t('breadcrumb.report_rdt_consumption'),
         Graphs.rdt_consumption_by_area_date_period_range(params.merge({
           :date_period_range => @date_period_range }))
       ]
     ]
-
     @graphs = []
   end
   

@@ -2,7 +2,6 @@
 # Methods added to this helper will be available to all templates in the application.
 
 module OlmisHelper
-
   def get_area_from_params(ps = params)
     RAILS_DEFAULT_LOGGER.debug "get_area_from_params: called"
     hierarchy = Olmis.area_hierarchy.map(&:constantize)
