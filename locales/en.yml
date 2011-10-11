@@ -355,6 +355,7 @@ en:
       delivery_interval:      "Delivery Interval"
       coverage:               "Coverage"
       rdt_consumption:        "RDT Consumption"
+      provinvial_summary:     "Provincial Summary"
     autoeval:
       header:               "Autoevaluation for {{name}}"
       choose_district:      "Choose another district:"
