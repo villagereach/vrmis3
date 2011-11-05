@@ -325,6 +325,7 @@ en:
       not_visited:         "Not visited"
       not_reported:        "Not reported"
       total_doses:         "Total doses"
+      total_tests:         "Total tests"
       total_visits:        "Number of visits"
       population:          "Population"
       target_group_size:   "Target group"
