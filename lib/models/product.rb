@@ -29,6 +29,9 @@ class Product < ActiveRecord::Base
   begin
     ProductType.active.each do |type|
       named_scope type.code, { :include => :product_type, :conditions => { 'product_types.code' => type.code } }
+      define_method "#{type.code.downcase}?" do
+        self.product_type.code.downcase == type.code.downcase
+      end
     end
   rescue ActiveRecord::StatementInvalid => e
         
