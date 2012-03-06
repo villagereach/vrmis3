@@ -92,32 +92,6 @@ class Graphs
       }
     end
 
-<<<<<<< HEAD
-    def rdt_consumption_by_health_center_per_region_by_date_period_range(params)
-      options = parse_params(params)
-      total, visited, not_visited, not_reported = *Reports.percent_of_health_centers_visited_for_region(options[:regions], options[:date_period_range])
-
-      series = [[I18n.t('reports.series.total_clinic_visits'), total.second],
-                [I18n.t('reports.series.reported'), not_reported.second.zip(total.second).map { |a,b| ((100 - a.to_f) * b.to_f/100 + 0.5).to_i }],
-                [visited.first, visited.second.zip(total.second).map { |a,b| (a.to_f * b.to_f/100 + 0.5).to_i }],
-                [I18n.t('reports.series.percent_visited'), visited.second, { :data_type => :pct }]]
-      {
-        :params => params.merge(:graph => 'rdt_consumption_by_health_center_per_region_by_date_period_range'),
-        :area => options[:regions].first.class.name.underscore,
-        :title => I18n.t('reports.titles.health_centers_visited', :name => options[:area].label, :date => options[:label]),
-        :x_dimension => 'region',
-        :series_dimension => 'visit_counts',
-        :x_labels => options[:regions].map(&:label),
-        :groups => [
-          {
-            :data_type => :int,
-            :series => series
-          }
-        ]
-      }
-    end
-=======
->>>>>>> ab9ed290c7afa80436761c239ef3138eceb01199
     
     def visit_counts_health_centers_per_region_by_area_date_period_range(params)
       options = parse_params(params)
