@@ -110,16 +110,6 @@ class Reports
       series
     end
 
-    def rdt_consumption_by_area_date_period_range(products, areas, date_period_range, group_by_month=true)
-      data = MzQueries.rdt_results_by_area_date_period_range(products, areas, date_period_range, group_by_month)
-      series = 
-        [
-          [ I18n.t('reports.axes.'+areas.first.class.name.tableize.singularize), areas.map(&:label), { :data_type => :text, :th => true }],
-          [ I18n.t('reports.series.population'), data['population'], { :data_type => :int }],
-        ]
-        
-      series
-    end
     
     def usage_by_area_date_period_range(regions, date_period_range)
       regions_by_id = Hash[*regions.map { |r| [r.id.to_s, r] }.flatten]

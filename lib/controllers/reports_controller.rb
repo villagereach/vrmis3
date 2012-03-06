@@ -203,20 +203,6 @@ class ReportsController < OlmisController
     ]
   end
 
-  def rdt_consumption
-    add_breadcrumb 'breadcrumb.report_rdt_consumption', url_for(:graph => 'rdt_consumption')
-    
-    @date_period_range = helpers.get_date_period_range
-    @area = helpers.get_area_from_params
-    @tables = [
-      [I18n.t('breadcrumb.report_rdt_consumption'),
-        Graphs.rdt_consumption_by_area_date_period_range(params.merge({
-          :date_period_range => @date_period_range }))
-      ]
-    ]
-
-    @graphs = []
-  end
   
   def target_coverage_map
     add_breadcrumb 'breadcrumb.report_maps', url_for(:graph => 'maps')
