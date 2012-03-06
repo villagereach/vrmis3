@@ -60,22 +60,6 @@ class Graphs
       }
     end
     
-    def rdt_consumption_by_area_date_period_range(params)
-      options = parse_params(params)
-      options[:regions] = params[:district_id] ? District.find(params[:district_id]).regions : options[:regions].collect!{|d| d.regions}.flatten
-      products = Product.test
-      RAILS_DEFAULT_LOGGER.debug "     ********* rdt_consumption_by_area_date_period_range: date_period_range=#{options[:date_period_range]}"
-      {
-        :params => params.merge(:graph => 'rdt_consumption_by_area_date_period_range'),
-        # :x_axis => I18n.t('reports.axes.'+options[:regions].first.class.name.tableize.singularize),
-        # :x_labels => options[:regions].map(&:label),
-        :area => options[:regions].first.class.name.underscore,
-        :title => I18n.t('reports.titles.rdt_consumption', :name => options[:area].label, :date => options[:label]),
-        :groups => [
-          :series => Reports.rdt_consumption_by_area_date_period_range(products, options[:regions], options[:date_period_range])
-        ]
-      }
-    end
 
     def usage_by_area_date_period_range(params)
       options = parse_params(params)
@@ -108,6 +92,7 @@ class Graphs
       }
     end
 
+<<<<<<< HEAD
     def rdt_consumption_by_health_center_per_region_by_date_period_range(params)
       options = parse_params(params)
       total, visited, not_visited, not_reported = *Reports.percent_of_health_centers_visited_for_region(options[:regions], options[:date_period_range])
@@ -131,6 +116,8 @@ class Graphs
         ]
       }
     end
+=======
+>>>>>>> ab9ed290c7afa80436761c239ef3138eceb01199
     
     def visit_counts_health_centers_per_region_by_area_date_period_range(params)
       options = parse_params(params)

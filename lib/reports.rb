@@ -107,58 +107,6 @@ class Reports
       series
     end
 
-    def rolled_up_rdt_consumption_by_area_date_period_range(province_id, date_period_range, params)
-      areas = Province.find(province_id).regions.sort
-      rdt_consumption_by_area_date_period_range(Product.test, areas, date_period_range, group_by_month=true)
-    end
-    
-    def rdt_consumption_by_area_date_period_range(products, areas, date_period_range, group_by_month=true)
-      data = MzQueries.rdt_consumption_by_area_date_period_range(products, areas, date_period_range, group_by_month)
-      
-      if data.empty?
-        series = [ [ I18n.t('reports.axes.'+areas.first.class.name.tableize.singularize), areas.map(&:label), { :data_type => :text }], ]
-      else
-        hcs = data.collect{|d| d['id'].to_i}.uniq
-        hc_labels = areas.select{|area| hcs.include?(area.id) }.map(&:label)
-        series = 
-          [
-            [ I18n.t('reports.axes.'+areas.first.class.name.tableize.singularize), hc_labels, { :data_type => :text, :th => true }],
-          ]
-        
-        Product.active.test.each do |test|
-          test_data = data.select{ |d| d['test_id'].to_i == test.id }
-
-          usage = []
-          hcs.each do |hc|
-            usage.push(test_data.select{|u| u['id'].to_i == hc }[0]['previous_month'])
-          end
-          series << [ I18n.t('reports.series.usage_last_month'), usage, { :column_group => test.label, :data_type => :int }]
-          
-          existing = []
-          hcs.each do |hc|
-            existing.push(test_data.select{|e| e['id'].to_i == hc}[0]['existing'])
-          end
-          series << [ I18n.t('reports.series.existing_stock'), existing,  { :column_group => test.label, :data_type => :int }]
-          
-          distributed = []
-          hcs.each do |hc|
-            distributed.push(test_data.select{|v| v['id'].to_i == hc}[0]['value'])
-          end
-          series << [ I18n.t('reports.series.total_doses'), distributed,  { :column_group => test.label, :data_type => :int }]
-          results = []
-          
-          hcs.each do |hc|
-            total = test_data.detect{|d| d['id'].to_i == hc && d['result'] == 'total'}['value']
-            positive = test_data.detect{|d| d['id'].to_i == hc && d['result'] == 'positive'}['value']
-            results.push((!total.nil? && total.to_i != 0 && !positive.nil?) ? 100 * (positive.to_i / total.to_i.to_f) : 0)
-          end
-          RAILS_DEFAULT_LOGGER.debug "#{results.inspect}"
-          series << [ I18n.t('reports.series.results_positive'),  results,  { :column_group => test.label, :data_type => :pct }]
-        end
-      end
-      series
-    end
-    
     def usage_by_area_date_period_range(regions, date_period_range)
       regions_by_id = Hash[*regions.map { |r| [r.id.to_s, r] }.flatten]
       
