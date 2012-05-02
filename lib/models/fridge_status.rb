@@ -171,11 +171,12 @@ class FridgeStatus < ActiveRecord::Base
         'past_problem'  => fs.past_problem,
         'temperature'   => fs.temperature,
         'state'         => case fs.status_code
+                           when nil then 'nr'   #bad nil data in production
                            when 'OK', 'nr' then fs.status_code
-                           else                 'problem'
+                           else                'problem'
                            end,
         'problem'       => case fs.status_code
-                           when 'OK', 'nr' then []
+                           when 'OK', 'nr', nil then []
                            else                 fs.status_code.split /\s+/
                            end,
         'other_problem' => fs.other_problem
