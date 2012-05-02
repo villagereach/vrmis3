@@ -177,7 +177,7 @@ class FridgeStatus < ActiveRecord::Base
                            end,
         'problem'       => case fs.status_code
                            when 'OK', 'nr', nil then []
-                           else                 fs.status_code.split /\s+/
+                           else                 fs.status_code.to_s.split /\s+/
                            end,
         'other_problem' => fs.other_problem
       }

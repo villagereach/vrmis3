@@ -165,16 +165,20 @@ module VisitsHelper
   end
 
   def inventory_field(f, inventory_type, package_code)
-    qty, nr =
-      if @visit
-        [@visit.ideal_stock[inventory_type][package_code].quantity, 
-         !@visit.ideal_stock[inventory_type][package_code].new_record? && 
-           !@visit.ideal_stock[inventory_type][package_code].quantity.nil?]
-      end
+    begin
+      qty, nr =
+        if @visit
+          [@visit.ideal_stock[inventory_type][package_code].quantity,
+           !@visit.ideal_stock[inventory_type][package_code].new_record? &&
+             !@visit.ideal_stock[inventory_type][package_code].quantity.nil?]
+        end
 
-    nr_field(f, inventory_type, package_code, qty, nr,
-      (@errors[package_code][inventory_type].on(:quantity) rescue nil),
-      !Inventory.nullable_types.include?(inventory_type))
+      nr_field(f, inventory_type, package_code, qty, nr,
+        (@errors[package_code][inventory_type].on(:quantity) rescue nil),
+        !Inventory.nullable_types.include?(inventory_type))
+    rescue
+      ''
+    end
   end
 
   def expression_field(name, expression, suffix='')
